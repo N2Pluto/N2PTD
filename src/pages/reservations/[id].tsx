@@ -36,9 +36,12 @@ const Reservation = () => {
                 <div key={index}>
                   <h3>{room.room_number}</h3>
                   <p>Bed Capacity: {room.bed_capacity}</p>
-                  
+
                 </div>
               ))}
+            </div>
+            <div>
+              
             </div>
         </Grid>
   )
