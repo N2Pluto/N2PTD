@@ -34,7 +34,7 @@ const ReservationInfo = () => {
                         <Typography variant='body2'>
                             - Dormitory fee: 10,000 baht per person per semester. <br /> - Monthly electricity bill payment.
                         </Typography>
-                        <Link href='/'>
+                        <Link href='/reservations/10'>
                             <Box
                                 sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'end', pt: 35, pr: 2 }}
                             >

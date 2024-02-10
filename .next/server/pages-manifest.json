@@ -2,6 +2,6 @@
   "/_app": "pages/_app.js",
   "/_document": "pages/_document.js",
   "/_error": "pages/_error.js",
-  "/dashboard": "pages/dashboard.js",
-  "/Dormitory": "pages/Dormitory.js"
+  "/api/room/building/[dorm_id]": "pages/api/room/building/[dorm_id].js",
+  "/api/building/[id]": "pages/api/building/[id].js"
 }

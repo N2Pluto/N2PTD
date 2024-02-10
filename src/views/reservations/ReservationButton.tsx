@@ -16,7 +16,7 @@ export default function LoadingButtonsTransition() {
         sx={{
           display: 'block'
         }}
-        control={<Switch checked={loading} onChange={() => setLoading(!loading)} name='loading' color='primary' />}
+        control={<Switch checked={loading} onChange={() => setLoading(!loading)} name='loading' color='secondary' />}
         label=''
       />
     </div>
