@@ -25,6 +25,24 @@ const RoomReservation = () => {
         <Grid item xs={12} md={6} lg={2}>
           <RoomCard />
         </Grid>
+        <Grid item xs={12} md={6} lg={2}>
+          <RoomCard />
+        </Grid>
+        <Grid item xs={12} md={6} lg={2}>
+          <RoomCard />
+        </Grid>
+        <Grid item xs={12} md={6} lg={2}>
+          <RoomCard />
+        </Grid>
+        <Grid item xs={12} md={6} lg={2}>
+          <RoomCard />
+        </Grid>
+        <Grid item xs={12} md={6} lg={2}>
+          <RoomCard />
+        </Grid>
+        <Grid item xs={12} md={6} lg={2}>
+          <RoomCard />
+        </Grid>
       </Grid>
     </ApexChartWrapper>
   )

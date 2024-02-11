@@ -26,7 +26,6 @@ const Dormitory = () => {
         <Grid item xs={12} md={6} lg={3}>
           <Dormitorydetails />
         </Grid>
-
         <Grid item xs={12} md={6} lg={3}>
           <DormitorydetailsII />
         </Grid>

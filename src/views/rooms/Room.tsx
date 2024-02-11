@@ -31,7 +31,7 @@ const RoomCard = () => {
 
   return (
     <Card>
-      <CardMedia sx={{ height: '14.5625rem' }} image='https://img5.pic.in.th/file/secure-sv1/wu.png' />
+      {/* <CardMedia sx={{ height: '14.5625rem' }} image='https://img5.pic.in.th/file/secure-sv1/wu.png' /> */}
       <CardContent>
         <Typography variant='h6' sx={{ marginBottom: 2 }}>
          
