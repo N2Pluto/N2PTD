@@ -5,7 +5,7 @@ import DormitorydetailsA1 from 'src/views/Dormitory/wu_A1'
 import DormitorydetailsA2 from 'src/views/Dormitory/wu_A2'
 import DormitorydetailsB1 from 'src/views/Dormitory/wu_B1'
 import DormitorydetailsB2 from 'src/views/Dormitory/wu_B2'
-import Dormitorydetails from 'src/views/Dormitory/wu_I'
+import DormitorydetailsI from 'src/views/Dormitory/wu_I'
 import DormitorydetailsII from 'src/views/Dormitory/wu_II'
 import DormitorydetailsIII from 'src/views/Dormitory/wu_III'
 import DormitorydetailsIV from 'src/views/Dormitory/wu_IV'
@@ -24,7 +24,7 @@ const Dormitory = () => {
     <ApexChartWrapper>
       <Grid container spacing={6}>
         <Grid item xs={12} md={6} lg={3}>
-          <Dormitorydetails />
+          <DormitorydetailsI />
         </Grid>
         <Grid item xs={12} md={6} lg={3}>
           <DormitorydetailsII />

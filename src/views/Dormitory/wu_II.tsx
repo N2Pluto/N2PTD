@@ -12,30 +12,31 @@ import supabase from 'src/libs/supabase'
 
 const DormitorydetailsII = () => {
   const [dormitoryBuilding, setDormitoryBuilding] = useState([])
-   useEffect(() => {
-     const fetchData = async () => {
-       try {
-         const { data, error } = await supabase.from('Dormitory_Building').select('name , images_url').eq('dorm_id', 2)
-         if (error) {
-           throw error
-         }
-         setDormitoryBuilding(data)
-       } catch (error) {
-         console.error('Error fetching dormitory building data:', error)
-       }
-     }
 
-     fetchData()
-   }, [])
-   
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // const { data, error } = await supabase.from('Dormitory_Building').select('name , images_url').eq('dorm_id', 1)
+        const { data } = await fetch('/api/building/2').then(res => res.json())
+        // if (error) {
+        //   throw error
+        // }
+        console.log('data:', data)
+        setDormitoryBuilding(data)
+      } catch (error) {
+        console.error('Error fetching dormitory building data:', error)
+      }
+    }
+
+    fetchData()
+  }, [])
+
   return (
     <Card>
-      <CardMedia sx={{ height: '14.5625rem' }} image={dormitoryBuilding[0]?.images_url} />
+      <CardMedia sx={{ height: '14.5625rem' }} image={dormitoryBuilding.images_url} />
       <CardContent>
         <Typography variant='h6' sx={{ marginBottom: 2 }}>
-          {dormitoryBuilding.map(dorm => (
-            <span>{dorm.name}</span>
-          ))}
+          <span>{dormitoryBuilding.name}</span>
         </Typography>
         <Typography variant='body2'>
           <>

@@ -7,7 +7,7 @@ import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 
-const ReservationRoom = () => {
+const ReservationRoomTest = () => {
   const router = useRouter()
   const [dormitoryBuilding, setDormitoryBuilding] = useState(null)
   const [dormitoryRoom, setDormitoryRoom] = useState([])
@@ -36,36 +36,35 @@ const ReservationRoom = () => {
     console.log('Reservation ROOM :', id)
   }
 
+  console.log('dormitoryBuilding:', dormitoryBuilding)
+  console.log('dormitoryRoom:', dormitoryRoom)
+
   return (
-    <div>
+    <>
       <h1>Reservation</h1>
       <Typography>{dormitoryBuilding?.name}</Typography>
 
       <div style={{ display: 'flex', flexWrap: 'wrap' }}>
         {dormitoryRoom.map(room => (
-          <div style={{ display: 'flex', flexWrap: 'wrap' }} key={room.room_id}>
-            <Card style={{ width: '16.66%', margin: '10px' }}>
-              <CardContent>
-                <Typography>
-                  <Typography>{room.room_number}</Typography>
-                  <Typography>Bed Capacity: {room.bed_capacity}</Typography>
-                </Typography>
-                <Link href={`/reservations/reservations_room/reservations_bed/${room.room_id}`}>
-                  <Box
-                    sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', pt: 5 }}
-                  >
-                    <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
-                      Register
-                    </Button>
-                  </Box>
-                </Link>
-              </CardContent>
-            </Card>
-          </div>
+          <Card key={room.room_id} style={{ width: '16.66%', margin: '10px' }}>
+            <CardContent>
+              <Typography>
+                <Typography>{room.room_number}</Typography>
+                <Typography>Bed Capacity: {room.bed_capacity}</Typography>
+              </Typography>
+              <Link href={`/reservations/reservations_room/reservations_bed/${room.room_id}`} passHref>
+                <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', pt: 5 }}>
+                  <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
+                    Register
+                  </Button>
+                </Box>
+              </Link>
+            </CardContent>
+          </Card>
         ))}
       </div>
-    </div>
+    </>
   )
 }
 
-export default ReservationRoom
+export default ReservationRoomTest

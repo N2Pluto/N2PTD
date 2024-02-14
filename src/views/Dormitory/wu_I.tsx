@@ -17,7 +17,7 @@ const DormitorydetailsI = () => {
     const fetchData = async () => {
       try {
         // const { data, error } = await supabase.from('Dormitory_Building').select('name , images_url').eq('dorm_id', 1)
-        const {data} = await fetch('/api/hello').then(res => res.json())
+        const { data } = await fetch('/api/building/1').then(res => res.json())
         // if (error) {
         //   throw error
         // }
@@ -33,12 +33,10 @@ const DormitorydetailsI = () => {
 
   return (
     <Card>
-      <CardMedia sx={{ height: '14.5625rem' }} image={dormitoryBuilding[0]?.images_url} />
+      <CardMedia sx={{ height: '14.5625rem' }} image={dormitoryBuilding.images_url} />
       <CardContent>
         <Typography variant='h6' sx={{ marginBottom: 2 }}>
-          {dormitoryBuilding.map(dorm => (
-            <span>{dorm.name}</span>
-          ))}
+          <span>{dormitoryBuilding.name}</span>
         </Typography>
         <Typography variant='body2'>
           <>

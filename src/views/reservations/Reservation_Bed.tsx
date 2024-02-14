@@ -11,7 +11,6 @@ const ReservationBed = () => {
   const router = useRouter()
   const [dormitoryBed, setDormitoryBed] = useState(null)
   const [dormitoryRoom, setDormitoryRoom] = useState([])
-  const [dormitoryRoomByBed, setDormitoryRoomByBed] = useState([])
 
   useEffect(() => {
     if (router.query.id) {
@@ -41,12 +40,13 @@ const ReservationBed = () => {
   console.log('dormitoryRoom:', dormitoryRoom)
 
   return (
-    <>
+    <span>
       <h1>Select Bed</h1>
       {/* <Typography>{dormitoryBed?.name}</Typography> */}
 
       <div style={{ display: 'flex', flexWrap: 'wrap' }}>
         {dormitoryRoom.map(room => (
+          
           <Card key={room.room_id} style={{ width: '16.66%', margin: '10px' }}>
             <CardContent>
               <Typography>
@@ -64,7 +64,7 @@ const ReservationBed = () => {
           </Card>
         ))}
       </div>
-    </>
+    </span>
   )
 }
 
