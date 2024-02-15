@@ -2,6 +2,7 @@ import supabase from 'src/libs/supabase'
 import jwt from 'jsonwebtoken'
 
 const handler = async (req: any, res: any) => {
+  console.log('wowao')
   try {
     if (req.method !== 'POST') {
       return res.status(405).json({ message: 'Method Not Allowed' })
@@ -10,7 +11,13 @@ const handler = async (req: any, res: any) => {
     const { email, password } = req.body
     console.log('email', email)
     console.log('password', password)
-    const user = await supabase.from('Users').select('student_id,email,password').eq('email', email).limit(1).single()
+    const user = await supabase
+      .from('Users')
+      .select('student_id,email,password,user_id')
+      .eq('email', email)
+      .limit(1)
+      .single()
+    console.log('user', user)
 
     // Check password
     if (user?.data?.password !== password) {
@@ -19,7 +26,7 @@ const handler = async (req: any, res: any) => {
 
     // Sign JWT token
     const accessToken = jwt.sign(
-      { student_id: user?.data?.student_id, email: user?.data?.email },
+      { student_id: user?.data?.student_id, email: user?.data?.email, user_id: user?.data?.user_id },
       process.env.JWT_SECRET,
       { expiresIn: '100h' }
     )
