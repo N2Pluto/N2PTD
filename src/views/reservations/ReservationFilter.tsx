@@ -15,7 +15,7 @@ import { Collapse, Divider } from '@mui/material'
 const ReservationFilter = () => {
   // ** State
   const [collapse, setCollapse] = useState<boolean>(false)
-  
+
 
   const handleClick = () => {
     setCollapse(!collapse)
