@@ -9,27 +9,32 @@ import Link from 'next/link'
 
 import { useEffect, useState } from 'react'
 import supabase from 'src/libs/supabase'
+import { userStore } from 'src/stores/userStore'
 
 const DormitorydetailsI = () => {
+  const { user } = userStore()
   const [dormitoryBuilding, setDormitoryBuilding] = useState([])
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // const { data, error } = await supabase.from('Dormitory_Building').select('name , images_url').eq('dorm_id', 1)
-        const { data } = await fetch('/api/building/1').then(res => res.json())
-        // if (error) {
-        //   throw error
-        // }
-        console.log('data:', data)
-        setDormitoryBuilding(data)
-      } catch (error) {
-        console.error('Error fetching dormitory building data:', error)
-      }
+    if (user) {
+      fetchData()
     }
+  }, [user])
 
-    fetchData()
-  }, [])
+  const fetchData = async () => {
+    try {
+      // const { data, error } = await supabase.from('Dormitory_Building').select('name , images_url').eq('dorm_id', 1)
+      const { data } = await fetch('/api/building/1').then(res => res.json())
+
+      // if (error) {
+      //   throw error
+      // }
+      console.log('data:', data)
+      setDormitoryBuilding(data)
+    } catch (error) {
+      console.error('Error fetching dormitory building data:', error)
+    }
+  }
 
   return (
     <Card>

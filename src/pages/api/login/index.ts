@@ -9,15 +9,13 @@ const handler = async (req: any, res: any) => {
     }
 
     const { email, password } = req.body
-    console.log('email', email)
-    console.log('password', password)
+
     const user = await supabase
       .from('Users')
       .select('student_id,email,password,user_id')
       .eq('email', email)
       .limit(1)
       .single()
-    console.log('user', user)
 
     // Check password
     if (user?.data?.password !== password) {
@@ -33,7 +31,8 @@ const handler = async (req: any, res: any) => {
 
     const userData = {
       student_id: user?.data?.student_id,
-      email: user?.data?.email
+      email: user?.data?.email,
+      user_id: user?.data?.user_id
     }
     console.log('user?.data', user?.data)
 

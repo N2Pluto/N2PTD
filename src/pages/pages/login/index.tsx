@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useRouter } from 'next/router'
+import { userStore } from 'src/stores/userStore'
 
 const LoginPage = () => {
   const [email, setEmail] = useState('santipan2546@hotmail.com')
   const [password, setPassword] = useState('12345678')
+  const { setUser } = userStore()
   const router = useRouter()
 
   const handleLogin = async () => {
@@ -18,8 +20,13 @@ const LoginPage = () => {
 
       if (response.ok) {
         const data = await response.json()
+
+        setUser(data?.user)
+
         localStorage.setItem('accessToken', data.accessToken)
-        router.push('/Dormitory') // Redirect to /Dormitory page
+
+        // Redirect to /Dormitory page
+        router.push('/Dormitory')
       } else {
         const errorData = await response.json()
         console.log('Login failed:', errorData.message)
@@ -40,7 +47,7 @@ const LoginPage = () => {
       >
         <div>
           <label>Email:</label>
-          <input type='email' value={email} onChange={e => setEmail(e.target.value)} />
+          <input type='string' value={email} onChange={e => setEmail(e.target.value)} />
         </div>
         <div>
           <label>Password:</label>
