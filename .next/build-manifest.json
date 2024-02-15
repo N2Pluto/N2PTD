@@ -25,25 +25,20 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/cards": [
+    "/dashboard": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/cards.js"
+      "static/chunks/pages/dashboard.js"
+    ],
+    "/pages/login": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/pages/login.js"
     ],
     "/reservations": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/reservations.js"
-    ],
-    "/reservations/reservations_room/[id]": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/reservations/reservations_room/[id].js"
-    ],
-    "/reservations/reservations_room/reservations_bed/[id]": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/reservations/reservations_room/reservations_bed/[id].js"
     ]
   },
   "ampFirstPages": []

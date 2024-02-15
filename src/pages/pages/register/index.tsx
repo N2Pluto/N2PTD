@@ -71,6 +71,19 @@ const RegisterPage = () => {
     showPassword: false
   })
 
+  interface State {
+    password: string
+    showPassword: boolean
+    student_id: string // Add the 'student_id' property
+  }
+
+  interface State {
+    password: string
+    showPassword: boolean
+    student_id: string
+    email: string // Add the 'email' property
+  }
+
   const handleChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
     setValues({ ...values, [prop]: event.target.value })
   }
@@ -82,6 +95,56 @@ const RegisterPage = () => {
   }
 
   const router = useRouter()
+
+  const handleSignUp = async () => {
+    try {
+      if (!values.student_id || !values.email || !values.password) {
+        console.error('Please fill in all fields')
+        alert('Please fill in all fields')
+        return
+      }
+
+      if (!/^\d+$/.test(values.student_id)) {
+        console.error('Student ID must be a number')
+        alert('Student ID must be a number')
+        return
+      }
+
+      if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(values.email)) {
+        console.error('Invalid email format')
+        alert('Invalid email format')
+        return
+      }
+
+      if (values.password.length < 8) {
+        console.error('Password must be at least 8 characters long')
+        alert('Password must be at least 8 characters long')
+        return
+      }
+
+      const response = await fetch('/api/register/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          student_id: values.student_id,
+          email: values.email,
+          password: values.password
+        })
+      })
+
+      if (response.ok) {
+        console.log('Data inserted successfully')
+        alert('Register Success')
+        router.push('/pages/login')
+      } else {
+        console.error('Failed to insert data')
+      }
+    } catch (error) {
+      console.error('Error inserting data:', error)
+    }
+  }
 
   return (
     <Box className='content-center'>
@@ -115,8 +178,15 @@ const RegisterPage = () => {
             <Typography variant='body2'>Make your app </Typography>
           </Box>
           <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
-            <TextField autoFocus fullWidth id='username' label='Username' sx={{ marginBottom: 4 }} />
-            <TextField fullWidth type='email' label='Email' sx={{ marginBottom: 4 }} />
+            <TextField
+              autoFocus
+              fullWidth
+              id='student_id'
+              label='Student_ID'
+              sx={{ marginBottom: 4 }}
+              onChange={handleChange('student_id')}
+            />
+            <TextField fullWidth type='email' label='Email' sx={{ marginBottom: 4 }} onChange={handleChange('email')} />
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-register-password'>Password</InputLabel>
               <OutlinedInput
@@ -152,13 +222,7 @@ const RegisterPage = () => {
                 </Fragment>
               }
             />
-            <Button
-              fullWidth
-              size='large'
-              variant='contained'
-              sx={{ marginBottom: 7 }}
-              onClick={() => router.push('/Dormitory')}
-            >
+            <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} onClick={handleSignUp}>
               Sign up
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>

@@ -1,5 +1,5 @@
 // ** React Imports
-import { ChangeEvent, MouseEvent, ReactNode, useState } from 'react'
+import { ChangeEvent, MouseEvent, ReactNode, useEffect, useState } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
@@ -40,6 +40,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 
 interface State {
+  email_student_id: string
   password: string
   showPassword: boolean
 }
@@ -65,6 +66,7 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 const LoginPage = () => {
   // ** State
   const [values, setValues] = useState<State>({
+    email_student_id: '',
     password: '',
     showPassword: false
   })
@@ -83,6 +85,51 @@ const LoginPage = () => {
 
   const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
+  }
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const fetchUserbyUserID = async () => {
+      try {
+        const { data } = await fetch('/api/users/').then(res => res.json())
+        console.log('data:', data)
+        setUser(data)
+      } catch (error) {
+        console.error('Error fetching users data:', error)
+      }
+    }
+
+    fetchUserbyUserID()
+  }, [])
+
+  const handleSignUp = async () => {
+    try {
+      const response = await fetch('/api/login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email_student_id: values.email_student_id,
+          password: values.password
+        })
+      })
+
+      console.log('Response:', response)
+
+      if (response.ok) {
+        console.log('Data Login successfully')
+        alert('Login Success')
+        const { user_id } = user;
+        router.push(`/Dormitory/${user_id}`);
+      } else {
+        console.error('Failed to Login data')
+      }
+    } catch (error) {
+      console.error('Error to login:', error)
+    }
+    console.log('email_student_id:', values.email_student_id)
+    console.log('password:', values.password)
   }
 
   return (
@@ -117,7 +164,14 @@ const LoginPage = () => {
             <Typography variant='body2'>Please sign-in to your account </Typography>
           </Box>
           <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
-            <TextField autoFocus fullWidth id='email' label='Email' sx={{ marginBottom: 4 }} />
+            <TextField
+              autoFocus
+              fullWidth
+              id='email_student_id'
+              label='Email or Student_ID'
+              onChange={handleChange('email_student_id')}
+              sx={{ marginBottom: 4 }}
+            />
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
               <OutlinedInput
@@ -148,13 +202,7 @@ const LoginPage = () => {
                 <LinkStyled onClick={e => e.preventDefault()}>Forgot Password?</LinkStyled>
               </Link>
             </Box>
-            <Button
-              fullWidth
-              size='large'
-              variant='contained'
-              sx={{ marginBottom: 7 }}
-              onClick={() => router.push('/dashboard')}
-            >
+            <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} onClick={handleSignUp}>
               Login
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>

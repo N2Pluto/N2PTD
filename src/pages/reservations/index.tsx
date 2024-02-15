@@ -9,7 +9,7 @@ const Reservation = () => {
     <ApexChartWrapper>
       <Grid container spacing={6}>
         <Grid item xs={12} md={6} lg={12} pb={3}>
-          <ReservationFilter />
+          {/* <ReservationFilter /> */}
         </Grid>
       </Grid>
       <Grid container spacing={6}>

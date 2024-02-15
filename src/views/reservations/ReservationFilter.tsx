@@ -15,6 +15,7 @@ import { Collapse, Divider } from '@mui/material'
 const ReservationFilter = () => {
   // ** State
   const [collapse, setCollapse] = useState<boolean>(false)
+  
 
   const handleClick = () => {
     setCollapse(!collapse)
@@ -33,15 +34,13 @@ const ReservationFilter = () => {
             }}
           >
             <Button onClick={handleClick}>Filter</Button>
-
           </Box>
           <Collapse in={collapse}>
             <Divider sx={{ margin: 0 }} />
             <CardContent>
-              <Button>1</Button>
-              <Button>2</Button>
-              <Button>3</Button>
-
+              <Button>Gender</Button>
+              <Button>male</Button>
+              <Button>female</Button>
             </CardContent>
           </Collapse>
         </CardContent>

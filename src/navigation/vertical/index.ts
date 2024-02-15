@@ -54,7 +54,7 @@ const navigation = (): VerticalNavItemsType => {
       title: 'Login',
       icon: Login,
       path: '/pages/login',
-      openInNewTab: true
+      // openInNewTab: true
     },
     {
       title: 'Account Settings',
@@ -65,7 +65,7 @@ const navigation = (): VerticalNavItemsType => {
       title: 'Register',
       icon: AccountPlusOutline,
       path: '/pages/register',
-      openInNewTab: true
+      // openInNewTab: true
     },
     {
       title: 'Error',
