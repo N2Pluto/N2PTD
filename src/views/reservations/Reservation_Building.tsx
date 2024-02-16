@@ -97,7 +97,7 @@ const ReservationBuilding = () => {
             <Collapse in={collapse}>
               <Divider sx={{ margin: 0 }} />
               <CardContent>
-                <Button onClick={() => setPriceFilter('')}>All</Button>
+                <Button onClick={() => setPriceFilter('')}>All Price</Button>
                 <Button onClick={() => setPriceFilter(5400)}>5400</Button>
                 <Button onClick={() => setPriceFilter(7200)}>7200</Button>
                 <Button onClick={() => setPriceFilter(9600)}>9600</Button>
