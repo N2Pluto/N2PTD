@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import CardSupport from '../cards/CardSupport'
 
 const ReservationRoomTest = () => {
   const router = useRouter()
@@ -46,20 +47,21 @@ const ReservationRoomTest = () => {
 
       <div style={{ display: 'flex', flexWrap: 'wrap' }}>
         {dormitoryRoom.map(room => (
-          <Card key={room.room_id} style={{ width: '16.66%', margin: '10px' }}>
-            <CardContent>
+          <Card key={room.room_id} style={{ width: '22.33%', margin: '10px' }}>
+            <CardSupport>
               <Typography>
                 <Typography>{room.room_number}</Typography>
                 <Typography>Bed Capacity: {room.bed_capacity}</Typography>
               </Typography>
+
               <Link href={`/reservations/reservations_room/reservations_bed/${room.room_id}`} passHref>
                 <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', pt: 5 }}>
-                  <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
+                  <Button onClick={() => handleReservation(room.room_id)} variant='contained' size='small'>
                     Register
                   </Button>
                 </Box>
               </Link>
-            </CardContent>
+            </CardSupport>
           </Card>
         ))}
       </div>
