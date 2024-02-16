@@ -35,6 +35,7 @@ const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
 const ReservationBuilding = () => {
   const [dormitoryBuilding, setDormitoryBuilding] = useState([])
   const [genderFilter, setGenderFilter] = useState<string>('')
+  const [priceFilter, setPriceFilter] = useState<string>('')
   const [collapse, setCollapse] = useState<boolean>(false)
 
   useEffect(() => {
@@ -72,35 +73,44 @@ const ReservationBuilding = () => {
 
   return (
     <>
-    <Grid pb={4}>
-    <Card >
-        <CardContent>
-          <Box
-            sx={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}
-          >
-            <Button onClick={handleClick1}>Filter Gender</Button>
-          </Box>
-          <Collapse in={collapse}>
-            <Divider sx={{ margin: 0 }} />
-            <CardContent>
-              <Button onClick={() => setGenderFilter('')}>All</Button>
-              <Button onClick={() => setGenderFilter('male')}>Male</Button>
-              <Button onClick={() => setGenderFilter('female')}>Female</Button>
-            </CardContent>
-          </Collapse>
-        </CardContent>
-      </Card>
-
-    </Grid>
-
+      <Grid pb={4}>
+        <Card>
+          <CardContent>
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <Button onClick={handleClick1}>Filter</Button>
+            </Box>
+            <Collapse in={collapse}>
+              <Divider sx={{ margin: 0 }} />
+              <CardContent>
+                <Button onClick={() => setGenderFilter('')}>All</Button>
+                <Button onClick={() => setGenderFilter('male')}>Male</Button>
+                <Button onClick={() => setGenderFilter('female')}>Female</Button>
+              </CardContent>
+            </Collapse>
+            <Collapse in={collapse}>
+              <Divider sx={{ margin: 0 }} />
+              <CardContent>
+                <Button onClick={() => setPriceFilter('')}>All</Button>
+                <Button onClick={() => setPriceFilter(5400)}>5400</Button>
+                <Button onClick={() => setPriceFilter(7200)}>7200</Button>
+                <Button onClick={() => setPriceFilter(9600)}>9600</Button>
+                <Button onClick={() => setPriceFilter(15000)}>15000</Button>
+              </CardContent>
+            </Collapse>
+          </CardContent>
+        </Card>
+      </Grid>
 
       {dormitoryBuilding
         .filter(dorm => genderFilter === '' || dorm.type_gender === genderFilter)
+        .filter(dorm => priceFilter === '' || dorm.price === priceFilter)
         .map(dorm => (
           <Grid key={dorm.dorm_id} pb={5}>
             <Card>
@@ -130,6 +140,12 @@ const ReservationBuilding = () => {
                       Gender :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.type_gender}
+                      </Box>
+                    </Typography>
+                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                      Price :{' '}
+                      <Box component='span' sx={{ fontWeight: 'bold' }}>
+                        {dorm.price}
                       </Box>
                     </Typography>
                   </CardContent>

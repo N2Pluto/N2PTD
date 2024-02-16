@@ -46,14 +46,13 @@ const ReservationBed = () => {
 
       <div style={{ display: 'flex', flexWrap: 'wrap' }}>
         {dormitoryRoom.map(room => (
-          
           <Card key={room.room_id} style={{ width: '16.66%', margin: '10px' }}>
             <CardContent>
               <Typography>
                 <Typography>Bed Number:{room.bed_number}</Typography>
                 <Typography>Bed Status: {room.bed_status}</Typography>
               </Typography>
-              <Link href={`/`}>
+              <Link href={`/dashboard`}>
                 <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', pt: 5 }}>
                   <Button onClick={() => handleReservation(room.bed_number)} variant='contained'>
                     Select!
