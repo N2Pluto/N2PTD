@@ -42,7 +42,7 @@ const ReservationRoomTest = () => {
 
   return (
     <>
-      <h1>Reservation</h1>
+      <h1>Reservation System</h1>
       <Typography>{dormitoryBuilding?.name}</Typography>
 
       <div style={{ display: 'flex', flexWrap: 'wrap' }}>
