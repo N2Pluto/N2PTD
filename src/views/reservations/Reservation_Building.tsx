@@ -72,7 +72,8 @@ const ReservationBuilding = () => {
 
   return (
     <>
-      <Card>
+    <Grid pb={4}>
+    <Card >
         <CardContent>
           <Box
             sx={{
@@ -94,6 +95,9 @@ const ReservationBuilding = () => {
           </Collapse>
         </CardContent>
       </Card>
+
+    </Grid>
+
 
       {dormitoryBuilding
         .filter(dorm => genderFilter === '' || dorm.type_gender === genderFilter)

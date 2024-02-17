@@ -6,11 +6,47 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import { CardHeader, Collapse, Divider, Grid, Paper, Table, TableCell, TableContainer, TableHead } from '@mui/material'
+import TableRow from '@mui/material/TableRow'
+import TableBody from '@mui/material/TableBody'
+
+import TablePagination from '@mui/material/TablePagination'
+import { auto } from '@popperjs/core'
+
+interface Column {
+  id: 'room' | 'code' | 'status' | 'details'
+  label: string
+  minWidth?: number
+  align?: 'right'
+  format?: (value: number) => string
+}
+
+const columns: readonly Column[] = [
+  { id: 'room', label: 'room', minWidth: 170 },
+  { id: 'code', label: 'bed capacity', minWidth: 100 },
+  {
+    id: 'status',
+    label: 'status',
+    minWidth: 170,
+    align: 'right',
+    format: (value: number) => value.toLocaleString('en-US')
+  },
+  {
+    id: 'details',
+    label: 'details',
+    minWidth: 170,
+    align: 'right',
+    format: (value: number) => value.toFixed(2)
+  }
+]
+
 
 const ReservationRoomTest = () => {
   const router = useRouter()
   const [dormitoryBuilding, setDormitoryBuilding] = useState(null)
   const [dormitoryRoom, setDormitoryRoom] = useState([])
+
+
 
   useEffect(() => {
     if (router.query.id) {
@@ -31,7 +67,8 @@ const ReservationRoomTest = () => {
     console.log('data:', data)
   }
 
-  const handleReservation = id => {
+
+  const handleReservation = (id: string) => { // specify the type of 'id' as string
     // Handle the reservation with the card ID
     console.log('Reservation ROOM :', id)
   }
@@ -41,29 +78,45 @@ const ReservationRoomTest = () => {
 
   return (
     <>
-      <h1>Reservation</h1>
-      <Typography>{dormitoryBuilding?.name}</Typography>
+    <h1> {dormitoryBuilding?.name}</h1>
+    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+      <TableContainer sx={{ maxHeight: auto }}>
+        <Table stickyHeader aria-label='sticky table'>
+          <TableHead>
+            <TableRow>
+              {columns.map(column => (
+                <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                  {column.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {dormitoryRoom.map(room => (
+              <TableRow hover role='checkbox' tabIndex={-1} key={room.room_id}>
+                <TableCell >{room.room_number}</TableCell>
+                <TableCell>{room.bed_capacity}</TableCell>
+                <TableCell align='right'>{room.status}</TableCell>
+                <TableCell align='right'>
+                <Link href={`/reservations/reservations_room/reservations_bed/${room.room_id}`} passHref>
+                  <Box>
+                    <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
+                    Select
+                    </Button>
+                  </Box>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-        {dormitoryRoom.map(room => (
-          <Card key={room.room_id} style={{ width: '16.66%', margin: '10px' }}>
-            <CardContent>
-              <Typography>
-                <Typography>{room.room_number}</Typography>
-                <Typography>Bed Capacity: {room.bed_capacity}</Typography>
-              </Typography>
-              <Link href={`/reservations/reservations_room/reservations_bed/${room.room_id}`} passHref>
-                <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', pt: 5 }}>
-                  <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
-                    Register
-                  </Button>
-                </Box>
-              </Link>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                </Link>
+                </TableCell>
+
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
     </>
+
+
   )
 }
 

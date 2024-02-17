@@ -1,37 +1,46 @@
 import supabase from 'src/libs/supabase'
+import jwt from 'jsonwebtoken'
 
 const handler = async (req: any, res: any) => {
-  const { email_student_id, password } = req.body
+  console.log('wowao')
+  try {
+    if (req.method !== 'POST') {
+      return res.status(405).json({ message: 'Method Not Allowed' })
+    }
 
-  // First, try to find a user with matching student_id
-  let { data, error } = await supabase
-    .from('Users')
-    .select('student_id,email,password')
-    .eq('student_id', email_student_id)
-    .eq('password', password)
+    const { email, password } = req.body
 
-  // If no user found, try to find a user with matching email
-  if (!data || data.length === 0) {
-    ;({ data, error } = await supabase
+    const user = await supabase
       .from('Users')
-      .select('student_id,email,password')
-      .eq('email', email_student_id)
-      .eq('password', password))
-  }
+      .select('student_id,email,password,user_id')
+      .eq('email', email)
+      .limit(1)
+      .single()
 
-  if (error) {
-    console.error('Error:', error)
-    res.status(400).json({ error: 'Failed to login' })
-    return
-  }
+    // Check password
+    if (user?.data?.password !== password) {
+      return res.status(401).json({ message: 'Not found identity' })
+    }
 
-  if (data && data.length > 0) {
-    console.log('Login successful:', data)
-    res.status(200).json({ data })
-  } else {
-    console.log('No matching user found')
-    res.status(404).json({ error: 'No matching user found' })
+    // Sign JWT token
+    const accessToken = jwt.sign(
+      { student_id: user?.data?.student_id, email: user?.data?.email, user_id: user?.data?.user_id },
+      process.env.JWT_SECRET,
+      { expiresIn: '100h' }
+    )
+
+    const userData = {
+      student_id: user?.data?.student_id,
+      email: user?.data?.email,
+      user_id: user?.data?.user_id
+    }
+    console.log('user?.data', user?.data)
+
+    res.status(200).json({ accessToken, user: userData })
+  } catch (error) {
+    console.log('error', error)
   }
 }
 
 export default handler
+

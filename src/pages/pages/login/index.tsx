@@ -22,11 +22,10 @@ import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
 
-// ** Icons Imports
-import Google from 'mdi-material-ui/Google'
-import Github from 'mdi-material-ui/Github'
-import Twitter from 'mdi-material-ui/Twitter'
-import Facebook from 'mdi-material-ui/Facebook'
+import { userStore } from 'src/stores/userStore'
+
+
+
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 
@@ -64,6 +63,11 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 }))
 
 const LoginPage = () => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const { setUser } = userStore()
+  const router = useRouter()
+
   // ** State
   const [values, setValues] = useState<State>({
     email_student_id: '',
@@ -73,7 +77,6 @@ const LoginPage = () => {
 
   // ** Hook
 
-  const router = useRouter()
 
   const handleChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
     setValues({ ...values, [prop]: event.target.value })
@@ -86,7 +89,34 @@ const LoginPage = () => {
   const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
   }
-  const [user, setUser] = useState(null)
+
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+
+        setUser(data?.user)
+
+        localStorage.setItem('accessToken', data.accessToken)
+
+        // Redirect to /Dormitory page
+        router.push('/Dormitory')
+      } else {
+        const errorData = await response.json()
+        console.log('Login failed:', errorData.message)
+      }
+    } catch (error) {
+      console.log('Error during login:', error)
+    }
+  }
 
   useEffect(() => {
     const fetchUserbyUserID = async () => {
@@ -169,16 +199,16 @@ const LoginPage = () => {
               fullWidth
               id='email_student_id'
               label='Email or Student_ID'
-              onChange={handleChange('email_student_id')}
+              onChange={e => setEmail(e.target.value)}
               sx={{ marginBottom: 4 }}
             />
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
               <OutlinedInput
                 label='Password'
-                value={values.password}
+                value={password}
                 id='auth-login-password'
-                onChange={handleChange('password')}
+                onChange={e => setPassword(e.target.value)}
                 type={values.showPassword ? 'text' : 'password'}
                 endAdornment={
                   <InputAdornment position='end'>
@@ -202,7 +232,7 @@ const LoginPage = () => {
                 <LinkStyled onClick={e => e.preventDefault()}>Forgot Password?</LinkStyled>
               </Link>
             </Box>
-            <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} onClick={handleSignUp}>
+            <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} onClick={handleLogin}>
               Login
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>

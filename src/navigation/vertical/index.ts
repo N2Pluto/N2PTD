@@ -20,7 +20,7 @@ const navigation = (): VerticalNavItemsType => {
       icon: HomeOutline,
       path: '/dashboard'
     },
-    
+
     {
       title: 'Dormitory',
       icon: HomeOutline,
@@ -41,32 +41,34 @@ const navigation = (): VerticalNavItemsType => {
       icon: HomeOutline,
       path: '/Regression'
     },
-    
+
     {
       sectionTitle: 'Pages'
     },
     {
       title: 'Dashboard',
       icon: HomeOutline,
-      path: '/'
+      path: '/dashboard'
     },
-    {
-      title: 'Login',
-      icon: Login,
-      path: '/pages/login',
-      // openInNewTab: true
-    },
+
+    // {
+    //   title: 'Login',
+    //   icon: Login,
+    //   path: '/pages/login',
+    //   // openInNewTab: true
+    // },
     {
       title: 'Account Settings',
       icon: AccountCogOutline,
       path: '/account-settings'
     },
-    {
-      title: 'Register',
-      icon: AccountPlusOutline,
-      path: '/pages/register',
-      // openInNewTab: true
-    },
+    
+    // {
+    //   title: 'Register',
+    //   icon: AccountPlusOutline,
+    //   path: '/pages/register',
+    //   // openInNewTab: true
+    // },
     {
       title: 'Error',
       icon: AlertCircleOutline,
