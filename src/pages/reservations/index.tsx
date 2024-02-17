@@ -8,20 +8,19 @@ import ReservationFilter from 'src/views/reservations/ReservationFilter'
 const Reservation = () => {
   return (
     <LayoutAuth>
-<ApexChartWrapper>
-      <Grid container spacing={6}>
-        <Grid item xs={12} md={6} lg={12} pb={3}>
-          {/* <ReservationFilter /> */}
+      <ApexChartWrapper>
+        <Grid container spacing={6}>
+          <Grid item xs={12} md={6} lg={12} pb={3}>
+            {/* <ReservationFilter /> */}
+          </Grid>
         </Grid>
-      </Grid>
-      <Grid container spacing={6}>
-        <Grid item xs={12} md={6} lg={12}>
-          <ReservationBuilding />
+        <Grid container spacing={6}>
+          <Grid item xs={12} md={6} lg={12}>
+            <ReservationBuilding />
+          </Grid>
         </Grid>
-      </Grid>
-    </ApexChartWrapper>
+      </ApexChartWrapper>
     </LayoutAuth>
-
   )
 }
 
