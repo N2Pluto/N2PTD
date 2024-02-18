@@ -1,24 +1,25 @@
-import { useRouter } from 'next/router'
-import Card from '@mui/material/Card'
-import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
-import Button from '@mui/material/Button'
-import Box from '@mui/material/Box'
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { styled } from '@mui/material/styles'
-import Grid, { GridProps } from '@mui/material/Grid'
-import IconButton from '@mui/material/IconButton'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import Twitter from 'mdi-material-ui/Twitter'
-import CartPlus from 'mdi-material-ui/CartPlus'
-import Facebook from 'mdi-material-ui/Facebook'
-import Linkedin from 'mdi-material-ui/Linkedin'
-import GooglePlus from 'mdi-material-ui/GooglePlus'
-import ShareVariant from 'mdi-material-ui/ShareVariant'
-import { CardActions } from '@mui/material'
-import { Collapse, Divider } from '@mui/material'
+import { useRouter } from 'next/router';
+import Card from '@mui/material/Card';
+import Typography from '@mui/material/Typography';
+import CardContent from '@mui/material/CardContent';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
+import Grid, { GridProps } from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Twitter from 'mdi-material-ui/Twitter';
+import CartPlus from 'mdi-material-ui/CartPlus';
+import Facebook from 'mdi-material-ui/Facebook';
+import Linkedin from 'mdi-material-ui/Linkedin';
+import GooglePlus from 'mdi-material-ui/GooglePlus';
+import ShareVariant from 'mdi-material-ui/ShareVariant';
+import { CardActions } from '@mui/material';
+import { Collapse, Divider } from '@mui/material';
+import { userStore, IUser } from 'src/stores/userStore'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -30,13 +31,28 @@ const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     borderRight: `1px solid ${theme.palette.divider}`
   }
-}))
+}));
 
 const ReservationBuilding = () => {
   const [dormitoryBuilding, setDormitoryBuilding] = useState([])
   const [genderFilter, setGenderFilter] = useState<string>('')
-  const [priceFilter, setPriceFilter] = useState<string>('')
   const [collapse, setCollapse] = useState<boolean>(false)
+   const userStoreInstance = userStore()
+   const { setUser } = userStoreInstance
+  const router = useRouter()
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
+
+ const handleReservation = (dorm_id: string) => {
+   if (dorm_id) {
+     console.log('Reservation Building:', dorm_id)
+     setUser({ ...userStoreInstance.user, dorm_id }) // Store dorm_id in userStore
+     router.push(`/reservations/reservations_room/${dorm_id}`)
+   } else {
+     console.error('Invalid dorm_id:', dorm_id)
+   }
+ }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,17 +68,10 @@ const ReservationBuilding = () => {
     fetchData()
   }, [])
 
-  const handleReservation = id => {
-    console.log('Reservation Building:', id)
-  }
-
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-
-  const open = Boolean(anchorEl)
-
-  const handleClick = (event: MouseEvent<HTMLElement>) => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
+
   const handleClose = () => {
     setAnchorEl(null)
   }
@@ -84,7 +93,7 @@ const ReservationBuilding = () => {
                 justifyContent: 'space-between'
               }}
             >
-              <Button onClick={handleClick1}>Filter</Button>
+              <Button onClick={handleClick1}>Filter Gender</Button>
             </Box>
             <Collapse in={collapse}>
               <Divider sx={{ margin: 0 }} />
@@ -94,23 +103,12 @@ const ReservationBuilding = () => {
                 <Button onClick={() => setGenderFilter('female')}>Female</Button>
               </CardContent>
             </Collapse>
-            <Collapse in={collapse}>
-              <Divider sx={{ margin: 0 }} />
-              <CardContent>
-                <Button onClick={() => setPriceFilter('')}>All Price</Button>
-                <Button onClick={() => setPriceFilter(5400)}>5400</Button>
-                <Button onClick={() => setPriceFilter(7200)}>7200</Button>
-                <Button onClick={() => setPriceFilter(9600)}>9600</Button>
-                <Button onClick={() => setPriceFilter(15000)}>15000</Button>
-              </CardContent>
-            </Collapse>
           </CardContent>
         </Card>
       </Grid>
 
       {dormitoryBuilding
         .filter(dorm => genderFilter === '' || dorm.type_gender === genderFilter)
-        .filter(dorm => priceFilter === '' || dorm.price === priceFilter)
         .map(dorm => (
           <Grid key={dorm.dorm_id} pb={5}>
             <Card>
@@ -142,21 +140,13 @@ const ReservationBuilding = () => {
                         {dorm.type_gender}
                       </Box>
                     </Typography>
-                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
-                      Price :{' '}
-                      <Box component='span' sx={{ fontWeight: 'bold' }}>
-                        {dorm.price}
-                      </Box>
-                    </Typography>
                   </CardContent>
                   <CardActions className='card-action-dense'>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                      <Link href={`reservations/reservations_room/${dorm.dorm_id}`}>
-                        <Button>
-                          <CartPlus fontSize='small' sx={{ marginRight: 2 }} />
-                          Reservation Now!
-                        </Button>
-                      </Link>
+                      <Button onClick={() => handleReservation(dorm.dorm_id)}>
+                        <CartPlus fontSize='small' sx={{ marginRight: 2 }} />
+                        Reservation Now!
+                      </Button>
 
                       <IconButton
                         id='long-button'
@@ -202,4 +192,4 @@ const ReservationBuilding = () => {
   )
 }
 
-export default ReservationBuilding
+export default ReservationBuilding;

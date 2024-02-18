@@ -6,12 +6,48 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import CardSupport from '../cards/CardSupport'
+import { CardHeader, Collapse, Divider, Grid, Paper, Table, TableCell, TableContainer, TableHead } from '@mui/material'
+import TableRow from '@mui/material/TableRow'
+import TableBody from '@mui/material/TableBody'
+
+import TablePagination from '@mui/material/TablePagination'
+import { auto } from '@popperjs/core'
+import { userStore, IUser } from 'src/stores/userStore'
+
+
+interface Column {
+  id: 'room' | 'code' | 'status' | 'details'
+  label: string
+  minWidth?: number
+  align?: 'right'
+  format?: (value: number) => string
+}
+
+const columns: readonly Column[] = [
+  { id: 'room', label: 'room', minWidth: 170 },
+  { id: 'code', label: 'bed capacity', minWidth: 100 },
+  {
+    id: 'status',
+    label: 'status',
+    minWidth: 170,
+    align: 'right',
+    format: (value: number) => value.toLocaleString('en-US')
+  },
+  {
+    id: 'details',
+    label: 'details',
+    minWidth: 170,
+    align: 'right',
+    format: (value: number) => value.toFixed(2)
+  }
+]
 
 const ReservationRoomTest = () => {
   const router = useRouter()
   const [dormitoryBuilding, setDormitoryBuilding] = useState(null)
   const [dormitoryRoom, setDormitoryRoom] = useState([])
+   const userStoreInstance = userStore()
+   const { setUser } = userStoreInstance
 
   useEffect(() => {
     if (router.query.id) {
@@ -32,39 +68,46 @@ const ReservationRoomTest = () => {
     console.log('data:', data)
   }
 
-  const handleReservation = id => {
-    // Handle the reservation with the card ID
-    console.log('Reservation ROOM :', id)
+  const handleReservation = (room_id: string) => {
+    console.log('Reservation ROOM :', room_id)
+    setUser({ ...userStoreInstance.user, room_id }) // Store room_id in userStore
+    router.push(`/reservations/reservations_room/reservations_bed/${room_id}`)
   }
-
-  console.log('dormitoryBuilding:', dormitoryBuilding)
-  console.log('dormitoryRoom:', dormitoryRoom)
 
   return (
     <>
-      <h1>Reservation System</h1>
-      <Typography>{dormitoryBuilding?.name}</Typography>
-
-      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-        {dormitoryRoom.map(room => (
-          <Card key={room.room_id} style={{ width: '22.33%', margin: '10px' }}>
-            <CardSupport>
-              <Typography>
-                <Typography>{room.room_number}</Typography>
-                <Typography>Bed Capacity: {room.bed_capacity}</Typography>
-              </Typography>
-
-              <Link href={`/reservations/reservations_room/reservations_bed/${room.room_id}`} passHref>
-                <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', pt: 5 }}>
-                  <Button onClick={() => handleReservation(room.room_id)} variant='contained' size='small'>
-                    Register
-                  </Button>
-                </Box>
-              </Link>
-            </CardSupport>
-          </Card>
-        ))}
-      </div>
+      <h1> {dormitoryBuilding?.name}</h1>
+      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+        <TableContainer sx={{ maxHeight: auto }}>
+          <Table stickyHeader aria-label='sticky table'>
+            <TableHead>
+              <TableRow>
+                {columns.map(column => (
+                  <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                    {column.label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {dormitoryRoom.map(room => (
+                <TableRow hover role='checkbox' tabIndex={-1} key={room.room_id}>
+                  <TableCell>{room.room_number}</TableCell>
+                  <TableCell>{room.bed_capacity}</TableCell>
+                  <TableCell align='right'>{room.status}</TableCell>
+                  <TableCell align='right'>
+                    <Box>
+                      <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
+                        Select
+                      </Button>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
     </>
   )
 }

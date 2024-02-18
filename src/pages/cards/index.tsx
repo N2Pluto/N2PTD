@@ -18,7 +18,6 @@ import CardWithCollapse from 'src/views/cards/CardWithCollapse'
 import CardVerticalRatings from 'src/views/cards/CardVerticalRatings'
 import CardNavigationCenter from 'src/views/cards/CardNavigationCenter'
 import CardHorizontalRatings from 'src/views/cards/CardHorizontalRatings'
-import CardTest from 'src/views/cards/CardTest'
 
 const CardBasic = () => {
   return (
@@ -76,9 +75,6 @@ const CardBasic = () => {
       </Grid>
       <Grid item xs={12} sm={6} md={4}>
         <CardLinkedIn />
-      </Grid>
-      <Grid item xs={12} sm={6} md={4}>
-        <CardTest />
       </Grid>
     </Grid>
   )

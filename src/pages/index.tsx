@@ -34,12 +34,21 @@ const LandingPage = () => {
           </Typography>
           <Typography variant='body2'>Please sign-in to your account or register a new one</Typography>
         </Box>
-        <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }}>
-          <Link href='/pages/login'>Login</Link>
-        </Button>
-        <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }}>
-          <Link href='/pages/register'>Register</Link>
-        </Button>
+        <Link href='/pages/login' passHref>
+          <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }}>
+            Login
+          </Button>
+        </Link>
+        <Link href='/pages/register' passHref>
+          <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }}>
+            Register
+          </Button>
+        </Link>
+        <Link href='/pages/loginadmin' passHref>
+          <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }}>
+            admin
+          </Button>
+        </Link>
       </CardContent>
       <FooterIllustrationsV1 />
     </Box>

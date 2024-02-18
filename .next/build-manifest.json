@@ -15,6 +15,16 @@
     "static/development/_middlewareManifest.js"
   ],
   "pages": {
+    "/404": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/404.js"
+    ],
+    "/Dormitory": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/Dormitory.js"
+    ],
     "/_app": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
@@ -24,6 +34,16 @@
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
+    ],
+    "/dashboard": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/dashboard.js"
+    ],
+    "/pages/login": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/pages/login.js"
     ],
     "/reservations": [
       "static/chunks/webpack.js",
@@ -35,10 +55,10 @@
       "static/chunks/main.js",
       "static/chunks/pages/reservations/reservations_room/[id].js"
     ],
-    "/tables": [
+    "/reservations/reservations_room/reservations_bed/[id]": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/tables.js"
+      "static/chunks/pages/reservations/reservations_room/reservations_bed/[id].js"
     ]
   },
   "ampFirstPages": []
