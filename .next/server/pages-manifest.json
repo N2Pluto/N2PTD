@@ -2,11 +2,11 @@
   "/_app": "pages/_app.js",
   "/_document": "pages/_document.js",
   "/_error": "pages/_error.js",
-  "/api/login": "pages/api/login.js",
-  "/api/fetch_building": "pages/api/fetch_building.js",
-  "/api/room/building/[dorm_id]": "pages/api/room/building/[dorm_id].js",
-  "/api/building/[id]": "pages/api/building/[id].js",
   "/api/bed/[id]": "pages/api/bed/[id].js",
+  "/api/building/[id]": "pages/api/building/[id].js",
   "/api/bed/room/[room_id]": "pages/api/bed/room/[room_id].js",
-  "/api/reservation": "pages/api/reservation.js"
+  "/api/fetch_building": "pages/api/fetch_building.js",
+  "/api/reservation/check": "pages/api/reservation/check.js",
+  "/api/room/building/[dorm_id]": "pages/api/room/building/[dorm_id].js",
+  "/api/reservation/select": "pages/api/reservation/select.js"
 }

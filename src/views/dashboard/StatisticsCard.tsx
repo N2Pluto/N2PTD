@@ -1,5 +1,5 @@
 // ** React Imports
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -20,72 +20,108 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 
 // ** Types
 import { ThemeColor } from 'src/@core/layouts/types'
+import { userStore } from 'src/stores/userStore'
 
 interface DataType {
-  stats: string
+  stats: number
   title: string
   color: ThemeColor
   icon: ReactElement
 }
 
-const salesData: DataType[] = [
-  {
-    stats: '245k',
-    title: 'Sales',
-    color: 'primary',
-    icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
-  },
-  {
-    stats: '12.5k',
-    title: 'Customers',
-    color: 'success',
-    icon: <AccountOutline sx={{ fontSize: '1.75rem' }} />
-  },
-  {
-    stats: '1.54k',
-    color: 'warning',
-    title: 'Products',
-    icon: <CellphoneLink sx={{ fontSize: '1.75rem' }} />
-  },
-  {
-    stats: '$88k',
-    color: 'info',
-    title: 'Revenue',
-    icon: <CurrencyUsd sx={{ fontSize: '1.75rem' }} />
-  }
-]
-
-const renderStats = () => {
-  return salesData.map((item: DataType, index: number) => (
-    <Grid item xs={12} sm={3} key={index}>
-      <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar
-          variant='rounded'
-          sx={{
-            mr: 3,
-            width: 44,
-            height: 44,
-            boxShadow: 3,
-            color: 'common.white',
-            backgroundColor: `${item.color}.main`
-          }}
-        >
-          {item.icon}
-        </Avatar>
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Typography variant='caption'>{item.title}</Typography>
-          <Typography variant='h6'>{item.stats}</Typography>
-        </Box>
-      </Box>
-    </Grid>
-  ))
-}
-
 const StatisticsCard = () => {
+  const { user } = userStore()
+  const [reservation, setReservation] = useState(null)
+
+  useEffect(() => {
+    const fetchReservationData = async () => {
+      try {
+        const { data } = await fetch(`/api/reservation/select?user_id=${user?.user_id}`).then(res => res.json())
+        setReservation(data[0])
+      } catch (error) {
+        console.error('Error fetching reservation data:', error)
+      }
+    }
+
+    fetchReservationData()
+  }, [user])
+
+  const salesData: DataType[] = [
+    {
+      stats: user?.student_id || 'N/A',
+      title: 'Student ID',
+      color: 'primary',
+      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+    },
+    {
+      stats: reservation?.dorm_id || 'N/A',
+      title: 'Dorm ID',
+      color: 'secondary',
+      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+    },
+    {
+      stats: reservation?.Dormitory_Building?.name || 'N/A',
+      title: 'Dormitory Name',
+      color: 'error',
+      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+    },
+    {
+      stats: reservation?.room_id || 'N/A',
+      title: 'Room ID',
+      color: 'warning',
+      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+    },
+    {
+      stats: reservation?.Dormitory_Room?.room_number || 'N/A',
+      title: 'Room Number',
+      color: 'info',
+      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+    },
+    {
+      stats: reservation?.bed_id || 'N/A',
+      title: 'Bed ID',
+      color: 'success',
+      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+    },
+    {
+      stats: reservation?.Dormitory_Bed?.bed_number || 'N/A',
+      title: 'Bed Number',
+      color: 'grey',
+      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+    }
+  ]
+
+  // Move renderStats below salesData declaration
+  const renderStats = () => {
+    return salesData.map((item: DataType, index: number) => (
+      <Grid item xs={12} sm={0} key={index}>
+        <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar
+            variant='rounded'
+            sx={{
+              mr: 3,
+              width: 44,
+              height: 44,
+              boxShadow: 3,
+              color: 'common.white',
+              backgroundColor: `${item.color}.main`
+            }}
+          >
+            {item.icon}
+          </Avatar>
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Typography variant='caption'>{item.title}</Typography>
+            <Typography variant='h6'>{item.stats}</Typography>
+          </Box>
+        </Box>
+      </Grid>
+    ))
+  }
+
   return (
     <Card>
       <CardHeader
-        title='Statistics Card'
+        title={`Reservation Information for User ${user?.user_id}`}
         action={
           <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
             <DotsVertical />
@@ -94,9 +130,8 @@ const StatisticsCard = () => {
         subheader={
           <Typography variant='body2'>
             <Box component='span' sx={{ fontWeight: 600, color: 'text.primary' }}>
-              Total 48.5% growth
+              ข้อมูลการจอง
             </Box>{' '}
-            😎 this month
           </Typography>
         }
         titleTypographyProps={{

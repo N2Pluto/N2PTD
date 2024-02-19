@@ -71,6 +71,7 @@ const ReservationRoomTest = () => {
   const handleReservation = (room_id: string) => {
     console.log('Reservation ROOM :', room_id)
     setUser({ ...userStoreInstance.user, room_id }) // Store room_id in userStore
+    console.log('user:', userStoreInstance.user)
     router.push(`/reservations/reservations_room/reservations_bed/${room_id}`)
   }
 

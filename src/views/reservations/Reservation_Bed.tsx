@@ -15,7 +15,7 @@ const ReservationBed = () => {
   const [dormitoryBed, setDormitoryBed] = useState(null)
   const [dormitoryRoom, setDormitoryRoom] = useState([])
   const userStoreInstance = userStore()
-  const { setUser } = userStoreInstance
+  const { user, setUser } = userStoreInstance // Destructure user and setUser from userStoreInstance
 
   useEffect(() => {
     if (router.query.id) {
@@ -35,51 +35,58 @@ const ReservationBed = () => {
     setDormitoryRoom(data)
   }
 
- const handleReservation = async (bed_id: string) => {
-   console.log('Reservation Bed ID:', bed_id)
-   setUser({ ...userStoreInstance.user, bed_id }) // Store bed_id in userStore
+  // ReservationBed Component
+  const handleReservation = async (bed_id: string) => {
+    console.log('Reservation Bed ID:', bed_id)
+    setUser({ ...userStoreInstance.user, bed_id })
+    console.log('user:', userStoreInstance.user)
 
-   // Add code to send reservation data to API /api/reservation
-   try {
-     const { user } = userStoreInstance
+    try {
+      if (!user) {
+        console.error('User data is missing.')
+        return
+      }
 
-     if (!user) {
-       console.error('User data is missing.')
-       return
-     }
+      const checkResponse = await fetch(`/api/reservation/check?user_id=${user.user_id}`)
+      const { hasReservation } = await checkResponse.json()
 
-     const response = await fetch('/api/reservation', {
-       method: 'POST',
-       headers: {
-         'Content-Type': 'application/json'
-       },
-       body: JSON.stringify({
-         user_id: user.user_id,
-         dorm_id: user.dorm_id,
-         room_id: user.room_id,
-         bed_id: bed_id
-       })
-     })
+      if (hasReservation) {
+        router.push('/dashboard')
+        alert('You have already made a reservation.')
+        return
+      }
 
-     const { data, error } = await response.json()
+      const response = await fetch('/api/reservation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: user.user_id,
+          dorm_id: user.dorm_id,
+          room_id: user.room_id,
+          bed_id: bed_id
+        })
+      })
 
-     if (error) {
-       console.error('Error inserting data into Reservation table:', error.message)
-     } else {
-       console.log('Data inserted successfully:', data)
-       router.push('/dashboard') // Redirect the user or perform any other necessary action
-     }
-   } catch (error) {
-     console.error('Error inserting data into Reservation table:', error.message)
-   }
- }
+      const { data, error } = await response.json()
 
- console.log('dormitoryRoom:', dormitoryRoom)
+      if (error) {
+        console.error('Error inserting data into Reservation table:', error.message)
+      } else {
+        console.log('Data inserted successfully:', data)
+        router.push(`/reservations/reservations_result/${user.user_id}`)
+      }
+    } catch (error) {
+      console.error('Error inserting data into Reservation table:', error.message)
+    }
+  }
+
+  console.log('dormitoryRoom:', dormitoryRoom)
 
   return (
     <span>
       <h1>Select Bed</h1>
-      {/* <Typography>{dormitoryBed?.name}</Typography> */}
 
       <div style={{ display: 'flex', flexWrap: 'wrap' }}>
         {dormitoryRoom.map((room, index) => (

@@ -26,7 +26,7 @@ const handler = async (req: any, res: any) => {
     const accessToken = jwt.sign(
       { student_id: user?.data?.student_id, email: user?.data?.email, user_id: user?.data?.user_id },
       process.env.JWT_SECRET,
-      { expiresIn: '100h' }
+      { expiresIn: '1h' }
     )
 
     const userData = {

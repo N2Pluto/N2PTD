@@ -47,7 +47,8 @@ const ReservationBuilding = () => {
  const handleReservation = (dorm_id: string) => {
    if (dorm_id) {
      console.log('Reservation Building:', dorm_id)
-     setUser({ ...userStoreInstance.user, dorm_id }) // Store dorm_id in userStore
+     setUser({ ...userStoreInstance.user, dorm_id }) 
+     console.log('user:', userStoreInstance.user)
      router.push(`/reservations/reservations_room/${dorm_id}`)
    } else {
      console.error('Invalid dorm_id:', dorm_id)
