@@ -21,6 +21,9 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 // ** Types
 import { ThemeColor } from 'src/@core/layouts/types'
 import { userStore } from 'src/stores/userStore'
+import { useRouter } from 'next/router'
+import Button from '@mui/material/Button'
+import Link from 'next/link'
 
 interface DataType {
   stats: number
@@ -31,7 +34,7 @@ interface DataType {
 
 const ReservationResultCard = () => {
   const { user } = userStore()
-
+  const router = useRouter()
   // Extract student_id from user object
 
   // Update the salesData array with the studentId
@@ -91,9 +94,12 @@ const ReservationResultCard = () => {
             <Typography variant='h6'>{item.stats}</Typography>
           </Box>
         </Box>
+        
       </Grid>
     ))
+    
   }
+  
 
   return (
     <Card>
@@ -125,6 +131,14 @@ const ReservationResultCard = () => {
           {renderStats()}
         </Grid>
       </CardContent>
+
+      <Link href='/dashboard'>
+        <Box>
+          <Button>
+            <Typography>Go to Profile</Typography>
+          </Button>
+        </Box>
+      </Link>
     </Card>
   )
 }
