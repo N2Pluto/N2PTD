@@ -1,5 +1,5 @@
 // ** React Imports
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -21,6 +21,9 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 // ** Types
 import { ThemeColor } from 'src/@core/layouts/types'
 import { userStore } from 'src/stores/userStore'
+import { useRouter } from 'next/router'
+import Button from '@mui/material/Button'
+import Link from 'next/link'
 
 interface DataType {
   stats: number
@@ -29,72 +32,49 @@ interface DataType {
   icon: ReactElement
 }
 
-const StatisticsCard = () => {
+const ReservationResultCard = () => {
   const { user } = userStore()
-  const [reservation, setReservation] = useState(null)
+  const router = useRouter()
+  // Extract student_id from user object
 
-  useEffect(() => {
-    const fetchReservationData = async () => {
-      try {
-        const { data } = await fetch(`/api/reservation/select?user_id=${user?.user_id}`).then(res => res.json())
-        setReservation(data[0])
-      } catch (error) {
-        console.error('Error fetching reservation data:', error)
-      }
-    }
-
-    fetchReservationData()
-  }, [user])
-
+  // Update the salesData array with the studentId
   const salesData: DataType[] = [
     {
-      stats: user?.student_id || 'N/A',
-      title: 'Student ID',
+      stats: user?.user_id || 'N/A',
+      title: 'User ID',
       color: 'primary',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.dorm_id || 'N/A',
-      title: 'Dorm ID',
-      color: 'secondary',
-      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
-    },
-    {
-      stats: reservation?.Dormitory_Building?.name || 'N/A',
-      title: 'Dormitory Name',
-      color: 'error',
-      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
-    },
-    {
-      stats: reservation?.room_id || 'N/A',
-      title: 'Room ID',
-      color: 'warning',
-      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
-    },
-    {
-      stats: reservation?.Dormitory_Room?.room_number || 'N/A',
-      title: 'Room Number',
-      color: 'info',
-      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
-    },
-    {
-      stats: reservation?.bed_id || 'N/A',
-      title: 'Bed ID',
+      stats: user?.student_id || 'N/A',
+      title: 'Student ID',
       color: 'success',
-      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+      icon: <AccountOutline sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.Dormitory_Bed?.bed_number || 'N/A',
-      title: 'Bed Number',
-      color: 'grey',
-      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+      stats: user?.dorm_id || 'N/A',
+      title: 'Dorm ID',
+      color: 'warning',
+      icon: <CellphoneLink sx={{ fontSize: '1.75rem' }} />
+    },
+    {
+      stats: user?.room_id || 'N/A',
+      title: 'Room ID',
+      color: 'info',
+      icon: <CurrencyUsd sx={{ fontSize: '1.75rem' }} />
+    },
+    {
+      stats: user?.bed_id || 'N/A',
+      title: 'Bed ID',
+      color: 'info',
+      icon: <CurrencyUsd sx={{ fontSize: '1.75rem' }} />
     }
   ]
 
   // Move renderStats below salesData declaration
   const renderStats = () => {
     return salesData.map((item: DataType, index: number) => (
-      <Grid item xs={12} sm={0} key={index}>
+      <Grid item xs={12} sm={3} key={index}>
         <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar
             variant='rounded'
@@ -114,14 +94,17 @@ const StatisticsCard = () => {
             <Typography variant='h6'>{item.stats}</Typography>
           </Box>
         </Box>
+        
       </Grid>
     ))
+    
   }
+  
 
   return (
     <Card>
       <CardHeader
-        title={`Reservation Information for User ${user?.user_id}`}
+        title='Reservation Result'
         action={
           <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
             <DotsVertical />
@@ -130,8 +113,9 @@ const StatisticsCard = () => {
         subheader={
           <Typography variant='body2'>
             <Box component='span' sx={{ fontWeight: 600, color: 'text.primary' }}>
-              ข้อมูลการจอง
+              Total 48.5% growth
             </Box>{' '}
+            😎 this month
           </Typography>
         }
         titleTypographyProps={{
@@ -147,8 +131,16 @@ const StatisticsCard = () => {
           {renderStats()}
         </Grid>
       </CardContent>
+
+      <Link href='/dashboard'>
+        <Box>
+          <Button>
+            <Typography>Go to Profile</Typography>
+          </Button>
+        </Box>
+      </Link>
     </Card>
   )
 }
 
-export default StatisticsCard
+export default ReservationResultCard

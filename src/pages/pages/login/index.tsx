@@ -24,8 +24,6 @@ import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormCo
 
 import { userStore } from 'src/stores/userStore'
 
-
-
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 
@@ -77,7 +75,6 @@ const LoginPage = () => {
 
   // ** Hook
 
-
   const handleChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
     setValues({ ...values, [prop]: event.target.value })
   }
@@ -108,7 +105,7 @@ const LoginPage = () => {
         localStorage.setItem('accessToken', data.accessToken)
 
         // Redirect to /Dormitory page
-        router.push('/Dormitory')
+        router.push('/dashboard')
       } else {
         const errorData = await response.json()
         console.log('Login failed:', errorData.message)
@@ -131,36 +128,6 @@ const LoginPage = () => {
 
     fetchUserbyUserID()
   }, [])
-
-  const handleSignUp = async () => {
-    try {
-      const response = await fetch('/api/login/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email_student_id: values.email_student_id,
-          password: values.password
-        })
-      })
-
-      console.log('Response:', response)
-
-      if (response.ok) {
-        console.log('Data Login successfully')
-        alert('Login Success')
-        const { user_id } = user;
-        router.push(`/Dormitory/${user_id}`);
-      } else {
-        console.error('Failed to Login data')
-      }
-    } catch (error) {
-      console.error('Error to login:', error)
-    }
-    console.log('email_student_id:', values.email_student_id)
-    console.log('password:', values.password)
-  }
 
   return (
     <Box className='content-center'>

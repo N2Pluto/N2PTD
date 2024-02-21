@@ -21,24 +21,26 @@ import StatisticsCard from 'src/views/dashboard/StatisticsCard'
 import WeeklyOverview from 'src/views/dashboard/WeeklyOverview'
 import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
 import SalesByCountries from 'src/views/dashboard/SalesByCountries'
+import LayoutAuth from 'src/layouts/LayoutAuth'
 
 const Dashboard = () => {
   return (
-    <ApexChartWrapper>
-      <Grid container spacing={6}>
-        <Grid item xs={12} md={4}>
-          <Trophy />
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <StatisticsCard />
-        </Grid>
-        <Grid item xs={12} md={6} lg={4}>
-          <WeeklyOverview />
-        </Grid>
-        <Grid item xs={12} md={6} lg={4}>
-          <TotalEarning />
-        </Grid>
-        <Grid item xs={12} md={6} lg={4}>
+    <LayoutAuth>
+      <ApexChartWrapper>
+        <Grid container spacing={6}>
+          {/* <Grid item xs={12} md={4}> */}
+          {/* <Trophy /> */}
+          {/* </Grid> */}
+          <Grid item xs={12} md={12}>
+            <StatisticsCard />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            {/* <WeeklyOverview /> */}
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            {/* <TotalEarning /> */}
+          </Grid>
+          {/* <Grid item xs={12} md={6} lg={4}>
           <Grid container spacing={6}>
             <Grid item xs={6}>
               <CardStatisticsVerticalComponent
@@ -83,18 +85,19 @@ const Dashboard = () => {
               />
             </Grid>
           </Grid>
-        </Grid>
-        <Grid item xs={12} md={6} lg={4}>
+        </Grid> */}
+          {/* <Grid item xs={12} md={6} lg={4}>
           <SalesByCountries />
-        </Grid>
-        <Grid item xs={12} md={12} lg={8}>
+        </Grid> */}
+          {/* <Grid item xs={12} md={12} lg={8}>
           <DepositWithdraw />
+        </Grid> */}
+          <Grid item xs={12}>
+            {/* <Table /> */}
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <Table />
-        </Grid>
-      </Grid>
-    </ApexChartWrapper>
+      </ApexChartWrapper>
+    </LayoutAuth>
   )
 }
 

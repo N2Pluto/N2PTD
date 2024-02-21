@@ -19,6 +19,7 @@ import GooglePlus from 'mdi-material-ui/GooglePlus'
 import ShareVariant from 'mdi-material-ui/ShareVariant'
 import { CardActions } from '@mui/material'
 import { Collapse, Divider } from '@mui/material'
+import { userStore, IUser } from 'src/stores/userStore'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -36,6 +37,23 @@ const ReservationBuilding = () => {
   const [dormitoryBuilding, setDormitoryBuilding] = useState([])
   const [genderFilter, setGenderFilter] = useState<string>('')
   const [collapse, setCollapse] = useState<boolean>(false)
+  const userStoreInstance = userStore()
+  const { setUser } = userStoreInstance
+  const router = useRouter()
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
+
+  const handleReservation = (dorm_id: string) => {
+    if (dorm_id) {
+      console.log('Reservation Building:', dorm_id)
+      setUser({ ...userStoreInstance.user, dorm_id })
+      console.log('user:', userStoreInstance.user)
+      router.push(`/reservations/reservations_room/${dorm_id}`)
+    } else {
+      console.error('Invalid dorm_id:', dorm_id)
+    }
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,17 +69,10 @@ const ReservationBuilding = () => {
     fetchData()
   }, [])
 
-  const handleReservation = id => {
-    console.log('Reservation Building:', id)
-  }
-
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-
-  const open = Boolean(anchorEl)
-
-  const handleClick = (event: MouseEvent<HTMLElement>) => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
+
   const handleClose = () => {
     setAnchorEl(null)
   }
@@ -72,32 +83,30 @@ const ReservationBuilding = () => {
 
   return (
     <>
-    <Grid pb={4}>
-    <Card >
-        <CardContent>
-          <Box
-            sx={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}
-          >
-            <Button onClick={handleClick1}>Filter Gender</Button>
-          </Box>
-          <Collapse in={collapse}>
-            <Divider sx={{ margin: 0 }} />
-            <CardContent>
-              <Button onClick={() => setGenderFilter('')}>All</Button>
-              <Button onClick={() => setGenderFilter('male')}>Male</Button>
-              <Button onClick={() => setGenderFilter('female')}>Female</Button>
-            </CardContent>
-          </Collapse>
-        </CardContent>
-      </Card>
-
-    </Grid>
-
+      <Grid pb={4}>
+        <Card>
+          <CardContent>
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <Button onClick={handleClick1}>Filter Gender</Button>
+            </Box>
+            <Collapse in={collapse}>
+              <Divider sx={{ margin: 0 }} />
+              <CardContent>
+                <Button onClick={() => setGenderFilter('')}>All</Button>
+                <Button onClick={() => setGenderFilter('male')}>Male</Button>
+                <Button onClick={() => setGenderFilter('female')}>Female</Button>
+              </CardContent>
+            </Collapse>
+          </CardContent>
+        </Card>
+      </Grid>
 
       {dormitoryBuilding
         .filter(dorm => genderFilter === '' || dorm.type_gender === genderFilter)
@@ -132,15 +141,31 @@ const ReservationBuilding = () => {
                         {dorm.type_gender}
                       </Box>
                     </Typography>
+                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                      Include :{' '}
+                      <Box component='span' sx={{ fontWeight: 'bold' }}>
+                        {dorm.type_building}
+                      </Box>
+                    </Typography>
+                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                      Bathroom :{' '}
+                      <Box component='span' sx={{ fontWeight: 'bold' }}>
+                        {dorm.type_bathroom}
+                      </Box>
+                    </Typography>
+                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                      Roommate :{' '}
+                      <Box component='span' sx={{ fontWeight: 'bold' }}>
+                        {dorm.type_roommate}
+                      </Box>
+                    </Typography>
                   </CardContent>
                   <CardActions className='card-action-dense'>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                      <Link href={`reservations/reservations_room/${dorm.dorm_id}`}>
-                        <Button>
-                          <CartPlus fontSize='small' sx={{ marginRight: 2 }} />
-                          Reservation Now!
-                        </Button>
-                      </Link>
+                      <Button onClick={() => handleReservation(dorm.dorm_id)}>
+                        <CartPlus fontSize='small' sx={{ marginRight: 2 }} />
+                        Reservation Now!
+                      </Button>
 
                       <IconButton
                         id='long-button'

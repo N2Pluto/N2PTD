@@ -1,9 +1,17 @@
+// userStore.ts
 import { create } from 'zustand'
 
 export interface IUser {
   user_id: string
   student_id: number
   email: string
+  name: string
+  lastname: string
+  school: string
+  course: string
+  dorm_id: string
+  room_id: string
+  bed_id: string
 }
 
 type StoreType = {
