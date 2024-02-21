@@ -1,24 +1,24 @@
-import { useRouter } from 'next/router';
-import Card from '@mui/material/Card';
-import Typography from '@mui/material/Typography';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
-import Grid, { GridProps } from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Twitter from 'mdi-material-ui/Twitter';
-import CartPlus from 'mdi-material-ui/CartPlus';
-import Facebook from 'mdi-material-ui/Facebook';
-import Linkedin from 'mdi-material-ui/Linkedin';
-import GooglePlus from 'mdi-material-ui/GooglePlus';
-import ShareVariant from 'mdi-material-ui/ShareVariant';
-import { CardActions } from '@mui/material';
-import { Collapse, Divider } from '@mui/material';
+import { useRouter } from 'next/router'
+import Card from '@mui/material/Card'
+import Typography from '@mui/material/Typography'
+import CardContent from '@mui/material/CardContent'
+import Button from '@mui/material/Button'
+import Box from '@mui/material/Box'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { styled } from '@mui/material/styles'
+import Grid, { GridProps } from '@mui/material/Grid'
+import IconButton from '@mui/material/IconButton'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Twitter from 'mdi-material-ui/Twitter'
+import CartPlus from 'mdi-material-ui/CartPlus'
+import Facebook from 'mdi-material-ui/Facebook'
+import Linkedin from 'mdi-material-ui/Linkedin'
+import GooglePlus from 'mdi-material-ui/GooglePlus'
+import ShareVariant from 'mdi-material-ui/ShareVariant'
+import { CardActions } from '@mui/material'
+import { Collapse, Divider } from '@mui/material'
 import { userStore, IUser } from 'src/stores/userStore'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
@@ -31,29 +31,29 @@ const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     borderRight: `1px solid ${theme.palette.divider}`
   }
-}));
+}))
 
 const ReservationBuilding = () => {
   const [dormitoryBuilding, setDormitoryBuilding] = useState([])
   const [genderFilter, setGenderFilter] = useState<string>('')
   const [collapse, setCollapse] = useState<boolean>(false)
-   const userStoreInstance = userStore()
-   const { setUser } = userStoreInstance
+  const userStoreInstance = userStore()
+  const { setUser } = userStoreInstance
   const router = useRouter()
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
- const handleReservation = (dorm_id: string) => {
-   if (dorm_id) {
-     console.log('Reservation Building:', dorm_id)
-     setUser({ ...userStoreInstance.user, dorm_id }) 
-     console.log('user:', userStoreInstance.user)
-     router.push(`/reservations/reservations_room/${dorm_id}`)
-   } else {
-     console.error('Invalid dorm_id:', dorm_id)
-   }
- }
+  const handleReservation = (dorm_id: string) => {
+    if (dorm_id) {
+      console.log('Reservation Building:', dorm_id)
+      setUser({ ...userStoreInstance.user, dorm_id })
+      console.log('user:', userStoreInstance.user)
+      router.push(`/reservations/reservations_room/${dorm_id}`)
+    } else {
+      console.error('Invalid dorm_id:', dorm_id)
+    }
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -141,6 +141,24 @@ const ReservationBuilding = () => {
                         {dorm.type_gender}
                       </Box>
                     </Typography>
+                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                      Include :{' '}
+                      <Box component='span' sx={{ fontWeight: 'bold' }}>
+                        {dorm.type_building}
+                      </Box>
+                    </Typography>
+                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                      Bathroom :{' '}
+                      <Box component='span' sx={{ fontWeight: 'bold' }}>
+                        {dorm.type_bathroom}
+                      </Box>
+                    </Typography>
+                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                      Roommate :{' '}
+                      <Box component='span' sx={{ fontWeight: 'bold' }}>
+                        {dorm.type_roommate}
+                      </Box>
+                    </Typography>
                   </CardContent>
                   <CardActions className='card-action-dense'>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
@@ -193,4 +211,4 @@ const ReservationBuilding = () => {
   )
 }
 
-export default ReservationBuilding;
+export default ReservationBuilding

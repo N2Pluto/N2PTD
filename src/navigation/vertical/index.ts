@@ -31,15 +31,20 @@ const navigation = (): VerticalNavItemsType => {
       icon: HomeOutline,
       path: '/reservations'
     },
+    // {
+    //   title: 'Billing',
+    //   icon: HomeOutline,
+    //   path: '/Billing'
+    // },
+    // {
+    //   title: 'Electricity Regression',
+    //   icon: HomeOutline,
+    //   path: '/Regression'
+    // },
     {
-      title: 'Billing',
+      title: 'Profile',
       icon: HomeOutline,
-      path: '/Billing'
-    },
-    {
-      title: 'Electricity Regression',
-      icon: HomeOutline,
-      path: '/Regression'
+      path: '/profile'
     },
 
     {
@@ -62,7 +67,7 @@ const navigation = (): VerticalNavItemsType => {
       icon: AccountCogOutline,
       path: '/account-settings'
     },
-    
+
     // {
     //   title: 'Register',
     //   icon: AccountPlusOutline,
