@@ -10,7 +10,8 @@ import CardHeader from '@mui/material/CardHeader'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
-
+import Button from '@mui/material/Button'
+import CartPlus from 'mdi-material-ui/CartPlus'
 // ** Icons Imports
 import TrendingUp from 'mdi-material-ui/TrendingUp'
 import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
@@ -32,6 +33,7 @@ interface DataType {
 const StatisticsCard = () => {
   const { user } = userStore()
   const [reservation, setReservation] = useState(null)
+  const [deleteReservation, setdeleteReservation] = useState(null)
 
   useEffect(() => {
     const fetchReservationData = async () => {
@@ -44,6 +46,25 @@ const StatisticsCard = () => {
     }
 
     fetchReservationData()
+  }, [user])
+
+  useEffect(() => {
+    const deleteReservationData = async () => {
+      try {
+        const response = await fetch(`/api/reservation/delete?user_id=${user?.user_id}`, {
+          method: 'DELETE'
+        })
+        if (!response.ok) {
+          throw new Error('Error deleting reservation data')
+        }
+        const data = await response.json()
+        setdeleteReservation(data) // or handle the deletion in your state as needed
+      } catch (error) {
+        console.error('Error deleting reservation data:', error)
+      }
+    }
+
+    deleteReservationData()
   }, [user])
 
   const salesData: DataType[] = [
@@ -130,7 +151,10 @@ const StatisticsCard = () => {
         subheader={
           <Typography variant='body2'>
             <Box component='span' sx={{ fontWeight: 600, color: 'text.primary' }}>
-              ข้อมูลการจอง
+              <Button onClick={setdeleteReservation}>
+                <CartPlus fontSize='small' sx={{ marginRight: 2 }} />
+                ยกเลิกการจอง
+              </Button>
             </Box>{' '}
           </Typography>
         }
