@@ -12,6 +12,7 @@ export interface IUser {
   dorm_id: string
   room_id: string
   bed_id: string
+  reservation_id: string
 }
 
 type StoreType = {
@@ -21,7 +22,8 @@ type StoreType = {
 }
 
 const initialState = {
-  user: null as IUser
+  user: null as IUser,
+
 }
 
 export const userStore = create<StoreType>(set => ({

@@ -10,7 +10,8 @@ import CardHeader from '@mui/material/CardHeader'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
-
+import Button from '@mui/material/Button'
+import CartPlus from 'mdi-material-ui/CartPlus'
 // ** Icons Imports
 import TrendingUp from 'mdi-material-ui/TrendingUp'
 import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
@@ -23,7 +24,7 @@ import { ThemeColor } from 'src/@core/layouts/types'
 import { userStore } from 'src/stores/userStore'
 
 interface DataType {
-  stats: number
+  stats: string
   title: string
   color: ThemeColor
   icon: ReactElement
@@ -46,6 +47,25 @@ const StatisticsCard = () => {
     fetchReservationData()
   }, [user])
 
+  const cancelReservation = async () => {
+    try {
+      const response = await fetch(`/api/reservation/deleteReservation?user_id=${user?.user_id}`, {
+        method: 'DELETE'
+      })
+
+      const { data, error } = await response.json()
+
+      if (error) {
+        console.error('Error deleting reservation:', error)
+      } else {
+        // Handle success, e.g., show a message to the user
+        console.log('Reservation deleted successfully:', data)
+      }
+    } catch (error) {
+      console.error('Error deleting reservation:', error)
+    }
+  }
+
   const salesData: DataType[] = [
     {
       stats: user?.student_id || 'N/A',
@@ -53,6 +73,13 @@ const StatisticsCard = () => {
       color: 'primary',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     },
+    {
+      stats: reservation?.user_id || 'N/A',
+      title: 'Reservation ID',
+      color: 'primary',
+      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+    },
+
     {
       stats: reservation?.dorm_id || 'N/A',
       title: 'Dorm ID',
@@ -121,7 +148,7 @@ const StatisticsCard = () => {
   return (
     <Card>
       <CardHeader
-        title={`Reservation Information for User ${user?.user_id}`}
+        title={`Reservation Information for User ${user?.email}`}
         action={
           <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
             <DotsVertical />
@@ -130,7 +157,10 @@ const StatisticsCard = () => {
         subheader={
           <Typography variant='body2'>
             <Box component='span' sx={{ fontWeight: 600, color: 'text.primary' }}>
-              ข้อมูลการจอง
+              <Button onClick={cancelReservation}>
+                <CartPlus fontSize='small' sx={{ marginRight: 2 }} />
+                ยกเลิกการจอง
+              </Button>
             </Box>{' '}
           </Typography>
         }

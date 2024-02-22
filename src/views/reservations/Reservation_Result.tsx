@@ -26,7 +26,7 @@ import Button from '@mui/material/Button'
 import Link from 'next/link'
 
 interface DataType {
-  stats: number
+  stats: Text
   title: string
   color: ThemeColor
   icon: ReactElement
@@ -45,6 +45,7 @@ const ReservationResultCard = () => {
       color: 'primary',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     },
+   
     {
       stats: user?.student_id || 'N/A',
       title: 'Student ID',
@@ -94,12 +95,9 @@ const ReservationResultCard = () => {
             <Typography variant='h6'>{item.stats}</Typography>
           </Box>
         </Box>
-        
       </Grid>
     ))
-    
   }
-  
 
   return (
     <Card>
