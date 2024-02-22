@@ -19,6 +19,7 @@ import ShareVariant from 'mdi-material-ui/ShareVariant'
 import { CardActions, Dialog, DialogContent, DialogTitle } from '@mui/material'
 import { userStore } from 'src/stores/userStore'
 import VerticalNavSectionTitle from 'src/@core/layouts/components/vertical/navigation/VerticalNavSectionTitle'
+import CloseIcon from '@mui/icons-material/Close'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -99,26 +100,45 @@ const ReservationBuilding = () => {
               <Button onClick={handleDialogToggle}>Filter Gender</Button>
             </Box>
             <Dialog open={dialogOpen} onClose={handleDialogToggle}>
-              <DialogTitle>Filter Gender</DialogTitle>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <IconButton onClick={handleDialogToggle}>
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <DialogTitle>Filter</DialogTitle>
+              </Box>
+
               <DialogContent>
-              <Typography> Gender</Typography>
+                <Typography> Gender</Typography>
                 <Grid container spacing={2} pb={5} pt={1}>
+                  <Button onClick={() => setGenderFilter('')}>All</Button>
                   <Button onClick={() => setGenderFilter('male')}>Male</Button>
                   <Button onClick={() => setGenderFilter('female')}>Female</Button>
                 </Grid>
                 <Typography>Room type</Typography>
                 <Grid container spacing={2} pb={5} pt={1}>
+                  <Button onClick={() => setBuildingFilter('')}>All</Button>
                   <Button onClick={() => setBuildingFilter('Air conditioner ')}>Air conditioner</Button>
                   <Button onClick={() => setBuildingFilter('Ceiling fan')}>Ceiling fan</Button>
                 </Grid>
                 <Typography>Roommate</Typography>
                 <Grid container spacing={2} pb={5} pt={1}>
+                  <Button onClick={() => setRoommateFilter('')}>All</Button>
                   <Button onClick={() => setRoommateFilter('2')}>2</Button>
                   <Button onClick={() => setRoommateFilter('4')}>4</Button>
                 </Grid>
 
                 <Grid container spacing={2} pb={5}>
-                <Button onClick={() => setGenderFilter && setBuildingFilter ('')}>Clear</Button>
+                  <Button
+                    onClick={() => {
+                      setGenderFilter('')
+                      setBuildingFilter('')
+                      setRoommateFilter('')
+                    }}
+                  >
+                    Clear
+                  </Button>
                   <Button onClick={handleDialogToggle}>Apply</Button>
                 </Grid>
               </DialogContent>
@@ -128,7 +148,7 @@ const ReservationBuilding = () => {
       </Grid>
 
       {dormitoryBuilding
-        .filter(dorm => genderFilter === '' || dorm.type_gender === genderFilter  )
+        .filter(dorm => genderFilter === '' || dorm.type_gender === genderFilter)
         .filter(dorm => buildingFilter === '' || dorm.type_building === buildingFilter)
         .filter(dorm => roommateFilter === '' || dorm.type_roommate === roommateFilter)
         .map(dorm => (
