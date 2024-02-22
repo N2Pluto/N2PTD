@@ -8,6 +8,7 @@ const handler = async (req: any, res: any) => {
     .select(
       `
         dorm_id,
+        user_id,
         room_id,
         bed_id,
         Dormitory_Building (name),

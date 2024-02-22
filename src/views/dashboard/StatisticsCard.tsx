@@ -24,7 +24,7 @@ import { ThemeColor } from 'src/@core/layouts/types'
 import { userStore } from 'src/stores/userStore'
 
 interface DataType {
-  stats: number
+  stats: string
   title: string
   color: ThemeColor
   icon: ReactElement
@@ -33,7 +33,6 @@ interface DataType {
 const StatisticsCard = () => {
   const { user } = userStore()
   const [reservation, setReservation] = useState(null)
-  const [deleteReservation, setdeleteReservation] = useState(null)
 
   useEffect(() => {
     const fetchReservationData = async () => {
@@ -48,24 +47,24 @@ const StatisticsCard = () => {
     fetchReservationData()
   }, [user])
 
-  useEffect(() => {
-    const deleteReservationData = async () => {
-      try {
-        const response = await fetch(`/api/reservation/delete?user_id=${user?.user_id}`, {
-          method: 'DELETE'
-        })
-        if (!response.ok) {
-          throw new Error('Error deleting reservation data')
-        }
-        const data = await response.json()
-        setdeleteReservation(data) // or handle the deletion in your state as needed
-      } catch (error) {
-        console.error('Error deleting reservation data:', error)
-      }
-    }
+  const cancelReservation = async () => {
+    try {
+      const response = await fetch(`/api/reservation/deleteReservation?user_id=${user?.user_id}`, {
+        method: 'DELETE'
+      })
 
-    deleteReservationData()
-  }, [user])
+      const { data, error } = await response.json()
+
+      if (error) {
+        console.error('Error deleting reservation:', error)
+      } else {
+        // Handle success, e.g., show a message to the user
+        console.log('Reservation deleted successfully:', data)
+      }
+    } catch (error) {
+      console.error('Error deleting reservation:', error)
+    }
+  }
 
   const salesData: DataType[] = [
     {
@@ -74,6 +73,13 @@ const StatisticsCard = () => {
       color: 'primary',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     },
+    {
+      stats: reservation?.user_id || 'N/A',
+      title: 'Reservation ID',
+      color: 'primary',
+      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+    },
+
     {
       stats: reservation?.dorm_id || 'N/A',
       title: 'Dorm ID',
@@ -142,7 +148,7 @@ const StatisticsCard = () => {
   return (
     <Card>
       <CardHeader
-        title={`Reservation Information for User ${user?.user_id}`}
+        title={`Reservation Information for User ${user?.email}`}
         action={
           <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
             <DotsVertical />
@@ -151,7 +157,7 @@ const StatisticsCard = () => {
         subheader={
           <Typography variant='body2'>
             <Box component='span' sx={{ fontWeight: 600, color: 'text.primary' }}>
-              <Button onClick={setdeleteReservation}>
+              <Button onClick={cancelReservation}>
                 <CartPlus fontSize='small' sx={{ marginRight: 2 }} />
                 ยกเลิกการจอง
               </Button>

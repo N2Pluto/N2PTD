@@ -1,5 +1,9 @@
 {
   "/_app": "pages/_app.js",
   "/_document": "pages/_document.js",
-  "/_error": "pages/_error.js"
+  "/_error": "pages/_error.js",
+  "/api/reservation/select": "pages/api/reservation/select.js",
+  "/api/reservation/deleteReservation": "pages/api/reservation/deleteReservation.js",
+  "/api/fetch_building": "pages/api/fetch_building.js",
+  "/api/building/[id]": "pages/api/building/[id].js"
 }
