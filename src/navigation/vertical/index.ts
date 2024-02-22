@@ -31,6 +31,7 @@ const navigation = (): VerticalNavItemsType => {
       icon: HomeOutline,
       path: '/reservations'
     },
+
     // {
     //   title: 'Billing',
     //   icon: HomeOutline,

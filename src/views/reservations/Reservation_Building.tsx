@@ -4,7 +4,6 @@ import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { styled } from '@mui/material/styles'
 import Grid, { GridProps } from '@mui/material/Grid'
@@ -17,9 +16,9 @@ import Facebook from 'mdi-material-ui/Facebook'
 import Linkedin from 'mdi-material-ui/Linkedin'
 import GooglePlus from 'mdi-material-ui/GooglePlus'
 import ShareVariant from 'mdi-material-ui/ShareVariant'
-import { CardActions } from '@mui/material'
-import { Collapse, Divider } from '@mui/material'
-import { userStore, IUser } from 'src/stores/userStore'
+import { CardActions, Dialog, DialogContent, DialogTitle } from '@mui/material'
+import { userStore } from 'src/stores/userStore'
+import VerticalNavSectionTitle from 'src/@core/layouts/components/vertical/navigation/VerticalNavSectionTitle'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -36,7 +35,8 @@ const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
 const ReservationBuilding = () => {
   const [dormitoryBuilding, setDormitoryBuilding] = useState([])
   const [genderFilter, setGenderFilter] = useState<string>('')
-  const [collapse, setCollapse] = useState<boolean>(false)
+
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
   const router = useRouter()
@@ -77,8 +77,8 @@ const ReservationBuilding = () => {
     setAnchorEl(null)
   }
 
-  const handleClick1 = () => {
-    setCollapse(!collapse)
+  const handleDialogToggle = () => {
+    setDialogOpen(!dialogOpen)
   }
 
   return (
@@ -94,16 +94,23 @@ const ReservationBuilding = () => {
                 justifyContent: 'space-between'
               }}
             >
-              <Button onClick={handleClick1}>Filter Gender</Button>
+              <Button onClick={handleDialogToggle}>Filter Gender</Button>
             </Box>
-            <Collapse in={collapse}>
-              <Divider sx={{ margin: 0 }} />
-              <CardContent>
-                <Button onClick={() => setGenderFilter('')}>All</Button>
-                <Button onClick={() => setGenderFilter('male')}>Male</Button>
-                <Button onClick={() => setGenderFilter('female')}>Female</Button>
-              </CardContent>
-            </Collapse>
+            <Dialog open={dialogOpen} onClose={handleDialogToggle}>
+              <DialogTitle>Filter Gender</DialogTitle>
+              <DialogContent>
+                <Grid container spacing={2} pt={5}>
+                  <Button onClick={() => setGenderFilter('')}>All</Button>
+                  <Button onClick={() => setGenderFilter('male')}>Male</Button>
+                  <Button onClick={() => setGenderFilter('female')}>Female</Button>
+                </Grid>
+
+                <Grid container spacing={2} pt={5}>
+                <Button onClick={() => setGenderFilter('')}>Clear</Button>
+                  <Button onClick={handleDialogToggle}>Apply</Button>
+                </Grid>
+              </DialogContent>
+            </Dialog>
           </CardContent>
         </Card>
       </Grid>
@@ -206,7 +213,6 @@ const ReservationBuilding = () => {
             </Card>
           </Grid>
         ))}
-      <Box></Box>
     </>
   )
 }
