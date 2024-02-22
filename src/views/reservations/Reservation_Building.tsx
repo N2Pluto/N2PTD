@@ -35,6 +35,8 @@ const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
 const ReservationBuilding = () => {
   const [dormitoryBuilding, setDormitoryBuilding] = useState([])
   const [genderFilter, setGenderFilter] = useState<string>('')
+  const [buildingFilter, setBuildingFilter] = useState<string>('')
+  const [roommateFilter, setRoommateFilter] = useState<string>('')
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const userStoreInstance = userStore()
@@ -99,14 +101,24 @@ const ReservationBuilding = () => {
             <Dialog open={dialogOpen} onClose={handleDialogToggle}>
               <DialogTitle>Filter Gender</DialogTitle>
               <DialogContent>
-                <Grid container spacing={2} pt={5}>
-                  <Button onClick={() => setGenderFilter('')}>All</Button>
+              <Typography> Gender</Typography>
+                <Grid container spacing={2} pb={5} pt={1}>
                   <Button onClick={() => setGenderFilter('male')}>Male</Button>
                   <Button onClick={() => setGenderFilter('female')}>Female</Button>
                 </Grid>
+                <Typography>Room type</Typography>
+                <Grid container spacing={2} pb={5} pt={1}>
+                  <Button onClick={() => setBuildingFilter('Air conditioner ')}>Air conditioner</Button>
+                  <Button onClick={() => setBuildingFilter('Ceiling fan')}>Ceiling fan</Button>
+                </Grid>
+                <Typography>Roommate</Typography>
+                <Grid container spacing={2} pb={5} pt={1}>
+                  <Button onClick={() => setRoommateFilter('2')}>2</Button>
+                  <Button onClick={() => setRoommateFilter('4')}>4</Button>
+                </Grid>
 
-                <Grid container spacing={2} pt={5}>
-                <Button onClick={() => setGenderFilter('')}>Clear</Button>
+                <Grid container spacing={2} pb={5}>
+                <Button onClick={() => setGenderFilter && setBuildingFilter ('')}>Clear</Button>
                   <Button onClick={handleDialogToggle}>Apply</Button>
                 </Grid>
               </DialogContent>
@@ -116,7 +128,9 @@ const ReservationBuilding = () => {
       </Grid>
 
       {dormitoryBuilding
-        .filter(dorm => genderFilter === '' || dorm.type_gender === genderFilter)
+        .filter(dorm => genderFilter === '' || dorm.type_gender === genderFilter  )
+        .filter(dorm => buildingFilter === '' || dorm.type_building === buildingFilter)
+        .filter(dorm => roommateFilter === '' || dorm.type_roommate === roommateFilter)
         .map(dorm => (
           <Grid key={dorm.dorm_id} pb={5}>
             <Card>
