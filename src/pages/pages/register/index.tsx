@@ -74,12 +74,6 @@ const RegisterPage = () => {
   interface State {
     password: string
     showPassword: boolean
-    student_id: string // Add the 'student_id' property
-  }
-
-  interface State {
-    password: string
-    showPassword: boolean
     student_id: string
     email: string // Add the 'email' property
   }
@@ -122,7 +116,7 @@ const RegisterPage = () => {
         return
       }
 
-      const response = await fetch('/api/register/', {
+      const response = await fetch('/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

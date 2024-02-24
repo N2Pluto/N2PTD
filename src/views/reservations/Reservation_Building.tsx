@@ -40,6 +40,8 @@ const ReservationBuilding = () => {
   const [roommateFilter, setRoommateFilter] = useState<string>('')
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
+  const [roomCounts, setRoomCounts] = useState<{ [key: string]: number }>({})
+
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
   const router = useRouter()
@@ -61,7 +63,7 @@ const ReservationBuilding = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await fetch('/api/fetch_building').then(res => res.json())
+        const { data } = await fetch('/api/building/fetch_building').then(res => res.json())
         console.log('data:', data)
         setDormitoryBuilding(data)
       } catch (error) {
@@ -198,6 +200,12 @@ const ReservationBuilding = () => {
                       Roommate :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.type_roommate}
+                      </Box>
+                    </Typography>
+                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                      Room Total :{' '}
+                      <Box component='span' sx={{ fontWeight: 'bold' }}>
+                        {dorm.room_total}
                       </Box>
                     </Typography>
                   </CardContent>

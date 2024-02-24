@@ -1,7 +1,4 @@
-// ** React Imports
 import { ReactElement, useEffect, useState } from 'react'
-
-// ** MUI Imports
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
@@ -12,16 +9,19 @@ import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
 import CartPlus from 'mdi-material-ui/CartPlus'
-// ** Icons Imports
 import TrendingUp from 'mdi-material-ui/TrendingUp'
-import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
-import CellphoneLink from 'mdi-material-ui/CellphoneLink'
-import AccountOutline from 'mdi-material-ui/AccountOutline'
-
-// ** Types
+import Snackbar from '@mui/material/Snackbar' // เพิ่ม Snackbar
+import MuiAlert from '@mui/material/Alert' // เพิ่ม Alert
 import { ThemeColor } from 'src/@core/layouts/types'
 import { userStore } from 'src/stores/userStore'
+
+interface DataType {
+  stats: string
+  title: string
+  color: ThemeColor
+  icon: ReactElement
+}
 
 interface DataType {
   stats: string
@@ -33,6 +33,9 @@ interface DataType {
 const StatisticsCard = () => {
   const { user } = userStore()
   const [reservation, setReservation] = useState(null)
+  const [showAlert, setShowAlert] = useState(false)
+  const [snackbarOpen, setSnackbarOpen] = useState(false) // state สำหรับแสดง Snackbar
+  const [snackbarMessage, setSnackbarMessage] = useState('') // state สำหรับข้อความใน Snackbar
 
   useEffect(() => {
     const fetchReservationData = async () => {
@@ -48,70 +51,75 @@ const StatisticsCard = () => {
   }, [user])
 
   const cancelReservation = async () => {
-    try {
-      const response = await fetch(`/api/reservation/deleteReservation?user_id=${user?.user_id}`, {
-        method: 'DELETE'
-      })
+    const confirmed = window.confirm('คุณต้องการยกเลิกการจองใช่หรือไม่?')
+    if (confirmed) {
+      try {
+        const response = await fetch(`/api/reservation/deleteReservation?user_id=${user?.user_id}`, {
+          method: 'DELETE'
+        })
 
-      const { data, error } = await response.json()
+        const { data, error } = await response.json()
 
-      if (error) {
+        if (error) {
+          console.error('Error deleting reservation:', error)
+        } else {
+          console.log('Reservation deleted successfully:', data)
+          setSnackbarMessage('ลบการจองเรียบร้อยแล้ว') // ตั้งค่าข้อความใน Snackbar
+          setSnackbarOpen(true) // เปิด Snackbar
+          setReservation(null) // Reset reservation data
+        }
+      } catch (error) {
         console.error('Error deleting reservation:', error)
-      } else {
-        // Handle success, e.g., show a message to the user
-        console.log('Reservation deleted successfully:', data)
       }
-    } catch (error) {
-      console.error('Error deleting reservation:', error)
     }
   }
 
   const salesData: DataType[] = [
     {
-      stats: user?.student_id || 'N/A',
+      stats: user?.student_id,
       title: 'Student ID',
       color: 'primary',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.user_id || 'N/A',
+      stats: reservation?.user_id,
       title: 'Reservation ID',
       color: 'primary',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     },
 
     {
-      stats: reservation?.dorm_id || 'N/A',
+      stats: reservation?.dorm_id,
       title: 'Dorm ID',
       color: 'secondary',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.Dormitory_Building?.name || 'N/A',
+      stats: reservation?.Dormitory_Building?.name,
       title: 'Dormitory Name',
       color: 'error',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.room_id || 'N/A',
+      stats: reservation?.room_id,
       title: 'Room ID',
       color: 'warning',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.Dormitory_Room?.room_number || 'N/A',
+      stats: reservation?.Dormitory_Room?.room_number,
       title: 'Room Number',
       color: 'info',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.bed_id || 'N/A',
+      stats: reservation?.bed_id,
       title: 'Bed ID',
       color: 'success',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.Dormitory_Bed?.bed_number || 'N/A',
+      stats: reservation?.Dormitory_Bed?.bed_number,
       title: 'Bed Number',
       color: 'grey',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
@@ -172,11 +180,21 @@ const StatisticsCard = () => {
           }
         }}
       />
-      <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important` }}>
-        <Grid container spacing={[5, 0]}>
+      <CardContent>
+        <Grid container spacing={2}>
           {renderStats()}
         </Grid>
       </CardContent>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <MuiAlert elevation={6} variant='filled' onClose={() => setSnackbarOpen(false)} severity='success'>
+          {snackbarMessage}
+        </MuiAlert>
+      </Snackbar>
     </Card>
   )
 }

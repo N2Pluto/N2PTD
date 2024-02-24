@@ -48,7 +48,7 @@ const ReservationBed = () => {
         return
       }
 
-      const checkResponse = await fetch(`/api/reservation/check?user_id=${user.user_id}`)
+      const checkResponse = await fetch(`/api/reservation/checkReservation?user_id=${user.user_id}`)
       const { hasReservation } = await checkResponse.json()
 
       if (hasReservation) {
@@ -56,6 +56,15 @@ const ReservationBed = () => {
         alert('You have already made a reservation.')
         return
       }
+
+       const checkBedResponse = await fetch(`/api/reservation/checkRepeat?bed_id=${bed_id}`)
+       const { isReserved } = await checkBedResponse.json()
+
+       if (isReserved) {
+         router.push('/dashboard')
+         alert('This bed is already reserved.')
+         return
+       }
 
       const response = await fetch('/api/reservation', {
         method: 'POST',

@@ -14,9 +14,8 @@ import TablePagination from '@mui/material/TablePagination'
 import { auto } from '@popperjs/core'
 import { userStore, IUser } from 'src/stores/userStore'
 
-
 interface Column {
-  id: 'room' | 'code' | 'status' | 'details'
+  id: 'room' | 'code' | 'status' | 'details' | 'bedstatus'
   label: string
   minWidth?: number
   align?: 'right'
@@ -27,11 +26,11 @@ const columns: readonly Column[] = [
   { id: 'room', label: 'room', minWidth: 170 },
   { id: 'code', label: 'bed capacity', minWidth: 100 },
   {
-    id: 'status',
-    label: 'status',
+    id: 'bedstatus',
+    label: 'bed status',
     minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US')
+    align: 'right'
+    // format: (value: number) => value.toLocaleString('en-US')
   },
   {
     id: 'details',
@@ -46,8 +45,8 @@ const ReservationRoomTest = () => {
   const router = useRouter()
   const [dormitoryBuilding, setDormitoryBuilding] = useState(null)
   const [dormitoryRoom, setDormitoryRoom] = useState([])
-   const userStoreInstance = userStore()
-   const { setUser } = userStoreInstance
+  const userStoreInstance = userStore()
+  const { setUser } = userStoreInstance
 
   useEffect(() => {
     if (router.query.id) {
@@ -94,8 +93,11 @@ const ReservationRoomTest = () => {
               {dormitoryRoom.map(room => (
                 <TableRow hover role='checkbox' tabIndex={-1} key={room.room_id}>
                   <TableCell>{room.room_number}</TableCell>
-                  <TableCell>{room.bed_capacity}</TableCell>
-                  <TableCell align='right'>{room.status}</TableCell>
+                  <TableCell >
+                    {' '}
+                    {room.bed_available} / {room.bed_capacity}{' '}
+                  </TableCell>
+                  <TableCell align='right'></TableCell>
                   <TableCell align='right'>
                     <Box>
                       <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
