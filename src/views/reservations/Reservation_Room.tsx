@@ -45,8 +45,24 @@ const ReservationRoomTest = () => {
   const router = useRouter()
   const [dormitoryBuilding, setDormitoryBuilding] = useState(null)
   const [dormitoryRoom, setDormitoryRoom] = useState([])
+  const [dormitoryRoomStatus, setDormitoryRoomStatus] = useState([])
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
+
+  useEffect(() => {
+    const fetchDataRoomStatus = async () => {
+      try {
+        const dorm_id = router.query.id; // Add the missing declaration for dorm_id
+        const response = await fetch(`/api/reservation/checkStatusRoom?dorm_id=${dorm_id}`)
+        const data = await response.json()
+        setDormitoryRoomStatus(data)
+      } catch (error) {
+        console.error('Error fetching room status:', error)
+      }
+    }
+
+    fetchDataRoomStatus()
+  }, [])
 
   useEffect(() => {
     if (router.query.id) {
@@ -71,7 +87,7 @@ const ReservationRoomTest = () => {
     console.log('Reservation ROOM :', room_id)
     setUser({ ...userStoreInstance.user, room_id }) // Store room_id in userStore
     console.log('user:', userStoreInstance.user)
-    router.push(`/reservation/reservations_building/reservations_room/reservations_bed/${room_id}`)
+    router.push(`/reservations/reservations_room/reservations_bed/${room_id}`)
   }
 
   return (
@@ -93,10 +109,11 @@ const ReservationRoomTest = () => {
               {dormitoryRoom.map(room => (
                 <TableRow hover role='checkbox' tabIndex={-1} key={room.room_id}>
                   <TableCell>{room.room_number}</TableCell>
-                  <TableCell >
+                  <TableCell>
                     {' '}
                     {room.bed_available} / {room.bed_capacity}{' '}
                   </TableCell>
+                  <TableCell>{room.status ? 'Available' : 'Occupied'}</TableCell>
                   <TableCell align='right'></TableCell>
                   <TableCell align='right'>
                     <Box>
