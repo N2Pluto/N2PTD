@@ -97,7 +97,7 @@ const ReservationBuilding = () => {
                 justifyContent: 'space-between'
               }}
             >
-              <Button onClick={handleDialogToggle}>Filter Gender</Button>
+              <Button onClick={handleDialogToggle}>Filter</Button>
             </Box>
             <Dialog open={dialogOpen} onClose={handleDialogToggle}>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
