@@ -44,6 +44,7 @@ const ReservationBuilding = () => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [roomCounts, setRoomCounts] = useState<{ [key: string]: number }>({})
 
+
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
   const router = useRouter()
@@ -54,9 +55,9 @@ const ReservationBuilding = () => {
   const handleReservation = (dorm_id: string) => {
     if (dorm_id) {
       console.log('Reservation Building:', dorm_id)
-      setUser({ ...userStoreInstance.user, dorm_id })
+      setUser({ ...userStoreInstance.user, dorm_id }) // เปลี่ยน เป็นเก็บ ใน useState
       console.log('user:', userStoreInstance.user)
-      router.push(`/reservation/reservations_building/reservations_room/${dorm_id}`)
+      router.push(`/reservation/room/${dorm_id}`)
     } else {
       console.error('Invalid dorm_id:', dorm_id)
     }

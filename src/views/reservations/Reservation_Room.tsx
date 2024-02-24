@@ -86,7 +86,7 @@ const ReservationRoomTest = () => {
     console.log('Reservation ROOM :', room_id)
     setUser({ ...userStoreInstance.user, room_id }) // Store room_id in userStore
     console.log('user:', userStoreInstance.user)
-    router.push(`/reservation/reservations_building/reservations_room/reservations_bed/${room_id}`)
+    router.push(`/reservation/bed/${room_id}`)
   }
 
   return (

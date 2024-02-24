@@ -4,9 +4,10 @@ export const authGuard = (req: any, res: any) => {
   const authHeader = req?.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1]
 
-  console.log('token ', token)
+  console.log('token_t', token)
   jwt.verify(token, process.env.JWT_SECRET, (err: any, decoded: any) => {
     if (err) {
+
       return res.status(403).json({ message: 'Forbidden' })
     }
     console.log('decoded', decoded)

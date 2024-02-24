@@ -35,8 +35,8 @@ const ReservationsStatistics = () => {
   const { user } = userStore()
   const [reservation, setReservation] = useState(null)
   const [showAlert, setShowAlert] = useState(false)
-  const [snackbarOpen, setSnackbarOpen] = useState(false) // state สำหรับแสดง Snackbar
-  const [snackbarMessage, setSnackbarMessage] = useState('') // state สำหรับข้อความใน Snackbar
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
 
   useEffect(() => {
     const fetchReservationData = async () => {
@@ -45,6 +45,7 @@ const ReservationsStatistics = () => {
         setReservation(data[0])
       } catch (error) {
         console.error('Error fetching reservation data:', error)
+        console.log('asd')
       }
     }
 

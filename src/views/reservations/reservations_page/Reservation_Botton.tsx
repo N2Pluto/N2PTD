@@ -16,7 +16,7 @@ import router from 'next/router'
 const ReservationBotton = () => {
 
   const handleReservation = ( ) => {
-    router.push(`/reservation/reservations_building`)
+    router.push(`/reservation/building`)
   }
 
   return (

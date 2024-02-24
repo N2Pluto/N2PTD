@@ -28,7 +28,7 @@ const handler = async (req: any, res: any) => {
         course: user?.data?.course
       },
       process.env.JWT_SECRET,
-      { expiresIn: '100h' }
+      { expiresIn: '10h' }
     )
 
     const userData = {
