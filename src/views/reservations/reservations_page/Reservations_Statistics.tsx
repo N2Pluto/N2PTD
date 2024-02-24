@@ -77,7 +77,7 @@ const ReservationsStatistics = () => {
 
   const salesData: DataType[] = [
     {
-      stats: user?.student_id,
+      stats: user?.student_id ,
       title: 'Student ID',
       color: 'primary',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
