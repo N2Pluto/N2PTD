@@ -48,14 +48,15 @@ const navigation = (): VerticalNavItemsType => {
       path: '/profile'
     },
 
-    {
-      sectionTitle: 'Pages'
-    },
-    {
-      title: 'Dashboard',
-      icon: HomeOutline,
-      path: '/dashboard'
-    },
+    // {
+    //   sectionTitle: 'Pages'
+    // },
+
+    // {
+    //   title: 'Dashboard',
+    //   icon: HomeOutline,
+    //   path: '/dashboard'
+    // },
 
     // {
     //   title: 'Login',
@@ -63,11 +64,11 @@ const navigation = (): VerticalNavItemsType => {
     //   path: '/pages/login',
     //   // openInNewTab: true
     // },
-    {
-      title: 'Account Settings',
-      icon: AccountCogOutline,
-      path: '/account-settings'
-    },
+    // {
+    //   title: 'Account Settings',
+    //   icon: AccountCogOutline,
+    //   path: '/account-settings'
+    // },
 
     // {
     //   title: 'Register',
@@ -75,12 +76,12 @@ const navigation = (): VerticalNavItemsType => {
     //   path: '/pages/register',
     //   // openInNewTab: true
     // },
-    {
-      title: 'Error',
-      icon: AlertCircleOutline,
-      path: '/pages/error',
-      openInNewTab: true
-    },
+    // {
+    //   title: 'Error',
+    //   icon: AlertCircleOutline,
+    //   path: '/pages/error',
+    //   openInNewTab: true
+    // },
     {
       sectionTitle: 'User Interface'
     },
