@@ -29,7 +29,7 @@ const navigation = (): VerticalNavItemsType => {
     {
       title: 'Reservation',
       icon: HomeOutline,
-      path: '/reservations'
+      path: '/reservation'
     },
 
     // {

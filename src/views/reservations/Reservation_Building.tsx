@@ -20,6 +20,8 @@ import { CardActions, Dialog, DialogContent, DialogTitle } from '@mui/material'
 import { userStore } from 'src/stores/userStore'
 import VerticalNavSectionTitle from 'src/@core/layouts/components/vertical/navigation/VerticalNavSectionTitle'
 import CloseIcon from '@mui/icons-material/Close'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -54,7 +56,7 @@ const ReservationBuilding = () => {
       console.log('Reservation Building:', dorm_id)
       setUser({ ...userStoreInstance.user, dorm_id })
       console.log('user:', userStoreInstance.user)
-      router.push(`/reservations/reservations_room/${dorm_id}`)
+      router.push(`/reservation/reservations_building/reservations_room/${dorm_id}`)
     } else {
       console.error('Invalid dorm_id:', dorm_id)
     }
@@ -102,33 +104,71 @@ const ReservationBuilding = () => {
               <Button onClick={handleDialogToggle}>Filter</Button>
             </Box>
             <Dialog open={dialogOpen} onClose={handleDialogToggle}>
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <IconButton onClick={handleDialogToggle}>
-                  <CloseIcon />
-                </IconButton>
-              </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <DialogTitle>Filter</DialogTitle>
-              </Box>
-
+              <DialogTitle>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography>Filter</Typography>
+                  <IconButton onClick={handleDialogToggle}>
+                    <CloseIcon />
+                  </IconButton>
+                </Box>
+                </DialogTitle>
               <DialogContent>
                 <Typography> Gender</Typography>
                 <Grid container spacing={2} pb={5} pt={1}>
-                  <Button onClick={() => setGenderFilter('')}>All</Button>
-                  <Button onClick={() => setGenderFilter('male')}>Male</Button>
-                  <Button onClick={() => setGenderFilter('female')}>Female</Button>
+                  <FormControlLabel
+                    control={<Checkbox checked={genderFilter === ''} onChange={() => setGenderFilter('')} />}
+                    label='All'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={genderFilter === 'male'} onChange={() => setGenderFilter('male')} />}
+                    label='Male'
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox checked={genderFilter === 'female'} onChange={() => setGenderFilter('female')} />
+                    }
+                    label='Female'
+                  />
                 </Grid>
                 <Typography>Room type</Typography>
                 <Grid container spacing={2} pb={5} pt={1}>
-                  <Button onClick={() => setBuildingFilter('')}>All</Button>
-                  <Button onClick={() => setBuildingFilter('Air conditioner ')}>Air conditioner</Button>
-                  <Button onClick={() => setBuildingFilter('Ceiling fan')}>Ceiling fan</Button>
+                  <FormControlLabel
+                    control={<Checkbox checked={buildingFilter === ''} onChange={() => setBuildingFilter('')} />}
+                    label='All'
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={buildingFilter == 'Air conditioner'}
+                        onChange={() => setBuildingFilter('Air conditioner')}
+                      />
+                    }
+                    label='Air conditioner'
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={buildingFilter == 'Ceiling fan'}
+                        onChange={() => setBuildingFilter('Ceiling fan')}
+                      />
+                    }
+                    label='Ceiling fan'
+                  />
                 </Grid>
                 <Typography>Roommate</Typography>
                 <Grid container spacing={2} pb={5} pt={1}>
-                  <Button onClick={() => setRoommateFilter('')}>All</Button>
-                  <Button onClick={() => setRoommateFilter('2')}>2</Button>
-                  <Button onClick={() => setRoommateFilter('4')}>4</Button>
+                  <FormControlLabel
+                    control={<Checkbox checked={roommateFilter === ''} onChange={() => setRoommateFilter('')} />}
+                    label='All'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={roommateFilter === '2'} onChange={() => setRoommateFilter('2')} />}
+                    label='2'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={roommateFilter === '4'} onChange={() => setRoommateFilter('4')} />}
+                    label='4'
+                  />
                 </Grid>
 
                 <Grid container spacing={2} pb={5}>

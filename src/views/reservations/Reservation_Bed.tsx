@@ -45,7 +45,6 @@ const ReservationBed = () => {
     try {
       if (!user) {
         console.error('User data is missing.')
-        return
       }
 
       const checkResponse = await fetch(`/api/reservation/checkReservation?user_id=${user.user_id}`)
@@ -54,7 +53,6 @@ const ReservationBed = () => {
       if (hasReservation) {
         router.push('/dashboard')
         alert('You have already made a reservation.')
-        return
       }
 
        const checkBedResponse = await fetch(`/api/reservation/checkRepeat?bed_id=${bed_id}`)
@@ -63,7 +61,6 @@ const ReservationBed = () => {
        if (isReserved) {
          router.push('/dashboard')
          alert('This bed is already reserved.')
-         return
        }
 
       const response = await fetch('/api/reservation', {
@@ -85,7 +82,7 @@ const ReservationBed = () => {
         console.error('Error inserting data into Reservation table:', error.message)
       } else {
         console.log('Data inserted successfully:', data)
-        router.push(`/reservations/reservations_result/${user.user_id}`)
+        router.push(`/reservation/reservations_building/reservations_room/reservations_bed/reservations_result/${user.user_id}`)
       }
     } catch (error) {
       console.error('Error inserting data into Reservation table:', error.message)

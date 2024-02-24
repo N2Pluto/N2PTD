@@ -35,37 +35,33 @@ interface DataType {
 const ReservationResultCard = () => {
   const { user } = userStore()
   const router = useRouter()
-  // Extract student_id from user object
+
+  const handleReservation = () => {
+    router.push(`/reservation`)
+  }
 
   // Update the salesData array with the studentId
   const salesData: DataType[] = [
     {
-      stats: user?.user_id || 'N/A',
-      title: 'User ID',
-      color: 'primary',
-      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
-    },
-   
-    {
-      stats: user?.student_id || 'N/A',
+      stats: user?.student_id,
       title: 'Student ID',
       color: 'success',
       icon: <AccountOutline sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: user?.dorm_id || 'N/A',
+      stats: user?.dorm_id,
       title: 'Dorm ID',
       color: 'warning',
       icon: <CellphoneLink sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: user?.room_id || 'N/A',
+      stats: user?.room_id,
       title: 'Room ID',
       color: 'info',
       icon: <CurrencyUsd sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: user?.bed_id || 'N/A',
+      stats: user?.bed_id,
       title: 'Bed ID',
       color: 'info',
       icon: <CurrencyUsd sx={{ fontSize: '1.75rem' }} />
@@ -108,21 +104,6 @@ const ReservationResultCard = () => {
             <DotsVertical />
           </IconButton>
         }
-        subheader={
-          <Typography variant='body2'>
-            <Box component='span' sx={{ fontWeight: 600, color: 'text.primary' }}>
-              Total 48.5% growth
-            </Box>{' '}
-            😎 this month
-          </Typography>
-        }
-        titleTypographyProps={{
-          sx: {
-            mb: 2.5,
-            lineHeight: '2rem !important',
-            letterSpacing: '0.15px !important'
-          }
-        }}
       />
       <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important` }}>
         <Grid container spacing={[5, 0]}>
@@ -130,13 +111,11 @@ const ReservationResultCard = () => {
         </Grid>
       </CardContent>
 
-      <Link href='/dashboard'>
-        <Box>
-          <Button>
-            <Typography>Go to Profile</Typography>
-          </Button>
-        </Box>
-      </Link>
+      <Box>
+        <Button onClick={handleReservation}>
+          <Typography>Go to Profile</Typography>
+        </Button>
+      </Box>
     </Card>
   )
 }
