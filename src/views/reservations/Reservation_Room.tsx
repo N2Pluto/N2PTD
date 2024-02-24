@@ -15,7 +15,7 @@ import { auto } from '@popperjs/core'
 import { userStore, IUser } from 'src/stores/userStore'
 
 interface Column {
-  id: 'room' | 'code' | 'status' | 'details' | 'bedstatus'
+  id: 'room' | 'code' | 'details' | 'bedstatus'
   label: string
   minWidth?: number
   align?: 'right'
@@ -30,7 +30,6 @@ const columns: readonly Column[] = [
     label: 'bed status',
     minWidth: 170,
     align: 'right'
-    // format: (value: number) => value.toLocaleString('en-US')
   },
   {
     id: 'details',
@@ -52,7 +51,7 @@ const ReservationRoomTest = () => {
   useEffect(() => {
     const fetchDataRoomStatus = async () => {
       try {
-        const dorm_id = router.query.id; // Add the missing declaration for dorm_id
+        const dorm_id = router.query.id // Add the missing declaration for dorm_id
         const response = await fetch(`/api/reservation/checkStatusRoom?dorm_id=${dorm_id}`)
         const data = await response.json()
         setDormitoryRoomStatus(data)
@@ -87,7 +86,7 @@ const ReservationRoomTest = () => {
     console.log('Reservation ROOM :', room_id)
     setUser({ ...userStoreInstance.user, room_id }) // Store room_id in userStore
     console.log('user:', userStoreInstance.user)
-    router.push(`/reservations/reservations_room/reservations_bed/${room_id}`)
+    router.push(`/reservation/reservations_building/reservations_room/reservations_bed/${room_id}`)
   }
 
   return (
@@ -113,8 +112,7 @@ const ReservationRoomTest = () => {
                     {' '}
                     {room.bed_available} / {room.bed_capacity}{' '}
                   </TableCell>
-                  <TableCell>{room.status ? 'Available' : 'Occupied'}</TableCell>
-                  <TableCell align='right'></TableCell>
+                  <TableCell align='right'>{room.status ? 'Available' : 'Occupied'}</TableCell>
                   <TableCell align='right'>
                     <Box>
                       <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
