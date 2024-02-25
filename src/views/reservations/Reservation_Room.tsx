@@ -70,17 +70,29 @@ const ReservationRoomTest = () => {
         const response = await fetch(`/api/reservation/checkStatusRoom?dorm_id=${dorm_id}`)
         const data = await response.json()
         setDormitoryRoomStatus(data)
+        console.log('data bed capacity:', data)
       } catch (error) {
         console.error('Error fetching room status:', error)
       }
     }
 
-    fetchDataRoomStatus()
-  }, [])
+    // Function to fetch data and update state
+    const fetchDataAndUpdateStatus = async () => {
+      await fetchDataRoomStatus() // Fetch the updated data
+    }
+
+    fetchDataAndUpdateStatus()
+
+    // Then set up the interval to fetch data every 5 seconds
+    const intervalId = setInterval(fetchDataAndUpdateStatus, 1000)
+
+    // Clear interval on component unmount
+    return () => clearInterval(intervalId)
+  }, []) // Remove dormitoryRoomStatus from dependencies
 
   useEffect(() => {
     if (router.query.id) {
-      Promise.all([fetchData(), fetchDataRoomByDormID()])
+      Promise.all([fetchData()])
     }
   }, [router.query.id])
 
@@ -90,12 +102,24 @@ const ReservationRoomTest = () => {
     setDormitoryBuilding(data)
   }
 
-  const fetchDataRoomByDormID = async () => {
-    console.log('router.query.id:', router.query.id)
-    const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
-    setDormitoryRoom(data)
-    console.log('data:', data)
-  }
+  useEffect(() => {
+    const fetchDataRoomByDormID = async () => {
+      console.log('router.query.id:', router.query.id)
+      const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
+      setDormitoryRoom(data)
+      console.log('data:', data)
+    }
+
+    const fetchDataAndUpdateStatusRoom = async () => {
+      await fetchDataRoomByDormID() // Fetch the updated data
+    }
+
+    fetchDataAndUpdateStatusRoom()
+    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 1000)
+
+    // Clear interval on component unmount
+    return () => clearInterval(intervalId)
+  }, [])
 
   const handleReservation = (room_id: string) => {
     console.log('Reservation ROOM :', room_id)
