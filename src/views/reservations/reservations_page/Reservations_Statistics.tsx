@@ -15,6 +15,10 @@ import Snackbar from '@mui/material/Snackbar' // เพิ่ม Snackbar
 import MuiAlert from '@mui/material/Alert' // เพิ่ม Alert
 import { ThemeColor } from 'src/@core/layouts/types'
 import { userStore } from 'src/stores/userStore'
+import PermIdentityIcon from '@mui/icons-material/PermIdentity';
+import CorporateFareIcon from '@mui/icons-material/CorporateFare';
+import DoorBackIcon from '@mui/icons-material/DoorBack';
+import BedIcon from '@mui/icons-material/Bed';
 
 interface DataType {
   stats: string
@@ -50,25 +54,25 @@ const ReservationsStatistics = () => {
       stats: user?.student_id?.toString() ,
       title: 'Student ID',
       color: 'primary',
-      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+      icon: <PermIdentityIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
       stats: reservation?.Dormitory_Building?.name,
       title: 'Dormitory Name',
       color: 'error',
-      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+      icon: <CorporateFareIcon  sx={{ fontSize: '1.75rem' }} />
     },
     {
       stats: reservation?.Dormitory_Room?.room_number,
       title: 'Room Number',
       color: 'info',
-      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+      icon: <DoorBackIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
       stats: reservation?.Dormitory_Bed?.bed_number,
       title: 'Bed Number',
       color: 'primary',
-      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+      icon: <BedIcon sx={{ fontSize: '1.75rem' }} />
     }
   ]
 

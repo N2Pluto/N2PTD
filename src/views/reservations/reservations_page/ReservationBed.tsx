@@ -3,19 +3,19 @@ import Typography from '@mui/material/Typography'
 import Card from '@mui/material/Card'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
-
 import { userStore } from 'src/stores/userStore'
 import Grid, { GridProps } from '@mui/material/Grid'
 import Tab from '@mui/material/Tab'
-
 import TabList from '@mui/lab/TabList'
 import TabPanel from '@mui/lab/TabPanel'
-
 import TabContext from '@mui/lab/TabContext'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContentText from '@mui/material/DialogContentText'
+import { DialogActions, DialogContent } from '@mui/material'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -35,11 +35,19 @@ const ReservationBedviwe = () => {
   const [dormitoryRoom, setDormitoryRoom] = useState([])
   const userStoreInstance = userStore()
   const { user, setUser } = userStoreInstance
-
   const [value, setValue] = useState<string>('1')
+  const [open, setOpen] = useState(false)
 
   const handleChange = (event: SyntheticEvent, newValue: string) => {
     setValue(newValue)
+  }
+
+  const handleOpen = () => {
+    setOpen(true)
+  }
+
+  const handleClose = () => {
+    setOpen(false)
   }
 
   useEffect(() => {
@@ -60,7 +68,6 @@ const ReservationBedviwe = () => {
     setDormitoryRoom(data)
   }
 
-  // ReservationBed Component
   const handleReservation = async (bed_id: string) => {
     console.log('Reservation Bed ID:', bed_id)
     setUser({ ...userStoreInstance.user, bed_id })
@@ -78,18 +85,20 @@ const ReservationBedviwe = () => {
       const { hasReservation } = await checkResponse.json()
 
       if (hasReservation) {
-        router.push('/reservation')
-        alert('You have already made a reservation.')
+        handleOpen()
 
         return
+      }
+
+      const handleClickOpen = () => {
+        setOpen(true)
       }
 
       const checkBedResponse = await fetch(`/api/reservation/checkRepeat?bed_id=${bed_id}`)
       const { isReserved } = await checkBedResponse.json()
 
       if (isReserved) {
-        router.push('/reservation')
-        alert('This bed is already reserved.')
+        handleClickOpen()
 
         return
       }
@@ -160,6 +169,24 @@ const ReservationBedviwe = () => {
           </CardContent>
         </TabContext>
       </Card>
+
+      <Dialog
+              open={open}
+              onClose={handleClose}
+              aria-labelledby='alert-dialog-title'
+              aria-describedby='alert-dialog-description'
+            >
+              <DialogTitle id='alert-dialog-title'>{'Warn'}</DialogTitle>
+              <DialogContent>
+                <DialogContentText id='alert-dialog-description'>
+                This room has already been reserved.
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose}>accept</Button>
+              </DialogActions>
+            </Dialog>
+
     </>
   )
 }

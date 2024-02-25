@@ -11,17 +11,19 @@ import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Twitter from 'mdi-material-ui/Twitter'
-import CartPlus from 'mdi-material-ui/CartPlus'
 import Facebook from 'mdi-material-ui/Facebook'
 import Linkedin from 'mdi-material-ui/Linkedin'
 import GooglePlus from 'mdi-material-ui/GooglePlus'
 import ShareVariant from 'mdi-material-ui/ShareVariant'
 import { CardActions, Dialog, DialogContent, DialogTitle } from '@mui/material'
 import { userStore } from 'src/stores/userStore'
-import VerticalNavSectionTitle from 'src/@core/layouts/components/vertical/navigation/VerticalNavSectionTitle'
 import CloseIcon from '@mui/icons-material/Close'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
+import WcIcon from '@mui/icons-material/Wc'
+import BedroomParentIcon from '@mui/icons-material/BedroomParent'
+import GroupIcon from '@mui/icons-material/Group'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -43,7 +45,6 @@ const ReservationBuilding = () => {
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [roomCounts, setRoomCounts] = useState<{ [key: string]: number }>({})
-
 
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
@@ -112,9 +113,12 @@ const ReservationBuilding = () => {
                     <CloseIcon />
                   </IconButton>
                 </Box>
-                </DialogTitle>
+              </DialogTitle>
               <DialogContent>
-                <Typography> Gender</Typography>
+                <Box sx={{ display: 'flex' }}>
+                  <Typography sx={{ paddingRight: 2 }}> Gender</Typography>
+                  <WcIcon fontSize='small' sx={{ marginRight: 2 }} />
+                </Box>
                 <Grid container spacing={2} pb={5} pt={1}>
                   <FormControlLabel
                     control={<Checkbox checked={genderFilter === ''} onChange={() => setGenderFilter('')} />}
@@ -131,7 +135,11 @@ const ReservationBuilding = () => {
                     label='Female'
                   />
                 </Grid>
-                <Typography>Room type</Typography>
+                <Box sx={{ display: 'flex' }}>
+                  <Typography sx={{ paddingRight: 2 }}>Room type</Typography>
+                  <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
+
+                </Box>
                 <Grid container spacing={2} pb={5} pt={1}>
                   <FormControlLabel
                     control={<Checkbox checked={buildingFilter === ''} onChange={() => setBuildingFilter('')} />}
@@ -156,7 +164,10 @@ const ReservationBuilding = () => {
                     label='Ceiling fan'
                   />
                 </Grid>
-                <Typography>Roommate</Typography>
+                <Box sx={{ display: 'flex' }}>
+                  <Typography sx={{ paddingRight: 2 }}>Roommate</Typography>
+                  <GroupIcon fontSize='small' sx={{ marginRight: 2 }} />
+                </Box>
                 <Grid container spacing={2} pb={5} pt={1}>
                   <FormControlLabel
                     control={<Checkbox checked={roommateFilter === ''} onChange={() => setRoommateFilter('')} />}
@@ -253,7 +264,7 @@ const ReservationBuilding = () => {
                   <CardActions className='card-action-dense'>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                       <Button onClick={() => handleReservation(dorm.dorm_id)}>
-                        <CartPlus fontSize='small' sx={{ marginRight: 2 }} />
+                        <AddCircleIcon fontSize='small' sx={{ marginRight: 2 }} />
                         Reservation Now!
                       </Button>
 

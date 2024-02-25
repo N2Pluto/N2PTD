@@ -9,14 +9,27 @@ import CardContent from '@mui/material/CardContent'
 import router from 'next/router'
 import { useEffect, useState } from 'react'
 import { userStore } from 'src/stores/userStore'
-import { CardHeader } from '@mui/material'
-import { CartPlus } from 'mdi-material-ui'
+
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
 
 const ReservationBotton = () => {
+  const [open, setOpen] = useState(false)
   const { user } = userStore()
   const [reservation, setReservation] = useState(null)
   const [snackbarOpen, setSnackbarOpen] = useState(false)
   const [snackbarMessage, setSnackbarMessage] = useState('')
+
+  const handleClickOpen = () => {
+    setOpen(true)
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+  }
 
   useEffect(() => {
     const fetchReservationData = async () => {
@@ -36,27 +49,24 @@ const ReservationBotton = () => {
     router.push(`/reservation/building`)
   }
   const cancelReservation = async () => {
-    const confirmed = window.confirm('Do you want to cancel your reservation??')
-    if (confirmed) {
-      try {
-        const response = await fetch(`/api/reservation/deleteReservation?user_id=${user?.user_id}`, {
-          method: 'DELETE'
-        })
+    try {
+      const response = await fetch(`/api/reservation/deleteReservation?user_id=${user?.user_id}`, {
+        method: 'DELETE'
+      })
 
-        const { data, error } = await response.json()
+      const { data, error } = await response.json()
 
-        if (error) {
-          console.error('Error deleting reservation:', error)
-        } else {
-          console.log('Reservation deleted successfully:', data)
-          setSnackbarMessage('Booking successfully deleted')
-          setSnackbarOpen(true)
-          setReservation(null)
-          router.reload() // Reload the page
-        }
-      } catch (error) {
+      if (error) {
         console.error('Error deleting reservation:', error)
+      } else {
+        console.log('Reservation deleted successfully:', data)
+        setSnackbarMessage('Booking successfully deleted')
+        setSnackbarOpen(true)
+        setReservation(null)
+        router.reload() // Reload the page
       }
+    } catch (error) {
+      console.error('Error deleting reservation:', error)
     }
   }
 
@@ -91,9 +101,38 @@ const ReservationBotton = () => {
             <Typography variant='caption'>email : {user?.email}</Typography>
           </Box>
           <Box sx={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-          <Button variant='contained' onClick={() => reservation?.Dormitory_Building && reservation?.Dormitory_Room && reservation?.Dormitory_Bed ? cancelReservation() : handleReservation()}>
-              {reservation?.Dormitory_Building && reservation?.Dormitory_Room && reservation?.Dormitory_Bed ? 'Cancel Reservation' : 'Send Request'}
+            <Button
+              variant='contained'
+              onClick={() =>
+                reservation?.Dormitory_Building && reservation?.Dormitory_Room && reservation?.Dormitory_Bed
+                  ? handleClickOpen()
+                  : handleReservation()
+              }
+            >
+              {reservation?.Dormitory_Building && reservation?.Dormitory_Room && reservation?.Dormitory_Bed
+                ? 'Cancel Reservation'
+                : 'Send Request'}
             </Button>
+
+            <Dialog
+              open={open}
+              onClose={handleClose}
+              aria-labelledby='alert-dialog-title'
+              aria-describedby='alert-dialog-description'
+            >
+              <DialogTitle id='alert-dialog-title'>{'Cancel Reservation'}</DialogTitle>
+              <DialogContent>
+                <DialogContentText id='alert-dialog-description'>
+                  Do you want to cancel your reservation?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose}>Disagree</Button>
+                <Button onClick={cancelReservation} autoFocus>
+                  Agree
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Box>
         </Box>
 
