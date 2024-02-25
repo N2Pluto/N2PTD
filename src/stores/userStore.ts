@@ -1,4 +1,3 @@
-// userStore.ts
 import { create } from 'zustand'
 
 export interface IUser {
@@ -9,6 +8,9 @@ export interface IUser {
   lastname: string
   school: string
   course: string
+  dorm_id: string
+  room_id: string
+  bed_id: string
 }
 
 type StoreType = {
@@ -18,8 +20,7 @@ type StoreType = {
 }
 
 const initialState = {
-  user: null as IUser,
-
+  user: null as IUser
 }
 
 export const userStore = create<StoreType>(set => ({
