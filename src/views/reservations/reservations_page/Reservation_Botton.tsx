@@ -91,6 +91,7 @@ const ReservationBotton = () => {
             <Typography variant='caption'>email : {user?.email}</Typography>
           </Box>
           <Box sx={{ flexDirection: 'column', alignItems: 'flex-end' }}>
+<<<<<<< HEAD
             <Button
               variant='contained'
               onClick={() =>
@@ -102,6 +103,10 @@ const ReservationBotton = () => {
               {reservation?.Dormitory_Building && reservation?.Dormitory_Room && reservation?.Dormitory_Bed
                 ? 'Cancel Reservation'
                 : 'Reservation'}
+=======
+          <Button variant='contained' onClick={() => reservation?.Dormitory_Building && reservation?.Dormitory_Room && reservation?.Dormitory_Bed ? cancelReservation() : handleReservation()}>
+              {reservation?.Dormitory_Building && reservation?.Dormitory_Room && reservation?.Dormitory_Bed ? 'Cancel Reservation' : 'Send Request'}
+>>>>>>> 6ef5084 (feat : main)
             </Button>
           </Box>
         </Box>
