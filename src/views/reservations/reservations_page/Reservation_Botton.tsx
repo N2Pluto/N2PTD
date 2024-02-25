@@ -140,7 +140,7 @@ const ReservationBotton = () => {
           sx={{ gap: 2, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}
         ></Box>
       </CardContent>
-      <>  </>
+      <> </>
     </Card>
   )
 }
