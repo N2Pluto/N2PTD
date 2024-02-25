@@ -13,6 +13,9 @@ import TableBody from '@mui/material/TableBody'
 import TablePagination from '@mui/material/TablePagination'
 import { auto } from '@popperjs/core'
 import { userStore, IUser } from 'src/stores/userStore'
+import { Refresh } from 'mdi-material-ui'
+import CheckIcon from '@mui/icons-material/Check'
+import CloseIcon from '@mui/icons-material/Close'
 
 interface Column {
   id: 'room' | 'code' | 'details' | 'bedstatus'
@@ -47,6 +50,18 @@ const ReservationRoomTest = () => {
   const [dormitoryRoomStatus, setDormitoryRoomStatus] = useState([])
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
+
+  // const [count, setCount] = useState(0)
+  // const [hasReloaded, setHasReloaded] = useState(false)
+
+  // useEffect(() => {
+  //   if (count === 0 && !hasReloaded) {
+  //     setCount(1)
+  //     setHasReloaded(true) // Update hasReloaded to prevent further reloads
+  //     router.reload()
+  //   }
+  //   console.log('count:', count) // This will log 'count: 1'
+  // }, [])
 
   useEffect(() => {
     const fetchDataRoomStatus = async () => {
@@ -112,7 +127,7 @@ const ReservationRoomTest = () => {
                     {' '}
                     {room.bed_available} / {room.bed_capacity}{' '}
                   </TableCell>
-                  <TableCell align='right'>{room.status ? 'Available' : 'Occupied'}</TableCell>
+                  <TableCell align='right'>{room.status ? 'เปิด' : 'ปิด'}</TableCell>
                   <TableCell align='right'>
                     <Box>
                       <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
