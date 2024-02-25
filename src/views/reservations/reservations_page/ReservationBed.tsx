@@ -161,28 +161,6 @@ const ReservationBedviwe = () => {
         </TabContext>
       </Card>
     </>
-
-    // <span>
-    //   <h1>Select Bed</h1>
-
-    //   <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-    //     {dormitoryRoom.map((room, index) => (
-    //       <Card key={index} style={{ width: '16.66%', margin: '10px' }}>
-    //         <CardContent>
-    //           <Typography>
-    //             <Typography>Bed Number:{room.bed_number}</Typography>
-    //             <Typography>Bed Status: {room.bed_status}</Typography>
-    //           </Typography>
-    //           <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', pt: 5 }}>
-    //             <Button onClick={() => handleReservation(room.bed_id)} variant='contained'>
-    //               Select!
-    //             </Button>
-    //           </Box>
-    //         </CardContent>
-    //       </Card>
-    //     ))}
-    //   </div>
-    // </span>
   )
 }
 

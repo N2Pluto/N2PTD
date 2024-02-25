@@ -16,14 +16,6 @@ import MuiAlert from '@mui/material/Alert' // เพิ่ม Alert
 import { ThemeColor } from 'src/@core/layouts/types'
 import { userStore } from 'src/stores/userStore'
 
-
-interface DataType {
-  stats: string
-  title: string
-  color: ThemeColor
-  icon: ReactElement
-}
-
 interface DataType {
   stats: string
   title: string
@@ -34,7 +26,6 @@ interface DataType {
 const ReservationsStatistics = () => {
   const { user } = userStore()
   const [reservation, setReservation] = useState(null)
-  const [showAlert, setShowAlert] = useState(false)
   const [snackbarOpen, setSnackbarOpen] = useState(false)
   const [snackbarMessage, setSnackbarMessage] = useState('')
 
@@ -52,48 +43,13 @@ const ReservationsStatistics = () => {
     fetchReservationData()
   }, [user])
 
-  const cancelReservation = async () => {
-    const confirmed = window.confirm('Do you want to cancel your reservation??')
-    if (confirmed) {
-      try {
-        const response = await fetch(`/api/reservation/deleteReservation?user_id=${user?.user_id}`, {
-          method: 'DELETE'
-        })
-
-        const { data, error } = await response.json()
-
-        if (error) {
-          console.error('Error deleting reservation:', error)
-        } else {
-          console.log('Reservation deleted successfully:', data)
-          setSnackbarMessage('Booking successfully deleted') // ตั้งค่าข้อความใน Snackbar
-          setSnackbarOpen(true) // เปิด Snackbar
-          setReservation(null) // Reset reservation data
-        }
-      } catch (error) {
-        console.error('Error deleting reservation:', error)
-      }
-    }
-  }
+  console.log('reservation:', reservation)
 
   const salesData: DataType[] = [
     {
-      stats: user?.student_id ,
+      stats: user?.student_id?.toString() ,
       title: 'Student ID',
       color: 'primary',
-      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
-    },
-    {
-      stats: reservation?.user_id,
-      title: 'Reservation ID',
-      color: 'primary',
-      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
-    },
-
-    {
-      stats: reservation?.dorm_id,
-      title: 'Dorm ID',
-      color: 'secondary',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     },
     {
@@ -103,27 +59,15 @@ const ReservationsStatistics = () => {
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.room_id,
-      title: 'Room ID',
-      color: 'warning',
-      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
-    },
-    {
       stats: reservation?.Dormitory_Room?.room_number,
       title: 'Room Number',
       color: 'info',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.bed_id,
-      title: 'Bed ID',
-      color: 'success',
-      icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
-    },
-    {
       stats: reservation?.Dormitory_Bed?.bed_number,
       title: 'Bed Number',
-      color: 'grey',
+      color: 'primary',
       icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
     }
   ]
@@ -132,7 +76,6 @@ const ReservationsStatistics = () => {
   const renderStats = () => {
     return salesData.map((item: DataType, index: number) => (
       <Grid item xs={12} sm={0} key={index}>
-
         <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar
             variant='rounded'
@@ -158,35 +101,14 @@ const ReservationsStatistics = () => {
 
   return (
     <Card>
-      <CardHeader
-        title={`Reservation Information for User ${user?.email}`}
-        action={
-          <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
-            <DotsVertical />
-          </IconButton>
-        }
-        subheader={
-          <Typography variant='body2'>
-            <Box component='span' sx={{ fontWeight: 600, color: 'text.primary' }}>
-              <Button onClick={cancelReservation}>
-                <CartPlus fontSize='small' sx={{ marginRight: 2 }} />
-                Cancel reservation
-              </Button>
-            </Box>{' '}
-          </Typography>
-        }
-        titleTypographyProps={{
-          sx: {
-            mb: 2.5,
-            lineHeight: '2rem !important',
-            letterSpacing: '0.15px !important'
-          }
-        }}
-      />
       <CardContent>
-        <Grid container spacing={2}>
-          {renderStats()}
-        </Grid>
+        {reservation?.Dormitory_Building && reservation?.Dormitory_Room && reservation?.Dormitory_Bed ? (
+          <Grid container spacing={2}>
+            {renderStats()}
+          </Grid>
+        ) : (
+          <Typography variant='h6'>No reservation has been made.</Typography>
+        )}
       </CardContent>
       <Snackbar
         open={snackbarOpen}
@@ -198,7 +120,6 @@ const ReservationsStatistics = () => {
           {snackbarMessage}
         </MuiAlert>
       </Snackbar>
-
     </Card>
   )
 }
