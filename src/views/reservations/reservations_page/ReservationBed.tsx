@@ -16,6 +16,8 @@ import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContentText from '@mui/material/DialogContentText'
 import { DialogActions, DialogContent } from '@mui/material'
+import CheckIcon from '@mui/icons-material/Check'
+import CloseIcon from '@mui/icons-material/Close'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -33,6 +35,7 @@ const ReservationBedviwe = () => {
   const router = useRouter()
   const [dormitoryBed, setDormitoryBed] = useState(null)
   const [dormitoryRoom, setDormitoryRoom] = useState([])
+  const [dormitoryBedStatus, setDormitoryBedStatus] = useState([])
   const userStoreInstance = userStore()
   const { user, setUser } = userStoreInstance
   const [value, setValue] = useState<string>('1')
@@ -52,7 +55,7 @@ const ReservationBedviwe = () => {
 
   useEffect(() => {
     if (router.query.id) {
-      Promise.all([fetchData(), fetchDataBedByRoomID()])
+      Promise.all([fetchData()])
     }
   }, [router.query.id])
 
@@ -62,11 +65,20 @@ const ReservationBedviwe = () => {
     setDormitoryBed(data)
   }
 
-  const fetchDataBedByRoomID = async () => {
-    console.log('router.query.id:', router.query.id)
-    const { data } = await fetch(`/api/bed/room/${router.query.id}`).then(res => res.json())
-    setDormitoryRoom(data)
-  }
+  useEffect(() => {
+    const fetchDataBedByRoomID = async () => {
+      console.log('router.query.id:', router.query.id)
+      const { data } = await fetch(`/api/bed/room/${router.query.id}`).then(res => res.json())
+      setDormitoryRoom(data)
+    }
+    const fetchDataAndUpdateStatus = async () => {
+      await fetchDataBedByRoomID() // Fetch the updated data
+    }
+    fetchDataAndUpdateStatus()
+    const intervalId = setInterval(fetchDataAndUpdateStatus, 1000)
+
+    return () => clearInterval(intervalId)
+  }, []) // Remove dormitoryRoomStatus from dependencies
 
   const handleReservation = async (bed_id: string) => {
     console.log('Reservation Bed ID:', bed_id)
@@ -122,6 +134,7 @@ const ReservationBedviwe = () => {
         console.error('Error inserting data into Reservation table:', error.message)
       } else {
         console.log('Data inserted successfully:', data)
+        
         router.push(`/reservation/result/${user.user_id}`)
       }
     } catch (error) {
@@ -157,12 +170,19 @@ const ReservationBedviwe = () => {
                   Bed Number: {room.bed_number}
                 </Typography>
                 <Typography variant='body2' sx={{ marginBottom: 4 }}>
-                  Bed Status: {room.bed_status}
+                  Bed Status: {room.bed_status ? <CheckIcon /> : <CloseIcon />}
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', pt: 5 }}>
-                  <Button onClick={() => handleReservation(room.bed_id)} variant='contained'>
-                    Select!
-                  </Button>
+                  {/* เปลี่ยนตรงนี้ */}
+                  {room.bed_status ? (
+                    <Button onClick={() => handleReservation(room.bed_id)} variant='contained'>
+                      Select!
+                    </Button>
+                  ) : (
+                    <Button onClick={handleOpen} variant='contained'>
+                      Close
+                    </Button> // Add onClick handler here
+                  )}
                 </Box>
               </TabPanel>
             ))}
@@ -171,22 +191,19 @@ const ReservationBedviwe = () => {
       </Card>
 
       <Dialog
-              open={open}
-              onClose={handleClose}
-              aria-labelledby='alert-dialog-title'
-              aria-describedby='alert-dialog-description'
-            >
-              <DialogTitle id='alert-dialog-title'>{'Warn'}</DialogTitle>
-              <DialogContent>
-                <DialogContentText id='alert-dialog-description'>
-                This room has already been reserved.
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleClose}>accept</Button>
-              </DialogActions>
-            </Dialog>
-
+        open={open}
+        onClose={handleClose}
+        aria-labelledby='alert-dialog-title'
+        aria-describedby='alert-dialog-description'
+      >
+        <DialogTitle id='alert-dialog-title'>{'Warn'}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id='alert-dialog-description'>THIS BED IS ALREADY RESERVE!</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>accept</Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }

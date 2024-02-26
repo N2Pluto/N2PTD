@@ -75,18 +75,13 @@ const ReservationRoomTest = () => {
         console.error('Error fetching room status:', error)
       }
     }
-
-    // Function to fetch data and update state
     const fetchDataAndUpdateStatus = async () => {
       await fetchDataRoomStatus() // Fetch the updated data
     }
 
     fetchDataAndUpdateStatus()
-
-    // Then set up the interval to fetch data every 5 seconds
     const intervalId = setInterval(fetchDataAndUpdateStatus, 1000)
 
-    // Clear interval on component unmount
     return () => clearInterval(intervalId)
   }, []) // Remove dormitoryRoomStatus from dependencies
 
@@ -117,7 +112,6 @@ const ReservationRoomTest = () => {
     fetchDataAndUpdateStatusRoom()
     const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 1000)
 
-    // Clear interval on component unmount
     return () => clearInterval(intervalId)
   }, [])
 
@@ -151,12 +145,18 @@ const ReservationRoomTest = () => {
                     {' '}
                     {room.bed_available} / {room.bed_capacity}{' '}
                   </TableCell>
-                  <TableCell align='right'>{room.status ? 'เปิด' : 'ปิด'}</TableCell>
+                  <TableCell align='right'>{room.status ? <CheckIcon/> : <CloseIcon/>}</TableCell>
                   <TableCell align='right'>
                     <Box>
-                      <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
-                        Select
-                      </Button>
+                      {room.status ? (
+                        <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
+                          Select
+                        </Button>
+                      ) : (
+                        <Button variant='contained' color='error' disabled>
+                          Close
+                        </Button>
+                      )}
                     </Box>
                   </TableCell>
                 </TableRow>

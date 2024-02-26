@@ -15,6 +15,7 @@ const handler = async (req: any, res: any) => {
 
       let foundReservation = false
       let room_id = null
+      let bed_id = null // Add this line
 
       reservationData.forEach((reservation: any) => {
         console.log('Checking reservation:', reservation)
@@ -22,6 +23,7 @@ const handler = async (req: any, res: any) => {
         if (reservation.user_id === user_id) {
           foundReservation = true
           room_id = reservation.room_id
+          bed_id = reservation.bed_id // Add this line
           console.log('Match found for user_id:', user_id)
           return
         }
@@ -35,6 +37,16 @@ const handler = async (req: any, res: any) => {
         if (error) {
           console.error('Error deleting reservation:', error.message)
           res.status(500).json({ error: 'Failed to delete reservation' })
+        }
+
+        // Update the bed_status in the Dormitory_Bed table
+        const { error: updateBedError } = await supabase
+          .from('Dormitory_Bed')
+          .update({ bed_status: true })
+          .eq('bed_id', bed_id)
+
+        if (updateBedError) {
+          throw updateBedError
         }
 
         // Fetch the current bed_available for the room
