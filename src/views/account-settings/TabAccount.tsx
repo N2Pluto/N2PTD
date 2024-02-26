@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, ElementType, ChangeEvent, SyntheticEvent } from 'react'
+import { useState, ElementType, SyntheticEvent } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -17,98 +17,128 @@ import IconButton from '@mui/material/IconButton'
 import CardContent from '@mui/material/CardContent'
 import FormControl from '@mui/material/FormControl'
 import Button, { ButtonProps } from '@mui/material/Button'
+import { ConsoleNetwork } from 'mdi-material-ui'
+import { userStore } from 'src/stores/userStore'
+import { user, setUser } from 'src/stores/userStore'
 
+// const ImgStyled = styled('img')(({ theme }) => ({
+//   width: 120,
+//   height: 120,
+//   marginRight: theme.spacing(6.25),
+//   borderRadius: theme.shape.borderRadius
+// }))
 
+// const ButtonStyled = styled(Button)<ButtonProps & { component?: ElementType; htmlFor?: string }>(({ theme }) => ({
+//   [theme.breakpoints.down('sm')]: {
+//     width: '100%',
+//     textAlign: 'center'
+//   }
+// }))
 
-const ImgStyled = styled('img')(({ theme }) => ({
-  width: 120,
-  height: 120,
-  marginRight: theme.spacing(6.25),
-  borderRadius: theme.shape.borderRadius
-}))
-
-const ButtonStyled = styled(Button)<ButtonProps & { component?: ElementType; htmlFor?: string }>(({ theme }) => ({
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-    textAlign: 'center'
-  }
-}))
-
-const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
-  marginLeft: theme.spacing(4.5),
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-    marginLeft: 0,
-    textAlign: 'center',
-    marginTop: theme.spacing(4)
-  }
-}))
+// const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
+//   marginLeft: theme.spacing(4.5),
+//   [theme.breakpoints.down('sm')]: {
+//     width: '100%',
+//     marginLeft: 0,
+//     textAlign: 'center',
+//     marginTop: theme.spacing(4)
+//   }
+// }))
 
 const TabAccount = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    lastname: '',
+    student_year: '',
+    school: '',
+    course: '',
+    religion: '',
+    region: ''
+  })
 
-  const [course, setCourse] = useState('')
-  const [school, setSchool] = useState('')
-  const [name, setName] = useState('')
-  const [lastname, setLastname] = useState('')
-  const [religion, setReligion] = useState('')
-  const [region, setRegion] = useState('')
+  const userStoreInstance = userStore()
+  const { user } = userStoreInstance
 
-  const handleupdate = async (event: SyntheticEvent) => {
+  const handleUserInfo = async e => {
+    e.preventDefault()
+
     try {
-      event.preventDefault()
-      const response = await fetch('/api/account-setting', {
+      const response = await fetch('/api/account-setting/updateUser', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          course,
-          lastname,
-          name,
-          region,
-          religion,
-          school,
+          user_id: user.user_id,
+          name: formData.name,
+          lastname: formData.lastname,
+          student_year: formData.student_year,
+          school: formData.school,
+          course: formData.course,
+          religion: formData.religion,
+          region: formData.region
         })
       })
 
-      const data = await response.json()
-      console.log(data)
-    }catch(error){
-      console.error('Error updating data:', error)
+      const { data, error } = await response.json()
+
+      if (error) {
+        console.error('Error Update data into USers table:', error.message)
+      } else {
+        console.log('Data Update Success:', data)
+        alert('Data Update Success')
+      }
+    } catch (error) {
+      console.error('Error Update data into USers table:', error.message)
     }
   }
 
+  const handleChange = e => {
+
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
 
   return (
     <CardContent>
-      <form onSubmit={handleupdate}>
-        <Grid container spacing={7}>
-
+      <Typography variant='h6' gutterBottom>
+        {/* Account Information User {userStoreInstance.user.student_id} */}
+      </Typography>
+      <form onSubmit={handleUserInfo}>
+        <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='name' placeholder='' defaultValue='' onChange={e => setName(e.target.value)} />
+            <TextField fullWidth label='Name' name='name' value={formData.name} onChange={handleChange} />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='lastname' placeholder='' defaultValue='' onChange={e => setLastname(e.target.value)} />
+            <TextField fullWidth label='Lastname' name='lastname' value={formData.lastname} onChange={handleChange} />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='school' placeholder='' defaultValue='' onChange={e => setSchool(e.target.value)} />
+            <TextField
+              fullWidth
+              label='Student_Year'
+              name='student_year'
+              value={formData.student_year}
+              onChange={handleChange}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='course' placeholder='' defaultValue='' onChange={e => setCourse(e.target.value)} />
+            <TextField fullWidth label='School' name='school' value={formData.school} onChange={handleChange} />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='religion' placeholder='' defaultValue='' onChange={e => setReligion(e.target.value)} />
+            <TextField fullWidth label='Course' name='course' value={formData.course} onChange={handleChange} />
           </Grid>
-
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='region' placeholder='' defaultValue='' onChange={e => setRegion(e.target.value)} />
+            <TextField fullWidth label='Religion' name='religion' value={formData.religion} onChange={handleChange} />
           </Grid>
-
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label='Region' name='region' value={formData.region} onChange={handleChange} />
+          </Grid>
           <Grid item xs={12}>
-            <Button type='submit' variant='contained' sx={{ marginRight: 3.5 }}>
-              Save Changes
+            <Button type='submit' variant='contained' color='primary'>
+              SAVE!
             </Button>
-
           </Grid>
         </Grid>
       </form>
@@ -117,3 +147,4 @@ const TabAccount = () => {
 }
 
 export default TabAccount
+
