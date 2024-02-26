@@ -25,10 +25,14 @@ const handler = async (req: any, res: any) => {
         name: user?.data?.name,
         lastname: user?.data?.lastname,
         school: user?.data?.school,
-        course: user?.data?.course
+        course: user?.data?.course,
+        religion: user?.data?.religion,
+        region: user?.data?.region,
+        student_year: user?.data?.student_year,
+        user_status: user?.data?.user_status
       },
       process.env.JWT_SECRET,
-      { expiresIn: '10h' }
+      { expiresIn: '30m' }
     )
 
     const userData = {
@@ -38,9 +42,12 @@ const handler = async (req: any, res: any) => {
       name: user?.data?.name,
       lastname: user?.data?.lastname,
       school: user?.data?.school,
-      course: user?.data?.course
+      course: user?.data?.course,
+      religion: user?.data?.religion,
+      region: user?.data?.region,
+      student_year: user?.data?.student_year,
+      user_status: user?.data?.user_status
     }
-    console.log('user?.data', user?.data)
 
     res.status(200).json({ accessToken, user: userData })
   } catch (error) {

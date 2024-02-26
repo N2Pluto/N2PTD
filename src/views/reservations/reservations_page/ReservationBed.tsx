@@ -2,7 +2,7 @@ import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Card from '@mui/material/Card'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { SyntheticEvent, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
@@ -16,6 +16,8 @@ import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContentText from '@mui/material/DialogContentText'
 import { DialogActions, DialogContent } from '@mui/material'
+import CheckIcon from '@mui/icons-material/Check'
+import CloseIcon from '@mui/icons-material/Close'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -33,6 +35,7 @@ const ReservationBedviwe = () => {
   const router = useRouter()
   const [dormitoryBed, setDormitoryBed] = useState(null)
   const [dormitoryRoom, setDormitoryRoom] = useState([])
+  const [dormitoryBedStatus, setDormitoryBedStatus] = useState([])
   const userStoreInstance = userStore()
   const { user, setUser } = userStoreInstance
   const [value, setValue] = useState<string>('1')
@@ -50,23 +53,33 @@ const ReservationBedviwe = () => {
     setOpen(false)
   }
 
-  useEffect(() => {
-    if (router.query.id) {
-      Promise.all([fetchData(), fetchDataBedByRoomID()])
-    }
-  }, [router.query.id])
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchData = async () => {
     console.log('router.query.id:', router.query.id)
     const { data } = await fetch(`/api/bed/${router.query.id}`).then(res => res.json())
     setDormitoryBed(data)
   }
 
-  const fetchDataBedByRoomID = async () => {
-    console.log('router.query.id:', router.query.id)
-    const { data } = await fetch(`/api/bed/room/${router.query.id}`).then(res => res.json())
-    setDormitoryRoom(data)
-  }
+  useEffect(() => {
+    if (router.query.id) {
+      Promise.all([fetchData()])
+    }
+  }, [fetchData, router.query.id])
+
+  useEffect(() => {
+    const fetchDataBedByRoomID = async () => {
+      console.log('router.query.id:', router.query.id)
+      const { data } = await fetch(`/api/bed/room/${router.query.id}`).then(res => res.json())
+      setDormitoryRoom(data)
+    }
+    const fetchDataAndUpdateStatus = async () => {
+      await fetchDataBedByRoomID() // Fetch the updated data
+    }
+    fetchDataAndUpdateStatus()
+    const intervalId = setInterval(fetchDataAndUpdateStatus, 1000)
+
+    return () => clearInterval(intervalId)
+  }, [router.query.id])
 
   const handleReservation = async (bed_id: string) => {
     console.log('Reservation Bed ID:', bed_id)
@@ -80,6 +93,7 @@ const ReservationBedviwe = () => {
 
         return
       }
+      console.log('user:', user)
 
       const checkResponse = await fetch(`/api/reservation/checkReservation?user_id=${user.user_id}`)
       const { hasReservation } = await checkResponse.json()
@@ -122,13 +136,13 @@ const ReservationBedviwe = () => {
         console.error('Error inserting data into Reservation table:', error.message)
       } else {
         console.log('Data inserted successfully:', data)
+
         router.push(`/reservation/result/${user.user_id}`)
       }
     } catch (error) {
       console.error('Error inserting data into Reservation table:', error.message)
     }
   }
-
   console.log('dormitoryRoom:', dormitoryRoom)
 
   return (
@@ -152,18 +166,28 @@ const ReservationBedviwe = () => {
           </TabList>
           <CardContent>
             {dormitoryRoom.map((room, index) => (
-              <TabPanel key={index} value={room.bed_id.toString()} sx={{ p: 0 }}>
+              <TabPanel key={index} value={room.bed_id.toString()} sx={{ p: 0 }} >
+                <Box>
                 <Typography variant='h6' sx={{ marginBottom: 2 }}>
                   Bed Number: {room.bed_number}
                 </Typography>
                 <Typography variant='body2' sx={{ marginBottom: 4 }}>
-                  Bed Status: {room.bed_status}
+                  Bed Status: {room.bed_status ? <CheckIcon /> : <CloseIcon />}
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', pt: 5 }}>
-                  <Button onClick={() => handleReservation(room.bed_id)} variant='contained'>
-                    Select!
-                  </Button>
+                  {room.bed_status ? (
+                    <Button onClick={() => handleReservation(room.bed_id)} variant='contained'>
+                      Select!
+                    </Button>
+                  ) : (
+                    <Button onClick={handleOpen} variant='contained' disabled>
+                      Select!
+                    </Button> // Add onClick handler here
+                  )}
                 </Box>
+
+                </Box>
+
               </TabPanel>
             ))}
           </CardContent>
@@ -171,22 +195,19 @@ const ReservationBedviwe = () => {
       </Card>
 
       <Dialog
-              open={open}
-              onClose={handleClose}
-              aria-labelledby='alert-dialog-title'
-              aria-describedby='alert-dialog-description'
-            >
-              <DialogTitle id='alert-dialog-title'>{'Warn'}</DialogTitle>
-              <DialogContent>
-                <DialogContentText id='alert-dialog-description'>
-                This room has already been reserved.
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleClose}>accept</Button>
-              </DialogActions>
-            </Dialog>
-
+        open={open}
+        onClose={handleClose}
+        aria-labelledby='alert-dialog-title'
+        aria-describedby='alert-dialog-description'
+      >
+        <DialogTitle id='alert-dialog-title'>{'Warn'}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id='alert-dialog-description'>THIS BED IS ALREADY RESERVE!</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>accept</Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }

@@ -1,5 +1,22 @@
+//api/reservation/index.ts
 import middleware from '../middleware'
 import supabase from 'src/libs/supabase'
+
+async function updateBedStatus(bed_id: string) {
+  try {
+    // อัปเดต bed_status เป็น false สำหรับเตียงที่ถูกจอง
+    const { error: updateError } = await supabase
+      .from('Dormitory_Bed')
+      .update({ bed_status: false })
+      .eq('bed_id', bed_id)
+
+    if (updateError) {
+      throw new Error('Error updating bed_status in Dormitory_Bed table')
+    }
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
 
 async function updateBedAvailable(room_id) {
   try {
@@ -48,8 +65,9 @@ function handler(req: any, res: any) {
         throw new Error('Error inserting data into Reservation table')
       }
 
-      // เมื่อ Insert สำเร็จให้ทำการอัปเดตค่า bed_available
+     
       await updateBedAvailable(room_id)
+      await updateBedStatus(bed_id)
 
       res.status(200).json({ message: 'Insert successful' })
     } catch (error) {
