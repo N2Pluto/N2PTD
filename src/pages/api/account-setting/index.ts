@@ -9,7 +9,7 @@ const handler = async (req: any, res: any) => {
     .from('Users')
     .update({ course, lastname, name, password, region, religion, school, student_id, student_year, user_status })
     .eq('user_id', user_id)
-    .select('*')
+    .single()
 
   if (error) {
     console.error('Error updating data:', error)
