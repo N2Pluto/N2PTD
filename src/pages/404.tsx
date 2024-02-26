@@ -9,12 +9,14 @@ import Button from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Box, { BoxProps } from '@mui/material/Box'
+import { userStore } from 'src/stores/userStore'
 
 // ** Layout Import
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrations from 'src/views/pages/misc/FooterIllustrations'
+import router from 'next/router'
 
 // ** Styled Components
 const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
@@ -22,6 +24,9 @@ const BoxWrapper = styled(Box)<BoxProps>(({ theme }) => ({
     width: '90vw'
   }
 }))
+
+
+
 
 const Img = styled('img')(({ theme }) => ({
   marginBottom: theme.spacing(10),
@@ -46,7 +51,18 @@ const TreeIllustration = styled('img')(({ theme }) => ({
   }
 }))
 
+
+
 const Error404 = () => {
+  const { user, clearStore } = userStore()
+
+  const handleLogout = () => {
+    localStorage.clear()
+    clearStore()
+    router.push('/')
+  }
+
+
   return (
     <Box className='content-center'>
       <Box sx={{ p: 5, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
@@ -58,11 +74,9 @@ const Error404 = () => {
           <Typography variant='body2'>We couldn&prime;t find the page you are looking for.</Typography>
         </BoxWrapper>
         <Img height='487' alt='error-illustration' src='/images/pages/404.png' />
-        <Link passHref href='/'>
-          <Button component='a' variant='contained' sx={{ px: 5.5 }}>
+          <Button component='a' variant='contained' sx={{ px: 5.5 }} onClick={handleLogout}>
             Back to Home
           </Button>
-        </Link>
       </Box>
       <FooterIllustrations image={<TreeIllustration alt='tree' src='/images/pages/tree.png' />} />
     </Box>
