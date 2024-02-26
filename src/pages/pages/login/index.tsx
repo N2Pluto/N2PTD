@@ -105,7 +105,14 @@ const LoginPage = () => {
         localStorage.setItem('accessToken', data.accessToken)
 
         // Redirect to /Dormitory page
-        router.push('/dashboard')
+
+        console.log('asdasdasda:', data)
+        if (data?.user.name === null) {
+          router.push('/profile/account-settings')
+        } else {
+          console.log('data:', data)
+          router.push('/dashboard')
+        }
       } else {
         const errorData = await response.json()
         console.log('Login failed:', errorData.message)
@@ -118,9 +125,15 @@ const LoginPage = () => {
   useEffect(() => {
     const fetchUserbyUserID = async () => {
       try {
-        const { data } = await fetch('/api/users/').then(res => res.json())
-        console.log('data:', data)
-        setUser(data)
+        const response = await fetch('/api/users/').then(res => res.json())
+        console.log('data:', response)
+        setUser(response.data)
+
+        if (response.data.accessToken === null) {
+          router.push('/profile')
+        } else {
+          router.push('/dashboard')
+        }
       } catch (error) {
         console.error('Error fetching users data:', error)
       }

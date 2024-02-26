@@ -16,6 +16,9 @@ import { userStore, IUser } from 'src/stores/userStore'
 import { Refresh } from 'mdi-material-ui'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
+import PersonIcon from '@mui/icons-material/Person';
+
+
 
 interface Column {
   id: 'room' | 'code' | 'details' | 'bedstatus'
@@ -26,13 +29,13 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-  { id: 'room', label: 'room', minWidth: 170 },
-  { id: 'code', label: 'bed capacity', minWidth: 100 },
+  { id: 'room', label: 'room', minWidth: 30, align: 'center'},
+  { id: 'code', label: 'bed capacity', minWidth: 150, align: 'center'},
   {
     id: 'bedstatus',
     label: 'bed status',
     minWidth: 170,
-    align: 'right'
+    align: 'center'
   },
   {
     id: 'details',
@@ -50,18 +53,6 @@ const ReservationRoomTest = () => {
   const [dormitoryRoomStatus, setDormitoryRoomStatus] = useState([])
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
-
-  // const [count, setCount] = useState(0)
-  // const [hasReloaded, setHasReloaded] = useState(false)
-
-  // useEffect(() => {
-  //   if (count === 0 && !hasReloaded) {
-  //     setCount(1)
-  //     setHasReloaded(true) // Update hasReloaded to prevent further reloads
-  //     router.reload()
-  //   }
-  //   console.log('count:', count) // This will log 'count: 1'
-  // }, [])
 
   useEffect(() => {
     const fetchDataRoomStatus = async () => {
@@ -140,12 +131,18 @@ const ReservationRoomTest = () => {
             <TableBody>
               {dormitoryRoom.map(room => (
                 <TableRow hover role='checkbox' tabIndex={-1} key={room.room_id}>
-                  <TableCell>{room.room_number}</TableCell>
-                  <TableCell>
-                    {' '}
-                    {room.bed_available} / {room.bed_capacity}{' '}
+                  <TableCell align='center'>{room.room_number}</TableCell>
+                  <TableCell align='center'>
+
+                  {Array.from({ length: room.bed_available }, (_, index) => (
+                    <PersonIcon color='primary' key={index} />
+                  ))}
+
+                  {Array.from({ length: room.bed_capacity - room.bed_available }, (_, index) => (
+                    <PersonIcon key={index} />
+                  ))}
                   </TableCell>
-                  <TableCell align='right'>{room.status ? <CheckIcon/> : <CloseIcon/>}</TableCell>
+                  <TableCell align='center' >{room.status ? <CheckIcon/> : <CloseIcon color='primary' />}</TableCell>
                   <TableCell align='right'>
                     <Box>
                       {room.status ? (
@@ -154,7 +151,7 @@ const ReservationRoomTest = () => {
                         </Button>
                       ) : (
                         <Button variant='contained' color='error' disabled>
-                          Close
+                          Select
                         </Button>
                       )}
                     </Box>

@@ -68,7 +68,9 @@ const RegisterPage = () => {
   // ** States
   const [values, setValues] = useState<State>({
     password: '',
-    showPassword: false
+    showPassword: false,
+    student_id: '', // Add the 'student_id' property
+    email: '' // Add the 'email' property
   })
 
   interface State {
@@ -95,24 +97,28 @@ const RegisterPage = () => {
       if (!values.student_id || !values.email || !values.password) {
         console.error('Please fill in all fields')
         alert('Please fill in all fields')
+
         return
       }
 
       if (!/^\d+$/.test(values.student_id)) {
         console.error('Student ID must be a number')
         alert('Student ID must be a number')
+
         return
       }
 
       if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(values.email)) {
         console.error('Invalid email format')
         alert('Invalid email format')
+
         return
       }
 
       if (values.password.length < 8) {
         console.error('Password must be at least 8 characters long')
         alert('Password must be at least 8 characters long')
+        
         return
       }
 

@@ -2,7 +2,7 @@ import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Card from '@mui/material/Card'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { SyntheticEvent, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
@@ -53,17 +53,18 @@ const ReservationBedviwe = () => {
     setOpen(false)
   }
 
-  useEffect(() => {
-    if (router.query.id) {
-      Promise.all([fetchData()])
-    }
-  }, [router.query.id])
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchData = async () => {
     console.log('router.query.id:', router.query.id)
     const { data } = await fetch(`/api/bed/${router.query.id}`).then(res => res.json())
     setDormitoryBed(data)
   }
+
+  useEffect(() => {
+    if (router.query.id) {
+      Promise.all([fetchData()])
+    }
+  }, [fetchData, router.query.id])
 
   useEffect(() => {
     const fetchDataBedByRoomID = async () => {
@@ -78,7 +79,7 @@ const ReservationBedviwe = () => {
     const intervalId = setInterval(fetchDataAndUpdateStatus, 1000)
 
     return () => clearInterval(intervalId)
-  }, []) // Remove dormitoryRoomStatus from dependencies
+  }, [router.query.id])
 
   const handleReservation = async (bed_id: string) => {
     console.log('Reservation Bed ID:', bed_id)
@@ -92,6 +93,7 @@ const ReservationBedviwe = () => {
 
         return
       }
+      console.log('user:', user)
 
       const checkResponse = await fetch(`/api/reservation/checkReservation?user_id=${user.user_id}`)
       const { hasReservation } = await checkResponse.json()
@@ -134,14 +136,13 @@ const ReservationBedviwe = () => {
         console.error('Error inserting data into Reservation table:', error.message)
       } else {
         console.log('Data inserted successfully:', data)
-        
+
         router.push(`/reservation/result/${user.user_id}`)
       }
     } catch (error) {
       console.error('Error inserting data into Reservation table:', error.message)
     }
   }
-
   console.log('dormitoryRoom:', dormitoryRoom)
 
   return (
@@ -165,7 +166,8 @@ const ReservationBedviwe = () => {
           </TabList>
           <CardContent>
             {dormitoryRoom.map((room, index) => (
-              <TabPanel key={index} value={room.bed_id.toString()} sx={{ p: 0 }}>
+              <TabPanel key={index} value={room.bed_id.toString()} sx={{ p: 0 }} >
+                <Box>
                 <Typography variant='h6' sx={{ marginBottom: 2 }}>
                   Bed Number: {room.bed_number}
                 </Typography>
@@ -173,17 +175,19 @@ const ReservationBedviwe = () => {
                   Bed Status: {room.bed_status ? <CheckIcon /> : <CloseIcon />}
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', pt: 5 }}>
-                  {/* เปลี่ยนตรงนี้ */}
                   {room.bed_status ? (
                     <Button onClick={() => handleReservation(room.bed_id)} variant='contained'>
                       Select!
                     </Button>
                   ) : (
-                    <Button onClick={handleOpen} variant='contained'>
-                      Close
+                    <Button onClick={handleOpen} variant='contained' disabled>
+                      Select!
                     </Button> // Add onClick handler here
                   )}
                 </Box>
+
+                </Box>
+
               </TabPanel>
             ))}
           </CardContent>
