@@ -12,6 +12,7 @@ import Button, { ButtonProps } from '@mui/material/Button'
 import { userStore } from 'src/stores/userStore'
 
 import Link from 'next/link'
+import { Divider } from '@mui/material'
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 120,
@@ -70,6 +71,7 @@ const TabAccountProfile = () => {
                 {profileData?.data.student_id}
               </Typography>
             </Box>
+            <Divider />
           </Grid>
 
           <Grid item xs={12} md={6}>
@@ -82,6 +84,7 @@ const TabAccountProfile = () => {
                 {profileData?.data.email}
               </Typography>
             </Box>
+            <Divider />
           </Grid>
 
           <Grid item xs={12} md={6}>
@@ -94,6 +97,7 @@ const TabAccountProfile = () => {
                 {profileData?.data.name}
               </Typography>
             </Box>
+            <Divider />
           </Grid>
 
           <Grid item xs={12} md={6}>
@@ -106,6 +110,7 @@ const TabAccountProfile = () => {
                 {profileData?.data.lastname}
               </Typography>
             </Box>
+            <Divider />
           </Grid>
 
           <Grid item xs={12} md={6}>
@@ -118,6 +123,7 @@ const TabAccountProfile = () => {
                 {profileData?.data.student_year}
               </Typography>
             </Box>
+            <Divider />
           </Grid>
 
           <Grid item xs={12} md={6}>
@@ -130,6 +136,7 @@ const TabAccountProfile = () => {
                 {profileData?.data.school}
               </Typography>
             </Box>
+            <Divider />
           </Grid>
 
           <Grid item xs={12} md={6}>
@@ -142,6 +149,7 @@ const TabAccountProfile = () => {
                 {profileData?.data.course}
               </Typography>
             </Box>
+            <Divider />
           </Grid>
 
           <Grid item xs={12} md={6}>
@@ -154,6 +162,7 @@ const TabAccountProfile = () => {
                 {profileData?.data.religion}
               </Typography>
             </Box>
+            <Divider />
           </Grid>
 
           <Grid item xs={12} md={6}>
@@ -166,6 +175,7 @@ const TabAccountProfile = () => {
                 {profileData?.data.region}
               </Typography>
             </Box>
+            <Divider />
           </Grid>
 
           <Grid item xs={12}>
