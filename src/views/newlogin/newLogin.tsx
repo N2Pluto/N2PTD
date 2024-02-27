@@ -20,6 +20,7 @@ import Button, { ButtonProps } from '@mui/material/Button'
 import { ConsoleNetwork } from 'mdi-material-ui'
 import { userStore } from 'src/stores/userStore'
 import { user, setUser } from 'src/stores/userStore'
+import { route } from 'next/dist/server/router'
 import router from 'next/router'
 
 // const ImgStyled = styled('img')(({ theme }) => ({
@@ -46,8 +47,9 @@ import router from 'next/router'
 //   }
 // }))
 
-const TabAccount = () => {
-  const { user , clearStore} = userStore()
+const Newlogin = () => {
+
+  const { user } = userStore()
 
   const [formData, setFormData] = useState({
     name: user?.name || '',
@@ -87,8 +89,7 @@ const TabAccount = () => {
       } else {
         console.log('Data Update Success:', data)
         alert('Data Update Success')
-        localStorage.clear()
-        router.push('/confirm')
+        router.push('/dashboard')
       }
     } catch (error) {
       console.error('Error Update data into USers table:', error.message)
@@ -104,7 +105,9 @@ const TabAccount = () => {
 
   return (
     <CardContent>
-      <Typography variant='h6' gutterBottom></Typography>
+      <Typography variant='h6' gutterBottom>
+        {/* Account Information User {userStoreInstance.user.student_id} */}
+      </Typography>
       <form onSubmit={handleUserInfo}>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
@@ -121,7 +124,6 @@ const TabAccount = () => {
               name='name'
               value={formData.name}
               onChange={handleChange}
-              required // Add the required attribute
             />
           </Grid>
 
@@ -132,7 +134,6 @@ const TabAccount = () => {
               name='lastname'
               value={formData.lastname}
               onChange={handleChange}
-              required // Add the required attribute
             />
           </Grid>
 
@@ -143,7 +144,6 @@ const TabAccount = () => {
               name='student_year'
               value={formData.student_year}
               onChange={handleChange}
-              required // Add the required attribute
             />
           </Grid>
 
@@ -154,7 +154,6 @@ const TabAccount = () => {
               name='school'
               value={formData.school}
               onChange={handleChange}
-              required // Add the required attribute
             />
           </Grid>
 
@@ -165,7 +164,6 @@ const TabAccount = () => {
               name='course'
               value={formData.course}
               onChange={handleChange}
-              required // Add the required attribute
             />
           </Grid>
 
@@ -176,7 +174,6 @@ const TabAccount = () => {
               name='religion'
               value={formData.religion}
               onChange={handleChange}
-              required // Add the required attribute
             />
           </Grid>
 
@@ -187,9 +184,8 @@ const TabAccount = () => {
               name='region'
               value={formData.region}
               onChange={handleChange}
-              required // Add the required attribute
             />
-          </Grid>
+            </Grid>
 
 
 
@@ -204,4 +200,4 @@ const TabAccount = () => {
   )
 }
 
-export default TabAccount
+export default Newlogin

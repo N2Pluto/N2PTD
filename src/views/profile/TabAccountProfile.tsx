@@ -88,6 +88,18 @@ const TabAccountProfile = () => {
 
           <Grid item xs={12} md={6}>
             <Typography variant='h5' sx={{ marginBottom: 1.5 }}>
+            Student year
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant='h6' sx={{ color: 'text.secondary' }}>
+                {' '}
+                {user?.student_year}
+              </Typography>
+            </Box>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Typography variant='h5' sx={{ marginBottom: 1.5 }}>
               School
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -106,6 +118,30 @@ const TabAccountProfile = () => {
               <Typography variant='h6' sx={{ color: 'text.secondary' }}>
                 {' '}
                 {user?.course}
+              </Typography>
+            </Box>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Typography variant='h5' sx={{ marginBottom: 1.5 }}>
+            Religion
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant='h6' sx={{ color: 'text.secondary' }}>
+                {' '}
+                {user?.religion}
+              </Typography>
+            </Box>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Typography variant='h5' sx={{ marginBottom: 1.5 }}>
+            Region
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant='h6' sx={{ color: 'text.secondary' }}>
+                {' '}
+                {user?.region}
               </Typography>
             </Box>
           </Grid>

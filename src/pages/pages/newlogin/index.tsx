@@ -1,5 +1,5 @@
 // ** React Imports
-import { SyntheticEvent, useState } from 'react'
+import { ReactNode, SyntheticEvent, useState } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -12,17 +12,12 @@ import MuiTab, { TabProps } from '@mui/material/Tab'
 
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
-import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
-import InformationOutline from 'mdi-material-ui/InformationOutline'
-
-// ** Demo Tabs Imports
-import TabInfo from 'src/views/account-settings/TabInfo'
-import TabAccount from 'src/views/account-settings/TabAccount'
-import TabSecurity from 'src/views/account-settings/TabSecurity'
 
 // ** Third Party Styles Imports
 import 'react-datepicker/dist/react-datepicker.css'
 import LayoutAuth from 'src/layouts/LayoutAuth'
+import BlankLayout from 'src/@core/layouts/BlankLayout'
+import Newlogin from 'src/views/newlogin/newLogin'
 
 const Tab = styled(MuiTab)<TabProps>(({ theme }) => ({
   [theme.breakpoints.down('md')]: {
@@ -42,7 +37,8 @@ const TabName = styled('span')(({ theme }) => ({
   }
 }))
 
-const AccountSettings = () => {
+const newlogin = () => {
+
   // ** State
   const [value, setValue] = useState<string>('account')
 
@@ -64,43 +60,21 @@ const AccountSettings = () => {
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <AccountOutline />
-                  <TabName>Account</TabName>
+                  <TabName>New Account</TabName>
                 </Box>
               }
             />
-            {/* <Tab
-              value='security'
-              label={
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <LockOpenOutline />
-                  <TabName>Security</TabName>
-                </Box>
-              }
-            />
-            <Tab
-              value='info'
-              label={
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <InformationOutline />
-                  <TabName>Info</TabName>
-                </Box>
-              }
-            /> */}
+
           </TabList>
 
           <TabPanel sx={{ p: 0 }} value='account'>
-            <TabAccount />
+            <Newlogin />
           </TabPanel>
-          {/* <TabPanel sx={{ p: 0 }} value='security'>
-            <TabSecurity />
-          </TabPanel>
-          <TabPanel sx={{ p: 0 }} value='info'>
-            <TabInfo />
-          </TabPanel> */}
         </TabContext>
       </Card>
     </LayoutAuth>
   )
 }
+newlogin.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>
 
-export default AccountSettings
+export default newlogin

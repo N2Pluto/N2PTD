@@ -107,11 +107,11 @@ const LoginPage = () => {
 
         // Redirect to /Dormitory page
 
-        if (!data?.user.name || !data?.user.course || !data?.user.school || !data?.user.lastname || !data?.user.religion || !data?.user?.region ) {
-          router.push('/pages/newlogin')
+        console.log('asdasdasda:', data)
+        if (!data?.user.name || !data?.user.course || !data?.user.school || !data?.user.lastname || !data?.user.religion || !data?.user.region ) {
         } else {
           console.log('data:', data)
-          router.push('/dashboard')
+          router.push('/profile')
         }
       } else {
         const errorData = await response.json()
@@ -146,32 +146,10 @@ const LoginPage = () => {
     <Box className='content-center'>
       <Card sx={{ zIndex: 1 }}>
         <CardContent sx={{ padding: theme => `${theme.spacing(12, 9, 7)} !important` }}>
-          <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Box
-              component='img'
-              src={'https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png'}
-              sx={{ height: 75, width: 75 }}
-              alt='logo'
-            ></Box>
-            <Typography
-              variant='h6'
-              sx={{
-                ml: 3,
-                pt: 6,
-                lineHeight: 1,
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                fontSize: '1.5rem !important'
-              }}
-            >
-              {themeConfig.templateName}
-            </Typography>
-          </Box>
           <Box sx={{ mb: 6 }}>
             <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
-              Welcome to {themeConfig.templateName}
+            confirm Confirm change
             </Typography>
-            <Typography variant='body2'>Please sign-in to your account </Typography>
           </Box>
           <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
             <TextField
@@ -207,23 +185,12 @@ const LoginPage = () => {
             <Box
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
             >
-              <FormControlLabel control={<Checkbox />} label='Remember Me' />
-              <Link passHref href='/'>
-                <LinkStyled onClick={e => e.preventDefault()}>Forgot Password?</LinkStyled>
-              </Link>
             </Box>
             <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} onClick={handleLogin}>
-              Login
+            confirm
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Typography variant='body2' sx={{ marginRight: 2 }}>
-                New on our platform?
-              </Typography>
-              <Typography variant='body2'>
-                <Link passHref href='/pages/register'>
-                  <LinkStyled>Create an account</LinkStyled>
-                </Link>
-              </Typography>
+
             </Box>
           </form>
         </CardContent>

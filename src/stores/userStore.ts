@@ -1,6 +1,9 @@
 import { create } from 'zustand'
 
 export interface IUser {
+  religion: any
+  region: any
+  student_year: any
   room_id: any
   dorm_id: any
   user_id: string
@@ -10,8 +13,6 @@ export interface IUser {
   lastname: string
   school: string
   course: string
-  dorm_id: string
-  room_id: string
   bed_id: string
 }
 
