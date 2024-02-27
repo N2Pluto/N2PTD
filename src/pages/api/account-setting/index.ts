@@ -1,23 +1,29 @@
-import supabase from 'src/libs/supabase'
+// import supabase from 'src/libs/supabase'
+// import middleware from '../middleware'
 
-const handler = async (req: any, res: any) => {
-  console.log(req.body)
-  const { user_id, course, lastname, name, password, region, religion, school, student_id, student_year, user_status } = req.body;
-  console.log(user_id, course, lastname, name, password, region, religion, school, student_id, student_year, user_status)
+// const handler = async (req: any, res: any) => {
+//   // ตรวจสอบว่ามีข้อมูล user_id และ formData ที่ส่งมาหรือไม่
+//   const user_id = req.query.user_id // Extract user_id from the request query
+//   console.log('user_id:', user_id)
+//   const { formData } = req.body
+//   console.log('formData:', formData)
 
-  const { data, error } = await supabase
-    .from('Users')
-    .update({ course, lastname, name, password, region, religion, school, student_id, student_year, user_status })
-    .eq('user_id', user_id)
-    .single()
+//   if (!user_id || !formData) {
+//     return res.status(400).json({ message: 'Missing user_id or formData' })
+//   }
 
-  if (error) {
-    console.error('Error updating data:', error)
-    res.status(500).json({ error: error.message })
-  } else {
-    console.log('Data:', data)
-    res.status(200).json({ data })
-  }
-}
+//   try {
+//     // อัปเดตข้อมูลในฐานข้อมูล Supabase
+//     const { data, error } = await supabase.from('Users').update(formData).eq('user_id', user_id)
 
-export default handler
+//     if (error) {
+//       throw error
+//     }
+
+//     res.status(200).json({ message: 'User data updated successfully', data })
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error updating user data', error: error.message })
+//   }
+// }
+
+// export default handler
