@@ -48,7 +48,7 @@ const TabAccountProfile = () => {
     if (user?.user_id) {
       fetchUserProfile()
     }
-  }, [user])
+  }, [ user])
 
   return (
     <CardContent>

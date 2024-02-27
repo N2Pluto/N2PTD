@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, ElementType, SyntheticEvent } from 'react'
+import { useState, ElementType, SyntheticEvent,useEffect } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -50,15 +50,61 @@ import router from 'next/router'
 const Newlogin = () => {
 
   const { user } = userStore()
+  const [profileData, setProfileData] = useState(null)
+
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch('/api/profile/fetchUserProfile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_id: user.user_id }) // ส่ง user_id ไปยัง API
+        })
+        const data = await response.json()
+        setProfileData(data) // เซ็ตข้อมูลผู้ใช้ที่ได้รับจาก API
+        console.log(data)
+      } catch (error) {
+        console.error('Error fetching user profile:', error)
+      }
+    }
+
+    if (user?.user_id) {
+      fetchUserProfile()
+    }
+  }, [user])
+
+
+  useEffect(() => {
+    if (user?.student_id.toString().startsWith('63')) {
+      // your code
+      setFormData(prevState => ({ ...prevState, student_year: '4' }))
+    }
+    if (user?.student_id.toString().startsWith('64')) {
+      // your code
+      setFormData(prevState => ({ ...prevState, student_year: '3' }))
+    }
+    if (user?.student_id.toString().startsWith('65')) {
+      // your code
+      setFormData(prevState => ({ ...prevState, student_year: '2' }))
+    }
+    if (user?.student_id.toString().startsWith('66')) {
+      // your code
+      setFormData(prevState => ({ ...prevState, student_year: '1' }))
+    }
+  }, [user?.student_id])
+
 
   const [formData, setFormData] = useState({
-    name: '',
-    lastname: '',
-    student_year: '',
-    school: '',
-    course: '',
-    religion: '',
-    region: ''
+    name: profileData?.data.name ,
+    lastname: profileData?.data.lastname,
+    student_year: profileData?.data.student_year,
+    school: profileData?.data.school,
+    course: profileData?.data.course,
+    religion: profileData?.data.religion,
+    region: profileData?.data.region
   })
 
   const handleUserInfo = async (e: { preventDefault: () => void }) => {
@@ -109,32 +155,20 @@ const Newlogin = () => {
         {/* Account Information User {userStoreInstance.user.student_id} */}
       </Typography>
       <form onSubmit={handleUserInfo}>
-        <Grid container spacing={3}>
+      <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='student id' placeholder='student id' defaultValue={user?.student_id} disabled />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Email' placeholder='Email' defaultValue={user?.email} disabled />
+            <TextField fullWidth label='Student id' name='Student id' defaultValue={user?.student_id} disabled />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label='name'
-              name='name'
-              value={formData.name}
-              onChange={handleChange}
-            />
+            <TextField fullWidth label='Email' name='Email' defaultValue={user?.email} disabled />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label='Lastname'
-              name='lastname'
-              value={formData.lastname}
-              onChange={handleChange}
-            />
+            <TextField fullWidth label='Name' name='name' value={formData.name} onChange={handleChange} required />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label='Lastname' name='lastname' value={formData.lastname} onChange={handleChange} required/>
           </Grid>
 
           <Grid item xs={12} sm={6}>
@@ -144,51 +178,21 @@ const Newlogin = () => {
               name='student_year'
               value={formData.student_year}
               onChange={handleChange}
+              disabled
             />
           </Grid>
-
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label='School'
-              name='school'
-              value={formData.school}
-              onChange={handleChange}
-            />
+            <TextField fullWidth label='School' name='school' value={formData.school} onChange={handleChange}required />
           </Grid>
-
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label='Course'
-              name='course'
-              value={formData.course}
-              onChange={handleChange}
-            />
+            <TextField fullWidth label='Course' name='course' value={formData.course} onChange={handleChange} required/>
           </Grid>
-
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label='Religion'
-              name='religion'
-              value={formData.religion}
-              onChange={handleChange}
-            />
+            <TextField fullWidth label='Religion' name='religion' value={formData.religion} onChange={handleChange} required/>
           </Grid>
-
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label='Region'
-              name='region'
-              value={formData.region}
-              onChange={handleChange}
-            />
-            </Grid>
-
-
-
+            <TextField fullWidth label='Region' name='region' value={formData.region} onChange={handleChange}required />
+          </Grid>
           <Grid item xs={12}>
             <Button type='submit' variant='contained' color='primary'>
               SAVE!
