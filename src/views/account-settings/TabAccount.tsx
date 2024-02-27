@@ -47,19 +47,20 @@ import router from 'next/router'
 // }))
 
 const TabAccount = () => {
-  const { user , clearStore} = userStore()
-
   const [formData, setFormData] = useState({
-    name: user?.name || '',
-    lastname: user?.lastname || '',
-    student_year: user?.student_year || '',
-    school: user?.school || '',
-    course: user?.course || '',
-    religion: user?.religion || '',
-    region: user?.region || ''
+    name: '',
+    lastname: '',
+    student_year: '',
+    school: '',
+    course: '',
+    religion: '',
+    region: ''
   })
 
-  const handleUserInfo = async (e: { preventDefault: () => void }) => {
+  const userStoreInstance = userStore()
+  const { user } = userStoreInstance
+
+  const handleUserInfo = async e => {
     e.preventDefault()
 
     try {
@@ -87,15 +88,14 @@ const TabAccount = () => {
       } else {
         console.log('Data Update Success:', data)
         alert('Data Update Success')
-        localStorage.clear()
-        router.push('/confirm')
+        router.push('/profile/')
       }
     } catch (error) {
       console.error('Error Update data into USers table:', error.message)
     }
   }
 
-  const handleChange = (e: { target: { name: any; value: any } }) => {
+  const handleChange = e => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -104,38 +104,17 @@ const TabAccount = () => {
 
   return (
     <CardContent>
-      <Typography variant='h6' gutterBottom></Typography>
+      <Typography variant='h6' gutterBottom>
+        {/* Account Information User {userStoreInstance.user.student_id} */}
+      </Typography>
       <form onSubmit={handleUserInfo}>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='student id' placeholder='student id' defaultValue={user?.student_id} disabled />
+            <TextField fullWidth label='Name' name='name' value={formData.name} onChange={handleChange} />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Email' placeholder='Email' defaultValue={user?.email} disabled />
+            <TextField fullWidth label='Lastname' name='lastname' value={formData.lastname} onChange={handleChange} />
           </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label='name'
-              name='name'
-              value={formData.name}
-              onChange={handleChange}
-              required // Add the required attribute
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label='Lastname'
-              name='lastname'
-              value={formData.lastname}
-              onChange={handleChange}
-              required // Add the required attribute
-            />
-          </Grid>
-
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -143,56 +122,20 @@ const TabAccount = () => {
               name='student_year'
               value={formData.student_year}
               onChange={handleChange}
-              required // Add the required attribute
             />
           </Grid>
-
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label='School'
-              name='school'
-              value={formData.school}
-              onChange={handleChange}
-              required // Add the required attribute
-            />
+            <TextField fullWidth label='School' name='school' value={formData.school} onChange={handleChange} />
           </Grid>
-
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label='Course'
-              name='course'
-              value={formData.course}
-              onChange={handleChange}
-              required // Add the required attribute
-            />
+            <TextField fullWidth label='Course' name='course' value={formData.course} onChange={handleChange} />
           </Grid>
-
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label='Religion'
-              name='religion'
-              value={formData.religion}
-              onChange={handleChange}
-              required // Add the required attribute
-            />
+            <TextField fullWidth label='Religion' name='religion' value={formData.religion} onChange={handleChange} />
           </Grid>
-
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label='Region'
-              name='region'
-              value={formData.region}
-              onChange={handleChange}
-              required // Add the required attribute
-            />
+            <TextField fullWidth label='Region' name='region' value={formData.region} onChange={handleChange} />
           </Grid>
-
-
-
           <Grid item xs={12}>
             <Button type='submit' variant='contained' color='primary'>
               SAVE!

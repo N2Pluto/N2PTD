@@ -52,13 +52,13 @@ const Newlogin = () => {
   const { user } = userStore()
 
   const [formData, setFormData] = useState({
-    name: user?.name || '',
-    lastname: user?.lastname || '',
-    student_year: user?.student_year || '',
-    school: user?.school || '',
-    course: user?.course || '',
-    religion: user?.religion || '',
-    region: user?.region || ''
+    name: '',
+    lastname: '',
+    student_year: '',
+    school: '',
+    course: '',
+    religion: '',
+    region: ''
   })
 
   const handleUserInfo = async (e: { preventDefault: () => void }) => {

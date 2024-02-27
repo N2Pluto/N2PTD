@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, ElementType, ChangeEvent, SyntheticEvent } from 'react'
+import { useState, ElementType, ChangeEvent, SyntheticEvent, useEffect } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -20,13 +20,35 @@ const ImgStyled = styled('img')(({ theme }) => ({
   borderRadius: theme.shape.borderRadius
 }))
 
-
-
 const TabAccountProfile = () => {
   const { user } = userStore()
+  console.log(user)
 
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
+  const [profileData, setProfileData] = useState(null)
 
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch('/api/profile/fetchUserProfile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_id: user.user_id }) // ส่ง user_id ไปยัง API
+        })
+        const data = await response.json()
+        setProfileData(data) // เซ็ตข้อมูลผู้ใช้ที่ได้รับจาก API
+        console.log(data)
+      } catch (error) {
+        console.error('Error fetching user profile:', error)
+      }
+    }
+
+    if (user?.user_id) {
+      fetchUserProfile()
+    }
+  }, [user])
 
   return (
     <CardContent>
@@ -45,7 +67,7 @@ const TabAccountProfile = () => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant='h6' sx={{ color: 'text.secondary' }}>
                 {' '}
-                {user?.student_id}
+                {profileData?.data.student_id}
               </Typography>
             </Box>
           </Grid>
@@ -57,7 +79,7 @@ const TabAccountProfile = () => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant='h6' sx={{ color: 'text.secondary' }}>
                 {' '}
-                {user?.email}
+                {profileData?.data.email}
               </Typography>
             </Box>
           </Grid>
@@ -69,7 +91,7 @@ const TabAccountProfile = () => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant='h6' sx={{ color: 'text.secondary' }}>
                 {' '}
-                {user?.name}
+                {profileData?.data.name}
               </Typography>
             </Box>
           </Grid>
@@ -81,19 +103,19 @@ const TabAccountProfile = () => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant='h6' sx={{ color: 'text.secondary' }}>
                 {' '}
-                {user?.lastname}
+                {profileData?.data.lastname}
               </Typography>
             </Box>
           </Grid>
 
           <Grid item xs={12} md={6}>
             <Typography variant='h5' sx={{ marginBottom: 1.5 }}>
-            Student year
+              Student year
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant='h6' sx={{ color: 'text.secondary' }}>
                 {' '}
-                {user?.student_year}
+                {profileData?.data.student_year}
               </Typography>
             </Box>
           </Grid>
@@ -105,7 +127,7 @@ const TabAccountProfile = () => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant='h6' sx={{ color: 'text.secondary' }}>
                 {' '}
-                {user?.school}
+                {profileData?.data.school}
               </Typography>
             </Box>
           </Grid>
@@ -117,31 +139,31 @@ const TabAccountProfile = () => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant='h6' sx={{ color: 'text.secondary' }}>
                 {' '}
-                {user?.course}
+                {profileData?.data.course}
               </Typography>
             </Box>
           </Grid>
 
           <Grid item xs={12} md={6}>
             <Typography variant='h5' sx={{ marginBottom: 1.5 }}>
-            Religion
+              Religion
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant='h6' sx={{ color: 'text.secondary' }}>
                 {' '}
-                {user?.religion}
+                {profileData?.data.religion}
               </Typography>
             </Box>
           </Grid>
 
           <Grid item xs={12} md={6}>
             <Typography variant='h5' sx={{ marginBottom: 1.5 }}>
-            Region
+              Region
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant='h6' sx={{ color: 'text.secondary' }}>
                 {' '}
-                {user?.region}
+                {profileData?.data.region}
               </Typography>
             </Box>
           </Grid>
