@@ -111,7 +111,7 @@ const ReservationBotton = () => {
             >
               {reservation?.Dormitory_Building && reservation?.Dormitory_Room && reservation?.Dormitory_Bed
                 ? 'Cancel Reservation'
-                : 'Send Request'}
+                : 'Reservation'}
             </Button>
 
             <Dialog

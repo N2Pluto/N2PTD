@@ -9,6 +9,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (error) {
       throw new Error(error.message)
+      
     }
 
     res.status(200).json({ data })

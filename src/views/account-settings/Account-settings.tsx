@@ -165,18 +165,18 @@ const AccountSettings = () => {
       <Grid item xs={12} sm={12} md={12} lg={12}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Link href='/dashboard'>
-          <Typography sx={{ whiteSpace: 'nowrap',pr:3 ,color: 'text.primary' }} variant='body2'>
-            Home
-          </Typography>
+            <Typography sx={{ whiteSpace: 'nowrap', pr: 3, color: 'text.primary' }} variant='body2'>
+              Home
+            </Typography>
           </Link>
           <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
           <Link href='/profile'>
-          <Typography sx={{ whiteSpace: 'nowrap',pr:3,pl:3 ,color: 'text.primary'  }} variant='body2'>
-            Profile
-          </Typography>
+            <Typography sx={{ whiteSpace: 'nowrap', pr: 3, pl: 3, color: 'text.primary' }} variant='body2'>
+              Profile
+            </Typography>
           </Link>
           <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
-          <Typography sx={{ whiteSpace: 'nowrap' ,pl:3 }} variant='body2'>
+          <Typography sx={{ whiteSpace: 'nowrap', pl: 3 }} variant='body2'>
             Edit Account
           </Typography>
         </Box>
@@ -279,7 +279,7 @@ const AccountSettings = () => {
         </Box>
       </Grid>
       <Grid item xs={1} sm={1} md={1} lg={1}></Grid>
-      <FooterIllustrationsV1 />
+      {/* <FooterIllustrationsV1 /> */}
     </Grid>
   )
 }
