@@ -22,6 +22,7 @@ import { user, setUser } from 'src/stores/userStore'
 import router from 'next/router'
 import Card from '@mui/material/Card'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
+import FooterIllustrationsV1 from '../pages/auth/FooterIllustration'
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 150,
@@ -163,7 +164,7 @@ const AccountSettings = () => {
     <Grid container spacing={3}>
       <Grid item xs={12} sm={12} md={12} lg={12}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Link href='/'>
+          <Link href='/dashboard'>
           <Typography sx={{ whiteSpace: 'nowrap',pr:3 ,color: 'text.primary' }} variant='body2'>
             Home
           </Typography>
@@ -278,6 +279,7 @@ const AccountSettings = () => {
         </Box>
       </Grid>
       <Grid item xs={1} sm={1} md={1} lg={1}></Grid>
+      <FooterIllustrationsV1 />
     </Grid>
   )
 }

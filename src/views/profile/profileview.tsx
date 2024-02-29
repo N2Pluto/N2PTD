@@ -20,6 +20,7 @@ import FacebookIcon from '@mui/icons-material/Facebook'
 import InstagramIcon from '@mui/icons-material/Instagram'
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone'
 import Link from 'next/link'
+import FooterIllustrationsV1 from '../pages/auth/FooterIllustration'
 
 const Profile = () => {
   const { user } = userStore()
@@ -262,6 +263,7 @@ const Profile = () => {
           </CardContent>
         </Card>
       </Grid>
+      <FooterIllustrationsV1 />
     </Grid>
   )
 }

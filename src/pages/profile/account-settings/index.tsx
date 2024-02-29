@@ -20,6 +20,7 @@ import CardNavigationCenter from 'src/views/cards/CardNavigationCenter'
 import CardHorizontalRatings from 'src/views/cards/CardHorizontalRatings'
 import LayoutAuth from 'src/layouts/LayoutAuth'
 import AccounSetting from 'src/views/account-settings/Account-settings'
+import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 
 const accountsetting = () => {
   return (
@@ -33,6 +34,7 @@ const accountsetting = () => {
 
         </Grid>
       </Grid>
+     
     </LayoutAuth>
   )
 }
