@@ -3,13 +3,13 @@ import Typography from '@mui/material/Typography'
 import Card from '@mui/material/Card'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import * as React from 'react'
 import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { CardHeader, Collapse, Divider, Grid, Paper, Table, TableCell, TableContainer, TableHead } from '@mui/material'
 import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
-
 import TablePagination from '@mui/material/TablePagination'
 import { auto } from '@popperjs/core'
 import { userStore, IUser } from 'src/stores/userStore'
@@ -21,6 +21,11 @@ import IconButton from '@mui/material/IconButton'
 import ChevronUp from 'mdi-material-ui/ChevronUp'
 import ChevronDown from 'mdi-material-ui/ChevronDown'
 import Tooltip from '@mui/material/Tooltip'
+import { CircularProgress } from '@mui/material'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
+
+import { IDormitoryBed } from 'src/interfaces/IDormitoryBed'
 
 interface Column {
   id: 'room' | 'code' | 'details' | 'bedstatus'
@@ -53,8 +58,42 @@ const ReservationRoomTest = () => {
   const [dormitoryBuilding, setDormitoryBuilding] = useState(null)
   const [dormitoryRoom, setDormitoryRoom] = useState([])
   const [dormitoryRoomStatus, setDormitoryRoomStatus] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [reservationData, setReservationData] = useState<Map<string, any[]>>(new Map())
+
+  const [open, setOpen] = useState({}) // Change this line
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
+
+  const handleClick = id => {
+    setOpen(prevOpen => ({
+      ...prevOpen,
+      [id]: !prevOpen[id]
+    }))
+  }
+
+  useEffect(() => {
+    const fetchReservationData = async (roomId: string) => {
+      try {
+        setLoading(true)
+        const response = await fetch(`/api/reservation/checkUserReservRoom?room_id=${roomId}`)
+        const data = await response.json()
+        setReservationData(prevData => {
+          const newData = new Map(prevData)
+          newData.set(roomId, data)
+          return newData
+        })
+        setLoading(false)
+      } catch (error) {
+        console.error('Error fetching reservation data:', error)
+        setLoading(false)
+      }
+    }
+
+    dormitoryRoom.forEach(room => {
+      fetchReservationData(room.room_id)
+    })
+  }, [dormitoryRoom])
 
   useEffect(() => {
     const fetchDataRoomStatus = async () => {
@@ -73,7 +112,7 @@ const ReservationRoomTest = () => {
     }
 
     fetchDataAndUpdateStatus()
-    const intervalId = setInterval(fetchDataAndUpdateStatus, 1000)
+    const intervalId = setInterval(fetchDataAndUpdateStatus, 50000)
 
     return () => clearInterval(intervalId)
   }, []) // Remove dormitoryRoomStatus from dependencies
@@ -103,7 +142,7 @@ const ReservationRoomTest = () => {
     }
 
     fetchDataAndUpdateStatusRoom()
-    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 1000)
+    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 50000)
 
     return () => clearInterval(intervalId)
   }, [])
@@ -132,36 +171,61 @@ const ReservationRoomTest = () => {
             </TableHead>
             <TableBody>
               {dormitoryRoom.map(room => (
-                <TableRow hover role='checkbox' tabIndex={-1} key={room.room_id}>
-                  <TableCell align='center'>{room.room_number}</TableCell>
-                  <TableCell align='center'>
-                    {Array.from({ length: room.bed_available }, (_, index) => (
-                      <Tooltip title='Booking information goes here' key={index}>
-                        <PersonIcon color='primary' />
-                      </Tooltip>
-                    ))}
+                <React.Fragment key={room.room_id}>
+                  <TableRow hover role='checkbox' tabIndex={-1}>
+                    <TableCell>
+                      <IconButton aria-label='expand row' size='small' onClick={() => handleClick(room.room_id)}>
+                        {open[room.room_id] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                      </IconButton>
+                    </TableCell>
+                    <TableCell align='center'>{room.room_number}</TableCell>
+                    <TableCell align='center'>
+                      {Array.from({ length: room.bed_available }, (_, index) => (
+                        <Tooltip title='This bed already reserve.' key={index}>
+                          <PersonIcon color='primary' />
+                        </Tooltip>
+                      ))}
 
-                    {Array.from({ length: room.bed_capacity - room.bed_available }, (_, index) => (
-                      <Tooltip title='no information ' key={index}>
-                        <PersonIcon />
-                      </Tooltip>
-                    ))}
-                  </TableCell>
-                  <TableCell align='center'>{room.status ? <CheckIcon /> : <CloseIcon color='primary' />}</TableCell>
-                  <TableCell align='center'>
-                    <Box>
-                      {room.status ? (
-                        <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
-                          Select
-                        </Button>
-                      ) : (
-                        <Button variant='contained' color='error' disabled>
-                          Select
-                        </Button>
-                      )}
-                    </Box>
-                  </TableCell>
-                </TableRow>
+                      {Array.from({ length: room.bed_capacity - room.bed_available }, (_, index) => (
+                        <Tooltip title='This bed is available' key={index}>
+                          <PersonIcon />
+                        </Tooltip>
+                      ))}
+                    </TableCell>
+                    <TableCell align='center'>{room.status ? <CheckIcon /> : <CloseIcon color='primary' />}</TableCell>
+                    <TableCell align='center'>
+                      <Box>
+                        {room.status ? (
+                          <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
+                            Select
+                          </Button>
+                        ) : (
+                          <Button variant='contained' color='error' disabled>
+                            Select
+                          </Button>
+                        )}
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                      <Collapse in={open[room.room_id]} timeout='auto' unmountOnExit>
+                        {' '}
+                        <Box sx={{ margin: 1 }}>
+                          {(reservationData.get(room.room_id) || []).map((reservation, index) => (
+                            <Typography key={index} variant='body1' gutterBottom component='div'>
+                              <strong>{`BED ${index + 1}:`}</strong>
+                              <strong>Student ID:</strong> {reservation.Users?.student_id}
+                              <strong>Year:</strong> {reservation.Users?.student_year}
+                              <strong>Course:</strong> {reservation.Users?.course}
+                              <strong>Religion:</strong> {reservation.Users?.religion}
+                            </Typography>
+                          ))}
+                        </Box>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
               ))}
             </TableBody>
           </Table>

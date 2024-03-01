@@ -244,19 +244,6 @@ const AccountSettings = () => {
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='Name' name='name' value={formData.name} onChange={handleChange} />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='Lastname'
-                    name='lastname'
-                    value={formData.lastname}
-                    onChange={handleChange}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label='Student_Year'
@@ -269,6 +256,20 @@ const AccountSettings = () => {
                 <Grid item xs={12} sm={6}>
                   <TextField fullWidth label='Gender ' name='Gender' defaultValue={user?.gender} disabled />
                 </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField fullWidth label='Name' name='name' value={formData.name} onChange={handleChange} />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label='Lastname'
+                    name='lastname'
+                    value={formData.lastname}
+                    onChange={handleChange}
+                  />
+                </Grid>
+
                 <Grid item xs={12} sm={6}>
                   <TextField fullWidth label='School' name='school' value={formData.school} onChange={handleChange} />
                 </Grid>
@@ -289,19 +290,31 @@ const AccountSettings = () => {
                 </Grid>
 
                 <Grid item xs={12} sm={12}>
-                  <Typography variant='h5' sx={{mt: 3,  mb: 3, pl: 2 }}>
-                  Social
+                  <Typography variant='h5' sx={{ mt: 3, mb: 3, pl: 2 }}>
+                    Social
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='facebook' name='facebook' value={formData.facebook} onChange={handleChange} />
+                  <TextField
+                    fullWidth
+                    label='Facebook'
+                    name='facebook'
+                    value={formData.facebook}
+                    onChange={handleChange}
+                  />
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='instagram' name='instagram' value={formData.instagram} onChange={handleChange} />
+                  <TextField
+                    fullWidth
+                    label='Instagram'
+                    name='instagram'
+                    value={formData.instagram}
+                    onChange={handleChange}
+                  />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='phone' name='phone' value={formData.phone} onChange={handleChange} />
+                  <TextField fullWidth label='Phone' name='phone' value={formData.phone} onChange={handleChange} />
                 </Grid>
                 <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button type='submit' variant='contained' color='primary'>

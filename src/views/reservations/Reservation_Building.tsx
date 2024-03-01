@@ -51,8 +51,6 @@ const ReservationBuilding = () => {
 
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
-  console.log('userStoreInstance:', userStoreInstance.user)
-  console.log('userStoreInstance Gender:', userStoreInstance.user.gender)
 
   const router = useRouter()
 
@@ -100,7 +98,7 @@ const ReservationBuilding = () => {
   return (
     <>
       <Grid pb={4}>
-        <Grid item xs={12} sm={12} md={12} lg={12} sx={{pb:3}}>
+        <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>

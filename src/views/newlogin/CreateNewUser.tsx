@@ -238,6 +238,21 @@ const CreateNewUser = () => {
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
+                  <TextField fullWidth label='gender' name='gender' defaultValue={user?.gender} disabled />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label='Student_Year'
+                    name='student_year'
+                    value={formData.student_year}
+                    onChange={handleChange}
+                    disabled
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label='Name'
@@ -257,16 +272,6 @@ const CreateNewUser = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='Student_Year'
-                    name='student_year'
-                    value={formData.student_year}
-                    onChange={handleChange}
-                    disabled
-                  />
-                </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
@@ -310,25 +315,15 @@ const CreateNewUser = () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label='major'
+                    label='Major'
                     name='major'
                     value={formData.major}
                     onChange={handleChange}
                     required
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='gender'
-                    name='gender'
-                    value={formData.gender}
-                    onChange={handleChange}
-                    disabled
-                  />
-                </Grid>
 
-               <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label='Phone'
@@ -337,8 +332,7 @@ const CreateNewUser = () => {
                     onChange={handleChange}
                     required
                   />
-                  </Grid>
-
+                </Grid>
 
                 <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button type='submit' variant='contained' color='primary'>
