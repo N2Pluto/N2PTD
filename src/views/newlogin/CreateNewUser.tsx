@@ -81,7 +81,12 @@ const CreateNewUser = () => {
     school: profileData?.data.school,
     course: profileData?.data.course,
     religion: profileData?.data.religion,
-    region: profileData?.data.region
+    region: profileData?.data.region,
+    major: profileData?.data.major,
+    gender: profileData?.data.gender,
+    phone: profileData?.data.phone,
+    facebook: profileData?.data.facebook,
+    instagram: profileData?.data.instagram
   })
 
   console.log('profileData', profileData)
@@ -102,6 +107,14 @@ const CreateNewUser = () => {
     if (user?.student_id.toString().startsWith('66')) {
       // your code
       setFormData(prevState => ({ ...prevState, student_year: '1' }))
+    }
+    if (user?.student_id.toString().startsWith('62')) {
+      // your code
+      setFormData(prevState => ({ ...prevState, student_year: '5' }))
+    }
+    if (user?.student_id.toString().startsWith('61')) {
+      // your code
+      setFormData(prevState => ({ ...prevState, student_year: '6' }))
     }
   }, [user?.student_id])
 
@@ -124,7 +137,12 @@ const CreateNewUser = () => {
           school: formData.school,
           course: formData.course,
           religion: formData.religion,
-          region: formData.region
+          region: formData.region,
+          major: formData?.major,
+          gender: formData?.gender,
+          phone: formData?.phone,
+          facebook: formData?.facebook,
+          instagram: formData?.instagram
         })
       })
 
@@ -289,6 +307,39 @@ const CreateNewUser = () => {
                     required
                   />
                 </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label='major'
+                    name='major'
+                    value={formData.major}
+                    onChange={handleChange}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label='gender'
+                    name='gender'
+                    value={formData.gender}
+                    onChange={handleChange}
+                    disabled
+                  />
+                </Grid>
+
+               <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label='Phone'
+                    name='phone'
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                  />
+                  </Grid>
+
+
                 <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button type='submit' variant='contained' color='primary'>
                     SAVE CHANGES!

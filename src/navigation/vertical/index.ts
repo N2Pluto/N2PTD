@@ -21,13 +21,13 @@ const navigation = (): VerticalNavItemsType => {
       path: '/dashboard'
     },
 
-    // {
-    //   title: 'Dormitory',
-    //   icon: HomeOutline,
-    //   path: '/Dormitory'
-    // },
+    {
+      title: 'Dormitory',
+      icon: HomeOutline,
+      path: '/Dormitory'
+    },
 
-    
+
     {
       title: 'Reservation',
       icon: HomeOutline,

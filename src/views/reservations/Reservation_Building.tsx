@@ -24,6 +24,9 @@ import AddCircleIcon from '@mui/icons-material/AddCircle'
 import WcIcon from '@mui/icons-material/Wc'
 import BedroomParentIcon from '@mui/icons-material/BedroomParent'
 import GroupIcon from '@mui/icons-material/Group'
+import Link from 'next/link'
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
+import { pbkdf2 } from 'crypto'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -48,6 +51,9 @@ const ReservationBuilding = () => {
 
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
+  console.log('userStoreInstance:', userStoreInstance.user)
+  console.log('userStoreInstance Gender:', userStoreInstance.user.gender)
+
   const router = useRouter()
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -76,7 +82,8 @@ const ReservationBuilding = () => {
     }
 
     fetchData()
-  }, [])
+    setGenderFilter(userStoreInstance.user.gender)
+  }, [userStoreInstance.user.gender])
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -93,6 +100,30 @@ const ReservationBuilding = () => {
   return (
     <>
       <Grid pb={4}>
+        <Grid item xs={12} sm={12} md={12} lg={12} sx={{pb:3}}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Link href='/dashboard'>
+                  <Typography sx={{ whiteSpace: 'nowrap', pr: 3, color: 'text.primary' }} variant='body2'>
+                    Home
+                  </Typography>
+                </Link>
+                <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
+                <Link href='/profile'>
+                  <Typography sx={{ whiteSpace: 'nowrap', pr: 3, pl: 3, color: 'text.primary' }} variant='body2'>
+                    Profile
+                  </Typography>
+                </Link>
+                <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
+                <Typography sx={{ whiteSpace: 'nowrap', pl: 3 }} variant='body2'>
+                  Edit Account
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
         <Card>
           <CardContent>
             <Box
@@ -116,29 +147,8 @@ const ReservationBuilding = () => {
               </DialogTitle>
               <DialogContent>
                 <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ paddingRight: 2 }}> Gender</Typography>
-                  <WcIcon fontSize='small' sx={{ marginRight: 2 }} />
-                </Box>
-                <Grid container spacing={2} pb={5} pt={1}>
-                  <FormControlLabel
-                    control={<Checkbox checked={genderFilter === ''} onChange={() => setGenderFilter('')} />}
-                    label='All'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={genderFilter === 'male'} onChange={() => setGenderFilter('male')} />}
-                    label='Male'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox checked={genderFilter === 'female'} onChange={() => setGenderFilter('female')} />
-                    }
-                    label='Female'
-                  />
-                </Grid>
-                <Box sx={{ display: 'flex' }}>
                   <Typography sx={{ paddingRight: 2 }}>Room type</Typography>
                   <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
-
                 </Box>
                 <Grid container spacing={2} pb={5} pt={1}>
                   <FormControlLabel

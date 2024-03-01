@@ -85,16 +85,15 @@ const Profile = () => {
                 </Typography>
                 <Typography variant='caption'>{profileData?.data.student_id}</Typography>
               </Box>
-              <Link href='/profile/account-settings'>
-              <Button variant='contained'>Edit</Button>
+              <Link href='/profile/account-settings' passHref>
+                <Button variant='contained'>Edit</Button>
               </Link>
-
             </Box>
           </CardContent>
         </Card>
       </Box>
 
-      <Grid item xs={12} md={6} lg={4} sx={{pb:3}}>
+      <Grid item xs={12} md={6} lg={4} sx={{ pb: 3 }}>
         <Card sx={{ position: 'relative' }}>
           <CardContent>
             <Box>
@@ -222,7 +221,7 @@ const Profile = () => {
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {/* {profileData?.data.student_id} */}
+                    {profileData?.data.facebook}
                   </Typography>
                 </Box>
               </Box>
@@ -237,9 +236,11 @@ const Profile = () => {
                   </Typography>
                 </Box>
                 <Box>
-                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {/* {profileData?.data.region} */}
-                  </Typography>
+                  <Link href={`https://www.instagram.com/${profileData?.data.instagram}`} passHref>
+                    <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                      {profileData?.data.instagram}
+                    </Typography>
+                  </Link>
                 </Box>
               </Box>
 
@@ -254,7 +255,7 @@ const Profile = () => {
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {/* {profileData?.data.email} */}
+                    {profileData?.data.phone}
                   </Typography>
                 </Box>
               </Box>
