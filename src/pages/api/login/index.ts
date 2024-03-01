@@ -29,7 +29,9 @@ const handler = async (req: any, res: any) => {
         religion: user?.data?.religion,
         region: user?.data?.region,
         student_year: user?.data?.student_year,
-        user_status: user?.data?.user_status
+        user_status: user?.data?.user_status,
+        gender : user?.data?.gender
+
       },
       process.env.JWT_SECRET,
       { expiresIn: '30m' }
@@ -46,7 +48,8 @@ const handler = async (req: any, res: any) => {
       religion: user?.data?.religion,
       region: user?.data?.region,
       student_year: user?.data?.student_year,
-      user_status: user?.data?.user_status
+      user_status: user?.data?.user_status,
+      gender : user?.data?.gender
     }
 
     res.status(200).json({ accessToken, user: userData })

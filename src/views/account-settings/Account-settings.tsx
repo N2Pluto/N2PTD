@@ -23,6 +23,7 @@ import router from 'next/router'
 import Card from '@mui/material/Card'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import FooterIllustrationsV1 from '../pages/auth/FooterIllustration'
+import { Divider } from '@mui/material'
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 150,
@@ -82,7 +83,12 @@ const AccountSettings = () => {
     school: profileData?.data.school,
     course: profileData?.data.course,
     religion: profileData?.data.religion,
-    region: profileData?.data.region
+    region: profileData?.data.region,
+    major: profileData?.data.major,
+    gender: profileData?.data.gender,
+    facebook: profileData?.data.facebook,
+    instagram: profileData?.data.instagram,
+    phone: profileData?.data.phone
   })
 
   console.log('profileData', profileData)
@@ -125,7 +131,12 @@ const AccountSettings = () => {
           school: formData.school,
           course: formData.course,
           religion: formData.religion,
-          region: formData.region
+          region: formData.region,
+          major: formData.major,
+          gender: formData.gender,
+          facebook: formData.facebook,
+          instagram: formData.instagram,
+          phone: formData.phone
         })
       })
 
@@ -183,7 +194,7 @@ const AccountSettings = () => {
       </Grid>
       <Grid item xs={1} sm={1} md={1} lg={1}></Grid>
       <Grid item xs={12} sm={12} md={12} lg={5}>
-        <Box sx={{ height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box sx={{ height: '600px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <CardContent>
             <form onSubmit={handleUserInfo}>
               <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
@@ -215,10 +226,15 @@ const AccountSettings = () => {
         </Box>
       </Grid>
       <Grid item xs={12} sm={12} md={12} lg={5}>
-        <Box sx={{ height: '700px', justifyContent: 'center', alignItems: 'center' }}>
+        <Box sx={{ justifyContent: 'center', alignItems: 'center' }}>
           <CardContent>
             <form onSubmit={handleUserInfo}>
               <Grid container spacing={3}>
+                <Grid item xs={12} sm={12}>
+                  <Typography variant='h5' sx={{ mb: 3, pl: 2 }}>
+                    personal information
+                  </Typography>
+                </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField fullWidth label='Student id' name='Student id' defaultValue={user?.student_id} disabled />
                 </Grid>
@@ -251,6 +267,9 @@ const AccountSettings = () => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
+                  <TextField fullWidth label='Gender ' name='Gender' defaultValue={user?.gender} disabled />
+                </Grid>
+                <Grid item xs={12} sm={6}>
                   <TextField fullWidth label='School' name='school' value={formData.school} onChange={handleChange} />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -267,6 +286,22 @@ const AccountSettings = () => {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField fullWidth label='Region' name='region' value={formData.region} onChange={handleChange} />
+                </Grid>
+
+                <Grid item xs={12} sm={12}>
+                  <Typography variant='h5' sx={{mt: 3,  mb: 3, pl: 2 }}>
+                  Social
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField fullWidth label='facebook' name='facebook' value={formData.facebook} onChange={handleChange} />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField fullWidth label='instagram' name='instagram' value={formData.instagram} onChange={handleChange} />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField fullWidth label='phone' name='phone' value={formData.phone} onChange={handleChange} />
                 </Grid>
                 <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button type='submit' variant='contained' color='primary'>

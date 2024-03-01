@@ -107,7 +107,7 @@ const LoginPage = () => {
 
         // Redirect to /Dormitory page
 
-        if (!data?.user.name || !data?.user.course || !data?.user.school || !data?.user.lastname || !data?.user.religion || !data?.user?.region ) {
+        if (!data?.user.name || !data?.user.course || !data?.user.school || !data?.user.lastname || !data?.user.religion || !data?.user?.region) {
           router.push('/pages/newlogin')
         } else {
           console.log('data:', data)

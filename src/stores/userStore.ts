@@ -14,6 +14,11 @@ export interface IUser {
   school: string
   course: string
   bed_id: string
+  major: string
+  gender: string
+  facebook: string
+  instagram: string
+  phone: string
 }
 
 type StoreType = {
