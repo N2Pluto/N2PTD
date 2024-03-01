@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import { CardHeader, Collapse, Divider, Grid, Paper, Table, TableCell, TableContainer, TableHead } from '@mui/material'
+import { CardHeader, Collapse, Divider, Grid, Paper, Stack, Step, StepConnector, StepLabel, Stepper, Table, TableCell, TableContainer, TableHead, stepConnectorClasses } from '@mui/material'
 import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
 
@@ -17,10 +17,24 @@ import { Refresh } from 'mdi-material-ui'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import PersonIcon from '@mui/icons-material/Person'
-import IconButton from '@mui/material/IconButton'
-import ChevronUp from 'mdi-material-ui/ChevronUp'
-import ChevronDown from 'mdi-material-ui/ChevronDown'
 import Tooltip from '@mui/material/Tooltip'
+import SettingsIcon from '@mui/icons-material/Settings'
+import { Theme, styled } from '@mui/material/styles'
+import CorporateFareIcon from '@mui/icons-material/CorporateFare';
+import BedIcon from '@mui/icons-material/Bed';
+import BedroomParentIcon from '@mui/icons-material/BedroomParent'
+
+const StyledGrid = styled(Grid)<GridProps>(({ theme}) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  [theme.breakpoints.down('md')]: {
+    borderBottom: `1px solid ${theme.palette.divider}`
+  },
+  [theme.breakpoints.up('md')]: {
+    borderRight: `1px solid ${theme.palette.divider}`
+  }
+}))
 
 interface Column {
   id: 'room' | 'code' | 'details' | 'bedstatus'
@@ -55,6 +69,72 @@ const ReservationRoomTest = () => {
   const [dormitoryRoomStatus, setDormitoryRoomStatus] = useState([])
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
+  const steps = ['Reservation', 'Building', 'Room' ,'Bed']
+
+  const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
+    [`&.${stepConnectorClasses.alternativeLabel}`]: {
+      top: 22
+    },
+    [`&.${stepConnectorClasses.active}`]: {
+      [`& .${stepConnectorClasses.line}`]: {
+        backgroundImage: 'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
+      }
+    },
+    [`&.${stepConnectorClasses.completed}`]: {
+      [`& .${stepConnectorClasses.line}`]: {
+        backgroundImage: 'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
+      }
+    },
+    [`& .${stepConnectorClasses.line}`]: {
+      height: 3,
+      border: 0,
+      backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#eaeaf0',
+      borderRadius: 1
+    }
+  }))
+
+
+
+  const ColorlibStepIconRoot = styled('div')<{ theme: Theme
+    ownerState: { completed?: boolean; active?: boolean };
+  }>(({ theme, ownerState }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#ccc',
+    zIndex: 1,
+    color: '#fff',
+    width: 50,
+    height: 50,
+    display: 'flex',
+    borderRadius: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...(ownerState.active && {
+      backgroundImage:
+        'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
+      boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',
+    }),
+    ...(ownerState.completed && {
+      backgroundImage:
+        'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
+    }),
+  }));
+
+  function ColorlibStepIcon(props: StepIconProps) {
+    const { active, completed, className } = props
+
+    const icons: { [index: string]: React.ReactElement } = {
+      1: <SettingsIcon />,
+      2: <CorporateFareIcon />,
+      3: <BedroomParentIcon />,
+      4: <BedIcon />
+    }
+
+    return (
+      <ColorlibStepIconRoot ownerState={{ completed, active }} className={className}>
+        {icons[String(props.icon)]}
+      </ColorlibStepIconRoot>
+    )
+  }
+
 
   useEffect(() => {
     const fetchDataRoomStatus = async () => {
@@ -117,6 +197,21 @@ const ReservationRoomTest = () => {
 
   return (
     <>
+    <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
+          <Card>
+            <CardContent>
+              <Stack sx={{ width: '100%' }} spacing={4}>
+                <Stepper alternativeLabel activeStep={2} connector={<ColorlibConnector />}>
+                  {steps.map(label => (
+                    <Step key={label}>
+                      <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
+                    </Step>
+                  ))}
+                </Stepper>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
       <h1> {dormitoryBuilding?.name}</h1>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer sx={{ maxHeight: auto }}>
