@@ -2,6 +2,7 @@
 import middleware from '../middleware'
 import supabase from 'src/libs/supabase'
 
+
 async function updateBedStatus(bed_id: string) {
   try {
     // อัปเดต bed_status เป็น false สำหรับเตียงที่ถูกจอง

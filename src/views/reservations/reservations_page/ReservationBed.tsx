@@ -35,14 +35,20 @@ const ReservationBedviwe = () => {
   const router = useRouter()
   const [dormitoryBed, setDormitoryBed] = useState(null)
   const [dormitoryRoom, setDormitoryRoom] = useState([])
-  const [dormitoryBedStatus, setDormitoryBedStatus] = useState([])
+  const [userReservations, setUserReservations] = useState<{ [key: string]: any }>({})
+
   const userStoreInstance = userStore()
   const { user, setUser } = userStoreInstance
   const [value, setValue] = useState<string>('1')
   const [open, setOpen] = useState(false)
 
-  const handleChange = (event: SyntheticEvent, newValue: string) => {
+  const handleChange = async (event: SyntheticEvent, newValue: string) => {
     setValue(newValue)
+
+    if (!userReservations[newValue]) {
+      const { data } = await fetch(`/api/reservation/checkUserReservBed?bed_id=${newValue}`).then(res => res.json())
+      setUserReservations(prevReservations => ({ ...prevReservations, [newValue]: data }))
+    }
   }
 
   const handleOpen = () => {
@@ -76,7 +82,7 @@ const ReservationBedviwe = () => {
       await fetchDataBedByRoomID() // Fetch the updated data
     }
     fetchDataAndUpdateStatus()
-    const intervalId = setInterval(fetchDataAndUpdateStatus, 1000)
+    const intervalId = setInterval(fetchDataAndUpdateStatus, 50000)
 
     return () => clearInterval(intervalId)
   }, [router.query.id])
@@ -84,16 +90,13 @@ const ReservationBedviwe = () => {
   const handleReservation = async (bed_id: string) => {
     console.log('Reservation Bed ID:', bed_id)
     setUser({ ...userStoreInstance.user, bed_id })
-
     console.log('user:', userStoreInstance.user)
-
     try {
       if (!user) {
         console.error('User data is missing.')
 
         return
       }
-      console.log('user:', user)
 
       const checkResponse = await fetch(`/api/reservation/checkReservation?user_id=${user.user_id}`)
       const { hasReservation } = await checkResponse.json()
@@ -164,30 +167,63 @@ const ReservationBedviwe = () => {
               <Tab key={index} value={room.bed_id.toString()} label={`Bed ${room.bed_number}`} />
             ))}
           </TabList>
+
           <CardContent>
             {dormitoryRoom.map((room, index) => (
-              <TabPanel key={index} value={room.bed_id.toString()} sx={{ p: 0 }} >
+              <TabPanel key={index} value={room.bed_id.toString()} sx={{ p: 0 }}>
                 <Box>
-                <Typography variant='h6' sx={{ marginBottom: 2 }}>
-                  Bed Number: {room.bed_number}
-                </Typography>
-                <Typography variant='body2' sx={{ marginBottom: 4 }}>
-                  Bed Status: {room.bed_status ? <CheckIcon /> : <CloseIcon />}
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', pt: 5 }}>
-                  {room.bed_status ? (
-                    <Button onClick={() => handleReservation(room.bed_id)} variant='contained'>
-                      Select!
-                    </Button>
-                  ) : (
-                    <Button onClick={handleOpen} variant='contained' disabled>
-                      Select!
-                    </Button> // Add onClick handler here
-                  )}
-                </Box>
+                  <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                    Bed ID: {room.bed_id}
+                  </Typography>
+                  <Typography variant='h6' sx={{ marginBottom: 2 }}>
+                    Bed Number: {room.bed_number}
+                  </Typography>
+                  <Typography variant='body2' sx={{ marginBottom: 4 }}>
+                    Bed Status: {room.bed_status ? <CheckIcon /> : <CloseIcon />}
+                  </Typography>
+                  {userReservations[room.bed_id] &&
+                    userReservations[room.bed_id].map((reservation, index) => (
+                      <Typography key={index} variant='body2' sx={{ marginBottom: 2 }}>
+                        <Box>
+                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                            User ID: {reservation.user_id}
+                          </Typography>
+                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                            Name: {reservation.Users?.name} {reservation.Users?.lastname}
+                          </Typography>
+                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                            Student_ID: {reservation.Users?.student_id}
+                          </Typography>
+                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                            Student_Year: {reservation.Users?.student_year}
+                          </Typography>
+                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                            Course: {reservation.Users?.course}
+                          </Typography>
+                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                            Region: {reservation.Users?.region}
+                          </Typography>
+                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                            Religion: {reservation.Users?.religion}
+                          </Typography>
+                        </Box>
+                      </Typography>
+                    ))}
 
+                  <Box
+                    sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', pt: 5 }}
+                  >
+                    {room.bed_status ? (
+                      <Button onClick={() => handleReservation(room.bed_id)} variant='contained'>
+                        Select!
+                      </Button>
+                    ) : (
+                      <Button onClick={handleOpen} variant='contained' disabled>
+                        Select!
+                      </Button>
+                    )}
+                  </Box>
                 </Box>
-
               </TabPanel>
             ))}
           </CardContent>

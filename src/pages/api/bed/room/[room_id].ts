@@ -1,3 +1,4 @@
+// this is api/bed/room/[room_id].ts
 import supabase from 'src/libs/supabase'
 import { NextApiRequest, NextApiResponse } from 'next'
 
