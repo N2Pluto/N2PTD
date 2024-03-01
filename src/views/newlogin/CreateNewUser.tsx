@@ -81,7 +81,8 @@ const CreateNewUser = () => {
     school: profileData?.data.school,
     course: profileData?.data.course,
     religion: profileData?.data.religion,
-    region: profileData?.data.region
+    region: profileData?.data.region,
+    gender: profileData?.data.gender
   })
 
   console.log('profileData', profileData)
@@ -124,7 +125,8 @@ const CreateNewUser = () => {
           school: formData.school,
           course: formData.course,
           religion: formData.religion,
-          region: formData.region
+          region: formData.region,
+          gender: formData.gender
         })
       })
 
@@ -238,6 +240,26 @@ const CreateNewUser = () => {
                     onChange={handleChange}
                   />
                 </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <TextField fullWidth label='Gender' name='gender' defaultValue={user?.gender} disabled />
+                </Grid>
+                
+                {/* <Grid item xs={12} sm={6}>
+                  <FormControl fullWidth>
+                    <InputLabel id='gender-label'>Gender</InputLabel>
+                    <Select
+                      labelId='gender-label'
+                      id='gender'
+                      name='gender'
+                      value={formData.gender}
+                      onChange={handleChange}
+                    >
+                      <MenuItem value={'male'}>Male</MenuItem>
+                      <MenuItem value={'female'}>Female</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid> */}
 
                 <Grid item xs={12} sm={6}>
                   <TextField

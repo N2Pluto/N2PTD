@@ -9,12 +9,13 @@ async function updateUserInfo(
   school: string,
   course: string,
   religion: string,
-  region: string
+  region: string,
+  gender: string
 ) {
   try {
     const { data, error } = await supabase
       .from('Users')
-      .update({ name, lastname, student_year, school, course, religion, region })
+      .update({ name, lastname, student_year, school, course, religion, region , gender })
       .eq('user_id', user_id)
 
     if (error) {
@@ -27,7 +28,7 @@ async function updateUserInfo(
 
 const handler = async (req: any, res: any) => {
   middleware(req, res, async () => {
-    const { user_id, name, lastname, student_year, school, course, religion, region } = req.body
+    const { user_id, name, lastname, student_year, school, course, religion, region, gender } = req.body
     console.log('user_id', user_id)
 
     if (!user_id) {
@@ -35,9 +36,9 @@ const handler = async (req: any, res: any) => {
     }
 
     try {
-      await updateUserInfo(user_id, name, lastname, student_year, school, course, religion, region)
+      await updateUserInfo(user_id, name, lastname, student_year, school, course, religion, region, gender)
 
-      res.status(200).json({ data: { name, lastname, student_year, school, course, religion, region } })
+      res.status(200).json({ data: { name, lastname, student_year, school, course, religion, region, gender } })
     } catch (error) {
       res.status(500).json({ error: error.message })
     }

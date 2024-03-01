@@ -128,6 +128,19 @@ const TabAccountProfile = () => {
 
           <Grid item xs={12} md={6}>
             <Typography variant='h5' sx={{ marginBottom: 1.5 }}>
+              Gender
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant='h6' sx={{ color: 'text.secondary' }}>
+                {' '}
+                {profileData?.data.gender}
+              </Typography>
+            </Box>
+            <Divider />
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <Typography variant='h5' sx={{ marginBottom: 1.5 }}>
               School
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>

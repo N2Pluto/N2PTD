@@ -104,7 +104,8 @@ const Newlogin = () => {
     school: profileData?.data.school,
     course: profileData?.data.course,
     religion: profileData?.data.religion,
-    region: profileData?.data.region
+    region: profileData?.data.region,
+    gender: profileData?.data.gender
   })
 
   const handleUserInfo = async (e: { preventDefault: () => void }) => {
@@ -124,7 +125,8 @@ const Newlogin = () => {
           school: formData.school,
           course: formData.course,
           religion: formData.religion,
-          region: formData.region
+          region: formData.region,
+          gender: formData.gender
         })
       })
 
@@ -155,7 +157,7 @@ const Newlogin = () => {
         {/* Account Information User {userStoreInstance.user.student_id} */}
       </Typography>
       <form onSubmit={handleUserInfo}>
-      <Grid container spacing={3}>
+        <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
             <TextField fullWidth label='Student id' name='Student id' defaultValue={user?.student_id} disabled />
           </Grid>
@@ -168,7 +170,14 @@ const Newlogin = () => {
             <TextField fullWidth label='Name' name='name' value={formData.name} onChange={handleChange} required />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Lastname' name='lastname' value={formData.lastname} onChange={handleChange} required/>
+            <TextField
+              fullWidth
+              label='Lastname'
+              name='lastname'
+              value={formData.lastname}
+              onChange={handleChange}
+              required
+            />
           </Grid>
 
           <Grid item xs={12} sm={6}>
@@ -182,16 +191,53 @@ const Newlogin = () => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='School' name='school' value={formData.school} onChange={handleChange}required />
+            <FormControl fullWidth>
+              <InputLabel id='gender-label'>Gender</InputLabel>
+              <Select labelId='gender-label' id='gender' name='gender' value={formData.gender} onChange={handleChange}>
+                <MenuItem value={'male'}>Male</MenuItem>
+                <MenuItem value={'female'}>Female</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Course' name='course' value={formData.course} onChange={handleChange} required/>
+            <TextField
+              fullWidth
+              label='School'
+              name='school'
+              value={formData.school}
+              onChange={handleChange}
+              required
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Religion' name='religion' value={formData.religion} onChange={handleChange} required/>
+            <TextField
+              fullWidth
+              label='Course'
+              name='course'
+              value={formData.course}
+              onChange={handleChange}
+              required
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Region' name='region' value={formData.region} onChange={handleChange}required />
+            <TextField
+              fullWidth
+              label='Religion'
+              name='religion'
+              value={formData.religion}
+              onChange={handleChange}
+              required
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label='Region'
+              name='region'
+              value={formData.region}
+              onChange={handleChange}
+              required
+            />
           </Grid>
           <Grid item xs={12}>
             <Button type='submit' variant='contained' color='primary'>

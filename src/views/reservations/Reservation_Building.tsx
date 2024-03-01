@@ -48,6 +48,9 @@ const ReservationBuilding = () => {
 
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
+  console.log('userStoreInstance:', userStoreInstance.user)
+  console.log('userStoreInstance Gender:', userStoreInstance.user.gender)
+
   const router = useRouter()
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -76,7 +79,8 @@ const ReservationBuilding = () => {
     }
 
     fetchData()
-  }, [])
+    setGenderFilter(userStoreInstance.user.gender)
+  }, [userStoreInstance.user.gender])
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -115,30 +119,10 @@ const ReservationBuilding = () => {
                 </Box>
               </DialogTitle>
               <DialogContent>
-                <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ paddingRight: 2 }}> Gender</Typography>
-                  <WcIcon fontSize='small' sx={{ marginRight: 2 }} />
-                </Box>
-                <Grid container spacing={2} pb={5} pt={1}>
-                  <FormControlLabel
-                    control={<Checkbox checked={genderFilter === ''} onChange={() => setGenderFilter('')} />}
-                    label='All'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={genderFilter === 'male'} onChange={() => setGenderFilter('male')} />}
-                    label='Male'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox checked={genderFilter === 'female'} onChange={() => setGenderFilter('female')} />
-                    }
-                    label='Female'
-                  />
-                </Grid>
+              
                 <Box sx={{ display: 'flex' }}>
                   <Typography sx={{ paddingRight: 2 }}>Room type</Typography>
                   <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
-
                 </Box>
                 <Grid container spacing={2} pb={5} pt={1}>
                   <FormControlLabel

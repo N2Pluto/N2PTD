@@ -80,7 +80,8 @@ const TabAccount = () => {
     school: profileData?.data.school,
     course: profileData?.data.course,
     religion: profileData?.data.religion,
-    region: profileData?.data.region
+    region: profileData?.data.region,
+    gender: profileData?.data.gender
   })
 
   console.log('profileData', profileData)
@@ -124,7 +125,8 @@ const TabAccount = () => {
           school: formData.school,
           course: formData.course,
           religion: formData.religion,
-          region: formData.region
+          region: formData.region,
+          gender: formData.gender
         })
       })
 
@@ -211,6 +213,11 @@ const TabAccount = () => {
               disabled
             />
           </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField fullWidth label='Gender' name='gender' value={formData.gender} onChange={handleChange} />
+          </Grid>
+
           <Grid item xs={12} sm={6}>
             <TextField fullWidth label='School' name='school' value={formData.school} onChange={handleChange} />
           </Grid>

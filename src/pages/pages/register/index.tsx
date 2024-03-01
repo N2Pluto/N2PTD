@@ -21,6 +21,8 @@ import { styled, useTheme } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
 
 // ** Icons Imports
 import Google from 'mdi-material-ui/Google'
@@ -70,14 +72,16 @@ const RegisterPage = () => {
     password: '',
     showPassword: false,
     student_id: '', // Add the 'student_id' property
-    email: '' // Add the 'email' property
+    email: '', // Add the 'email' property
+    gender: ''
   })
 
   interface State {
     password: string
     showPassword: boolean
     student_id: string
-    email: string // Add the 'email' property
+    email: string
+    gender: string
   }
 
   const handleChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -118,7 +122,7 @@ const RegisterPage = () => {
       if (values.password.length < 8) {
         console.error('Password must be at least 8 characters long')
         alert('Password must be at least 8 characters long')
-        
+
         return
       }
 
@@ -130,7 +134,8 @@ const RegisterPage = () => {
         body: JSON.stringify({
           student_id: values.student_id,
           email: values.email,
-          password: values.password
+          password: values.password,
+          gender: values.gender
         })
       })
 
@@ -186,6 +191,20 @@ const RegisterPage = () => {
               sx={{ marginBottom: 4 }}
               onChange={handleChange('student_id')}
             />
+            <FormControl fullWidth sx={{ marginBottom: 4 }}>
+              <InputLabel id='gender-label'>Gender</InputLabel>
+              <Select
+                labelId='gender-label'
+                id='gender'
+                value={values.gender}
+                label='Gender'
+                onChange={handleChange('gender')}
+              >
+                <MenuItem value='male'>male</MenuItem>
+                <MenuItem value='female'>female</MenuItem>
+              </Select>
+            </FormControl>
+
             <TextField fullWidth type='email' label='Email' sx={{ marginBottom: 4 }} onChange={handleChange('email')} />
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-register-password'>Password</InputLabel>

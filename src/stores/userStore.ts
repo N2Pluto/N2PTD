@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 
 export interface IUser {
+  gender: string
   religion: any
   region: any
   student_year: any

@@ -86,21 +86,35 @@ const Profile = () => {
                 <Typography variant='caption'>{profileData?.data.student_id}</Typography>
               </Box>
               <Link href='/profile/account-settings'>
-              <Button variant='contained'>Edit</Button>
+                <Button variant='contained'>Edit</Button>
               </Link>
-
             </Box>
           </CardContent>
         </Card>
       </Box>
 
-      <Grid item xs={12} md={6} lg={4} sx={{pb:3}}>
+      <Grid item xs={12} md={6} lg={4} sx={{ pb: 3 }}>
         <Card sx={{ position: 'relative' }}>
           <CardContent>
             <Box>
               <Typography variant='h6' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
                 About
               </Typography>
+              <Box sx={{ display: 'flex', pt: 3 }}>
+                <Box sx={{ pr: 3 }}>
+                  <FeaturedVideoIcon />
+                </Box>
+                <Box sx={{ pr: 2 }}>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    Gender :
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    {profileData?.data.gender}
+                  </Typography>
+                </Box>
+              </Box>
 
               <Box sx={{ display: 'flex', pt: 3 }}>
                 <Box sx={{ pr: 3 }}>

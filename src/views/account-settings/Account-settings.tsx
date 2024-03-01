@@ -49,6 +49,7 @@ const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
 
 const AccountSettings = () => {
   const { user } = userStore()
+  console.log('user',user)
 
   const [profileData, setProfileData] = useState(null)
 
@@ -82,7 +83,8 @@ const AccountSettings = () => {
     school: profileData?.data.school,
     course: profileData?.data.course,
     religion: profileData?.data.religion,
-    region: profileData?.data.region
+    region: profileData?.data.region,
+    gender: profileData?.data.gender
   })
 
   console.log('profileData', profileData)
@@ -125,7 +127,8 @@ const AccountSettings = () => {
           school: formData.school,
           course: formData.course,
           religion: formData.religion,
-          region: formData.region
+          region: formData.region,
+          gender: formData.gender
         })
       })
 
@@ -239,6 +242,25 @@ const AccountSettings = () => {
                     onChange={handleChange}
                   />
                 </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField fullWidth label='Gender' name='gender' defaultValue={user?.gender} disabled />
+                </Grid>
+
+                {/* <Grid item xs={12} sm={6}>
+                  <FormControl fullWidth>
+                    <InputLabel id='gender-label'>Gender</InputLabel>
+                    <Select
+                      labelId='gender-label'
+                      id='gender'
+                      name='gender'
+                      value={formData.gender}
+                      onChange={handleChange}
+                    >
+                      <MenuItem value={'male'}>Male</MenuItem>
+                      <MenuItem value={'female'}>Female</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid> */}
 
                 <Grid item xs={12} sm={6}>
                   <TextField
@@ -250,6 +272,7 @@ const AccountSettings = () => {
                     disabled
                   />
                 </Grid>
+
                 <Grid item xs={12} sm={6}>
                   <TextField fullWidth label='School' name='school' value={formData.school} onChange={handleChange} />
                 </Grid>
