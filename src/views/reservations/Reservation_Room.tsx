@@ -16,9 +16,11 @@ import { userStore, IUser } from 'src/stores/userStore'
 import { Refresh } from 'mdi-material-ui'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
-import PersonIcon from '@mui/icons-material/Person';
-
-
+import PersonIcon from '@mui/icons-material/Person'
+import IconButton from '@mui/material/IconButton'
+import ChevronUp from 'mdi-material-ui/ChevronUp'
+import ChevronDown from 'mdi-material-ui/ChevronDown'
+import Tooltip from '@mui/material/Tooltip'
 
 interface Column {
   id: 'room' | 'code' | 'details' | 'bedstatus'
@@ -29,8 +31,8 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-  { id: 'room', label: 'room', minWidth: 30, align: 'center'},
-  { id: 'code', label: 'bed capacity', minWidth: 150, align: 'center'},
+  { id: 'room', label: 'room', minWidth: 30, align: 'center' },
+  { id: 'code', label: 'bed capacity', minWidth: 150, align: 'center' },
   {
     id: 'bedstatus',
     label: 'bed status',
@@ -41,7 +43,7 @@ const columns: readonly Column[] = [
     id: 'details',
     label: 'details',
     minWidth: 170,
-    align: 'right',
+    align: 'center',
     format: (value: number) => value.toFixed(2)
   }
 ]
@@ -133,17 +135,20 @@ const ReservationRoomTest = () => {
                 <TableRow hover role='checkbox' tabIndex={-1} key={room.room_id}>
                   <TableCell align='center'>{room.room_number}</TableCell>
                   <TableCell align='center'>
+                    {Array.from({ length: room.bed_available }, (_, index) => (
+                      <Tooltip title='Booking information goes here' key={index}>
+                        <PersonIcon color='primary' />
+                      </Tooltip>
+                    ))}
 
-                  {Array.from({ length: room.bed_available }, (_, index) => (
-                    <PersonIcon color='primary' key={index} />
-                  ))}
-
-                  {Array.from({ length: room.bed_capacity - room.bed_available }, (_, index) => (
-                    <PersonIcon key={index} />
-                  ))}
+                    {Array.from({ length: room.bed_capacity - room.bed_available }, (_, index) => (
+                      <Tooltip title='no information ' key={index}>
+                        <PersonIcon />
+                      </Tooltip>
+                    ))}
                   </TableCell>
-                  <TableCell align='center' >{room.status ? <CheckIcon/> : <CloseIcon color='primary' />}</TableCell>
-                  <TableCell align='right'>
+                  <TableCell align='center'>{room.status ? <CheckIcon /> : <CloseIcon color='primary' />}</TableCell>
+                  <TableCell align='center'>
                     <Box>
                       {room.status ? (
                         <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
