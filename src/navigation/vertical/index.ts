@@ -35,6 +35,12 @@ const navigation = (): VerticalNavItemsType => {
     },
 
     // {
+    //   title: 'Reservation Detail',
+    //   icon: HomeOutline,
+    //   path: '/reservation-detail/building/'
+    // },
+
+    // {
     //   title: 'Billing',
     //   icon: HomeOutline,
     //   path: '/Billing'

@@ -2,8 +2,8 @@
 import Grid from '@mui/material/Grid'
 import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
 import LayoutAuth from 'src/layouts/LayoutAuth'
-import ReservationBuildingDetails from 'src/views/Dormitory/detail/building'
-import ReservationFilter from 'src/views/reservations/ReservationFilter'
+import ReservationBedDetails from 'src/views/Dormitory/detail/bed'
+import ReservationBedviwe from 'src/views/reservations/reservations_page/ReservationBed'
 
 const Reservation = () => {
   return (
@@ -11,7 +11,7 @@ const Reservation = () => {
       <ApexChartWrapper>
         <Grid container spacing={6}>
           <Grid item xs={12} md={12} lg={12}>
-            <ReservationBuildingDetails />
+            <ReservationBedDetails />
           </Grid>
         </Grid>
       </ApexChartWrapper>

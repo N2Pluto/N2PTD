@@ -15,19 +15,7 @@ import Facebook from 'mdi-material-ui/Facebook'
 import Linkedin from 'mdi-material-ui/Linkedin'
 import GooglePlus from 'mdi-material-ui/GooglePlus'
 import ShareVariant from 'mdi-material-ui/ShareVariant'
-import {
-  CardActions,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Stack,
-  Step,
-  StepConnector,
-  StepIconProps,
-  StepLabel,
-  Stepper,
-  stepConnectorClasses
-} from '@mui/material'
+import { CardActions, Dialog, DialogContent, DialogTitle } from '@mui/material'
 import { userStore } from 'src/stores/userStore'
 import CloseIcon from '@mui/icons-material/Close'
 import Checkbox from '@mui/material/Checkbox'
@@ -35,11 +23,9 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import BedroomParentIcon from '@mui/icons-material/BedroomParent'
 import GroupIcon from '@mui/icons-material/Group'
-import * as React from 'react'
-
-import SettingsIcon from '@mui/icons-material/Settings'
-import CorporateFareIcon from '@mui/icons-material/CorporateFare';
-import BedIcon from '@mui/icons-material/Bed';
+import Link from 'next/link'
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
+import TransgenderIcon from '@mui/icons-material/Transgender'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -53,7 +39,7 @@ const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   }
 }))
 
-const ReservationBuilding = () => {
+const ReservationBuildingDetails = () => {
   const [dormitoryBuilding, setDormitoryBuilding] = useState([])
   const [genderFilter, setGenderFilter] = useState<string>('')
   const [buildingFilter, setBuildingFilter] = useState<string>('')
@@ -64,128 +50,18 @@ const ReservationBuilding = () => {
 
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
-  console.log('userStoreInstance:', userStoreInstance?.user)
-  console.log('userStoreInstance Gender:', userStoreInstance?.user?.gender)
 
   const router = useRouter()
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
-  const steps = ['Reservation', 'Building', 'Room' ,'Bed']
-
-  const QontoConnector = styled(StepConnector)(({ theme }) => ({
-    [`&.${stepConnectorClasses.alternativeLabel}`]: {
-      top: 10,
-      left: 'calc(-50% + 16px)',
-      right: 'calc(50% + 16px)'
-    },
-    [`&.${stepConnectorClasses.active}`]: {
-      [`& .${stepConnectorClasses.line}`]: {
-        borderColor: '#784af4'
-      }
-    },
-    [`&.${stepConnectorClasses.completed}`]: {
-      [`& .${stepConnectorClasses.line}`]: {
-        borderColor: '#784af4'
-      }
-    },
-    [`& .${stepConnectorClasses.line}`]: {
-      borderColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#eaeaf0',
-      borderTopWidth: 3,
-      borderRadius: 1
-    }
-  }))
-
-  const QontoStepIconRoot = styled('div')<{ ownerState: { active?: boolean } }>(({ theme, ownerState }) => ({
-    color: theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#eaeaf0',
-    display: 'flex',
-    height: 22,
-    alignItems: 'center',
-    ...(ownerState.active && {
-      color: '#784af4'
-    }),
-    '& .QontoStepIcon-completedIcon': {
-      color: '#784af4',
-      zIndex: 1,
-      fontSize: 18
-    },
-    '& .QontoStepIcon-circle': {
-      width: 8,
-      height: 8,
-      borderRadius: '50%',
-      backgroundColor: 'currentColor'
-    }
-  }))
-
-  const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
-    [`&.${stepConnectorClasses.alternativeLabel}`]: {
-      top: 22
-    },
-    [`&.${stepConnectorClasses.active}`]: {
-      [`& .${stepConnectorClasses.line}`]: {
-        backgroundImage: 'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
-      }
-    },
-    [`&.${stepConnectorClasses.completed}`]: {
-      [`& .${stepConnectorClasses.line}`]: {
-        backgroundImage: 'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
-      }
-    },
-    [`& .${stepConnectorClasses.line}`]: {
-      height: 3,
-      border: 0,
-      backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#eaeaf0',
-      borderRadius: 1
-    }
-  }))
-
-  const ColorlibStepIconRoot = styled('div')<{
-    ownerState: { completed?: boolean; active?: boolean };
-  }>(({ theme, ownerState }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#ccc',
-    zIndex: 1,
-    color: '#fff',
-    width: 50,
-    height: 50,
-    display: 'flex',
-    borderRadius: '50%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...(ownerState.active && {
-      backgroundImage:
-        'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
-      boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',
-    }),
-    ...(ownerState.completed && {
-      backgroundImage:
-        'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
-    }),
-  }));
-
-  function ColorlibStepIcon(props: StepIconProps) {
-    const { active, completed, className } = props
-
-    const icons: { [index: string]: React.ReactElement } = {
-      1: <SettingsIcon />,
-      2: <CorporateFareIcon />,
-      3: <BedroomParentIcon />,
-      4: <BedIcon />
-    }
-
-    return (
-      <ColorlibStepIconRoot ownerState={{ completed, active }} className={className}>
-        {icons[String(props.icon)]}
-      </ColorlibStepIconRoot>
-    )
-  }
-
   const handleReservation = (dorm_id: string) => {
     if (dorm_id) {
       console.log('Reservation Building:', dorm_id)
       setUser({ ...userStoreInstance.user, dorm_id }) // เปลี่ยน เป็นเก็บ ใน useState
       console.log('user:', userStoreInstance.user)
-      router.push(`/reservation/room/${dorm_id}`)
+      router.push(`/Dormitory/room/${dorm_id}`)
     } else {
       console.error('Invalid dorm_id:', dorm_id)
     }
@@ -203,10 +79,7 @@ const ReservationBuilding = () => {
     }
 
     fetchData()
-    if (userStoreInstance.user) {
-      setGenderFilter(userStoreInstance?.user?.gender)
-    }
-  }, [userStoreInstance.user])
+  }, [])
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -226,15 +99,17 @@ const ReservationBuilding = () => {
         <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
           <Card>
             <CardContent>
-              <Stack sx={{ width: '100%' }} spacing={4}>
-                <Stepper alternativeLabel activeStep={1} connector={<ColorlibConnector />}>
-                  {steps.map(label => (
-                    <Step key={label}>
-                      <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
-                    </Step>
-                  ))}
-                </Stepper>
-              </Stack>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography sx={{ whiteSpace: 'nowrap', pr: 3, color: 'text.primary' }} variant='body2'>
+                  Dormitory
+                </Typography>
+
+                <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
+
+                <Typography sx={{ whiteSpace: 'nowrap', pr: 3, pl: 3 }} variant='body2'>
+                  Building
+                </Typography>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
@@ -251,6 +126,7 @@ const ReservationBuilding = () => {
             >
               <Button onClick={handleDialogToggle}>Filter</Button>
             </Box>
+
             <Dialog open={dialogOpen} onClose={handleDialogToggle}>
               <DialogTitle>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -261,6 +137,25 @@ const ReservationBuilding = () => {
                 </Box>
               </DialogTitle>
               <DialogContent>
+                <Box sx={{ display: 'flex' }}>
+                  <Typography sx={{ paddingRight: 2 }}>Gender Filter</Typography>
+                  <TransgenderIcon fontSize='small' sx={{ marginRight: 2 }} />
+                </Box>
+                <Grid container spacing={2} pb={5} pt={1}>
+                  <FormControlLabel
+                    control={<Checkbox checked={genderFilter === ''} onChange={() => setGenderFilter('')} />}
+                    label='All'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={genderFilter == 'male'} onChange={() => setGenderFilter('male')} />}
+                    label='male'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={genderFilter == 'female'} onChange={() => setGenderFilter('female')} />}
+                    label='female'
+                  />
+                </Grid>
+
                 <Box sx={{ display: 'flex' }}>
                   <Typography sx={{ paddingRight: 2 }}>Room type</Typography>
                   <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
@@ -390,41 +285,8 @@ const ReservationBuilding = () => {
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                       <Button onClick={() => handleReservation(dorm.dorm_id)}>
                         <AddCircleIcon fontSize='small' sx={{ marginRight: 2 }} />
-                        Reservation Now!
+                        View details
                       </Button>
-
-                      <IconButton
-                        id='long-button'
-                        aria-label='share'
-                        aria-haspopup='true'
-                        onClick={handleClick}
-                        aria-controls='long-menu'
-                        aria-expanded={open ? 'true' : undefined}
-                      >
-                        <ShareVariant fontSize='small' />
-                      </IconButton>
-                      <Menu
-                        open={open}
-                        id='long-menu'
-                        anchorEl={anchorEl}
-                        onClose={handleClose}
-                        MenuListProps={{
-                          'aria-labelledby': 'long-button'
-                        }}
-                      >
-                        <MenuItem onClick={handleClose}>
-                          <Facebook />
-                        </MenuItem>
-                        <MenuItem onClick={handleClose}>
-                          <Twitter />
-                        </MenuItem>
-                        <MenuItem onClick={handleClose}>
-                          <Linkedin />
-                        </MenuItem>
-                        <MenuItem onClick={handleClose}>
-                          <GooglePlus />
-                        </MenuItem>
-                      </Menu>
                     </Box>
                   </CardActions>
                 </Grid>
@@ -436,4 +298,4 @@ const ReservationBuilding = () => {
   )
 }
 
-export default ReservationBuilding
+export default ReservationBuildingDetails

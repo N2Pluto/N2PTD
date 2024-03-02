@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import { CardHeader, Collapse, Divider, Grid, Paper, Stack, Step, StepConnector, StepLabel, Stepper, Table, TableCell, TableContainer, TableHead, stepConnectorClasses } from '@mui/material'
+import { CardHeader, Collapse, Divider, Grid, IconButton, Paper, Stack, Step, StepConnector, StepLabel, Stepper, Table, TableCell, TableContainer, TableHead, stepConnectorClasses } from '@mui/material'
 import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
 
@@ -23,6 +23,12 @@ import { Theme, styled } from '@mui/material/styles'
 import CorporateFareIcon from '@mui/icons-material/CorporateFare';
 import BedIcon from '@mui/icons-material/Bed';
 import BedroomParentIcon from '@mui/icons-material/BedroomParent'
+import * as React from 'react'
+import { CircularProgress } from '@mui/material'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
+
+import { IDormitoryBed } from 'src/interfaces/IDormitoryBed'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme}) => ({
   display: 'flex',
@@ -37,7 +43,7 @@ const StyledGrid = styled(Grid)<GridProps>(({ theme}) => ({
 }))
 
 interface Column {
-  id: 'room' | 'code' | 'details' | 'bedstatus'
+  id: 'details'| 'room' | 'code' | 'reserve' | 'bedstatus'
   label: string
   minWidth?: number
   align?: 'right'
@@ -45,6 +51,7 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
+  { id: 'details', label: 'DETAILS', minWidth: 30 },
   { id: 'room', label: 'room', minWidth: 30, align: 'center' },
   { id: 'code', label: 'bed capacity', minWidth: 150, align: 'center' },
   {
@@ -54,8 +61,8 @@ const columns: readonly Column[] = [
     align: 'center'
   },
   {
-    id: 'details',
-    label: 'details',
+    id: 'reserve',
+    label: 'reserve',
     minWidth: 170,
     align: 'center',
     format: (value: number) => value.toFixed(2)
@@ -69,6 +76,42 @@ const ReservationRoomTest = () => {
   const [dormitoryRoomStatus, setDormitoryRoomStatus] = useState([])
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
+  const [loading, setLoading] = useState(false)
+  const [reservationData, setReservationData] = useState<Map<string, any[]>>(new Map())
+
+  const [open, setOpen] = useState({}) // Change this line
+
+  const handleClick = id => {
+    setOpen(prevOpen => ({
+      ...prevOpen,
+      [id]: !prevOpen[id]
+    }))
+  }
+
+  useEffect(() => {
+    const fetchReservationData = async (roomId: string) => {
+      try {
+        setLoading(true)
+        const response = await fetch(`/api/reservation/checkUserReservationBoom?room_id=${roomId}`)
+        const data = await response.json()
+        setReservationData(prevData => {
+          const newData = new Map(prevData)
+          newData.set(roomId, data)
+
+          return newData
+        })
+        setLoading(false)
+      } catch (error) {
+        console.error('Error fetching reservation data:', error)
+        setLoading(false)
+      }
+    }
+
+    dormitoryRoom.forEach(room => {
+      fetchReservationData(room.room_id)
+    })
+  }, [dormitoryRoom])
+
   const steps = ['Reservation', 'Building', 'Room' ,'Bed']
 
   const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
@@ -153,7 +196,7 @@ const ReservationRoomTest = () => {
     }
 
     fetchDataAndUpdateStatus()
-    const intervalId = setInterval(fetchDataAndUpdateStatus, 1000)
+    const intervalId = setInterval(fetchDataAndUpdateStatus, 50000)
 
     return () => clearInterval(intervalId)
   }, []) // Remove dormitoryRoomStatus from dependencies
@@ -183,7 +226,7 @@ const ReservationRoomTest = () => {
     }
 
     fetchDataAndUpdateStatusRoom()
-    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 1000)
+    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 50000)
 
     return () => clearInterval(intervalId)
   }, [])
@@ -227,17 +270,23 @@ const ReservationRoomTest = () => {
             </TableHead>
             <TableBody>
               {dormitoryRoom.map(room => (
-                <TableRow hover role='checkbox' tabIndex={-1} key={room.room_id}>
+                <React.Fragment key={room.room_id}>
+                <TableRow hover role='checkbox' tabIndex={-1}>
+                  <TableCell>
+                    <IconButton aria-label='expand row' size='small' onClick={() => handleClick(room.room_id)}>
+                      {open[room.room_id] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                    </IconButton>
+                  </TableCell>
                   <TableCell align='center'>{room.room_number}</TableCell>
                   <TableCell align='center'>
                     {Array.from({ length: room.bed_available }, (_, index) => (
-                      <Tooltip title='Booking information goes here' key={index}>
+                      <Tooltip title='This bed already reserve.' key={index}>
                         <PersonIcon color='primary' />
                       </Tooltip>
                     ))}
 
                     {Array.from({ length: room.bed_capacity - room.bed_available }, (_, index) => (
-                      <Tooltip title='no information ' key={index}>
+                      <Tooltip title='This bed is available' key={index}>
                         <PersonIcon />
                       </Tooltip>
                     ))}
@@ -257,6 +306,25 @@ const ReservationRoomTest = () => {
                     </Box>
                   </TableCell>
                 </TableRow>
+                <TableRow>
+                  <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                    <Collapse in={open[room.room_id]} timeout='auto' unmountOnExit>
+                      {' '}
+                      <Box sx={{ margin: 1 }}>
+                        {(reservationData.get(room.room_id) || []).map((reservation, index) => (
+                          <Typography key={index} variant='body1' gutterBottom component='div'>
+                            <strong>{`BED ${index + 1}:`}</strong>
+                            <strong>Student ID:</strong> {reservation.Users?.student_id}
+                            <strong>Year:</strong> {reservation.Users?.student_year}
+                            <strong>Course:</strong> {reservation.Users?.course}
+                            <strong>Religion:</strong> {reservation.Users?.religion}
+                          </Typography>
+                        ))}
+                      </Box>
+                    </Collapse>
+                  </TableCell>
+                </TableRow>
+              </React.Fragment>
               ))}
             </TableBody>
           </Table>
