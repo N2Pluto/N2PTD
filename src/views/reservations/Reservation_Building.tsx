@@ -111,10 +111,6 @@ const ReservationBuilding = () => {
     }
   }, [user]);
 
-
-
-
-
   const QontoConnector = styled(StepConnector)(({ theme }) => ({
     [`&.${stepConnectorClasses.alternativeLabel}`]: {
       top: 10,

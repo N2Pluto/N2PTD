@@ -19,6 +19,7 @@ export interface IUser {
   facebook: string
   instagram: string
   phone: string
+  role: string
 }
 
 type StoreType = {

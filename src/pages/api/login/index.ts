@@ -30,7 +30,8 @@ const handler = async (req: any, res: any) => {
         region: user?.data?.region,
         student_year: user?.data?.student_year,
         user_status: user?.data?.user_status,
-        gender : user?.data?.gender
+        gender : user?.data?.gender,
+        role : user?.data?.role
 
       },
       process.env.JWT_SECRET,
@@ -49,7 +50,8 @@ const handler = async (req: any, res: any) => {
       region: user?.data?.region,
       student_year: user?.data?.student_year,
       user_status: user?.data?.user_status,
-      gender : user?.data?.gender
+      gender : user?.data?.gender,
+      role : user?.data?.role
     }
 
     res.status(200).json({ accessToken, user: userData })
