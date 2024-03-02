@@ -64,6 +64,10 @@ const ReservationBuilding = () => {
 
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
+  const { user } = userStore()
+
+  const [profileData, setProfileData] = useState(null)
+
   console.log('userStoreInstance:', userStoreInstance?.user)
   console.log('userStoreInstance Gender:', userStoreInstance?.user?.gender)
 
@@ -73,6 +77,43 @@ const ReservationBuilding = () => {
   const open = Boolean(anchorEl)
 
   const steps = ['Reservation', 'Building', 'Room' ,'Bed']
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch('/api/profile/fetchUserProfile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_id: user.user_id })
+        });
+        const data = await response.json();
+
+        // เปลี่ยนไปใช้ data ที่ได้จากการ fetch โดยตรง
+        console.log('gender', data.data.gender);
+
+        if (data.data.gender === 'male') {
+          console.log('male', data.data.gender);
+          setGenderFilter('male');
+        }
+        if (data.data.gender === 'female') {
+          console.log('female', data.data.gender);
+          setGenderFilter('female');
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+
+    if (user?.user_id) {
+      fetchUserProfile();
+    }
+  }, [user]);
+
+
+
+
 
   const QontoConnector = styled(StepConnector)(({ theme }) => ({
     [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -203,10 +244,7 @@ const ReservationBuilding = () => {
     }
 
     fetchData()
-    if (userStoreInstance.user) {
-      setGenderFilter(userStoreInstance?.user?.gender)
-    }
-  }, [userStoreInstance.user])
+  }, [ ])
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -311,7 +349,6 @@ const ReservationBuilding = () => {
                 <Grid container spacing={2} pb={5}>
                   <Button
                     onClick={() => {
-                      setGenderFilter('')
                       setBuildingFilter('')
                       setRoommateFilter('')
                     }}
