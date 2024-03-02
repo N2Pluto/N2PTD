@@ -1,0 +1,23 @@
+// ** MUI Imports
+import Grid from '@mui/material/Grid'
+import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
+import LayoutAuth from 'src/layouts/LayoutAuth'
+import ReservationBedDetails from 'src/views/reservation-detail/Detail_Bed'
+import ReservationBed from 'src/views/reservations/Reservation_Bed'
+import ReservationBedviwe from 'src/views/reservations/reservations_page/ReservationBed'
+
+const Reservation = () => {
+  return (
+    <LayoutAuth>
+      <ApexChartWrapper>
+        <Grid container spacing={6}>
+          <Grid item xs={12} md={12} lg={12}>
+            <ReservationBedDetails />
+          </Grid>
+        </Grid>
+      </ApexChartWrapper>
+    </LayoutAuth>
+  )
+}
+
+export default Reservation

@@ -27,11 +27,15 @@ const navigation = (): VerticalNavItemsType => {
       path: '/Dormitory'
     },
 
-
     {
       title: 'Reservation',
       icon: HomeOutline,
       path: '/reservation'
+    },
+    {
+      title: 'Reservation Detail',
+      icon: HomeOutline,
+      path: '/reservation-detail/building/'
     },
 
     // {
