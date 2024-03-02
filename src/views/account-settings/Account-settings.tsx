@@ -3,7 +3,7 @@ import { useState, ElementType, SyntheticEvent, useEffect, ChangeEvent } from 'r
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
-import Link from '@mui/material/Link'
+import Link from 'next/link'
 import Alert from '@mui/material/Alert'
 import Select from '@mui/material/Select'
 import { styled } from '@mui/material/styles'
@@ -175,13 +175,13 @@ const AccountSettings = () => {
     <Grid container spacing={3}>
       <Grid item xs={12} sm={12} md={12} lg={12}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Link href='/dashboard'>
+          <Link href='/dashboard' passHref >
             <Typography sx={{ whiteSpace: 'nowrap', pr: 3, color: 'text.primary' }} variant='body2'>
               Home
             </Typography>
           </Link>
           <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
-          <Link href='/profile'>
+          <Link href='/profile' passHref>
             <Typography sx={{ whiteSpace: 'nowrap', pr: 3, pl: 3, color: 'text.primary' }} variant='body2'>
               Profile
             </Typography>

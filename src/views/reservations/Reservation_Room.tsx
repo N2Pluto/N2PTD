@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import { CardHeader, Collapse, Divider, Grid, Paper, Table, TableCell, TableContainer, TableHead } from '@mui/material'
+import { CardHeader, Collapse, Divider, Grid, IconButton, Paper, Stack, Step, StepConnector, StepLabel, Stepper, Table, TableCell, TableContainer, TableHead, stepConnectorClasses } from '@mui/material'
 import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
 
@@ -17,13 +17,33 @@ import { Refresh } from 'mdi-material-ui'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import PersonIcon from '@mui/icons-material/Person'
-import IconButton from '@mui/material/IconButton'
-import ChevronUp from 'mdi-material-ui/ChevronUp'
-import ChevronDown from 'mdi-material-ui/ChevronDown'
 import Tooltip from '@mui/material/Tooltip'
+import SettingsIcon from '@mui/icons-material/Settings'
+import { Theme, styled } from '@mui/material/styles'
+import CorporateFareIcon from '@mui/icons-material/CorporateFare';
+import BedIcon from '@mui/icons-material/Bed';
+import BedroomParentIcon from '@mui/icons-material/BedroomParent'
+import * as React from 'react'
+import { CircularProgress } from '@mui/material'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
+
+import { IDormitoryBed } from 'src/interfaces/IDormitoryBed'
+
+const StyledGrid = styled(Grid)<GridProps>(({ theme}) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  [theme.breakpoints.down('md')]: {
+    borderBottom: `1px solid ${theme.palette.divider}`
+  },
+  [theme.breakpoints.up('md')]: {
+    borderRight: `1px solid ${theme.palette.divider}`
+  }
+}))
 
 interface Column {
-  id: 'room' | 'code' | 'details' | 'bedstatus'
+  id: 'details'| 'room' | 'code' | 'reserve' | 'bedstatus'
   label: string
   minWidth?: number
   align?: 'right'
@@ -31,6 +51,7 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
+  { id: 'details', label: 'DETAILS', minWidth: 30 },
   { id: 'room', label: 'room', minWidth: 30, align: 'center' },
   { id: 'code', label: 'bed capacity', minWidth: 150, align: 'center' },
   {
@@ -40,8 +61,8 @@ const columns: readonly Column[] = [
     align: 'center'
   },
   {
-    id: 'details',
-    label: 'details',
+    id: 'reserve',
+    label: 'reserve',
     minWidth: 170,
     align: 'center',
     format: (value: number) => value.toFixed(2)
@@ -55,6 +76,108 @@ const ReservationRoomTest = () => {
   const [dormitoryRoomStatus, setDormitoryRoomStatus] = useState([])
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
+  const [loading, setLoading] = useState(false)
+  const [reservationData, setReservationData] = useState<Map<string, any[]>>(new Map())
+
+  const [open, setOpen] = useState({}) // Change this line
+
+  const handleClick = id => {
+    setOpen(prevOpen => ({
+      ...prevOpen,
+      [id]: !prevOpen[id]
+    }))
+  }
+
+  useEffect(() => {
+    const fetchReservationData = async (roomId: string) => {
+      try {
+        setLoading(true)
+        const response = await fetch(`/api/reservation/checkUserReservationBoom?room_id=${roomId}`)
+        const data = await response.json()
+        setReservationData(prevData => {
+          const newData = new Map(prevData)
+          newData.set(roomId, data)
+
+          return newData
+        })
+        setLoading(false)
+      } catch (error) {
+        console.error('Error fetching reservation data:', error)
+        setLoading(false)
+      }
+    }
+
+    dormitoryRoom.forEach(room => {
+      fetchReservationData(room.room_id)
+    })
+  }, [dormitoryRoom])
+
+  const steps = ['Reservation', 'Building', 'Room' ,'Bed']
+
+  const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
+    [`&.${stepConnectorClasses.alternativeLabel}`]: {
+      top: 22
+    },
+    [`&.${stepConnectorClasses.active}`]: {
+      [`& .${stepConnectorClasses.line}`]: {
+        backgroundImage: 'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
+      }
+    },
+    [`&.${stepConnectorClasses.completed}`]: {
+      [`& .${stepConnectorClasses.line}`]: {
+        backgroundImage: 'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
+      }
+    },
+    [`& .${stepConnectorClasses.line}`]: {
+      height: 3,
+      border: 0,
+      backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#eaeaf0',
+      borderRadius: 1
+    }
+  }))
+
+
+
+  const ColorlibStepIconRoot = styled('div')<{ theme: Theme
+    ownerState: { completed?: boolean; active?: boolean };
+  }>(({ theme, ownerState }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#ccc',
+    zIndex: 1,
+    color: '#fff',
+    width: 50,
+    height: 50,
+    display: 'flex',
+    borderRadius: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...(ownerState.active && {
+      backgroundImage:
+        'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
+      boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',
+    }),
+    ...(ownerState.completed && {
+      backgroundImage:
+        'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
+    }),
+  }));
+
+  function ColorlibStepIcon(props: StepIconProps) {
+    const { active, completed, className } = props
+
+    const icons: { [index: string]: React.ReactElement } = {
+      1: <SettingsIcon />,
+      2: <CorporateFareIcon />,
+      3: <BedroomParentIcon />,
+      4: <BedIcon />
+    }
+
+    return (
+      <ColorlibStepIconRoot ownerState={{ completed, active }} className={className}>
+        {icons[String(props.icon)]}
+      </ColorlibStepIconRoot>
+    )
+  }
+
 
   useEffect(() => {
     const fetchDataRoomStatus = async () => {
@@ -73,7 +196,7 @@ const ReservationRoomTest = () => {
     }
 
     fetchDataAndUpdateStatus()
-    const intervalId = setInterval(fetchDataAndUpdateStatus, 1000)
+    const intervalId = setInterval(fetchDataAndUpdateStatus, 50000)
 
     return () => clearInterval(intervalId)
   }, []) // Remove dormitoryRoomStatus from dependencies
@@ -103,7 +226,7 @@ const ReservationRoomTest = () => {
     }
 
     fetchDataAndUpdateStatusRoom()
-    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 1000)
+    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 50000)
 
     return () => clearInterval(intervalId)
   }, [])
@@ -117,6 +240,21 @@ const ReservationRoomTest = () => {
 
   return (
     <>
+    <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
+          <Card>
+            <CardContent>
+              <Stack sx={{ width: '100%' }} spacing={4}>
+                <Stepper alternativeLabel activeStep={2} connector={<ColorlibConnector />}>
+                  {steps.map(label => (
+                    <Step key={label}>
+                      <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
+                    </Step>
+                  ))}
+                </Stepper>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
       <h1> {dormitoryBuilding?.name}</h1>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer sx={{ maxHeight: auto }}>
@@ -132,17 +270,23 @@ const ReservationRoomTest = () => {
             </TableHead>
             <TableBody>
               {dormitoryRoom.map(room => (
-                <TableRow hover role='checkbox' tabIndex={-1} key={room.room_id}>
+                <React.Fragment key={room.room_id}>
+                <TableRow hover role='checkbox' tabIndex={-1}>
+                  <TableCell>
+                    <IconButton aria-label='expand row' size='small' onClick={() => handleClick(room.room_id)}>
+                      {open[room.room_id] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                    </IconButton>
+                  </TableCell>
                   <TableCell align='center'>{room.room_number}</TableCell>
                   <TableCell align='center'>
                     {Array.from({ length: room.bed_available }, (_, index) => (
-                      <Tooltip title='Booking information goes here' key={index}>
+                      <Tooltip title='This bed already reserve.' key={index}>
                         <PersonIcon color='primary' />
                       </Tooltip>
                     ))}
 
                     {Array.from({ length: room.bed_capacity - room.bed_available }, (_, index) => (
-                      <Tooltip title='no information ' key={index}>
+                      <Tooltip title='This bed is available' key={index}>
                         <PersonIcon />
                       </Tooltip>
                     ))}
@@ -162,6 +306,25 @@ const ReservationRoomTest = () => {
                     </Box>
                   </TableCell>
                 </TableRow>
+                <TableRow>
+                  <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                    <Collapse in={open[room.room_id]} timeout='auto' unmountOnExit>
+                      {' '}
+                      <Box sx={{ margin: 1 }}>
+                        {(reservationData.get(room.room_id) || []).map((reservation, index) => (
+                          <Typography key={index} variant='body1' gutterBottom component='div'>
+                            <strong>{`BED ${index + 1}:`}</strong>
+                            <strong>Student ID:</strong> {reservation.Users?.student_id}
+                            <strong>Year:</strong> {reservation.Users?.student_year}
+                            <strong>Course:</strong> {reservation.Users?.course}
+                            <strong>Religion:</strong> {reservation.Users?.religion}
+                          </Typography>
+                        ))}
+                      </Box>
+                    </Collapse>
+                  </TableCell>
+                </TableRow>
+              </React.Fragment>
               ))}
             </TableBody>
           </Table>
