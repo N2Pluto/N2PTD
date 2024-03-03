@@ -13,16 +13,12 @@ const MUITable = () => {
     <AdminLayout>
       <Grid container spacing={6}>
         <Grid item xs={12}>
-          <Typography variant='h5'>
-            <Link href='https://mui.com/components/tables/' target='_blank'>
-              User Control
-            </Link>
-          </Typography>
+          <Typography variant='h5' sx={{pl:4}}>User information</Typography>
         </Grid>
 
         <Grid item xs={12}>
           <Card>
-            <CardHeader title='User Control Table' titleTypographyProps={{ variant: 'h6' }} />
+            <CardHeader title='User information Table' titleTypographyProps={{ variant: 'h6' }} />
             <UserControl />
           </Card>
         </Grid>

@@ -68,7 +68,7 @@ const useNavigation = (): VerticalNavItemsType => {
         path: '/admin/dashboardadmin'
       },
       {
-        title: 'USER CONTROL',
+        title: 'User information',
         icon: HomeOutline,
         path: '/admin/userControl'
       },
