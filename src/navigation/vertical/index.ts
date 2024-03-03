@@ -39,6 +39,9 @@ const useNavigation = (): VerticalNavItemsType => {
         if (data.data.role === 'admin') {
           console.log('admin');
           setRoleFilter('admin');
+        } else if (data.data.role === 'user') {
+          console.log('user');
+          setRoleFilter('user');
         }
 
 
@@ -74,7 +77,7 @@ const useNavigation = (): VerticalNavItemsType => {
       },
 
     ]
-  }else{
+  }else if(roleFilter === 'user'){
     return [
       {
         title: 'Home',
