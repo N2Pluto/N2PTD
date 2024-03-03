@@ -63,10 +63,16 @@ const useNavigation = (): VerticalNavItemsType => {
   if(roleFilter === 'admin'){
     return [
       {
-        title: 'admin',
+        title: 'Dashboard',
         icon: HomeOutline,
-        path: '/dashboardadmin'
-      }
+        path: '/admin/dashboardadmin'
+      },
+      {
+        title: 'USER CONTROL',
+        icon: HomeOutline,
+        path: '/admin/userControl'
+      },
+
     ]
   }else{
     return [

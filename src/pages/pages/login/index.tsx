@@ -107,7 +107,7 @@ const LoginPage = () => {
 
         //check role
         if (data?.user.role === 'admin') {
-          router.push('/dashboardadmin')
+          router.push('/admin/dashboardadmin')
         } else if (data?.user.role === null) {
           if (
             !data?.user.name ||
