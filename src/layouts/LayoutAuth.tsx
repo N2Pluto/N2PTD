@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'src/constants/Link'
 import profileService from 'src/services/profile.service'
 import { userStore } from 'src/stores/userStore'
+import Loading from './loadingpage'
 
 interface LayoutProps {
   children?: React.ReactNode
@@ -42,7 +43,7 @@ const LayoutAuth: React.FC<LayoutProps> = ({ children }) => {
     setLoading(false)
   }
 
-  return <React.Fragment>{loading ? <div>Loading</div> : <React.Fragment>{children}</React.Fragment>}</React.Fragment>
+  return <React.Fragment>{loading ? <Loading></Loading> : <React.Fragment>{children}</React.Fragment>}</React.Fragment>
 }
 
 export default LayoutAuth

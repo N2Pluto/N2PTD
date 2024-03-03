@@ -110,7 +110,7 @@ const UserDropdown = () => {
             <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
               <Typography sx={{ fontWeight: 600 }}>{user?.student_id}</Typography>
               <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
-                Admin
+                {/* Admin */}
               </Typography>
             </Box>
           </Box>
@@ -138,7 +138,7 @@ const UserDropdown = () => {
             Chat
           </Box>
         </MenuItem> */}
-        
+
         <Divider />
         <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
           <Box sx={styles}>

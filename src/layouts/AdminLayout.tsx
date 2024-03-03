@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'src/constants/Link'
 import profileService from 'src/services/profile.service'
 import { userStore } from 'src/stores/userStore'
+import LoadingPage from './loadingpage'
 
 interface LayoutProps {
   children?: React.ReactNode
@@ -84,7 +85,7 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
     setLoading(false)
   }
 
-  return <React.Fragment>{loading ? <div>Loading</div> : <React.Fragment>{children}</React.Fragment>}</React.Fragment>
+  return <React.Fragment>{loading ?<LoadingPage></LoadingPage> : <React.Fragment>{children}</React.Fragment>}</React.Fragment>
 }
 
 export default AdminLayout
