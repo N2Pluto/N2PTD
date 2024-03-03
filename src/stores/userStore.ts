@@ -19,6 +19,10 @@ export interface IUser {
   facebook: string
   instagram: string
   phone: string
+  activity: string
+  personality_pros: string
+  personality_cons: string
+  sleep: string
 }
 
 type StoreType = {

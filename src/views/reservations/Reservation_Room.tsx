@@ -6,10 +6,29 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import { CardHeader, Collapse, Divider, Grid, IconButton, Paper, Stack, Step, StepConnector, StepLabel, Stepper, Table, TableCell, TableContainer, TableHead, stepConnectorClasses } from '@mui/material'
+import Checkbox from '@mui/material/Checkbox'
+import {
+  CardHeader,
+  Collapse,
+  Divider,
+  Grid,
+  IconButton,
+  Paper,
+  Stack,
+  Step,
+  StepConnector,
+  StepLabel,
+  Stepper,
+  Table,
+  TableCell,
+  TableContainer,
+  TableHead,
+  stepConnectorClasses
+} from '@mui/material'
 import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
-
+import { CardActions, Dialog, DialogContent, DialogTitle, StepIconProps } from '@mui/material'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import TablePagination from '@mui/material/TablePagination'
 import { auto } from '@popperjs/core'
 import { userStore, IUser } from 'src/stores/userStore'
@@ -20,8 +39,8 @@ import PersonIcon from '@mui/icons-material/Person'
 import Tooltip from '@mui/material/Tooltip'
 import SettingsIcon from '@mui/icons-material/Settings'
 import { Theme, styled } from '@mui/material/styles'
-import CorporateFareIcon from '@mui/icons-material/CorporateFare';
-import BedIcon from '@mui/icons-material/Bed';
+import CorporateFareIcon from '@mui/icons-material/CorporateFare'
+import BedIcon from '@mui/icons-material/Bed'
 import BedroomParentIcon from '@mui/icons-material/BedroomParent'
 import * as React from 'react'
 import { CircularProgress } from '@mui/material'
@@ -29,8 +48,9 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 
 import { IDormitoryBed } from 'src/interfaces/IDormitoryBed'
+import { set } from 'nprogress'
 
-const StyledGrid = styled(Grid)<GridProps>(({ theme}) => ({
+const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -43,7 +63,7 @@ const StyledGrid = styled(Grid)<GridProps>(({ theme}) => ({
 }))
 
 interface Column {
-  id: 'details'| 'room' | 'code' | 'reserve' | 'bedstatus'
+  id: 'details' | 'room' | 'code' | 'reserve' | 'bedstatus'
   label: string
   minWidth?: number
   align?: 'right'
@@ -78,6 +98,11 @@ const ReservationRoomTest = () => {
   const { setUser } = userStoreInstance
   const [loading, setLoading] = useState(false)
   const [reservationData, setReservationData] = useState<Map<string, any[]>>(new Map())
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false)
+  const [roomFilter, setRoomFilter] = useState<string>('')
+  const [bedAvailableFilter, setBedAvailableFilter] = useState<number | null>(null)
+  const [courseFilter, setCourseFilter] = useState<string>('')
+  const [religionFilter, setReligionFilter] = useState<string>('')
 
   const [open, setOpen] = useState({}) // Change this line
 
@@ -112,7 +137,7 @@ const ReservationRoomTest = () => {
     })
   }, [dormitoryRoom])
 
-  const steps = ['Reservation', 'Building', 'Room' ,'Bed']
+  const steps = ['Reservation', 'Building', 'Room', 'Bed']
 
   const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
     [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -136,30 +161,26 @@ const ReservationRoomTest = () => {
     }
   }))
 
-
-
-  const ColorlibStepIconRoot = styled('div')<{ theme: Theme
-    ownerState: { completed?: boolean; active?: boolean };
-  }>(({ theme, ownerState }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#ccc',
-    zIndex: 1,
-    color: '#fff',
-    width: 50,
-    height: 50,
-    display: 'flex',
-    borderRadius: '50%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...(ownerState.active && {
-      backgroundImage:
-        'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
-      boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',
-    }),
-    ...(ownerState.completed && {
-      backgroundImage:
-        'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
-    }),
-  }));
+  const ColorlibStepIconRoot = styled('div')<{ theme: Theme; ownerState: { completed?: boolean; active?: boolean } }>(
+    ({ theme, ownerState }) => ({
+      backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#ccc',
+      zIndex: 1,
+      color: '#fff',
+      width: 50,
+      height: 50,
+      display: 'flex',
+      borderRadius: '50%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      ...(ownerState.active && {
+        backgroundImage: 'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
+        boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)'
+      }),
+      ...(ownerState.completed && {
+        backgroundImage: 'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)'
+      })
+    })
+  )
 
   function ColorlibStepIcon(props: StepIconProps) {
     const { active, completed, className } = props
@@ -177,7 +198,6 @@ const ReservationRoomTest = () => {
       </ColorlibStepIconRoot>
     )
   }
-
 
   useEffect(() => {
     const fetchDataRoomStatus = async () => {
@@ -238,23 +258,168 @@ const ReservationRoomTest = () => {
     router.push(`/reservation/bed/${room_id}`)
   }
 
+  const handleDialogToggle = () => {
+    setDialogOpen(!dialogOpen)
+  }
+
   return (
     <>
-    <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
-          <Card>
-            <CardContent>
-              <Stack sx={{ width: '100%' }} spacing={4}>
-                <Stepper alternativeLabel activeStep={2} connector={<ColorlibConnector />}>
-                  {steps.map(label => (
-                    <Step key={label}>
-                      <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
-                    </Step>
-                  ))}
-                </Stepper>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Grid>
+      <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
+        <Card>
+          <CardContent>
+            <Stack sx={{ width: '100%' }} spacing={4}>
+              <Stepper alternativeLabel activeStep={2} connector={<ColorlibConnector />}>
+                {steps.map(label => (
+                  <Step key={label}>
+                    <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+            </Stack>
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid pb={4}>
+        <Card>
+          <CardContent>
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
+              <Button onClick={handleDialogToggle}>Filter Room</Button>
+            </Box>
+            <Dialog open={dialogOpen} onClose={handleDialogToggle}>
+              <DialogTitle>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography>Filter Room</Typography>
+                  <IconButton onClick={handleDialogToggle}>
+                    <CloseIcon />
+                  </IconButton>
+                </Box>
+              </DialogTitle>
+              <DialogContent>
+                <Box sx={{ display: 'flex' }}>
+                  <Typography sx={{ paddingRight: 2 }}>Bed Available</Typography>
+                  <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
+                </Box>
+
+                <Grid container spacing={2} pb={5} pt={1}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox checked={bedAvailableFilter === null} onChange={() => setBedAvailableFilter(null)} />
+                    }
+                    label='All'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={bedAvailableFilter === 0} onChange={() => setBedAvailableFilter(0)} />}
+                    label='0'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={bedAvailableFilter === 1} onChange={() => setBedAvailableFilter(1)} />}
+                    label='1'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={bedAvailableFilter === 2} onChange={() => setBedAvailableFilter(2)} />}
+                    label='2'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={bedAvailableFilter === 3} onChange={() => setBedAvailableFilter(3)} />}
+                    label='3'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={bedAvailableFilter === 4} onChange={() => setBedAvailableFilter(4)} />}
+                    label='4'
+                  />
+                </Grid>
+
+                <Box sx={{ display: 'flex' }}>
+                  <Typography sx={{ paddingRight: 2 }}>Course</Typography>
+                  <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
+                </Box>
+                <Grid container spacing={2} pb={5} pt={1}>
+                  <FormControlLabel
+                    control={<Checkbox checked={courseFilter === ''} onChange={() => setCourseFilter('')} />}
+                    label='All'
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox checked={courseFilter === 'Single'} onChange={() => setCourseFilter('Single')} />
+                    }
+                    label='Single'
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox checked={courseFilter === 'Double'} onChange={() => setCourseFilter('Double')} />
+                    }
+                    label='Double'
+                  />
+                </Grid>
+
+                <Box sx={{ display: 'flex' }}>
+                  <Typography sx={{ paddingRight: 2 }}>Religion</Typography>
+                  <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
+                </Box>
+                <Grid container spacing={2} pb={5} pt={1}>
+                  <FormControlLabel
+                    control={<Checkbox checked={religionFilter === ''} onChange={() => setReligionFilter('')} />}
+                    label='All'
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={religionFilter === 'Christianity'}
+                        onChange={() => setReligionFilter('Christianity')}
+                      />
+                    }
+                    label='Christianity'
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox checked={religionFilter === 'Islam'} onChange={() => setReligionFilter('Islam')} />
+                    }
+                    label='Islam'
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={religionFilter === 'Buddhism'}
+                        onChange={() => setReligionFilter('Buddhism')}
+                      />
+                    }
+                    label='Buddhism'
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={religionFilter === 'Hinduism'}
+                        onChange={() => setReligionFilter('Hinduism')}
+                      />
+                    }
+                    label='Hinduism'
+                  />
+                </Grid>
+
+                <Grid container spacing={2} pb={5}>
+                  <Button
+                    onClick={() => {
+                      setBedAvailableFilter(null)
+                      setCourseFilter('')
+                      setReligionFilter('')
+                    }}
+                  >
+                    Clear
+                  </Button>
+                  <Button onClick={handleDialogToggle}>Apply</Button>
+                </Grid>
+              </DialogContent>
+            </Dialog>
+          </CardContent>
+        </Card>
+      </Grid>
       <h1> {dormitoryBuilding?.name}</h1>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer sx={{ maxHeight: auto }}>
@@ -269,63 +434,69 @@ const ReservationRoomTest = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {dormitoryRoom.map(room => (
-                <React.Fragment key={room.room_id}>
-                <TableRow hover role='checkbox' tabIndex={-1}>
-                  <TableCell>
-                    <IconButton aria-label='expand row' size='small' onClick={() => handleClick(room.room_id)}>
-                      {open[room.room_id] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                    </IconButton>
-                  </TableCell>
-                  <TableCell align='center'>{room.room_number}</TableCell>
-                  <TableCell align='center'>
-                    {Array.from({ length: room.bed_available }, (_, index) => (
-                      <Tooltip title='This bed already reserve.' key={index}>
-                        <PersonIcon color='primary' />
-                      </Tooltip>
-                    ))}
-
-                    {Array.from({ length: room.bed_capacity - room.bed_available }, (_, index) => (
-                      <Tooltip title='This bed is available' key={index}>
-                        <PersonIcon />
-                      </Tooltip>
-                    ))}
-                  </TableCell>
-                  <TableCell align='center'>{room.status ? <CheckIcon /> : <CloseIcon color='primary' />}</TableCell>
-                  <TableCell align='center'>
-                    <Box>
-                      {room.status ? (
-                        <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
-                          Select
-                        </Button>
-                      ) : (
-                        <Button variant='contained' color='error' disabled>
-                          Select
-                        </Button>
-                      )}
-                    </Box>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                    <Collapse in={open[room.room_id]} timeout='auto' unmountOnExit>
-                      {' '}
-                      <Box sx={{ margin: 1 }}>
-                        {(reservationData.get(room.room_id) || []).map((reservation, index) => (
-                          <Typography key={index} variant='body1' gutterBottom component='div'>
-                            <strong>{`BED ${index + 1}:`}</strong>
-                            <strong>Student ID:</strong> {reservation.Users?.student_id}
-                            <strong>Year:</strong> {reservation.Users?.student_year}
-                            <strong>Course:</strong> {reservation.Users?.course}
-                            <strong>Religion:</strong> {reservation.Users?.religion}
-                          </Typography>
+              {dormitoryRoom
+                .filter(room => bedAvailableFilter === null || room.bed_available === bedAvailableFilter)
+                .filter(room => courseFilter === '' || room.course === courseFilter)
+                .filter(room => religionFilter === '' || room.religion === religionFilter)
+                .map(room => (
+                  <React.Fragment key={room.room_id}>
+                    <TableRow hover role='checkbox' tabIndex={-1}>
+                      <TableCell>
+                        <IconButton aria-label='expand row' size='small' onClick={() => handleClick(room.room_id)}>
+                          {open[room.room_id] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                        </IconButton>
+                      </TableCell>
+                      <TableCell align='center'>{room.room_number}</TableCell>
+                      <TableCell align='center'>
+                        {Array.from({ length: room.bed_available }, (_, index) => (
+                          <Tooltip title='This bed already reserve.' key={index}>
+                            <PersonIcon color='primary' />
+                          </Tooltip>
                         ))}
-                      </Box>
-                    </Collapse>
-                  </TableCell>
-                </TableRow>
-              </React.Fragment>
-              ))}
+
+                        {Array.from({ length: room.bed_capacity - room.bed_available }, (_, index) => (
+                          <Tooltip title='This bed is available' key={index}>
+                            <PersonIcon />
+                          </Tooltip>
+                        ))}
+                      </TableCell>
+                      <TableCell align='center'>
+                        {room.status ? <CheckIcon /> : <CloseIcon color='primary' />}
+                      </TableCell>
+                      <TableCell align='center'>
+                        <Box>
+                          {room.status ? (
+                            <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
+                              Select
+                            </Button>
+                          ) : (
+                            <Button variant='contained' color='error' disabled>
+                              Select
+                            </Button>
+                          )}
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                        <Collapse in={open[room.room_id]} timeout='auto' unmountOnExit>
+                          {' '}
+                          <Box sx={{ margin: 1 }}>
+                            {(reservationData.get(room.room_id) || []).map((reservation, index) => (
+                              <Typography key={index} variant='body1' gutterBottom component='div'>
+                                <strong>{`BED ${index + 1}:`}</strong>
+                                <strong>Student ID:</strong> {reservation.Users?.student_id}
+                                <strong>Year:</strong> {reservation.Users?.student_year}
+                                <strong>Course:</strong> {reservation.Users?.course}
+                                <strong>Religion:</strong> {reservation.Users?.religion}
+                              </Typography>
+                            ))}
+                          </Box>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  </React.Fragment>
+                ))}
             </TableBody>
           </Table>
         </TableContainer>

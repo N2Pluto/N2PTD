@@ -15,11 +15,32 @@ async function updateUserInfo(
   facebook: string,
   instagram: string,
   phone: string,
+  activity: string,
+  personality_pros: string,
+  personality_cons: string,
+  sleep: string
 ) {
   try {
     const { data, error } = await supabase
       .from('Users')
-      .update({ name, lastname, student_year, school, course, religion, region , major , gender ,facebook , instagram ,phone})
+      .update({
+        name,
+        lastname,
+        student_year,
+        school,
+        course,
+        religion,
+        region,
+        major,
+        gender,
+        facebook,
+        instagram,
+        phone,
+        activity,
+        personality_pros,
+        personality_cons,
+        sleep
+      })
       .eq('user_id', user_id)
 
     if (error) {
@@ -32,7 +53,25 @@ async function updateUserInfo(
 
 const handler = async (req: any, res: any) => {
   middleware(req, res, async () => {
-    const { user_id, name, lastname, student_year, school, course, religion, region , major , gender ,facebook , instagram ,phone} = req.body
+    const {
+      user_id,
+      name,
+      lastname,
+      student_year,
+      school,
+      course,
+      religion,
+      region,
+      major,
+      gender,
+      facebook,
+      instagram,
+      phone,
+      activity,
+      personality_pros,
+      personality_cons,
+      sleep
+    } = req.body
     console.log('user_id', user_id)
 
     if (!user_id) {
@@ -40,9 +79,48 @@ const handler = async (req: any, res: any) => {
     }
 
     try {
-      await updateUserInfo(user_id, name, lastname, student_year, school, course, religion, region , major , gender ,facebook , instagram ,phone)
+      await updateUserInfo(
+        user_id,
+        name,
+        lastname,
+        student_year,
+        school,
+        course,
+        religion,
+        region,
+        major,
+        gender,
+        facebook,
+        instagram,
+        phone,
+        activity,
+        personality_pros,
+        personality_cons,
+        sleep
+      )
 
-      res.status(200).json({ data: { name, lastname, student_year, school, course, religion, region , major , gender ,facebook , instagram ,phone } })
+      res
+        .status(200)
+        .json({
+          data: {
+            name,
+            lastname,
+            student_year,
+            school,
+            course,
+            religion,
+            region,
+            major,
+            gender,
+            facebook,
+            instagram,
+            phone,
+            activity,
+            personality_pros,
+            personality_cons,
+            sleep
+          }
+        })
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
