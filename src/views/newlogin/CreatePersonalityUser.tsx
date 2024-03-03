@@ -3,7 +3,7 @@ import { useState, ElementType, SyntheticEvent, useEffect, ChangeEvent } from 'r
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
-import Link from '@mui/material/Link'
+import Link from 'next/link'
 import Alert from '@mui/material/Alert'
 import Select from '@mui/material/Select'
 import { styled } from '@mui/material/styles'
@@ -22,6 +22,8 @@ import { user, setUser } from 'src/stores/userStore'
 import router from 'next/router'
 import Card from '@mui/material/Card'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
+import FooterIllustrationsV1 from '../pages/auth/FooterIllustration'
+import { Divider } from '@mui/material'
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 150,
@@ -46,7 +48,7 @@ const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
   }
 }))
 
-const CreateNewUser = () => {
+const CreatePersonalityUser = () => {
   const { user } = userStore()
 
   const [profileData, setProfileData] = useState(null)
@@ -80,13 +82,17 @@ const CreateNewUser = () => {
     student_year: profileData?.data.student_year,
     school: profileData?.data.school,
     course: profileData?.data.course,
-    major: profileData?.data.major,
     religion: profileData?.data.religion,
     region: profileData?.data.region,
+    major: profileData?.data.major,
     gender: profileData?.data.gender,
-    phone: profileData?.data.phone,
     facebook: profileData?.data.facebook,
     instagram: profileData?.data.instagram,
+    phone: profileData?.data.phone,
+    activity: profileData?.data.activity,
+    personality_pros: profileData?.data.personality_pros,
+    personality_cons: profileData?.data.personality_cons,
+    sleep: profileData?.data.sleep
   })
 
   console.log('profileData', profileData)
@@ -108,14 +114,6 @@ const CreateNewUser = () => {
       // your code
       setFormData(prevState => ({ ...prevState, student_year: '1' }))
     }
-    if (user?.student_id.toString().startsWith('62')) {
-      // your code
-      setFormData(prevState => ({ ...prevState, student_year: '5' }))
-    }
-    if (user?.student_id.toString().startsWith('61')) {
-      // your code
-      setFormData(prevState => ({ ...prevState, student_year: '6' }))
-    }
   }, [user?.student_id])
 
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
@@ -136,13 +134,17 @@ const CreateNewUser = () => {
           student_year: formData.student_year,
           school: formData.school,
           course: formData.course,
-          major: formData?.major,
           religion: formData.religion,
           region: formData.region,
-          gender: formData?.gender,
-          phone: formData?.phone,
-          facebook: formData?.facebook,
-          instagram: formData?.instagram
+          major: formData.major,
+          gender: formData.gender,
+          facebook: formData.facebook,
+          instagram: formData.instagram,
+          phone: formData.phone,
+          activity: formData.activity,
+          personality_pros: formData.personality_pros,
+          personality_cons: formData.personality_cons,
+          sleep: formData.sleep
         })
       })
 
@@ -153,7 +155,7 @@ const CreateNewUser = () => {
       } else {
         console.log('Data Update Success:', data)
         alert('Data Update Success')
-        router.push('/pages/newlogin/personality')
+        router.push('/profile/')
       }
     } catch (error) {
       console.error('Error Update data into USers table:', error.message)
@@ -179,193 +181,81 @@ const CreateNewUser = () => {
 
   return (
     <Grid container spacing={3}>
+
       <Grid item xs={12} sm={12} md={12} lg={12}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Link href='/pages/login'>
+
+        <Box sx={{ display: 'flex', alignItems: 'center' , justifyContent:'center'}}>
+          <Link href='/dashboard' passHref>
+            <Typography sx={{ whiteSpace: 'nowrap', pr: 3, color: 'text.primary' }} variant='body2'>
+              Home
+            </Typography>
+          </Link>
+          <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
+          <Link href='/profile' passHref>
             <Typography sx={{ whiteSpace: 'nowrap', pr: 3, pl: 3, color: 'text.primary' }} variant='body2'>
-              Login
+              Profile
             </Typography>
           </Link>
           <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
           <Typography sx={{ whiteSpace: 'nowrap', pl: 3 }} variant='body2'>
-            Create New User
+            Edit Account
           </Typography>
         </Box>
       </Grid>
+      <Grid item xs={1} sm={1} md={1} lg={1}></Grid>
       <Grid item xs={12} sm={12} md={12} lg={5}>
-        <Box sx={{ height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <CardContent>
-            <form onSubmit={handleUserInfo}>
-              <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
-                <Box sx={{ alignItems: 'center', justifyItems: 'center' }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <ImgStyled src={imgSrc} alt='Profile Pic' />
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <Typography variant='body2' sx={{ marginTop: 5 }}>
-                      Allowed PNG or JPEG. Max size of 800K.
-                    </Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 3 }}>
-                    <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
-                      Upload Photo
-                      <input
-                        hidden
-                        type='file'
-                        onChange={onChange}
-                        accept='image/png, image/jpeg'
-                        id='account-settings-upload-image'
-                      />
-                    </ButtonStyled>
-                  </Box>
-                </Box>
-              </Grid>
-            </form>
-          </CardContent>
-        </Box>
-      </Grid>
-      <Grid item xs={12} sm={12} md={12} lg={5}>
-        <Box sx={{ height: '700px', justifyContent: 'center', alignItems: 'center' }}>
+        <Box sx={{ justifyContent: 'center', alignItems: 'center' }}>
           <CardContent>
             <form onSubmit={handleUserInfo}>
               <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='Student id' name='Student id' defaultValue={user?.student_id} disabled />
+                <Grid item xs={12} sm={12}>
+                  <Typography variant='h5' sx={{ mb: 3, pl: 2 }}>
+                    LIFE STYLE
+                  </Typography>
                 </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='Email' name='Email' defaultValue={user?.email} disabled />
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={12}>
                   <TextField
                     fullWidth
-                    label='gender'
-                    name='gender'
-                    value={user?.gender}
-                    onChange={handleChange}
-                    disabled
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='Student_Year'
-                    name='student_year'
-                    value={formData.student_year}
-                    onChange={handleChange}
-                    disabled
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='Name'
-                    name='name'
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='Lastname'
-                    name='lastname'
-                    value={formData.lastname}
+                    label='Activity'
+                    name='activity'
+                    value={formData.activity}
                     onChange={handleChange}
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={12}>
                   <TextField
                     fullWidth
-                    label='School'
-                    name='school'
-                    value={formData.school}
+                    label='Personality (Pros)'
+                    name='personality_pros'
+                    value={formData.personality_pros}
                     onChange={handleChange}
-                    required
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={12}>
                   <TextField
                     fullWidth
-                    label='Department'
-                    name='course'
-                    value={formData.course}
+                    label='Personality (Cons)'
+                    name='personality_cons'
+                    value={formData.personality_cons}
                     onChange={handleChange}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='Major'
-                    name='major'
-                    value={formData.major}
-                    onChange={handleChange}
-                    required
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={12}>
                   <TextField
                     fullWidth
-                    label='Religion'
-                    name='religion'
-                    value={formData.religion}
+                    label='Sleep Style'
+                    name='sleep'
+                    value={formData.sleep}
                     onChange={handleChange}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='Region'
-                    name='region'
-                    value={formData.region}
-                    onChange={handleChange}
-                    required
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='Facebook'
-                    name='facebook'
-                    value={formData.facebook}
-                    onChange={handleChange}
-                    required
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='Instagram'
-                    name='instagram'
-                    value={formData.instagram}
-                    onChange={handleChange}
-                    required
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='Phone'
-                    name='phone'
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
                   />
                 </Grid>
 
                 <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button type='submit' variant='contained' color='primary'>
-                    SAVE & NEXT!
+                    SAVE CHANGES!
                   </Button>
                 </Grid>
               </Grid>
@@ -373,8 +263,10 @@ const CreateNewUser = () => {
           </CardContent>
         </Box>
       </Grid>
+      <Grid item xs={1} sm={1} md={1} lg={1}></Grid>
+      {/* <FooterIllustrationsV1 /> */}
     </Grid>
   )
 }
 
-export default CreateNewUser
+export default CreatePersonalityUser
