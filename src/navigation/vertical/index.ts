@@ -44,9 +44,6 @@ const useNavigation = (): VerticalNavItemsType => {
           setRoleFilter('user');
         }
 
-
-
-
       } catch (error) {
         console.error('Error fetching user profile:', error);
       }
