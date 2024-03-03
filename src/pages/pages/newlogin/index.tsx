@@ -39,7 +39,7 @@ const Newlogin = () => {
           <Grid item xs={12} sm={12} md={12}>
             <CreateNewUser />
           </Grid>
-          <FooterIllustrationsV1 />
+          {/* <FooterIllustrationsV1 /> */}
         </Grid>
       </Grid>
     </LayoutAuth>

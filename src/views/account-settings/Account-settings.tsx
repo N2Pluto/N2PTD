@@ -24,6 +24,117 @@ import Card from '@mui/material/Card'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import FooterIllustrationsV1 from '../pages/auth/FooterIllustration'
 import { Divider } from '@mui/material'
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
+
+const school: SchoolOptionType[] = [
+  {
+    title: 'School of Management',
+    course: ['Marketing Management', 'Logistics Management', 'Tourism and Hospitality'],
+    major: ['Digital Marketing and Branding', 'Logistics Management', 'Hospitality Industry']
+  },
+  { title: 'School of Nursing', course: ['Nursing Science'], major: ['Nursing Science'] },
+  {
+    title: 'School of Political Science and Public Administration',
+    course: ['Public Administration', 'Political Science'],
+    major: ['Public Administration', 'Political Science']
+  },
+  {
+    title: 'School of Engineering and Technology',
+    course: [
+      'Civil Engineering',
+      'Electrical Engineering',
+      'Materials Engineer',
+      'Mechanical Engineer',
+      'Chemical Engineer',
+      'Computer Engineer'
+    ],
+    major: [
+      'Civil Engineering',
+      'Electrical Engineering',
+      'Petrochemical and Polymer Engineering',
+      'Mechanical and Robotic Engineering',
+      'Chemical Engineering and Pharmaceutical Chemistry',
+      'Computer Engineering and Artificial Intelligence'
+    ]
+  },
+  {
+    title: 'School of Architecture and Design',
+    course: ['Architecture', 'Interior Architecture'],
+    major: ['Architecture Program', 'Interior Design Program']
+  },
+  {
+    title: 'School of Public Health',
+    course: ['Public Health'],
+    major: ['Public Health Program in Community Public Health']
+  },
+  { title: 'School of Medicine', course: ['Medicine'], major: ['Medicine Program'] },
+  {
+    title: 'School of Science',
+    course: ['Physics', 'Chemistry', 'Biology'],
+    major: ['Physical Program', 'Chemical Program', 'Biology Program']
+  },
+  {
+    title: 'International College of Dentistry',
+    course: ['Dental Surgery '],
+    major: ['Doctor of Dental Surgery Program']
+  },
+  {
+    title: 'Akkhraratchakumari Veterinary College',
+    course: ['Veterinary Science'],
+    major: ['Doctor of Veterinary Medicine Program']
+  },
+  { title: 'School of Accounting and Finance' },
+  { title: 'School of Agricultural Technology and Food Industry' },
+  { title: 'School of Law' },
+  { title: 'International Veterinary College' },
+  { title: 'Faculty of Liberal Arts' },
+  { title: 'School of Information Science' },
+  { title: 'School of Allied Health Sciences' }
+]
+
+interface SchoolOptionType {
+  title: string
+  course?: string[]
+  major?: string[]
+}
+
+const schoolOptions = createFilterOptions({
+  matchFrom: 'start',
+  stringify: (option: SchoolOptionType) => option.title
+})
+
+const religion: ReligionOptionType = [
+  { title: 'Buddhism' },
+  { title: 'Christianity' },
+  { title: 'Islam' },
+  { title: 'Hinduism' },
+  { title: 'Sikhism' },
+  { title: 'Judaism' },
+  { title: 'Baháʼí Faith' },
+  { title: 'Jainism' },
+  { title: 'Shinto' },
+  { title: 'Cao Dai' },
+  { title: 'Zoroastrianism' },
+  { title: 'Tenrikyo' },
+  { title: 'Wicca' },
+  { title: 'Rastafari' },
+  { title: 'Unitarian Universalism' },
+  { title: 'Scientology' },
+  { title: 'Bahaism' },
+  { title: 'Paganism' },
+  { title: 'Atheism' },
+  { title: 'Agnosticism' },
+  { title: 'Other' }
+]
+
+interface ReligionOptionType {
+  title: string
+}
+
+const religionOptions = createFilterOptions({
+  matchFrom: 'start',
+  stringify: (option: string) => option
+})
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 150,
@@ -52,6 +163,8 @@ const AccountSettings = () => {
   const { user } = userStore()
 
   const [profileData, setProfileData] = useState(null)
+  const [selectedSchool, setSelectedSchool] = useState<SchoolOptionType | null>(null)
+  const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -269,27 +382,59 @@ const AccountSettings = () => {
                     onChange={handleChange}
                   />
                 </Grid>
-
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='School' name='school' value={formData.school} onChange={handleChange} />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='Course' name='course' value={formData.course} onChange={handleChange} />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='Major' name='major' value={formData.major} onChange={handleChange} />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='Religion'
-                    name='religion'
-                    value={formData.religion}
-                    onChange={handleChange}
+                <Grid item xs={12} sm={12}>
+                  <Autocomplete
+                    id='school-demo'
+                    options={school}
+                    getOptionLabel={option => option.title}
+                    onChange={(event, newValue) => {
+                      setSelectedSchool(newValue)
+                      setSelectedCourse(null)
+                      setFormData({ ...formData, school: newValue ? newValue.title : '' })
+                    }}
+                    renderInput={params => <TextField {...params} label='School' />}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField fullWidth label='Region' name='region' value={formData.region} onChange={handleChange} />
+
+                {selectedSchool && selectedSchool.course && (
+                  <Grid item xs={12} sm={12}>
+                    <Autocomplete
+                      id='course-demo'
+                      options={selectedSchool.course}
+                      getOptionLabel={option => option}
+                      onChange={(event, newValue) => {
+                        setSelectedCourse(newValue)
+                        setFormData({ ...formData, course: newValue || '' })
+                      }}
+                      renderInput={params => <TextField {...params} label='Course' />}
+                    />
+                  </Grid>
+                )}
+
+                {selectedCourse && selectedSchool?.major && (
+                  <Grid item xs={12} sm={12}>
+                    <Autocomplete
+                      id='major-demo'
+                      options={selectedSchool.major}
+                      getOptionLabel={option => option}
+                      onChange={(event, newValue) => {
+                        setFormData({ ...formData, major: newValue || '' })
+                      }}
+                      renderInput={params => <TextField {...params} label='Major' />}
+                    />
+                  </Grid>
+                )}
+
+                <Grid item xs={12} sm={12}>
+                  <Autocomplete
+                    id='filter-demo'
+                    options={religion}
+                    getOptionLabel={option => option.title}
+                    onChange={(event, newValue) => {
+                      setFormData({ ...formData, religion: newValue ? newValue.title : '' })
+                    }}
+                    renderInput={params => <TextField {...params} label='Religion' />}
+                  />
                 </Grid>
 
                 <Grid item xs={12} sm={12}>
@@ -297,7 +442,7 @@ const AccountSettings = () => {
                     Social
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={12}>
                   <TextField
                     fullWidth
                     label='Facebook'
