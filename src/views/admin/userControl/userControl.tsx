@@ -8,6 +8,7 @@ import TableContainer from '@mui/material/TableContainer'
 import TableRow, { TableRowProps } from '@mui/material/TableRow'
 import TableCell, { TableCellProps, tableCellClasses } from '@mui/material/TableCell'
 import { Divider, Grid } from '@mui/material'
+import { useEffect, useState } from 'react'
 
 const StyledTableCell = styled(TableCell)<TableCellProps>(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -30,32 +31,42 @@ const StyledTableRow = styled(TableRow)<TableRowProps>(({ theme }) => ({
   }
 }))
 
-const createData = (email: string, calories: number, fat: number, carbs: number, protein: number) => {
-  return { email, calories, fat, carbs, protein }
-}
-
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9)
-]
-
 const UserControl = () => {
+
+  const [user, setUser] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await fetch('/api/userControl/fetch_user').then(res => res.json())
+        setUser(data)
+      } catch (error) {
+        console.error('Error fetching dormitory building data:', error)
+      }
+    }
+    fetchData()
+  }, [ ])
+
+  const createData = (email: string, STUDENT: string, name: string, lastname: string, phone: string,role:string) => {
+    return { email, STUDENT, name, lastname, phone ,role}
+  }
+
+  const rows = user.map((u) => createData(u.email, u.student_id,u.name ,u.lastname, u.phone, u.role));
+
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} sm={12} md={12} lg={12} sx={{pl:3}}>
         {' '}
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 700 }} aria-label='customized table'>
+          <Table sx={{ minWidth: 700 }}>
             <TableHead>
               <TableRow>
-                <StyledTableCell>Dessert (100g serving)</StyledTableCell>
-                <StyledTableCell align='right'>Calories</StyledTableCell>
-                <StyledTableCell align='right'>Fat (g)</StyledTableCell>
-                <StyledTableCell align='right'>Carbs (g)</StyledTableCell>
-                <StyledTableCell align='right'>Protein (g)</StyledTableCell>
+                <StyledTableCell>email</StyledTableCell>
+                <StyledTableCell align='right'>Student ID</StyledTableCell>
+                <StyledTableCell align='right'>name</StyledTableCell>
+                <StyledTableCell >Last name</StyledTableCell>
+                <StyledTableCell align='right'>phone</StyledTableCell>
+                <StyledTableCell align='right'>Role</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -64,10 +75,11 @@ const UserControl = () => {
                   <StyledTableCell component='th' scope='row'>
                     {row.email}
                   </StyledTableCell>
-                  <StyledTableCell align='right'>{row.calories}</StyledTableCell>
-                  <StyledTableCell align='right'>{row.fat}</StyledTableCell>
-                  <StyledTableCell align='right'>{row.carbs}</StyledTableCell>
-                  <StyledTableCell align='right'>{row.protein}</StyledTableCell>
+                  <StyledTableCell align='right'>{row.STUDENT}</StyledTableCell>
+                  <StyledTableCell align='right'>{row.name}</StyledTableCell>
+                  <StyledTableCell >{row.lastname}</StyledTableCell>
+                  <StyledTableCell align='right'>{row.phone}</StyledTableCell>
+                  <StyledTableCell align='right'>{row.role}</StyledTableCell>
                 </StyledTableRow>
               ))}
             </TableBody>

@@ -22,7 +22,7 @@ const MUITable = () => {
 
         <Grid item xs={12}>
           <Card>
-            <CardHeader title='Customized Table' titleTypographyProps={{ variant: 'h6' }} />
+            <CardHeader title='User Control Table' titleTypographyProps={{ variant: 'h6' }} />
             <UserControl />
           </Card>
         </Grid>
