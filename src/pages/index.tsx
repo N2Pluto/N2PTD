@@ -44,11 +44,6 @@ const LandingPage = () => {
             Register
           </Button>
         </Link>
-        <Link href='/pages/loginadmin' passHref>
-          <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }}>
-            admin
-          </Button>
-        </Link>
       </CardContent>
       <FooterIllustrationsV1 />
     </Box>

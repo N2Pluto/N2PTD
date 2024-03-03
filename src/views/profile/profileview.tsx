@@ -21,12 +21,14 @@ import InstagramIcon from '@mui/icons-material/Instagram'
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone'
 import Link from 'next/link'
 import FooterIllustrationsV1 from '../pages/auth/FooterIllustration'
+import CustomizedMenus from './component/ButtonSpeedDial'
 
 const Profile = () => {
   const { user } = userStore()
   console.log(user)
 
   const [profileData, setProfileData] = useState(null)
+
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -85,9 +87,10 @@ const Profile = () => {
                 </Typography>
                 <Typography variant='caption'>{profileData?.data.student_id}</Typography>
               </Box>
-              <Link href='/profile/account-settings' passHref>
+              {/* <Link href='/profile/account-settings' passHref>
                 <Button variant='contained'>Edit</Button>
-              </Link>
+              </Link> */}
+              <CustomizedMenus />
             </Box>
           </CardContent>
         </Card>
@@ -151,11 +154,27 @@ const Profile = () => {
 
               <Box sx={{ display: 'flex', pt: 2 }}>
                 <Box sx={{ pr: 3 }}>
+                  <SchoolIcon />
+                </Box>
+                <Box sx={{ pr: 2 }}>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    School :
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    {profileData?.data.school}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box sx={{ display: 'flex', pt: 2 }}>
+                <Box sx={{ pr: 3 }}>
                   <AccountBalanceIcon />
                 </Box>
                 <Box sx={{ pr: 2 }}>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    course :
+                    Course :
                   </Typography>
                 </Box>
                 <Box>
@@ -171,12 +190,12 @@ const Profile = () => {
                 </Box>
                 <Box sx={{ pr: 2 }}>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    School :
+                    Major :
                   </Typography>
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.school}
+                    {profileData?.data.major}
                   </Typography>
                 </Box>
               </Box>
@@ -264,7 +283,85 @@ const Profile = () => {
           </CardContent>
         </Card>
       </Grid>
-      <FooterIllustrationsV1 />
+
+      <Grid item xs={12} md={6} lg={4}>
+        <Card sx={{ position: 'relative' }}>
+          <CardContent>
+            <Box>
+              <Typography variant='h6' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                Life Style
+              </Typography>
+
+              <Box sx={{ display: 'flex', pt: 3 }}>
+                <Box sx={{ pr: 3 }}>
+                  <FacebookIcon />
+                </Box>
+                <Box sx={{ pr: 2 }}>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    activity :
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    {profileData?.data.activity}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box sx={{ display: 'flex', pt: 2 }}>
+                <Box sx={{ pr: 3 }}>
+                  <InstagramIcon />
+                </Box>
+                <Box sx={{ pr: 2 }}>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    Personality Pros :
+                  </Typography>
+                </Box>
+                <Box>
+                  <Link href={`https://www.instagram.com/${profileData?.data.instagram}`} passHref>
+                    <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                      {profileData?.data.personality_pros}
+                    </Typography>
+                  </Link>
+                </Box>
+              </Box>
+
+              <Box sx={{ display: 'flex', pt: 2 }}>
+                <Box sx={{ pr: 3 }}>
+                  <LocalPhoneIcon />
+                </Box>
+                <Box sx={{ pr: 2 }}>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    Personality Cons :
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    {profileData?.data.personality_cons}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box sx={{ display: 'flex', pt: 2 }}>
+                <Box sx={{ pr: 3 }}>
+                  <LocalPhoneIcon />
+                </Box>
+                <Box sx={{ pr: 2 }}>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    Sleep :
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    {profileData?.data.sleep}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+            <Divider />
+          </CardContent>
+        </Card>
+      </Grid>
     </Grid>
   )
 }

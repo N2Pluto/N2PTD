@@ -105,13 +105,23 @@ const LoginPage = () => {
 
         localStorage.setItem('accessToken', data.accessToken)
 
-        // Redirect to /Dormitory page
-
-        if (!data?.user.name || !data?.user.course || !data?.user.school || !data?.user.lastname || !data?.user.religion || !data?.user?.region) {
-          router.push('/pages/newlogin')
-        } else {
-          console.log('data:', data)
-          router.push('/dashboard')
+        //check role
+        if (data?.user.role === 'admin') {
+          router.push('/dashboardadmin')
+        } else if (data?.user.role === null) {
+          if (
+            !data?.user.name ||
+            !data?.user.course ||
+            !data?.user.school ||
+            !data?.user.lastname ||
+            !data?.user.religion ||
+            !data?.user?.region
+          ) {
+            router.push('/pages/newlogin')
+          } else {
+            console.log('data:', data)
+            router.push('/dashboard')
+          }
         }
       } else {
         const errorData = await response.json()
@@ -222,6 +232,13 @@ const LoginPage = () => {
               <Typography variant='body2'>
                 <Link passHref href='/pages/register'>
                   <LinkStyled>Create an account</LinkStyled>
+                </Link>
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'right', pt: 6 }}>
+              <Typography variant='body2'>
+                <Link passHref href='/'>
+                  <LinkStyled>back to home</LinkStyled>
                 </Link>
               </Typography>
             </Box>

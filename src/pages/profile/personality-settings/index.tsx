@@ -3,8 +3,7 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 
 import LayoutAuth from 'src/layouts/LayoutAuth'
-import AccounSetting from 'src/views/account-settings/Account-settings'
-import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
+import PersonalitySettings from 'src/views/personality-settings/Personality-settings'
 
 const accountsetting = () => {
   return (
@@ -14,11 +13,9 @@ const accountsetting = () => {
           <Typography variant='h5'>Edit Account</Typography>
         </Grid>
         <Grid item xs={12} sm={12} md={12}>
-        <AccounSetting/>
-
+          <PersonalitySettings/>
         </Grid>
       </Grid>
-
     </LayoutAuth>
   )
 }

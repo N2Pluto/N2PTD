@@ -9,7 +9,7 @@ const handler = async (req: any, res: any) => {
 
     const { email, password } = req.body
 
-    const admid = await supabase
+    const admin = await supabase
       .from('Admin')
       .select('email,password,admin_id')
       .eq('email', email)
@@ -17,24 +17,24 @@ const handler = async (req: any, res: any) => {
       .single()
 
     // Check password
-    if (admid?.data?.password !== password) {
+    if (admin?.data?.password !== password) {
       return res.status(401).json({ message: 'Not found identity' })
     }
 
     // Sign JWT token
     const accessToken = jwt.sign(
-      { student_id: admid?.data? email: admid?.data?.email, user_id: admid?.data?.admin_id },
+      { student_id: admin?.data? email: admin?.data?.email, admin_id: admin?.data?.admin_id },
       process.env.JWT_SECRET,
       { expiresIn: '100h' }
     )
 
-    const userData = {
-      admin_id: admid?.data?.admin_id,
-      email: admid?.data?.email,
+    const adminData = {
+      admin_id: admin?.data?.admin_id,
+      email: admin?.data?.email,
     }
-    console.log('user?.data', admid?.data)
+    console.log('admin?.data', admin?.data)
 
-    res.status(200).json({ accessToken, user: userData })
+    res.status(200).json({ accessToken, user: adminData })
   } catch (error) {
     console.log('error', error)
   }

@@ -12,113 +12,172 @@ import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
 
 // ** Type import
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
-
-const navigation = (): VerticalNavItemsType => {
-  return [
-    {
-      title: 'Home',
-      icon: HomeOutline,
-      path: '/dashboard'
-    },
-
-    {
-      title: 'Dormitory',
-      icon: HomeOutline,
-      path: '/Dormitory'
-    },
+import { userStore } from 'src/stores/userStore'
+import { useEffect, useState } from 'react'
 
 
-    {
-      title: 'Reservation',
-      icon: HomeOutline,
-      path: '/reservation'
-    },
 
-    // {
-    //   title: 'Reservation Detail',
-    //   icon: HomeOutline,
-    //   path: '/reservation-detail/building/'
-    // },
+const useNavigation = (): VerticalNavItemsType => {
+  const { user } = userStore()
+  const [roleFilter, setRoleFilter] = useState<string>('')
 
-    // {
-    //   title: 'Billing',
-    //   icon: HomeOutline,
-    //   path: '/Billing'
-    // },
-    // {
-    //   title: 'Electricity Regression',
-    //   icon: HomeOutline,
-    //   path: '/Regression'
-    // },
-    {
-      title: 'Profile',
-      icon: HomeOutline,
-      path: '/profile'
-    },
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch('/api/profile/fetchUserProfile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_id: user.user_id })
+        });
+        const data = await response.json();
 
-    // {
-    //   sectionTitle: 'Pages'
-    // },
+        // เปลี่ยนไปใช้ data ที่ได้จากการ fetch โดยตรง
+        console.log('', data.data.role);
 
-    // {
-    //   title: 'Dashboard',
-    //   icon: HomeOutline,
-    //   path: '/dashboard'
-    // },
+        if (data.data.role === 'admin') {
+          console.log('admin');
+          setRoleFilter('admin');
+        }
 
-    // {
-    //   title: 'Login',
-    //   icon: Login,
-    //   path: '/pages/login',
-    //   // openInNewTab: true
-    // },
-    // {
-    //   title: 'Account Settings',
-    //   icon: AccountCogOutline,
-    //   path: '/account-settings'
-    // },
 
-    // {
-    //   title: 'Register',
-    //   icon: AccountPlusOutline,
-    //   path: '/pages/register',
-    //   // openInNewTab: true
-    // },
-    // {
-    //   title: 'Error',
-    //   icon: AlertCircleOutline,
-    //   path: '/pages/error',
-    //   openInNewTab: true
-    // },
-    {
-      sectionTitle: 'User Interface'
-    },
-    {
-      title: 'Typography',
-      icon: FormatLetterCase,
-      path: '/typography'
-    },
-    {
-      title: 'Icons',
-      path: '/icons',
-      icon: GoogleCirclesExtended
-    },
-    {
-      title: 'Cards',
-      icon: CreditCardOutline,
-      path: '/cards'
-    },
-    {
-      title: 'Tables',
-      icon: Table,
-      path: '/tables'
-    },
-    {
-      icon: CubeOutline,
-      title: 'Form Layouts',
-      path: '/form-layouts'
+
+
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+
+    if (user?.user_id) {
+      fetchUserProfile();
     }
-  ]
+  }, [user]);
+
+
+
+
+
+  console.log('user',user)
+
+  if(roleFilter === 'admin'){
+    return [
+      {
+        title: 'admin',
+        icon: HomeOutline,
+        path: '/dashboardadmin'
+      }
+    ]
+  }else{
+    return [
+      {
+        title: 'Home',
+        icon: HomeOutline,
+        path: '/dashboard'
+      },
+
+      {
+        title: 'Dormitory',
+        icon: HomeOutline,
+        path: '/Dormitory'
+      },
+
+
+      {
+        title: 'Reservation',
+        icon: HomeOutline,
+        path: '/reservation'
+      },
+
+      // {
+      //   title: 'Reservation Detail',
+      //   icon: HomeOutline,
+      //   path: '/reservation-detail/building/'
+      // },
+
+      // {
+      //   title: 'Billing',
+      //   icon: HomeOutline,
+      //   path: '/Billing'
+      // },
+      // {
+      //   title: 'Electricity Regression',
+      //   icon: HomeOutline,
+      //   path: '/Regression'
+      // },
+      {
+        title: 'Profile',
+        icon: HomeOutline,
+        path: '/profile'
+      },
+
+      // {
+      //   sectionTitle: 'Pages'
+      // },
+
+      // {
+      //   title: 'Dashboard',
+      //   icon: HomeOutline,
+      //   path: '/dashboard'
+      // },
+
+      // {
+      //   title: 'Login',
+      //   icon: Login,
+      //   path: '/pages/login',
+      //   // openInNewTab: true
+      // },
+      // {
+      //   title: 'Account Settings',
+      //   icon: AccountCogOutline,
+      //   path: '/account-settings'
+      // },
+
+      // {
+      //   title: 'Register',
+      //   icon: AccountPlusOutline,
+      //   path: '/pages/register',
+      //   // openInNewTab: true
+      // },
+      // {
+      //   title: 'Error',
+      //   icon: AlertCircleOutline,
+      //   path: '/pages/error',
+      //   openInNewTab: true
+      // },
+      {
+        sectionTitle: 'User Interface'
+      },
+      {
+        title: 'Typography',
+        icon: FormatLetterCase,
+        path: '/typography'
+      },
+      {
+        title: 'Icons',
+        path: '/icons',
+        icon: GoogleCirclesExtended
+      },
+      {
+        title: 'Cards',
+        icon: CreditCardOutline,
+        path: '/cards'
+      },
+      {
+        title: 'Tables',
+        icon: Table,
+        path: '/tables'
+      },
+      {
+        icon: CubeOutline,
+        title: 'Form Layouts',
+        path: '/form-layouts'
+      }
+    ]
+
+  }
+
+
 }
 
-export default navigation
+export default useNavigation
