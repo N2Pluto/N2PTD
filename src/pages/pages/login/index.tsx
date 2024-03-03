@@ -125,6 +125,8 @@ const LoginPage = () => {
         }
       } else {
         const errorData = await response.json()
+        alert('Login failed : Email or password is incorrect.')
+
         console.log('Login failed:', errorData.message)
       }
     } catch (error) {
