@@ -28,8 +28,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         // Check bed_available to set new status
         if (bed_available === bed_capacity) {
           newStatus = false
-        } else {
-          newStatus = true
         }
 
         // Update the status of the room
