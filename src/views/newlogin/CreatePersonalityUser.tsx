@@ -24,6 +24,76 @@ import Card from '@mui/material/Card'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import FooterIllustrationsV1 from '../pages/auth/FooterIllustration'
 import { Divider } from '@mui/material'
+import * as React from 'react'
+import Checkbox from '@mui/material/Checkbox'
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
+import CheckBoxIcon from '@mui/icons-material/CheckBox'
+
+const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
+const checkedIcon = <CheckBoxIcon fontSize='small' />
+
+const activity = [
+  { title: 'Basketball' },
+  { title: 'Read a Book' },
+  { title: 'Football' },
+  { title: 'Play a game' },
+  { title: 'Hang out' },
+  { title: 'Watch a movie' },
+  { title: 'Listen to music' },
+  { title: 'Cooking' },
+  { title: 'Travel' },
+  { title: 'Shopping' },
+  { title: 'Swimming' },
+  { title: 'Running' },
+  { title: 'Cycling' },
+  { title: 'Tennis' },
+  { title: 'Golf' },
+  { title: 'Volleyball' },
+  { title: 'Badminton' },
+  { title: 'Table Tennis' },
+  { title: 'Gym' },
+  { title: 'Yoga' },
+  { title: 'Dance' },
+  { title: 'Meditation' },
+  { title: 'Fishing' },
+  { title: 'Photography' },
+  { title: 'Drawing' },
+  { title: 'Singing' },
+  { title: 'Playing an instrument' },
+  { title: 'Gardening' },
+  { title: 'Hiking' },
+  { title: 'Camping' },
+  { title: 'Skiing' },
+  { title: 'Snowboarding' },
+  { title: 'Surfing' },
+  { title: 'Skateboarding' },
+  { title: 'Rollerblading' },
+  { title: 'Ice Skating' },
+  { title: 'Bowling' },
+  { title: 'Billiards' },
+  { title: 'Darts' },
+  { title: 'Chess' },
+  { title: 'Poker' },
+  { title: 'Mahjong' },
+  { title: 'Board Games' },
+  { title: 'Video Games' },
+  { title: 'Karaoke' },
+  { title: 'Clubbing' },
+  { title: 'Bar Hopping' },
+  { title: 'Wine Tasting' }
+]
+
+const sleep = [{ title: 'Early Bird' }, { title: 'Night Owl' }, { title: 'Normal' }]
+
+interface sleepType {
+  title: string
+}
+
+const sleepTypeOption = createFilterOptions({
+  matchFrom: 'start',
+  stringify: (option: sleepType) => option.title
+})
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 150,
@@ -181,10 +251,8 @@ const CreatePersonalityUser = () => {
 
   return (
     <Grid container spacing={3}>
-
       <Grid item xs={12} sm={12} md={12} lg={12}>
-
-        <Box sx={{ display: 'flex', alignItems: 'center' , justifyContent:'center'}}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Link href='/dashboard' passHref>
             <Typography sx={{ whiteSpace: 'nowrap', pr: 3, color: 'text.primary' }} variant='body2'>
               Home
@@ -198,62 +266,55 @@ const CreatePersonalityUser = () => {
           </Link>
           <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
           <Typography sx={{ whiteSpace: 'nowrap', pl: 3 }} variant='body2'>
-            Edit Account
+            Edit Personality
           </Typography>
         </Box>
       </Grid>
-      <Grid item xs={1} sm={1} md={1} lg={1}></Grid>
+      <Grid item xs={4} sm={4} md={4} lg={4}></Grid>
       <Grid item xs={12} sm={12} md={12} lg={5}>
         <Box sx={{ justifyContent: 'center', alignItems: 'center' }}>
           <CardContent>
             <form onSubmit={handleUserInfo}>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={12}>
-                  <Typography variant='h5' sx={{ mb: 3, pl: 2 }}>
+                  <Typography variant='h5' sx={{ mb: 5, pl: 2, pt: 2 }}>
                     LIFE STYLE
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={12}>
-                  <TextField
-                    fullWidth
-                    label='Activity'
-                    name='activity'
-                    value={formData.activity}
-                    onChange={handleChange}
+                  <Autocomplete
+                    multiple
+                    id='checkboxes-tags-demo'
+                    options={activity}
+                    disableCloseOnSelect
+                    getOptionLabel={option => option.title}
+                    onChange={(event, newValue) => {
+                      setFormData({ ...formData, activity: newValue.map(option => option.title).join(', ') })
+                    }}
+                    renderOption={(props, option, { selected }) => (
+                      <li {...props}>
+                        <Checkbox icon={icon} checkedIcon={checkedIcon} style={{ marginRight: 8 }} checked={selected} />
+                        {option.title}
+                      </li>
+                    )}
+                    style={{ width: 500 }}
+                    renderInput={params => <TextField {...params} label='Activity' placeholder='Favorites' fullWidth />}
                   />
                 </Grid>
-
                 <Grid item xs={12} sm={12}>
-                  <TextField
-                    fullWidth
-                    label='Personality (Pros)'
-                    name='personality_pros'
-                    value={formData.personality_pros}
-                    onChange={handleChange}
+                  <Autocomplete
+                    id='filter-demo'
+                    options={sleep}
+                    getOptionLabel={option => option.title}
+                    onChange={(event, newValue) => {
+                      setFormData({ ...formData, sleep: newValue ? newValue.title : '' })
+                    }}
+                    style={{ width: 500 }}
+                    renderInput={params => <TextField {...params} label='Sleep Style' fullWidth />}
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={12}>
-                  <TextField
-                    fullWidth
-                    label='Personality (Cons)'
-                    name='personality_cons'
-                    value={formData.personality_cons}
-                    onChange={handleChange}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sm={12}>
-                  <TextField
-                    fullWidth
-                    label='Sleep Style'
-                    name='sleep'
-                    value={formData.sleep}
-                    onChange={handleChange}
-                  />
-                </Grid>
-
-                <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Grid item xs={10} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button type='submit' variant='contained' color='primary'>
                     SAVE CHANGES!
                   </Button>

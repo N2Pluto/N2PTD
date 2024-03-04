@@ -120,21 +120,6 @@ const Profile = () => {
                 </Box>
               </Box>
 
-              <Box sx={{ display: 'flex', pt: 2 }}>
-                <Box sx={{ pr: 3 }}>
-                  <LocationOnIcon />
-                </Box>
-                <Box sx={{ pr: 2 }}>
-                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    Region :
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.region}
-                  </Typography>
-                </Box>
-              </Box>
 
               <Box sx={{ display: 'flex', pt: 2 }}>
                 <Box sx={{ pr: 3 }}>
@@ -298,7 +283,7 @@ const Profile = () => {
                 </Box>
                 <Box sx={{ pr: 2 }}>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    activity :
+                    Activity :
                   </Typography>
                 </Box>
                 <Box>
@@ -308,39 +293,8 @@ const Profile = () => {
                 </Box>
               </Box>
 
-              <Box sx={{ display: 'flex', pt: 2 }}>
-                <Box sx={{ pr: 3 }}>
-                  <InstagramIcon />
-                </Box>
-                <Box sx={{ pr: 2 }}>
-                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    Personality Pros :
-                  </Typography>
-                </Box>
-                <Box>
-                  <Link href={`https://www.instagram.com/${profileData?.data.instagram}`} passHref>
-                    <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                      {profileData?.data.personality_pros}
-                    </Typography>
-                  </Link>
-                </Box>
-              </Box>
 
-              <Box sx={{ display: 'flex', pt: 2 }}>
-                <Box sx={{ pr: 3 }}>
-                  <LocalPhoneIcon />
-                </Box>
-                <Box sx={{ pr: 2 }}>
-                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    Personality Cons :
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.personality_cons}
-                  </Typography>
-                </Box>
-              </Box>
+
 
               <Box sx={{ display: 'flex', pt: 2 }}>
                 <Box sx={{ pr: 3 }}>
