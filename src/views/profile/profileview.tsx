@@ -96,7 +96,7 @@ const Profile = () => {
         </Card>
       </Box>
 
-      <Grid item xs={12} md={6} lg={4} sx={{ pb: 3 }}>
+      <Grid item xs={12} md={6} lg={6} sx={{ pb: 3 }}>
         <Card sx={{ position: 'relative' }}>
           <CardContent>
             <Box>
@@ -206,7 +206,7 @@ const Profile = () => {
         </Card>
       </Grid>
 
-      <Grid item xs={12} md={6} lg={4}>
+      <Grid item xs={12} md={6} lg={6} sx={{ pb: 3 }}>
         <Card sx={{ position: 'relative' }}>
           <CardContent>
             <Box>
@@ -269,7 +269,7 @@ const Profile = () => {
         </Card>
       </Grid>
 
-      <Grid item xs={12} md={6} lg={4}>
+      <Grid item xs={12} md={6} lg={6}>
         <Card sx={{ position: 'relative' }}>
           <CardContent>
             <Box>
