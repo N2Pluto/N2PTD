@@ -482,7 +482,7 @@ const ReservationRoomTest = () => {
                         <Collapse in={open[room.room_id]} timeout='auto' unmountOnExit>
                           {' '}
                           <Box sx={{ margin: 1 }}>
-                            {(reservationData.get(room.room_id) || []).map((reservation, index) => (
+                            {Array.isArray(reservationData.get(room.room_id)) ? reservationData.get(room.room_id).map((reservation, index) => (
                               <Typography key={index} variant='body1' gutterBottom component='div'>
                                 <strong>{`BED ${index + 1}:`}</strong>
                                 <strong>Student ID:</strong> {reservation.Users?.student_id}
@@ -490,7 +490,7 @@ const ReservationRoomTest = () => {
                                 <strong>Course:</strong> {reservation.Users?.course}
                                 <strong>Religion:</strong> {reservation.Users?.religion}
                               </Typography>
-                            ))}
+                            )) : null}
                           </Box>
                         </Collapse>
                       </TableCell>
