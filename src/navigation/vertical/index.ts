@@ -72,6 +72,44 @@ const useNavigation = (): VerticalNavItemsType => {
         icon: HomeOutline,
         path: '/admin/userControl'
       },
+      {
+        title: 'Building Control ',
+        icon: HomeOutline,
+        path: '/admin/buildingControl'
+      },
+      {
+        sectionTitle: 'User Interface'
+      },
+      {
+        title: 'Home',
+        icon: HomeOutline,
+        path: '/dashboard'
+      },
+      {
+        title: 'Typography',
+        icon: FormatLetterCase,
+        path: '/typography'
+      },
+      {
+        title: 'Icons',
+        path: '/icons',
+        icon: GoogleCirclesExtended
+      },
+      {
+        title: 'Cards',
+        icon: CreditCardOutline,
+        path: '/cards'
+      },
+      {
+        title: 'Tables',
+        icon: Table,
+        path: '/tables'
+      },
+      {
+        icon: CubeOutline,
+        title: 'Form Layouts',
+        path: '/form-layouts'
+      }
 
     ]
   }else if(roleFilter === 'user'){
@@ -95,22 +133,6 @@ const useNavigation = (): VerticalNavItemsType => {
         path: '/reservation'
       },
 
-      // {
-      //   title: 'Reservation Detail',
-      //   icon: HomeOutline,
-      //   path: '/reservation-detail/building/'
-      // },
-
-      // {
-      //   title: 'Billing',
-      //   icon: HomeOutline,
-      //   path: '/Billing'
-      // },
-      // {
-      //   title: 'Electricity Regression',
-      //   icon: HomeOutline,
-      //   path: '/Regression'
-      // },
       {
         title: 'Profile',
         icon: HomeOutline,

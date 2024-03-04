@@ -27,6 +27,65 @@ const Dashboard = () => {
   return (
     <LayoutAuth>
       <ApexChartWrapper>
+        <Grid container spacing={6}>
+          <Grid item xs={12} md={6} lg={4}>
+            <CardStatisticsVerticalComponent
+              icon={<Poll />}
+              title='Total Sales'
+              statistic='2,367'
+              color='primary'
+              statisticTitle='Sales'
+            />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <CardStatisticsVerticalComponent
+              icon={<CurrencyUsd />}
+              title='Total Earnings'
+              statistic='$ 89,500'
+              color='success'
+              statisticTitle='Earnings'
+            />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <CardStatisticsVerticalComponent
+              icon={<HelpCircleOutline />}
+              title='Support Tickets'
+              statistic='45'
+              color='warning'
+              statisticTitle='Tickets'
+            />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <CardStatisticsVerticalComponent
+              icon={<BriefcaseVariantOutline />}
+              title='Business Leads'
+              statistic='1,345'
+              color='info'
+              statisticTitle='Leads'
+            />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <StatisticsCard />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <Trophy />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <TotalEarning />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <Table />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <WeeklyOverview />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <DepositWithdraw />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <SalesByCountries />
+          </Grid>
+        </Grid>
 
       </ApexChartWrapper>
     </LayoutAuth>
