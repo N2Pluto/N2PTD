@@ -50,6 +50,12 @@ const TotalBuilding = () => {
     fetchData()
   }, [])
 
+  
+
+  const freeRoom = room.filter(b => b.status === true).length
+  const reservedRoom = room.filter(b => b.status === false).length
+
+
   const freeBeds = bed.filter(b => b.bed_status === true).length
   const reservedBeds = bed.filter(b => b.bed_status === false).length
 
@@ -61,7 +67,7 @@ const TotalBuilding = () => {
       avatarColor: 'success',
     },
     {
-      name: room.length,
+      name: `Room All : ${room.length} | Free : ${freeRoom} | Reserved : ${reservedRoom}`,
       title: 'Room',
       avatarText: <BedroomParentIcon />,
       avatarColor: 'error'
