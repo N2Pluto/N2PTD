@@ -1,3 +1,4 @@
+
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Card from '@mui/material/Card'
@@ -46,6 +47,8 @@ import * as React from 'react'
 import { CircularProgress } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
+import ConstructionIcon from '@mui/icons-material/Construction';
+
 
 import { IDormitoryBed } from 'src/interfaces/IDormitoryBed'
 import { set } from 'nprogress'
@@ -104,9 +107,10 @@ const ReservationRoomTest = () => {
   const [courseFilter, setCourseFilter] = useState<string>('')
   const [religionFilter, setReligionFilter] = useState<string>('')
 
-  const [open, setOpen] = useState({}) // Change this line
+  const [open, setOpen] = useState<Record<string | number, boolean>>({})
 
-  const handleClick = id => {
+
+  const handleClick = (id: string | number) => {
     setOpen(prevOpen => ({
       ...prevOpen,
       [id]: !prevOpen[id]
@@ -461,17 +465,31 @@ const ReservationRoomTest = () => {
                         ))}
                       </TableCell>
                       <TableCell align='center'>
-                        {room.status ? <CheckIcon /> : <CloseIcon color='primary' />}
+                      {room.room_rehearse ? (
+                            room.status ? (
+                              <CheckIcon />
+                            ) : (
+                              <CloseIcon color='primary' />
+                            )
+                          ) : (
+                            <ConstructionIcon color='error' />
+                          )}
                       </TableCell>
                       <TableCell align='center'>
                         <Box>
-                          {room.status ? (
-                            <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
-                              Select
-                            </Button>
+                          {room.room_rehearse ? (
+                            room.status ? (
+                              <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
+                                Select
+                              </Button>
+                            ) : (
+                              <Button variant='contained' color='error' disabled>
+                                Full
+                              </Button>
+                            )
                           ) : (
                             <Button variant='contained' color='error' disabled>
-                              Select
+                              Closed for maintenance
                             </Button>
                           )}
                         </Box>
@@ -482,15 +500,17 @@ const ReservationRoomTest = () => {
                         <Collapse in={open[room.room_id]} timeout='auto' unmountOnExit>
                           {' '}
                           <Box sx={{ margin: 1 }}>
-                            {Array.isArray(reservationData.get(room.room_id)) ? reservationData.get(room.room_id).map((reservation, index) => (
-                              <Typography key={index} variant='body1' gutterBottom component='div'>
-                                <strong>{`BED ${index + 1}:`}</strong>
-                                <strong>Student ID:</strong> {reservation.Users?.student_id}
-                                <strong>Year:</strong> {reservation.Users?.student_year}
-                                <strong>Course:</strong> {reservation.Users?.course}
-                                <strong>Religion:</strong> {reservation.Users?.religion}
-                              </Typography>
-                            )) : null}
+                            {Array.isArray(reservationData.get(room.room_id))
+                              ? reservationData.get(room.room_id).map((reservation, index) => (
+                                  <Typography key={index} variant='body1' gutterBottom component='div'>
+                                    <strong>{`BED ${index + 1}:`}</strong>
+                                    <strong>Student ID:</strong> {reservation.Users?.student_id}
+                                    <strong>Year:</strong> {reservation.Users?.student_year}
+                                    <strong>Course:</strong> {reservation.Users?.course}
+                                    <strong>Religion:</strong> {reservation.Users?.religion}
+                                  </Typography>
+                                ))
+                              : null}
                           </Box>
                         </Collapse>
                       </TableCell>

@@ -1,9 +1,9 @@
 import supabase from 'src/libs/supabase'
 import middleware from '../middleware'
 
-async function updateUserInfo(room_id: string, status: boolean) {
+async function updateUserInfo(room_id: string, room_rehearse: boolean) {
   try {
-    const { data, error } = await supabase.from('Dormitory_Room').update({ status }).eq('room_id', room_id)
+    const { data, error } = await supabase.from('Dormitory_Room').update({ room_rehearse }).eq('room_id', room_id)
 
     if (error) {
       console.error(error.message)
@@ -15,7 +15,7 @@ async function updateUserInfo(room_id: string, status: boolean) {
 }
 
 const handler = async (req: any, res: any) => {
-  const { room_id, status } = req.body
+  const { room_id, room_rehearse } = req.body
   console.log('room_id', room_id)
 
   if (!room_id) {
@@ -23,11 +23,11 @@ const handler = async (req: any, res: any) => {
   }
 
   try {
-    await updateUserInfo(room_id, status)
+    await updateUserInfo(room_id, room_rehearse)
 
     res.status(200).json({
       data: {
-        status
+        room_rehearse
       }
     })
   } catch (error) {

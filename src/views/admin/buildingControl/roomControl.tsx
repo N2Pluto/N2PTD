@@ -51,7 +51,7 @@ const RoomControl = () => {
         },
         body: JSON.stringify({
           room_id: roomId,
-          status: !currentStatus // Toggle the status
+          room_rehearse: !currentStatus // Toggle the status
         })
       })
 
@@ -92,15 +92,15 @@ const RoomControl = () => {
               <TableCell align='center'>{room.bed_capacity}</TableCell>
               <TableCell align='center'>{room.bed_available}</TableCell>
               <TableCell align='center'>
-                <Button onClick={() => handleUserInfo(room.room_id, room.status)}>
-                  {room.status ? <CheckIcon /> : <CloseIcon color='primary' />}
+                <Button onClick={() => handleUserInfo(room.room_id, room.room_rehearse)}>
+                  {room.room_rehearse ? <CheckIcon /> : <CloseIcon color='primary' />}
                 </Button>
               </TableCell>
 
               <TableCell align='center'>
-                <Button variant='contained' onClick={() => handleSelect(room.dorm_id)}>
+                {/* <Button variant='contained' onClick={() => handleSelect(room.dorm_id)}>
                   Select
-                </Button>
+                </Button> */}
               </TableCell>
             </TableRow>
           ))}
