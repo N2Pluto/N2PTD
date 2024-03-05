@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .select(
         `
       user_id,
-      Users (name, lastname ,  course, student_id ,religion , student_year , region , school )
+      Users (*)
 
     `
       )

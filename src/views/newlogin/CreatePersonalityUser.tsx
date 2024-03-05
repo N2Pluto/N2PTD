@@ -84,7 +84,25 @@ const activity = [
   { title: 'Wine Tasting' }
 ]
 
-const sleep = [{ title: 'Early Bird' }, { title: 'Night Owl' }, { title: 'Normal' }]
+const redflag = [
+  { title: 'Dirty' },
+  { title: 'Smoke' },
+  { title: 'Drink' },
+  { title: 'Party' },
+  { title: 'Play loud music' },
+  { title: 'Bring friends over' },
+  { title: 'Be messy' },
+  { title: 'Be noisy' },
+  { title: 'Be a night owl' },
+  { title: 'Be a morning person' },
+  { title: 'Be a pet owner' }
+]
+
+const sleep = [
+  { title: 'Before Midnight' },
+  { title: 'After Midnight' },
+  { title: 'Some nights before midnight, some nights after midnight' }
+]
 
 interface sleepType {
   title: string
@@ -94,6 +112,52 @@ const sleepTypeOption = createFilterOptions({
   matchFrom: 'start',
   stringify: (option: sleepType) => option.title
 })
+
+const school = [
+  { title: 'find roommates who attend the same school' },
+  { title: 'find roommates from any school' },
+  { title: 'find both' }
+]
+
+interface schoolType {
+  title: string
+}
+
+const schoolTypeOption = createFilterOptions({
+  matchFrom: 'start',
+  stringify: (option: schoolType) => option.title
+})
+
+const major = [
+  { title: 'find roommates who study the same major' },
+  { title: 'find roommates from any major' },
+  { title: 'find both' }
+]
+
+interface majorType {
+  title: string
+}
+
+const majorTypeOption = createFilterOptions({
+  matchFrom: 'start',
+  stringify: (option: majorType) => option.title
+})
+
+const religion = [
+  { title: 'find roommates who have the same religion' },
+  { title: 'find roommates from any religion' },
+  { title: 'find both' }
+]
+
+interface religionType {
+  title: string
+}
+
+const religionTypeOption = createFilterOptions({
+  matchFrom: 'start',
+  stringify: (option: religionType) => option.title
+})
+
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 150,
@@ -160,9 +224,11 @@ const CreatePersonalityUser = () => {
     instagram: profileData?.data.instagram,
     phone: profileData?.data.phone,
     activity: profileData?.data.activity,
-    personality_pros: profileData?.data.personality_pros,
-    personality_cons: profileData?.data.personality_cons,
-    sleep: profileData?.data.sleep
+    sleep: profileData?.data.sleep,
+    filter_school: profileData?.data.filter_school,
+    filter_major: profileData?.data.filter_major,
+    filter_religion: profileData?.data.filter_religion,
+    filter_redflag: profileData?.data.filter_redflag
   })
 
   console.log('profileData', profileData)
@@ -212,9 +278,11 @@ const CreatePersonalityUser = () => {
           instagram: formData.instagram,
           phone: formData.phone,
           activity: formData.activity,
-          personality_pros: formData.personality_pros,
-          personality_cons: formData.personality_cons,
-          sleep: formData.sleep
+          sleep: formData.sleep,
+          filter_school: formData.filter_school,
+          filter_major: formData.filter_major,
+          filter_religion: formData.filter_religion,
+          filter_redflag: formData.filter_redflag
         })
       })
 
@@ -277,10 +345,55 @@ const CreatePersonalityUser = () => {
             <form onSubmit={handleUserInfo}>
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={12}>
-                  <Typography variant='h5' sx={{ mb: 5, pl: 2, pt: 2 }}>
+                  <Typography variant='h5' sx={{ mb: 3, pl: 2 }}>
+                    Requirement
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={12} sm={12}>
+                  <Autocomplete
+                    id='filter-demo'
+                    options={school}
+                    getOptionLabel={option => option.title}
+                    onChange={(event, newValue) => {
+                      setFormData({ ...formData, filter_school: newValue ? newValue.title : '' })
+                    }}
+                    style={{ width: 500 }}
+                    renderInput={params => <TextField {...params} label='School Filter' fullWidth />}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={12}>
+                  <Autocomplete
+                    id='filter-demo'
+                    options={major}
+                    getOptionLabel={option => option.title}
+                    onChange={(event, newValue) => {
+                      setFormData({ ...formData, filter_major: newValue ? newValue.title : '' })
+                    }}
+                    style={{ width: 500 }}
+                    renderInput={params => <TextField {...params} label='Major Filter' fullWidth />}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={12}>
+                  <Autocomplete
+                    id='filter-demo'
+                    options={religion}
+                    getOptionLabel={option => option.title}
+                    onChange={(event, newValue) => {
+                      setFormData({ ...formData, filter_religion: newValue ? newValue.title : '' })
+                    }}
+                    style={{ width: 500 }}
+                    renderInput={params => <TextField {...params} label='Religion Filter' fullWidth />}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12}>
+                  <Typography variant='h5' sx={{ mb: 3, pl: 2 }}>
                     LIFE STYLE
                   </Typography>
                 </Grid>
+
                 <Grid item xs={12} sm={12}>
                   <Autocomplete
                     multiple
@@ -301,6 +414,30 @@ const CreatePersonalityUser = () => {
                     renderInput={params => <TextField {...params} label='Activity' placeholder='Favorites' fullWidth />}
                   />
                 </Grid>
+
+                <Grid item xs={12} sm={12}>
+                  <Autocomplete
+                    multiple
+                    id='checkboxes-tags-demo'
+                    options={redflag}
+                    disableCloseOnSelect
+                    getOptionLabel={option => option.title}
+                    onChange={(event, newValue) => {
+                      setFormData({ ...formData, filter_redflag: newValue.map(option => option.title).join(', ') })
+                    }}
+                    renderOption={(props, option, { selected }) => (
+                      <li {...props}>
+                        <Checkbox icon={icon} checkedIcon={checkedIcon} style={{ marginRight: 8 }} checked={selected} />
+                        {option.title}
+                      </li>
+                    )}
+                    style={{ width: 500 }}
+                    renderInput={params => (
+                      <TextField {...params} label='Red Flag Filter' placeholder='Favorites' fullWidth />
+                    )}
+                  />
+                </Grid>
+
                 <Grid item xs={12} sm={12}>
                   <Autocomplete
                     id='filter-demo'
@@ -314,7 +451,7 @@ const CreatePersonalityUser = () => {
                   />
                 </Grid>
 
-                <Grid item xs={10} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button type='submit' variant='contained' color='primary'>
                     SAVE CHANGES!
                   </Button>
