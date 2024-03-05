@@ -49,6 +49,11 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 
 import { IDormitoryBed } from 'src/interfaces/IDormitoryBed'
 import { set } from 'nprogress'
+import SchoolIcon from '@mui/icons-material/School'
+import MosqueIcon from '@mui/icons-material/Mosque'
+import PoolIcon from '@mui/icons-material/Pool'
+import DangerousIcon from '@mui/icons-material/Dangerous'
+import HotelIcon from '@mui/icons-material/Hotel'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -103,8 +108,34 @@ const ReservationRoomTest = () => {
   const [bedAvailableFilter, setBedAvailableFilter] = useState<number | null>(null)
   const [courseFilter, setCourseFilter] = useState<string>('')
   const [religionFilter, setReligionFilter] = useState<string>('')
+  const [profileData, setProfileData] = useState(null)
+  const { user } = userStore()
 
   const [open, setOpen] = useState({}) // Change this line
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch('/api/profile/fetchUserProfile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_id: user.user_id }) // ส่ง user_id ไปยัง API
+        })
+        const data = await response.json()
+        setProfileData(data) // เซ็ตข้อมูลผู้ใช้ที่ได้รับจาก API
+        console.log(data)
+      } catch (error) {
+        console.error('Error fetching user profile:', error)
+      }
+    }
+
+    if (user?.user_id) {
+      fetchUserProfile()
+      console.log('usasdsader:', profileData)
+    }
+  }, [user])
 
   const handleClick = id => {
     setOpen(prevOpen => ({
@@ -260,6 +291,104 @@ const ReservationRoomTest = () => {
 
   const handleDialogToggle = () => {
     setDialogOpen(!dialogOpen)
+  }
+
+  const handleSmartReservation = () => {
+    const filterSchool = profileData?.data.filter_school
+    const filterMajor = profileData?.data.filter_major
+    const filterReligion = profileData?.data.filter_religion
+    const filterActivity = profileData?.data.filter_activity
+    const filterRedflag = profileData?.data.filter_redflag
+    const filterSleep = profileData?.data.filter_sleep // Assuming there's a similar field for sleep
+    let filteredRooms = []
+
+    // Filter by school
+    if (filterSchool === 'find roommates who attend the same school') {
+      filteredRooms = dormitoryRoom.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.school === profileData?.data.school)
+      })
+    } else if (filterSchool === 'find roommates from any school') {
+      filteredRooms = dormitoryRoom.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.school !== profileData?.data.school)
+      })
+    } else if (filterSchool === 'find both') {
+      filteredRooms = dormitoryRoom.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.school)
+      })
+    }
+
+    // Filter by major within the previously filtered rooms
+    if (filterMajor === 'find roommates who study the same major') {
+      filteredRooms = filteredRooms.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.major === profileData?.data.major)
+      })
+    } else if (filterMajor === 'find roommates from any major') {
+      filteredRooms = filteredRooms.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.major !== profileData?.data.major)
+      })
+    } else if (filterMajor === 'find both') {
+      filteredRooms = filteredRooms.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.major)
+      })
+    }
+
+    // Filter by religion within the previously filtered rooms
+    if (filterReligion === 'find roommates who have the same religion') {
+      filteredRooms = filteredRooms.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.religion === profileData?.data.religion)
+      })
+    } else if (filterReligion === 'find roommates from any religion') {
+      filteredRooms = filteredRooms.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.religion !== profileData?.data.religion)
+      })
+    } else if (filterReligion === 'find both') {
+      filteredRooms = filteredRooms.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.religion)
+      })
+    }
+
+    // Filter by activity within the previously filtered rooms
+    if (filterActivity) {
+      filteredRooms = filteredRooms.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => {
+          const activities = reservation.Users?.activity || []
+          const userActivities = profileData?.data.activity || []
+          return activities.some(activity => userActivities.includes(activity))
+        })
+      })
+    }
+
+    // Filter by redflag within the previously filtered rooms
+    if (filterRedflag) {
+      filteredRooms = filteredRooms.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => {
+          const redflags = reservation.Users?.filter_redflag || []
+          const userRedflags = profileData?.data.filter_redflag || []
+          return redflags.some(redflag => userRedflags.includes(redflag))
+        })
+      })
+    }
+
+    // Filter by sleep within the previously filtered rooms
+    if (filterSleep) {
+      filteredRooms = filteredRooms.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.sleep === profileData?.data.sleep)
+      })
+    }
+
+    setDormitoryRoom(filteredRooms)
   }
 
   return (
@@ -420,6 +549,10 @@ const ReservationRoomTest = () => {
           </CardContent>
         </Card>
       </Grid>
+      <Button variant='contained' onClick={handleSmartReservation}>
+        MATCHING ROOM
+      </Button>
+
       <h1> {dormitoryBuilding?.name}</h1>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer sx={{ maxHeight: auto }}>
@@ -481,17 +614,45 @@ const ReservationRoomTest = () => {
                       <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                         <Collapse in={open[room.room_id]} timeout='auto' unmountOnExit>
                           {' '}
-                          <Box sx={{ margin: 1 }}>
+                          <CardContent sx={{ margin: 0 }}>
                             {(reservationData.get(room.room_id) || []).map((reservation, index) => (
-                              <Typography key={index} variant='body1' gutterBottom component='div'>
-                                <strong>{`BED ${index + 1}:`}</strong>
-                                <strong>Student ID:</strong> {reservation.Users?.student_id}
-                                <strong>Year:</strong> {reservation.Users?.student_year}
-                                <strong>Course:</strong> {reservation.Users?.course}
-                                <strong>Religion:</strong> {reservation.Users?.religion}
-                              </Typography>
+                              <Card sx={{ margin: 5 }} key={index}>
+                                <CardContent>
+                                  <Typography variant='h6' gutterBottom component='div'>
+                                    {`BED ${index + 1}:`}
+                                  </Typography>
+                                  <Grid container spacing={6}>
+                                    <Grid item xs={12}>
+                                      <Box display='flex' alignItems='center'>
+                                        <SchoolIcon />
+                                        <Typography variant='body1'>: {reservation.Users?.school}</Typography>
+                                      </Box>
+                                      <Box display='flex' alignItems='center'>
+                                        <SchoolIcon />
+                                        <Typography variant='body1'>: {reservation.Users?.major}</Typography>
+                                      </Box>
+                                      <Box display='flex' alignItems='center'>
+                                        <MosqueIcon />
+                                        <Typography variant='body1'>: {reservation.Users?.religion}</Typography>
+                                      </Box>
+                                      <Box display='flex' alignItems='center'>
+                                        <PoolIcon />
+                                        <Typography variant='body1'>: {reservation.Users?.activity}</Typography>
+                                      </Box>
+                                      <Box display='flex' alignItems='center'>
+                                        <DangerousIcon />
+                                        <Typography variant='body1'>: {reservation.Users?.filter_redflag}</Typography>
+                                      </Box>
+                                      <Box display='flex' alignItems='center'>
+                                        <HotelIcon />
+                                        <Typography variant='body1'>: {reservation.Users?.sleep}</Typography>
+                                      </Box>
+                                    </Grid>
+                                  </Grid>
+                                </CardContent>
+                              </Card>
                             ))}
-                          </Box>
+                          </CardContent>
                         </Collapse>
                       </TableCell>
                     </TableRow>

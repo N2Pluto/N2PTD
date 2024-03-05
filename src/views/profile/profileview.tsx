@@ -29,7 +29,6 @@ const Profile = () => {
 
   const [profileData, setProfileData] = useState(null)
 
-
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -119,7 +118,6 @@ const Profile = () => {
                   </Typography>
                 </Box>
               </Box>
-
 
               <Box sx={{ display: 'flex', pt: 2 }}>
                 <Box sx={{ pr: 3 }}>
@@ -293,8 +291,21 @@ const Profile = () => {
                 </Box>
               </Box>
 
-
-
+              <Box sx={{ display: 'flex', pt: 3 }}>
+                <Box sx={{ pr: 3 }}>
+                  <FacebookIcon />
+                </Box>
+                <Box sx={{ pr: 2 }}>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    Red Flag :
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    {profileData?.data.filter_redflag}
+                  </Typography>
+                </Box>
+              </Box>
 
               <Box sx={{ display: 'flex', pt: 2 }}>
                 <Box sx={{ pr: 3 }}>
@@ -308,6 +319,65 @@ const Profile = () => {
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
                     {profileData?.data.sleep}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+            <Divider />
+          </CardContent>
+        </Card>
+      </Grid>
+
+      <Grid item xs={12} md={6} lg={4}>
+        <Card sx={{ position: 'relative' }}>
+          <CardContent>
+            <Box>
+              <Typography variant='h6' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                Requirement
+              </Typography>
+
+              <Box sx={{ display: 'flex', pt: 3 }}>
+                <Box sx={{ pr: 3 }}>
+                  <FacebookIcon />
+                </Box>
+                <Box sx={{ pr: 2 }}>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    School :
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    {profileData?.data.filter_school}
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', pt: 3 }}>
+                <Box sx={{ pr: 3 }}>
+                  <FacebookIcon />
+                </Box>
+                <Box sx={{ pr: 2 }}>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    Major :
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    {profileData?.data.filter_major}
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', pt: 3 }}>
+                <Box sx={{ pr: 3 }}>
+                  <FacebookIcon />
+                </Box>
+                <Box sx={{ pr: 2 }}>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    Religion :
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                    {profileData?.data.filter_religion}
                   </Typography>
                 </Box>
               </Box>

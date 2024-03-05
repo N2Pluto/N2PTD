@@ -114,8 +114,7 @@ const LoginPage = () => {
             !data?.user.course ||
             !data?.user.school ||
             !data?.user.lastname ||
-            !data?.user.religion ||
-            !data?.user?.region
+            !data?.user.religion
           ) {
             router.push('/pages/newlogin')
           } else {

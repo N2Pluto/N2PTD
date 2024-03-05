@@ -16,9 +16,11 @@ async function updateUserInfo(
   instagram: string,
   phone: string,
   activity: string,
-  personality_pros: string,
-  personality_cons: string,
-  sleep: string
+  sleep: string,
+  filter_school: string,
+  filter_major: string,
+  filter_religion: string,
+  filter_redflag: string
 ) {
   try {
     const { data, error } = await supabase
@@ -37,9 +39,11 @@ async function updateUserInfo(
         instagram,
         phone,
         activity,
-        personality_pros,
-        personality_cons,
-        sleep
+        sleep,
+        filter_school,
+        filter_major,
+        filter_religion,
+        filter_redflag
       })
       .eq('user_id', user_id)
 
@@ -68,9 +72,11 @@ const handler = async (req: any, res: any) => {
       instagram,
       phone,
       activity,
-      personality_pros,
-      personality_cons,
-      sleep
+      sleep,
+      filter_school,
+      filter_major,
+      filter_religion,
+      filter_redflag
     } = req.body
     console.log('user_id', user_id)
 
@@ -94,33 +100,35 @@ const handler = async (req: any, res: any) => {
         instagram,
         phone,
         activity,
-        personality_pros,
-        personality_cons,
-        sleep
+        sleep,
+        filter_school,
+        filter_major,
+        filter_religion,
+        filter_redflag
       )
 
-      res
-        .status(200)
-        .json({
-          data: {
-            name,
-            lastname,
-            student_year,
-            school,
-            course,
-            religion,
-            region,
-            major,
-            gender,
-            facebook,
-            instagram,
-            phone,
-            activity,
-            personality_pros,
-            personality_cons,
-            sleep
-          }
-        })
+      res.status(200).json({
+        data: {
+          name,
+          lastname,
+          student_year,
+          school,
+          course,
+          religion,
+          region,
+          major,
+          gender,
+          facebook,
+          instagram,
+          phone,
+          activity,
+          sleep,
+          filter_school,
+          filter_major,
+          filter_religion,
+          filter_redflag
+        }
+      })
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
