@@ -54,6 +54,7 @@ import MosqueIcon from '@mui/icons-material/Mosque'
 import PoolIcon from '@mui/icons-material/Pool'
 import DangerousIcon from '@mui/icons-material/Dangerous'
 import HotelIcon from '@mui/icons-material/Hotel'
+import ConstructionIcon from '@mui/icons-material/Construction'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -306,16 +307,19 @@ const ReservationRoomTest = () => {
     if (filterSchool === 'find roommates who attend the same school') {
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.school === profileData?.data.school)
       })
     } else if (filterSchool === 'find roommates from any school') {
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.school !== profileData?.data.school)
       })
     } else if (filterSchool === 'find both') {
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.school)
       })
     }
@@ -324,16 +328,19 @@ const ReservationRoomTest = () => {
     if (filterMajor === 'find roommates who study the same major') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.major === profileData?.data.major)
       })
     } else if (filterMajor === 'find roommates from any major') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.major !== profileData?.data.major)
       })
     } else if (filterMajor === 'find both') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.major)
       })
     }
@@ -342,16 +349,20 @@ const ReservationRoomTest = () => {
     if (filterReligion === 'find roommates who have the same religion') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.religion === profileData?.data.religion)
       })
     } else if (filterReligion === 'find roommates from any religion') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
+
         return reservations.some(reservation => reservation.Users?.religion !== profileData?.data.religion)
       })
     } else if (filterReligion === 'find both') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.religion)
       })
     }
@@ -360,9 +371,11 @@ const ReservationRoomTest = () => {
     if (filterActivity) {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => {
           const activities = reservation.Users?.activity || []
           const userActivities = profileData?.data.activity || []
+
           return activities.some(activity => userActivities.includes(activity))
         })
       })
@@ -372,9 +385,11 @@ const ReservationRoomTest = () => {
     if (filterRedflag) {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => {
           const redflags = reservation.Users?.filter_redflag || []
           const userRedflags = profileData?.data.filter_redflag || []
+
           return redflags.some(redflag => userRedflags.includes(redflag))
         })
       })
@@ -384,12 +399,19 @@ const ReservationRoomTest = () => {
     if (filterSleep) {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.sleep === profileData?.data.sleep)
       })
     }
 
     setDormitoryRoom(filteredRooms)
   }
+
+  const handleClear = () => {
+    router.reload()
+  }
+
+
 
   return (
     <>
@@ -549,10 +571,18 @@ const ReservationRoomTest = () => {
           </CardContent>
         </Card>
       </Grid>
-      <Button variant='contained' onClick={handleSmartReservation}>
-        MATCHING ROOM
-      </Button>
-
+      <Box sx={{ display: 'flex', pb: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Button variant='contained' onClick={handleSmartReservation}>
+            MATCHING ROOM
+          </Button>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' ,pl:3}}>
+          <Button variant='contained' onClick={handleClear}>
+            clear
+          </Button>
+        </Box>
+      </Box>
       <h1> {dormitoryBuilding?.name}</h1>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer sx={{ maxHeight: auto }}>
@@ -594,17 +624,31 @@ const ReservationRoomTest = () => {
                         ))}
                       </TableCell>
                       <TableCell align='center'>
-                        {room.status ? <CheckIcon /> : <CloseIcon color='primary' />}
+                        {room.room_rehearse ? (
+                          room.status ? (
+                            <CheckIcon />
+                          ) : (
+                            <CloseIcon color='primary' />
+                          )
+                        ) : (
+                          <ConstructionIcon color='error' />
+                        )}
                       </TableCell>
                       <TableCell align='center'>
                         <Box>
-                          {room.status ? (
-                            <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
-                              Select
-                            </Button>
+                          {room.room_rehearse ? (
+                            room.status ? (
+                              <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
+                                Select
+                              </Button>
+                            ) : (
+                              <Button variant='contained' color='error' disabled>
+                                Full
+                              </Button>
+                            )
                           ) : (
                             <Button variant='contained' color='error' disabled>
-                              Select
+                              Closed for maintenance
                             </Button>
                           )}
                         </Box>

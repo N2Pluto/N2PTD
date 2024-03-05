@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import LayoutAuth from 'src/layouts/LayoutAuth'
 import PersonalitySettings from 'src/views/personality-settings/personality-settings'
 
-const accountsetting = () => {
+const Personalitysetting = () => {
   return (
     <LayoutAuth>
       <Grid container spacing={6}>
@@ -20,4 +20,4 @@ const accountsetting = () => {
   )
 }
 
-export default accountsetting
+export default Personalitysetting

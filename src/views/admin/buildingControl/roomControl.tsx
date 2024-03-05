@@ -10,9 +10,13 @@ import { useEffect, useState } from 'react'
 import Button from '@mui/material/Button'
 import router from 'next/router'
 
+// ** MUI Icons
+
+import CheckIcon from '@mui/icons-material/Check'
+import CloseIcon from '@mui/icons-material/Close'
+
 const RoomControl = () => {
   const [room, setRoom] = useState([])
-  const [dormitoryRoom, setDormitoryRoom] = useState([])
 
   useEffect(() => {
     const fetchDataRoomByDormID = async () => {
@@ -38,7 +42,27 @@ const RoomControl = () => {
     alert(`Building with ID ${id} selected.`)
   }
 
-  console.log('ตรงนี้', room)
+  const handleUserInfo = async (roomId: string, currentStatus: boolean) => {
+    try {
+      const response = await fetch('/api/room/updateStatus', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          room_id: roomId,
+          room_rehearse: !currentStatus // Toggle the status
+        })
+      })
+
+      router.reload()
+
+      // ... rest of the function
+
+    } catch (error) {
+      console.error('Error Update data into Users table:', error.message)
+    }
+  }
 
   return (
     <TableContainer component={Paper}>
@@ -47,8 +71,8 @@ const RoomControl = () => {
           <TableRow>
             <TableCell align='center'>room number</TableCell>
             <TableCell align='center'>bed capacity</TableCell>
-            <TableCell align='center'>status </TableCell>
             <TableCell align='center'>bed available </TableCell>
+            <TableCell align='center'>status </TableCell>
             <TableCell align='center'>detail </TableCell>
           </TableRow>
         </TableHead>
@@ -66,12 +90,17 @@ const RoomControl = () => {
                 {room.room_number}
               </TableCell>
               <TableCell align='center'>{room.bed_capacity}</TableCell>
-              <TableCell align='center'>{room.status}</TableCell>
               <TableCell align='center'>{room.bed_available}</TableCell>
               <TableCell align='center'>
-                <Button variant='contained' onClick={() => handleSelect(room.dorm_id)}>
-                  Select
+                <Button onClick={() => handleUserInfo(room.room_id, room.room_rehearse)}>
+                  {room.room_rehearse ? <CheckIcon /> : <CloseIcon color='primary' />}
                 </Button>
+              </TableCell>
+
+              <TableCell align='center'>
+                {/* <Button variant='contained' onClick={() => handleSelect(room.dorm_id)}>
+                  Select
+                </Button> */}
               </TableCell>
             </TableRow>
           ))}

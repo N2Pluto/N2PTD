@@ -21,6 +21,8 @@ export interface IUser {
   phone: string
   role: string
   activity: string
+  personality_pros: string
+  personality_cons: string
   sleep: string
   filter_school: string
   filter_major: string

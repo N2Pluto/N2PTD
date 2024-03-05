@@ -12,7 +12,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     // Fetch Dormitory_Room data from Supabase for the given dorm_id
     const { data, error } = await supabase
       .from('Dormitory_Room')
-      .select('room_id, bed_available, bed_capacity, status')
+      .select('room_id, bed_available, bed_capacity, status ,room_rehearse')
       .eq('dorm_id', dorm_id)
 
     if (error) {
@@ -28,7 +28,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         // Check bed_available to set new status
         if (bed_available === bed_capacity) {
           newStatus = false
-        } else {
+        }else{
           newStatus = true
         }
 
