@@ -27,7 +27,7 @@ const Dashboard = () => {
   return (
     <LayoutAuth>
       <ApexChartWrapper>
-        <Grid container spacing={6}>
+        {/* <Grid container spacing={6}>
           <Grid item xs={12} md={6} lg={4}>
             <CardStatisticsVerticalComponent
               icon={<Poll />}
@@ -85,7 +85,7 @@ const Dashboard = () => {
           <Grid item xs={12} md={6} lg={4}>
             <SalesByCountries />
           </Grid>
-        </Grid>
+        </Grid> */}
 
       </ApexChartWrapper>
     </LayoutAuth>

@@ -15,10 +15,30 @@ import TabContext from '@mui/lab/TabContext'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContentText from '@mui/material/DialogContentText'
-import { DialogActions, DialogContent } from '@mui/material'
+import BedroomParentIcon from '@mui/icons-material/BedroomParent'
+import CorporateFareIcon from '@mui/icons-material/CorporateFare';
+import BedIcon from '@mui/icons-material/Bed';
+import {
+  DialogActions,
+  DialogContent,
+  Stack,
+  Step,
+  StepConnector,
+  StepLabel,
+  Stepper,
+  stepConnectorClasses
+} from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
-import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
+import SettingsIcon from '@mui/icons-material/Settings'
+import GroupAddIcon from '@mui/icons-material/GroupAdd'
+import VideoLabelIcon from '@mui/icons-material/VideoLabel'
+import SchoolIcon from '@mui/icons-material/School'
+import MosqueIcon from '@mui/icons-material/Mosque'
+import PoolIcon from '@mui/icons-material/Pool'
+import DangerousIcon from '@mui/icons-material/Dangerous'
+import HotelIcon from '@mui/icons-material/Hotel'
+import ConstructionIcon from '@mui/icons-material/Construction'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -32,7 +52,7 @@ const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   }
 }))
 
-const ReservationBedDetails = () => {
+const ReservationBedviwe = () => {
   const router = useRouter()
   const [dormitoryBed, setDormitoryBed] = useState(null)
   const [dormitoryRoom, setDormitoryRoom] = useState([])
@@ -42,6 +62,7 @@ const ReservationBedDetails = () => {
   const { user, setUser } = userStoreInstance
   const [value, setValue] = useState<string>('1')
   const [open, setOpen] = useState(false)
+  const steps = ['Reservation', 'Building', 'Room', 'Bed']
 
   const handleChange = async (event: SyntheticEvent, newValue: string) => {
     setValue(newValue)
@@ -58,6 +79,66 @@ const ReservationBedDetails = () => {
 
   const handleClose = () => {
     setOpen(false)
+  }
+
+  const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
+    [`&.${stepConnectorClasses.alternativeLabel}`]: {
+      top: 22
+    },
+    [`&.${stepConnectorClasses.active}`]: {
+      [`& .${stepConnectorClasses.line}`]: {
+        backgroundImage: 'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
+      }
+    },
+    [`&.${stepConnectorClasses.completed}`]: {
+      [`& .${stepConnectorClasses.line}`]: {
+        backgroundImage: 'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
+      }
+    },
+    [`& .${stepConnectorClasses.line}`]: {
+      height: 3,
+      border: 0,
+      backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#eaeaf0',
+      borderRadius: 1
+    }
+  }))
+
+  const ColorlibStepIconRoot = styled('div')<{
+    ownerState: { completed?: boolean; active?: boolean }
+  }>(({ theme, ownerState }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#ccc',
+    zIndex: 1,
+    color: '#fff',
+    width: 50,
+    height: 50,
+    display: 'flex',
+    borderRadius: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...(ownerState.active && {
+      backgroundImage: 'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
+      boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)'
+    }),
+    ...(ownerState.completed && {
+      backgroundImage: 'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)'
+    })
+  }))
+
+  function ColorlibStepIcon(props: StepIconProps) {
+    const { active, completed, className } = props
+
+    const icons: { [index: string]: React.ReactElement } = {
+      1: <SettingsIcon />,
+      2: <CorporateFareIcon />,
+      3: <BedroomParentIcon />,
+      4: <BedIcon />
+    }
+
+    return (
+      <ColorlibStepIconRoot ownerState={{ completed, active }} className={className}>
+        {icons[String(props.icon)]}
+      </ColorlibStepIconRoot>
+    )
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -90,7 +171,8 @@ const ReservationBedDetails = () => {
 
   const handleReservation = async (bed_id: string) => {
     console.log('Reservation Bed ID:', bed_id)
-
+    setUser({ ...userStoreInstance.user, bed_id })
+    console.log('user:', userStoreInstance.user)
     try {
       if (!user) {
         console.error('User data is missing.')
@@ -119,6 +201,29 @@ const ReservationBedDetails = () => {
 
         return
       }
+
+      const response = await fetch('/api/reservation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: user.user_id,
+          dorm_id: user.dorm_id,
+          room_id: user.room_id,
+          bed_id: bed_id
+        })
+      })
+
+      const { data, error } = await response.json()
+
+      if (error) {
+        console.error('Error inserting data into Reservation table:', error.message)
+      } else {
+        console.log('Data inserted successfully:', data)
+
+        router.push(`/reservation/result/${user.user_id}`)
+      }
     } catch (error) {
       console.error('Error inserting data into Reservation table:', error.message)
     }
@@ -127,34 +232,7 @@ const ReservationBedDetails = () => {
 
   return (
     <>
-      <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
-        <Card>
-          <CardContent>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography sx={{ whiteSpace: 'nowrap', pr: 3, color: 'text.primary' }} variant='body2'>
-                Dormitory
-              </Typography>
 
-              <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
-
-              <Typography sx={{ whiteSpace: 'nowrap', pr: 3, pl: 3, color: 'text.primary' }} variant='body2'>
-                Building
-              </Typography>
-
-              <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
-
-              <Typography sx={{ whiteSpace: 'nowrap', pr: 3, pl: 3 ,color: 'text.primary'}} variant='body2'>
-                Room
-              </Typography>
-              <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
-
-              <Typography sx={{ whiteSpace: 'nowrap', pr: 3, pl: 3 }} variant='body2'>
-                Bed
-              </Typography>
-            </Box>
-          </CardContent>
-        </Card>
-      </Grid>
       <Grid pb={4}>
         <Card>
           <CardContent>
@@ -177,9 +255,6 @@ const ReservationBedDetails = () => {
             {dormitoryRoom.map((room, index) => (
               <TabPanel key={index} value={room.bed_id.toString()} sx={{ p: 0 }}>
                 <Box>
-                  <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                    Bed ID: {room.bed_id}
-                  </Typography>
                   <Typography variant='h6' sx={{ marginBottom: 2 }}>
                     Bed Number: {room.bed_number}
                   </Typography>
@@ -188,31 +263,81 @@ const ReservationBedDetails = () => {
                   </Typography>
                   {userReservations[room.bed_id] &&
                     userReservations[room.bed_id].map((reservation, index) => (
-                      <Typography key={index} variant='body2' sx={{ marginBottom: 2 }}>
-                        <Box>
-                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                            Student_Year: {reservation.Users?.student_year}
-                          </Typography>
-                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                            Course: {reservation.Users?.course}
-                          </Typography>
-                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                            Region: {reservation.Users?.region}
-                          </Typography>
-                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                            Religion: {reservation.Users?.religion}
-                          </Typography>
-                        </Box>
-                      </Typography>
+
+                      <CardContent sx={{ margin: 0 }} key={index} >
+                              <Card sx={{ margin: 5 }} key={index}>
+                                <CardContent>
+                                  <Grid container spacing={6}>
+                                    <Grid item xs={12}>
+                                      <Box display='flex' alignItems='center'>
+                                        <SchoolIcon sx={{pr:2}}/>
+                                        <Typography variant='body1'> : {reservation.Users?.school}</Typography>
+                                      </Box>
+                                      <Box display='flex' alignItems='center'>
+                                        <SchoolIcon sx={{pr:2}} />
+                                        <Typography variant='body1'> : {reservation.Users?.major}</Typography>
+                                      </Box>
+                                      <Box display='flex' alignItems='center'>
+                                        <MosqueIcon sx={{pr:2}}/>
+                                        <Typography variant='body1'> : {reservation.Users?.religion}</Typography>
+                                      </Box>
+                                      <Box display='flex' alignItems='center'>
+                                        <PoolIcon sx={{pr:2}}/>
+                                        <Typography variant='body1'> : {reservation.Users?.activity}</Typography>
+                                      </Box>
+                                      <Box display='flex' alignItems='center'>
+                                        <DangerousIcon sx={{pr:2}}/>
+                                        <Typography variant='body1'> : {reservation.Users?.filter_redflag}</Typography>
+                                      </Box>
+                                      <Box display='flex' alignItems='center'>
+                                        <HotelIcon sx={{pr:2}}/>
+                                        <Typography variant='body1'> : {reservation.Users?.sleep}</Typography>
+                                      </Box>
+                                    </Grid>
+                                  </Grid>
+                                </CardContent>
+                              </Card>
+                          </CardContent>
+
+
+                      // <Typography key={index} variant='body2' sx={{ marginBottom: 2 }}>
+                      //   <Box>
+                      //     <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                      //       Student_Year: {reservation.Users?.student_year}
+                      //     </Typography>
+                      //     <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                      //       Course: {reservation.Users?.course}
+                      //     </Typography>
+                      //     <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                      //       Religion: {reservation.Users?.religion}
+                      //     </Typography>
+                      //   </Box>
+                      // </Typography>
                     ))}
+
                 </Box>
               </TabPanel>
             ))}
           </CardContent>
         </TabContext>
       </Card>
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby='alert-dialog-title'
+        aria-describedby='alert-dialog-description'
+      >
+        <DialogTitle id='alert-dialog-title'>{'Warn'}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id='alert-dialog-description'>THIS BED IS ALREADY RESERVE!</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>accept</Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }
 
-export default ReservationBedDetails
+export default ReservationBedviwe

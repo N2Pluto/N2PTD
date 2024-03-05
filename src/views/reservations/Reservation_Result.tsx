@@ -12,18 +12,18 @@ import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 
 // ** Icons Imports
-import TrendingUp from 'mdi-material-ui/TrendingUp'
-import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
-import CellphoneLink from 'mdi-material-ui/CellphoneLink'
-import AccountOutline from 'mdi-material-ui/AccountOutline'
+import PermIdentityIcon from '@mui/icons-material/PermIdentity';
+import CorporateFareIcon from '@mui/icons-material/CorporateFare';
+import DoorBackIcon from '@mui/icons-material/DoorBack';
+import BedIcon from '@mui/icons-material/Bed';
 
 // ** Types
 import { ThemeColor } from 'src/@core/layouts/types'
 import { userStore } from 'src/stores/userStore'
 import { useRouter } from 'next/router'
 import Button from '@mui/material/Button'
-import Link from 'next/link'
+
 
 interface DataType {
   stats: Text
@@ -43,28 +43,28 @@ const ReservationResultCard = () => {
   // Update the salesData array with the studentId
   const salesData: DataType[] = [
     {
-      stats: user?.student_id,
+      stats: user?.student_id.toString(),
       title: 'Student ID',
       color: 'success',
-      icon: <AccountOutline sx={{ fontSize: '1.75rem' }} />
+      icon: <PermIdentityIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: user?.dorm_id,
+      stats: user?.dorm_id.toString(),
       title: 'Dorm ID',
       color: 'warning',
-      icon: <CellphoneLink sx={{ fontSize: '1.75rem' }} />
+      icon: <CorporateFareIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: user?.room_id,
+      stats: user?.room_id.toString(),
       title: 'Room ID',
       color: 'info',
-      icon: <CurrencyUsd sx={{ fontSize: '1.75rem' }} />
+      icon: <DoorBackIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: user?.bed_id,
+      stats: user?.bed_id.toString(),
       title: 'Bed ID',
       color: 'info',
-      icon: <CurrencyUsd sx={{ fontSize: '1.75rem' }} />
+      icon: <BedIcon sx={{ fontSize: '1.75rem' }} />
     }
   ]
 

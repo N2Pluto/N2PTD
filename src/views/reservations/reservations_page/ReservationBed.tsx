@@ -33,6 +33,12 @@ import CloseIcon from '@mui/icons-material/Close'
 import SettingsIcon from '@mui/icons-material/Settings'
 import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import VideoLabelIcon from '@mui/icons-material/VideoLabel'
+import SchoolIcon from '@mui/icons-material/School'
+import MosqueIcon from '@mui/icons-material/Mosque'
+import PoolIcon from '@mui/icons-material/Pool'
+import DangerousIcon from '@mui/icons-material/Dangerous'
+import HotelIcon from '@mui/icons-material/Hotel'
+import ConstructionIcon from '@mui/icons-material/Construction'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -263,9 +269,6 @@ const ReservationBedviwe = () => {
             {dormitoryRoom.map((room, index) => (
               <TabPanel key={index} value={room.bed_id.toString()} sx={{ p: 0 }}>
                 <Box>
-                  <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                    Bed ID: {room.bed_id}
-                  </Typography>
                   <Typography variant='h6' sx={{ marginBottom: 2 }}>
                     Bed Number: {room.bed_number}
                   </Typography>
@@ -274,31 +277,56 @@ const ReservationBedviwe = () => {
                   </Typography>
                   {userReservations[room.bed_id] &&
                     userReservations[room.bed_id].map((reservation, index) => (
-                      <Typography key={index} variant='body2' sx={{ marginBottom: 2 }}>
-                        <Box>
-                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                            User ID: {reservation.user_id}
-                          </Typography>
-                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                            Name: {reservation.Users?.name} {reservation.Users?.lastname}
-                          </Typography>
-                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                            Student_ID: {reservation.Users?.student_id}
-                          </Typography>
-                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                            Student_Year: {reservation.Users?.student_year}
-                          </Typography>
-                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                            Course: {reservation.Users?.course}
-                          </Typography>
-                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                            Region: {reservation.Users?.region}
-                          </Typography>
-                          <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                            Religion: {reservation.Users?.religion}
-                          </Typography>
-                        </Box>
-                      </Typography>
+
+                      <CardContent sx={{ margin: 0 }} key={index} >
+                              <Card sx={{ margin: 5 }} key={index}>
+                                <CardContent>
+                                  <Grid container spacing={6}>
+                                    <Grid item xs={12}>
+                                      <Box display='flex' alignItems='center'>
+                                        <SchoolIcon sx={{pr:2}}/>
+                                        <Typography variant='body1'> : {reservation.Users?.school}</Typography>
+                                      </Box>
+                                      <Box display='flex' alignItems='center'>
+                                        <SchoolIcon sx={{pr:2}} />
+                                        <Typography variant='body1'> : {reservation.Users?.major}</Typography>
+                                      </Box>
+                                      <Box display='flex' alignItems='center'>
+                                        <MosqueIcon sx={{pr:2}}/>
+                                        <Typography variant='body1'> : {reservation.Users?.religion}</Typography>
+                                      </Box>
+                                      <Box display='flex' alignItems='center'>
+                                        <PoolIcon sx={{pr:2}}/>
+                                        <Typography variant='body1'> : {reservation.Users?.activity}</Typography>
+                                      </Box>
+                                      <Box display='flex' alignItems='center'>
+                                        <DangerousIcon sx={{pr:2}}/>
+                                        <Typography variant='body1'> : {reservation.Users?.filter_redflag}</Typography>
+                                      </Box>
+                                      <Box display='flex' alignItems='center'>
+                                        <HotelIcon sx={{pr:2}}/>
+                                        <Typography variant='body1'> : {reservation.Users?.sleep}</Typography>
+                                      </Box>
+                                    </Grid>
+                                  </Grid>
+                                </CardContent>
+                              </Card>
+                          </CardContent>
+
+
+                      // <Typography key={index} variant='body2' sx={{ marginBottom: 2 }}>
+                      //   <Box>
+                      //     <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                      //       Student_Year: {reservation.Users?.student_year}
+                      //     </Typography>
+                      //     <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                      //       Course: {reservation.Users?.course}
+                      //     </Typography>
+                      //     <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                      //       Religion: {reservation.Users?.religion}
+                      //     </Typography>
+                      //   </Box>
+                      // </Typography>
                     ))}
 
                   <Box

@@ -9,15 +9,12 @@ import TableRow, { TableRowProps } from '@mui/material/TableRow'
 import TableCell, { TableCellProps, tableCellClasses } from '@mui/material/TableCell'
 import { Button, Divider, Grid } from '@mui/material'
 import { useEffect, useState } from 'react'
-import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
-import Link from 'next/link'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import React from 'react'
 import EditIcon from '@mui/icons-material/Edit'
 import Menu, { MenuProps } from '@mui/material/Menu'
 import FileCopyIcon from '@mui/icons-material/FileCopy'
-import { route } from 'next/dist/server/router'
 import router from 'next/router'
 
 const StyledMenu = styled((props: MenuProps) => (
@@ -35,20 +32,20 @@ const StyledMenu = styled((props: MenuProps) => (
   />
 ))(({ theme }) => ({
   '& .MuiPaper-root': {
-    borderRadius: 6,
+    borderRadius: 2,
     marginTop: theme.spacing(1),
     minWidth: 180,
     color: theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
     boxShadow:
-      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+      'rgb(0, 0, 0) 0px 0px 0px 0px, rgb(0, 0, 0) 0px 0px 0px 0px, rgb(0, 0, 0) 0px 0px 0px 0px, rgb(0, 0, 0) 0px 0px 0px 0px',
     '& .MuiMenu-list': {
-      padding: '4px 0'
+      padding: '1px 0'
     },
     '& .MuiMenuItem-root': {
       '& .MuiSvgIcon-root': {
         fontSize: 18,
         color: theme.palette.text.secondary,
-        marginRight: theme.spacing(1.5)
+        marginRight: theme.spacing(0)
       },
       '&:active': {
         backgroundColor: alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity)
@@ -87,8 +84,8 @@ const UserControl = () => {
     setAnchorEl(event.currentTarget)
   }
   const handleClose = (role: string, user_id: string) => {
-    setRole({ role: role });
-    setAnchorEl(null);
+    setRole({ role: role })
+    setAnchorEl(null)
   }
 
   useEffect(() => {
@@ -123,11 +120,19 @@ const UserControl = () => {
     router.reload()
   }
 
-  const createData = (user_id: string,email: string, STUDENT: string, name: string, lastname: string, phone: string, role: string) => {
-return { user_id, email, STUDENT, name, lastname, phone, role }
+  const createData = (
+    user_id: string,
+    email: string,
+    STUDENT: string,
+    name: string,
+    lastname: string,
+    phone: string,
+    role: string
+  ) => {
+    return { user_id, email, STUDENT, name, lastname, phone, role }
   }
 
-  const rows = user.map(u => createData(u.user_id,u.email, u.student_id, u.name, u.lastname, u.phone, u.role))
+  const rows = user.map(u => createData(u.user_id, u.email, u.student_id, u.name, u.lastname, u.phone, u.role))
 
   return (
     <Grid container spacing={1}>
