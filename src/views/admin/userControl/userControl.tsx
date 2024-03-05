@@ -17,6 +17,8 @@ import React from 'react'
 import EditIcon from '@mui/icons-material/Edit'
 import Menu, { MenuProps } from '@mui/material/Menu'
 import FileCopyIcon from '@mui/icons-material/FileCopy'
+import { route } from 'next/dist/server/router'
+import router from 'next/router'
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -78,15 +80,14 @@ const StyledTableRow = styled(TableRow)<TableRowProps>(({ theme }) => ({
 
 const UserControl = () => {
   const [user, setUser] = useState([])
-  const [role, setRole] = useState({role : ''})
+  const [role, setRole] = useState({ role: '' })
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
-  const handleClose = (role: string) => {
+  const handleClose = (role: string, user_id: string) => {
     setRole({ role: role });
-    handleUserInfo();
     setAnchorEl(null);
   }
 
@@ -102,7 +103,7 @@ const UserControl = () => {
     fetchData()
   }, [])
 
-  const handleUserInfo = async () => {
+  const handleUserInfo = async (role: string, user_id: string) => {
     try {
       const response = await fetch('/api/userControl/updateRole', {
         method: 'POST',
@@ -110,28 +111,23 @@ const UserControl = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          role : role
+          role: role,
+          user_id: user_id
         })
       })
 
-      const { data, error } = await response.json()
-
-      if (error) {
-        console.error('Error Update data into USers table:', error.message)
-      } else {
-        console.log('Data Update Success:', data)
-        alert('Data Update Success')
-      }
+      // Rest of the function...
     } catch (error) {
       console.error('Error Update data into USers table:', error.message)
     }
+    router.reload()
   }
 
-  const createData = (email: string, STUDENT: string, name: string, lastname: string, phone: string, role: string) => {
-    return { email, STUDENT, name, lastname, phone, role }
+  const createData = (user_id: string,email: string, STUDENT: string, name: string, lastname: string, phone: string, role: string) => {
+return { user_id, email, STUDENT, name, lastname, phone, role }
   }
 
-  const rows = user.map(u => createData(u.email, u.student_id, u.name, u.lastname, u.phone, u.role))
+  const rows = user.map(u => createData(u.user_id,u.email, u.student_id, u.name, u.lastname, u.phone, u.role))
 
   return (
     <Grid container spacing={1}>
@@ -160,7 +156,6 @@ const UserControl = () => {
                   <StyledTableCell>{row.lastname}</StyledTableCell>
                   <StyledTableCell align='right'>{row.phone}</StyledTableCell>
                   <StyledTableCell align='right'>
-
                     <Button
                       id='demo-customized-button'
                       aria-controls={open ? 'demo-customized-menu' : undefined}
@@ -180,20 +175,17 @@ const UserControl = () => {
                       }}
                       anchorEl={anchorEl}
                       open={open}
-                      onClose={() => handleClose('')}
+                      onClose={handleClose}
                     >
+                      <MenuItem onClick={() => handleUserInfo('admin', row.user_id)} disableRipple>
+                        <EditIcon />
+                        ADMIN
+                      </MenuItem>
 
-                        <MenuItem onClick={() => handleClose('admin')} disableRipple>
-                          <EditIcon />
-                          ADMIN
-                        </MenuItem>
-
-
-                        <MenuItem onClick={() => handleClose('user')} disableRipple>
-                          <FileCopyIcon />
-                          USER
-                        </MenuItem>
-
+                      <MenuItem onClick={() => handleUserInfo('user', row.user_id)} disableRipple>
+                        <FileCopyIcon />
+                        USER
+                      </MenuItem>
 
                       <Divider sx={{ my: 0.5 }} />
                     </StyledMenu>
@@ -209,4 +201,3 @@ const UserControl = () => {
 }
 
 export default UserControl
-
