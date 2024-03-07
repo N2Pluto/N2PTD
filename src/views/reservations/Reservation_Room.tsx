@@ -55,18 +55,8 @@ import PoolIcon from '@mui/icons-material/Pool'
 import DangerousIcon from '@mui/icons-material/Dangerous'
 import HotelIcon from '@mui/icons-material/Hotel'
 import ConstructionIcon from '@mui/icons-material/Construction'
-
-const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  [theme.breakpoints.down('md')]: {
-    borderBottom: `1px solid ${theme.palette.divider}`
-  },
-  [theme.breakpoints.up('md')]: {
-    borderRight: `1px solid ${theme.palette.divider}`
-  }
-}))
+import HolidayVillageIcon from '@mui/icons-material/HolidayVillage'
+import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices'
 
 interface Column {
   id: 'details' | 'room' | 'code' | 'reserve' | 'bedstatus'
@@ -106,9 +96,11 @@ const ReservationRoomTest = () => {
   const [reservationData, setReservationData] = useState<Map<string, any[]>>(new Map())
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [roomFilter, setRoomFilter] = useState<string>('')
+
   const [bedAvailableFilter, setBedAvailableFilter] = useState<number | null>(null)
-  const [courseFilter, setCourseFilter] = useState<string>('')
-  const [religionFilter, setReligionFilter] = useState<string>('')
+  const [floorFilter, setFloorFilter] = useState<number | null>(null)
+  const [schoolFilter, setSchoolFilter] = useState('')
+
   const [profileData, setProfileData] = useState(null)
   const { user } = userStore()
 
@@ -168,68 +160,6 @@ const ReservationRoomTest = () => {
       fetchReservationData(room.room_id)
     })
   }, [dormitoryRoom])
-
-  const steps = ['Reservation', 'Building', 'Room', 'Bed']
-
-  const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
-    [`&.${stepConnectorClasses.alternativeLabel}`]: {
-      top: 22
-    },
-    [`&.${stepConnectorClasses.active}`]: {
-      [`& .${stepConnectorClasses.line}`]: {
-        backgroundImage: 'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
-      }
-    },
-    [`&.${stepConnectorClasses.completed}`]: {
-      [`& .${stepConnectorClasses.line}`]: {
-        backgroundImage: 'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
-      }
-    },
-    [`& .${stepConnectorClasses.line}`]: {
-      height: 3,
-      border: 0,
-      backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#eaeaf0',
-      borderRadius: 1
-    }
-  }))
-
-  const ColorlibStepIconRoot = styled('div')<{ theme: Theme; ownerState: { completed?: boolean; active?: boolean } }>(
-    ({ theme, ownerState }) => ({
-      backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#ccc',
-      zIndex: 1,
-      color: '#fff',
-      width: 50,
-      height: 50,
-      display: 'flex',
-      borderRadius: '50%',
-      justifyContent: 'center',
-      alignItems: 'center',
-      ...(ownerState.active && {
-        backgroundImage: 'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
-        boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)'
-      }),
-      ...(ownerState.completed && {
-        backgroundImage: 'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)'
-      })
-    })
-  )
-
-  function ColorlibStepIcon(props: StepIconProps) {
-    const { active, completed, className } = props
-
-    const icons: { [index: string]: React.ReactElement } = {
-      1: <SettingsIcon />,
-      2: <CorporateFareIcon />,
-      3: <BedroomParentIcon />,
-      4: <BedIcon />
-    }
-
-    return (
-      <ColorlibStepIconRoot ownerState={{ completed, active }} className={className}>
-        {icons[String(props.icon)]}
-      </ColorlibStepIconRoot>
-    )
-  }
 
   useEffect(() => {
     const fetchDataRoomStatus = async () => {
@@ -304,19 +234,40 @@ const ReservationRoomTest = () => {
     let filteredRooms = []
 
     // Filter by school
+    if (schoolFilter === 'Same School') {
+      filteredRooms = dormitoryRoom.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.school === profileData?.data.school)
+      })
+    } else if (schoolFilter === 'Same Major') {
+      filteredRooms = dormitoryRoom.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.major === profileData?.data.major)
+      })
+    } else if (schoolFilter === 'Same Religion') {
+      filteredRooms = dormitoryRoom.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.religion === profileData?.data.religion)
+      })
+    }
+
+    // Filter by school
     if (filterSchool === 'find roommates who attend the same school') {
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.school === profileData?.data.school)
       })
     } else if (filterSchool === 'find roommates from any school') {
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.school !== profileData?.data.school)
       })
     } else if (filterSchool === 'find both') {
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.school)
       })
     }
@@ -325,16 +276,19 @@ const ReservationRoomTest = () => {
     if (filterMajor === 'find roommates who attend the same major') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.major === profileData?.data.major)
       })
     } else if (filterMajor === 'find roommates from any major') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.major !== profileData?.data.major)
       })
     } else if (filterMajor === 'find both') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.major)
       })
     }
@@ -343,16 +297,19 @@ const ReservationRoomTest = () => {
     if (filterReligion === 'find roommates who attend the same religion') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.religion === profileData?.data.religion)
       })
     } else if (filterReligion === 'find roommates from any religion') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.religion !== profileData?.data.religion)
       })
     } else if (filterReligion === 'find both') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.religion)
       })
     }
@@ -361,6 +318,7 @@ const ReservationRoomTest = () => {
     if (filteredRooms.length === 0 && filterSleep) {
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.sleep === filterSleep)
       })
     }
@@ -370,8 +328,10 @@ const ReservationRoomTest = () => {
       const userActivities = filterActivity.split(',').map(activity => activity.trim())
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => {
           const activities = reservation.Users?.activity || []
+
           return userActivities.some(activity => activities.includes(activity))
         })
       })
@@ -382,8 +342,10 @@ const ReservationRoomTest = () => {
       const userRedflags = filterRedflag.split(',').map(redflag => redflag.trim())
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => {
           const redflags = reservation.Users?.filter_redflag || []
+
           return userRedflags.some(redflag => redflags.includes(redflag))
         })
       })
@@ -401,6 +363,7 @@ const ReservationRoomTest = () => {
         if (filterSleep) {
           filteredRooms = dormitoryRoom.filter(room => {
             const reservations = reservationData.get(room.room_id) || []
+
             return reservations.some(reservation => reservation.Users?.sleep === filterSleep)
           })
         }
@@ -408,8 +371,10 @@ const ReservationRoomTest = () => {
           const userActivities = filterActivity.split(',').map(activity => activity.trim())
           filteredRooms = dormitoryRoom.filter(room => {
             const reservations = reservationData.get(room.room_id) || []
+
             return reservations.some(reservation => {
               const activities = reservation.Users?.activity || []
+
               return userActivities.some(activity => activities.includes(activity))
             })
           })
@@ -418,8 +383,10 @@ const ReservationRoomTest = () => {
           const userRedflags = filterRedflag.split(',').map(redflag => redflag.trim())
           filteredRooms = dormitoryRoom.filter(room => {
             const reservations = reservationData.get(room.room_id) || []
+
             return reservations.some(reservation => {
               const redflags = reservation.Users?.filter_redflag || []
+
               return userRedflags.some(redflag => redflags.includes(redflag))
             })
           })
@@ -433,7 +400,7 @@ const ReservationRoomTest = () => {
         // Filter by religion only
         filteredRooms = dormitoryRoom.filter(room => {
           const reservations = reservationData.get(room.room_id) || []
-          
+
           return reservations.some(reservation => reservation.Users?.religion === profileData?.data.religion)
         })
       } else if (
@@ -480,23 +447,22 @@ const ReservationRoomTest = () => {
     router.reload()
   }
 
+  const mapToFloorCategory = (floorNumber: number): number => {
+    if (floorNumber >= 101 && floorNumber <= 105) {
+      return 1
+    } else if (floorNumber >= 201 && floorNumber <= 205) {
+      return 2
+    } else if (floorNumber >= 301 && floorNumber <= 305) {
+      return 3
+    } else if (floorNumber >= 401 && floorNumber <= 405) {
+      return 4
+    } else {
+      return -1 // Or any other default value if the floor number doesn't match any category
+    }
+  }
+
   return (
     <>
-      <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
-        <Card>
-          <CardContent>
-            <Stack sx={{ width: '100%' }} spacing={4}>
-              <Stepper alternativeLabel activeStep={2} connector={<ColorlibConnector />}>
-                {steps.map(label => (
-                  <Step key={label}>
-                    <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
-                  </Step>
-                ))}
-              </Stepper>
-            </Stack>
-          </CardContent>
-        </Card>
-      </Grid>
       <Grid pb={4}>
         <Card>
           <CardContent>
@@ -520,11 +486,37 @@ const ReservationRoomTest = () => {
                 </Box>
               </DialogTitle>
               <DialogContent>
+                {' '}
                 <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ paddingRight: 2 }}>Bed Available</Typography>
-                  <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
+                  <HolidayVillageIcon fontSize='small' sx={{ marginRight: 2 }} />
+                  <Typography sx={{ paddingRight: 2 }}>Floor</Typography>
                 </Box>
-
+                <Grid container spacing={2} pb={5} pt={1}>
+                  <FormControlLabel
+                    control={<Checkbox checked={floorFilter === null} onChange={() => setFloorFilter(null)} />}
+                    label='All'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={floorFilter === 1} onChange={() => setFloorFilter(1)} />}
+                    label='1'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={floorFilter === 2} onChange={() => setFloorFilter(2)} />}
+                    label='2'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={floorFilter === 3} onChange={() => setFloorFilter(3)} />}
+                    label='3'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={floorFilter === 4} onChange={() => setFloorFilter(4)} />}
+                    label='4'
+                  />
+                </Grid>
+                <Box sx={{ display: 'flex' }}>
+                  <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
+                  <Typography sx={{ paddingRight: 2 }}>Bed Available</Typography>
+                </Box>
                 <Grid container spacing={2} pb={5} pt={1}>
                   <FormControlLabel
                     control={
@@ -553,80 +545,51 @@ const ReservationRoomTest = () => {
                     label='4'
                   />
                 </Grid>
-
                 <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ paddingRight: 2 }}>Course</Typography>
-                  <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
+                  <MiscellaneousServicesIcon fontSize='small' sx={{ marginRight: 2 }} />
+                  <Typography sx={{ paddingRight: 2 }}>Requirement</Typography>
                 </Box>
                 <Grid container spacing={2} pb={5} pt={1}>
-                  <FormControlLabel
-                    control={<Checkbox checked={courseFilter === ''} onChange={() => setCourseFilter('')} />}
-                    label='All'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox checked={courseFilter === 'Single'} onChange={() => setCourseFilter('Single')} />
-                    }
-                    label='Single'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox checked={courseFilter === 'Double'} onChange={() => setCourseFilter('Double')} />
-                    }
-                    label='Double'
-                  />
+                  <Grid item xs={12}>
+                    <FormControlLabel
+                      control={<Checkbox checked={schoolFilter === ''} onChange={() => setSchoolFilter('')} />}
+                      label='All'
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={schoolFilter === 'Same School'}
+                          onChange={() => setSchoolFilter('Same School')}
+                        />
+                      }
+                      label='Same School'
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={schoolFilter === 'Same Major'}
+                          onChange={() => setSchoolFilter('Same Major')}
+                        />
+                      }
+                      label='Same Major'
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={schoolFilter === 'Same Religion'}
+                          onChange={() => setSchoolFilter('Same Religion')}
+                        />
+                      }
+                      label='Same Religion'
+                    />
+                  </Grid>
                 </Grid>
-
-                <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ paddingRight: 2 }}>Religion</Typography>
-                  <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
-                </Box>
-                <Grid container spacing={2} pb={5} pt={1}>
-                  <FormControlLabel
-                    control={<Checkbox checked={religionFilter === ''} onChange={() => setReligionFilter('')} />}
-                    label='All'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={religionFilter === 'Christianity'}
-                        onChange={() => setReligionFilter('Christianity')}
-                      />
-                    }
-                    label='Christianity'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox checked={religionFilter === 'Islam'} onChange={() => setReligionFilter('Islam')} />
-                    }
-                    label='Islam'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={religionFilter === 'Buddhism'}
-                        onChange={() => setReligionFilter('Buddhism')}
-                      />
-                    }
-                    label='Buddhism'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={religionFilter === 'Hinduism'}
-                        onChange={() => setReligionFilter('Hinduism')}
-                      />
-                    }
-                    label='Hinduism'
-                  />
-                </Grid>
-
                 <Grid container spacing={2} pb={5}>
                   <Button
                     onClick={() => {
                       setBedAvailableFilter(null)
-                      setCourseFilter('')
-                      setReligionFilter('')
+                      setFloorFilter(null)
+                      setSchoolFilter('')
                     }}
                   >
                     Clear
@@ -666,8 +629,19 @@ const ReservationRoomTest = () => {
             <TableBody>
               {dormitoryRoom
                 .filter(room => bedAvailableFilter === null || room.bed_available === bedAvailableFilter)
-                .filter(room => courseFilter === '' || room.course === courseFilter)
-                .filter(room => religionFilter === '' || room.religion === religionFilter)
+                .filter(room => floorFilter === null || mapToFloorCategory(room.room_number) === floorFilter)
+                .filter(room => {
+                  const reservations = reservationData.get(room.room_id) || []
+                  if (schoolFilter === 'Same School') {
+                    return reservations.some(reservation => reservation.Users?.school === profileData?.data.school)
+                  } else if (schoolFilter === 'Same Major') {
+                    return reservations.some(reservation => reservation.Users?.major === profileData?.data.major)
+                  } else if (schoolFilter === 'Same Religion') {
+                    return reservations.some(reservation => reservation.Users?.religion === profileData?.data.religion)
+                  } else {
+                    return true // If no school filter is selected, return true to include all rooms
+                  }
+                })
                 .map(room => (
                   <React.Fragment key={room.room_id}>
                     <TableRow hover role='checkbox' tabIndex={-1}>

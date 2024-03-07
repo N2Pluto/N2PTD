@@ -38,8 +38,12 @@ import GroupIcon from '@mui/icons-material/Group'
 import * as React from 'react'
 
 import SettingsIcon from '@mui/icons-material/Settings'
-import CorporateFareIcon from '@mui/icons-material/CorporateFare';
-import BedIcon from '@mui/icons-material/Bed';
+import CorporateFareIcon from '@mui/icons-material/CorporateFare'
+import BedIcon from '@mui/icons-material/Bed'
+import ShowerIcon from '@mui/icons-material/Shower'
+import { set } from 'nprogress'
+import HotelIcon from '@mui/icons-material/Hotel'
+import LocalAtmIcon from '@mui/icons-material/LocalAtm'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -57,7 +61,10 @@ const ReservationBuilding = () => {
   const [dormitoryBuilding, setDormitoryBuilding] = useState([])
   const [genderFilter, setGenderFilter] = useState<string>('')
   const [buildingFilter, setBuildingFilter] = useState<string>('')
+  const [bathroomFilter, setBathroomFilter] = useState<string>('')
   const [roommateFilter, setRoommateFilter] = useState<string>('')
+  const [bedFilter, setBedFilter] = useState<string>('')
+  const [priceFilter, setPriceFilter] = useState<number | ''>('')
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [roomCounts, setRoomCounts] = useState<{ [key: string]: number }>({})
@@ -76,7 +83,7 @@ const ReservationBuilding = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
-  const steps = ['Reservation', 'Building', 'Room' ,'Bed']
+  const steps = ['Reservation', 'Building', 'Room', 'Bed']
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -87,29 +94,29 @@ const ReservationBuilding = () => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({ user_id: user.user_id })
-        });
-        const data = await response.json();
+        })
+        const data = await response.json()
 
         // เปลี่ยนไปใช้ data ที่ได้จากการ fetch โดยตรง
-        console.log('gender', data.data.gender);
+        console.log('gender', data.data.gender)
 
         if (data.data.gender === 'male') {
-          console.log('male', data.data.gender);
-          setGenderFilter('male');
+          console.log('male', data.data.gender)
+          setGenderFilter('male')
         }
         if (data.data.gender === 'female') {
-          console.log('female', data.data.gender);
-          setGenderFilter('female');
+          console.log('female', data.data.gender)
+          setGenderFilter('female')
         }
       } catch (error) {
-        console.error('Error fetching user profile:', error);
+        console.error('Error fetching user profile:', error)
       }
-    };
+    }
 
     if (user?.user_id) {
-      fetchUserProfile();
+      fetchUserProfile()
     }
-  }, [user]);
+  }, [user])
 
   const QontoConnector = styled(StepConnector)(({ theme }) => ({
     [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -178,7 +185,7 @@ const ReservationBuilding = () => {
   }))
 
   const ColorlibStepIconRoot = styled('div')<{
-    ownerState: { completed?: boolean; active?: boolean };
+    ownerState: { completed?: boolean; active?: boolean }
   }>(({ theme, ownerState }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#ccc',
     zIndex: 1,
@@ -190,15 +197,13 @@ const ReservationBuilding = () => {
     justifyContent: 'center',
     alignItems: 'center',
     ...(ownerState.active && {
-      backgroundImage:
-        'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
-      boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',
+      backgroundImage: 'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
+      boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)'
     }),
     ...(ownerState.completed && {
-      backgroundImage:
-        'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
-    }),
-  }));
+      backgroundImage: 'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)'
+    })
+  }))
 
   function ColorlibStepIcon(props: StepIconProps) {
     const { active, completed, className } = props
@@ -240,7 +245,7 @@ const ReservationBuilding = () => {
     }
 
     fetchData()
-  }, [ ])
+  }, [])
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -296,8 +301,27 @@ const ReservationBuilding = () => {
               </DialogTitle>
               <DialogContent>
                 <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ paddingRight: 2 }}>Room type</Typography>
+                  <GroupIcon fontSize='small' sx={{ marginRight: 2 }} />
+                  <Typography sx={{ paddingRight: 2 }}>Roommate</Typography>
+                </Box>
+                <Grid container spacing={2} pb={5} pt={1}>
+                  <FormControlLabel
+                    control={<Checkbox checked={roommateFilter === ''} onChange={() => setRoommateFilter('')} />}
+                    label='All'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={roommateFilter === '2'} onChange={() => setRoommateFilter('2')} />}
+                    label='2'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={roommateFilter === '4'} onChange={() => setRoommateFilter('4')} />}
+                    label='4'
+                  />
+                </Grid>
+
+                <Box sx={{ display: 'flex' }}>
                   <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
+                  <Typography sx={{ paddingRight: 2 }}>Room type</Typography>
                 </Box>
                 <Grid container spacing={2} pb={5} pt={1}>
                   <FormControlLabel
@@ -323,22 +347,81 @@ const ReservationBuilding = () => {
                     label='Ceiling fan'
                   />
                 </Grid>
+
                 <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ paddingRight: 2 }}>Roommate</Typography>
-                  <GroupIcon fontSize='small' sx={{ marginRight: 2 }} />
+                  <HotelIcon fontSize='small' sx={{ marginRight: 2 }} />
+                  <Typography sx={{ paddingRight: 2 }}>Bed Type</Typography>
                 </Box>
                 <Grid container spacing={2} pb={5} pt={1}>
                   <FormControlLabel
-                    control={<Checkbox checked={roommateFilter === ''} onChange={() => setRoommateFilter('')} />}
+                    control={<Checkbox checked={bedFilter === ''} onChange={() => setBedFilter('')} />}
                     label='All'
                   />
                   <FormControlLabel
-                    control={<Checkbox checked={roommateFilter === '2'} onChange={() => setRoommateFilter('2')} />}
-                    label='2'
+                    control={
+                      <Checkbox checked={bedFilter == 'single bed'} onChange={() => setBedFilter('single bed')} />
+                    }
+                    label='Single Bed'
                   />
                   <FormControlLabel
-                    control={<Checkbox checked={roommateFilter === '4'} onChange={() => setRoommateFilter('4')} />}
-                    label='4'
+                    control={<Checkbox checked={bedFilter == 'bunk bed'} onChange={() => setBedFilter('bunk bed')} />}
+                    label='Bunk Bed'
+                  />
+                </Grid>
+
+                <Box sx={{ display: 'flex' }}>
+                  <ShowerIcon fontSize='small' sx={{ marginRight: 2 }} />
+                  <Typography sx={{ paddingRight: 2 }}>Bathroom Type</Typography>
+                </Box>
+                <Grid container spacing={2} pb={5} pt={1}>
+                  <FormControlLabel
+                    control={<Checkbox checked={bathroomFilter === ''} onChange={() => setBathroomFilter('')} />}
+                    label='All'
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={bathroomFilter == 'shared bathroom'}
+                        onChange={() => setBathroomFilter('shared bathroom')}
+                      />
+                    }
+                    label='Shared Bathroom'
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={bathroomFilter == 'en suite bathroom'}
+                        onChange={() => setBathroomFilter('en suite bathroom')}
+                      />
+                    }
+                    label='En-Suite Bathroom'
+                  />
+                </Grid>
+
+                <Box sx={{ display: 'flex' }}>
+                  <LocalAtmIcon fontSize='small' sx={{ marginRight: 2 }} />
+                  <Typography sx={{ paddingRight: 2 }}>Price</Typography>
+                </Box>
+                <Grid container spacing={2} pb={5} pt={1}>
+                  <FormControlLabel
+                    control={<Checkbox checked={priceFilter === ''} onChange={() => setPriceFilter('')} />}
+                    label='All'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={priceFilter === 5400} onChange={() => setPriceFilter(5400)} />}
+                    label='5400'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={priceFilter === 7200} onChange={() => setPriceFilter(7200)} />}
+                    label='7200'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={priceFilter === 9600} onChange={() => setPriceFilter(9600)} />}
+                    label='9600'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={priceFilter === 15000} onChange={() => setPriceFilter(15000)} />}
+                    label='15000'
                   />
                 </Grid>
 
@@ -347,6 +430,9 @@ const ReservationBuilding = () => {
                     onClick={() => {
                       setBuildingFilter('')
                       setRoommateFilter('')
+                      setBathroomFilter('')
+                      setBedFilter('')
+                      setPriceFilter('')
                     }}
                   >
                     Clear
@@ -360,9 +446,12 @@ const ReservationBuilding = () => {
       </Grid>
 
       {dormitoryBuilding
-        .filter(dorm => genderFilter === '' || dorm.type_gender === genderFilter)
         .filter(dorm => buildingFilter === '' || dorm.type_building === buildingFilter)
         .filter(dorm => roommateFilter === '' || dorm.type_roommate === roommateFilter)
+        .filter(dorm => bathroomFilter === '' || dorm.type_bathroom === bathroomFilter)
+        .filter(dorm => bedFilter === '' || dorm.type_bedtype === bedFilter)
+        .filter(dorm => priceFilter === '' || dorm.price === priceFilter)
+
         .map(dorm => (
           <Grid key={dorm.dorm_id} pb={5}>
             <Card>
@@ -406,6 +495,13 @@ const ReservationBuilding = () => {
                         {dorm.type_bathroom}
                       </Box>
                     </Typography>
+
+                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                      Bed Type :{' '}
+                      <Box component='span' sx={{ fontWeight: 'bold' }}>
+                        {dorm.type_bedtype}
+                      </Box>
+                    </Typography>
                     <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
                       Roommate :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
@@ -416,6 +512,12 @@ const ReservationBuilding = () => {
                       Room Total :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.room_total}
+                      </Box>
+                    </Typography>
+                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                      Price :{' '}
+                      <Box component='span' sx={{ fontWeight: 'bold' }}>
+                        {dorm.price} / Person / Term.
                       </Box>
                     </Typography>
                   </CardContent>
