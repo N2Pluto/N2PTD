@@ -298,110 +298,179 @@ const ReservationRoomTest = () => {
     const filterSchool = profileData?.data.filter_school
     const filterMajor = profileData?.data.filter_major
     const filterReligion = profileData?.data.filter_religion
-    const filterActivity = profileData?.data.filter_activity
+    const filterActivity = profileData?.data.activity
     const filterRedflag = profileData?.data.filter_redflag
-    const filterSleep = profileData?.data.filter_sleep // Assuming there's a similar field for sleep
+    const filterSleep = profileData?.data.sleep
     let filteredRooms = []
 
     // Filter by school
     if (filterSchool === 'find roommates who attend the same school') {
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
-
         return reservations.some(reservation => reservation.Users?.school === profileData?.data.school)
       })
     } else if (filterSchool === 'find roommates from any school') {
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
-
         return reservations.some(reservation => reservation.Users?.school !== profileData?.data.school)
       })
     } else if (filterSchool === 'find both') {
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
-
         return reservations.some(reservation => reservation.Users?.school)
       })
     }
 
-    // Filter by major within the previously filtered rooms
-    if (filterMajor === 'find roommates who study the same major') {
+    // Filter by major
+    if (filterMajor === 'find roommates who attend the same major') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
-
         return reservations.some(reservation => reservation.Users?.major === profileData?.data.major)
       })
     } else if (filterMajor === 'find roommates from any major') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
-
         return reservations.some(reservation => reservation.Users?.major !== profileData?.data.major)
       })
     } else if (filterMajor === 'find both') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
-
         return reservations.some(reservation => reservation.Users?.major)
       })
     }
 
-    // Filter by religion within the previously filtered rooms
-    if (filterReligion === 'find roommates who have the same religion') {
+    // Filter by religion
+    if (filterReligion === 'find roommates who attend the same religion') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
-
         return reservations.some(reservation => reservation.Users?.religion === profileData?.data.religion)
       })
     } else if (filterReligion === 'find roommates from any religion') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
-
-
         return reservations.some(reservation => reservation.Users?.religion !== profileData?.data.religion)
       })
     } else if (filterReligion === 'find both') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
-
         return reservations.some(reservation => reservation.Users?.religion)
       })
     }
 
-    // Filter by activity within the previously filtered rooms
-    if (filterActivity) {
-      filteredRooms = filteredRooms.filter(room => {
+    // If no rooms match the previous criteria, filter by sleep
+    if (filteredRooms.length === 0 && filterSleep) {
+      filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.sleep === filterSleep)
+      })
+    }
 
+    // If no rooms match the previous criteria, filter by activity
+    if (filteredRooms.length === 0 && filterActivity) {
+      const userActivities = filterActivity.split(',').map(activity => activity.trim())
+      filteredRooms = dormitoryRoom.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
         return reservations.some(reservation => {
           const activities = reservation.Users?.activity || []
-          const userActivities = profileData?.data.activity || []
-
-          return activities.some(activity => userActivities.includes(activity))
+          return userActivities.some(activity => activities.includes(activity))
         })
       })
     }
 
-    // Filter by redflag within the previously filtered rooms
-    if (filterRedflag) {
-      filteredRooms = filteredRooms.filter(room => {
+    // If no rooms match the previous criteria, filter by redflag
+    if (filteredRooms.length === 0 && filterRedflag) {
+      const userRedflags = filterRedflag.split(',').map(redflag => redflag.trim())
+      filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
-
         return reservations.some(reservation => {
           const redflags = reservation.Users?.filter_redflag || []
-          const userRedflags = profileData?.data.filter_redflag || []
-
-          return redflags.some(redflag => userRedflags.includes(redflag))
+          return userRedflags.some(redflag => redflags.includes(redflag))
         })
       })
     }
 
-    // Filter by sleep within the previously filtered rooms
-    if (filterSleep) {
-      filteredRooms = filteredRooms.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
+    // Handle additional cases
+    if (filteredRooms.length === 0) {
+      if (
+        (filterSchool === 'find roommates from any school' || filterSchool === 'find both') &&
+        (filterMajor === 'find roommates from any major' || filterMajor === 'find both') &&
+        (filterReligion === 'find roommates who have the same religion' || filterReligion === 'find both')
+      ) {
+        // Case 1: No rooms match school, major, and religion filters
+        // Filter by sleep, activity, and redflag
+        if (filterSleep) {
+          filteredRooms = dormitoryRoom.filter(room => {
+            const reservations = reservationData.get(room.room_id) || []
+            return reservations.some(reservation => reservation.Users?.sleep === filterSleep)
+          })
+        }
+        if (filteredRooms.length === 0 && filterActivity) {
+          const userActivities = filterActivity.split(',').map(activity => activity.trim())
+          filteredRooms = dormitoryRoom.filter(room => {
+            const reservations = reservationData.get(room.room_id) || []
+            return reservations.some(reservation => {
+              const activities = reservation.Users?.activity || []
+              return userActivities.some(activity => activities.includes(activity))
+            })
+          })
+        }
+        if (filteredRooms.length === 0 && filterRedflag) {
+          const userRedflags = filterRedflag.split(',').map(redflag => redflag.trim())
+          filteredRooms = dormitoryRoom.filter(room => {
+            const reservations = reservationData.get(room.room_id) || []
+            return reservations.some(reservation => {
+              const redflags = reservation.Users?.filter_redflag || []
+              return userRedflags.some(redflag => redflags.includes(redflag))
+            })
+          })
+        }
+      } else if (
+        // Case 2: All filters are "from any" except for religion
+        filterSchool === 'find roommates from any school' &&
+        filterMajor === 'find roommates from any major' &&
+        filterReligion === 'find roommates who have the same religion'
+      ) {
+        // Filter by religion only
+        filteredRooms = dormitoryRoom.filter(room => {
+          const reservations = reservationData.get(room.room_id) || []
+          
+          return reservations.some(reservation => reservation.Users?.religion === profileData?.data.religion)
+        })
+      } else if (
+        // Case 3: All filters are "find both" except for religion
+        filterSchool === 'find both' &&
+        filterMajor === 'find both' &&
+        filterReligion === 'find roommates from same religion'
+      ) {
+        // Filter by school, major, and religion
+        filteredRooms = dormitoryRoom.filter(room => {
+          const reservations = reservationData.get(room.room_id) || []
 
-        return reservations.some(reservation => reservation.Users?.sleep === profileData?.data.sleep)
-      })
+          return reservations.some(
+            reservation =>
+              reservation.Users?.school &&
+              reservation.Users?.major &&
+              reservation.Users?.religion === profileData?.data.religion
+          )
+        })
+      } else if (
+        // Case 4: All filters are "find both" except for religion
+        filterSchool === 'find both' &&
+        filterMajor === 'find both' &&
+        filterReligion === 'find roommates from any religion'
+      ) {
+        // Filter by school, major, and religion
+        filteredRooms = dormitoryRoom.filter(room => {
+          const reservations = reservationData.get(room.room_id) || []
+
+          return reservations.some(
+            reservation =>
+              reservation.Users?.school &&
+              reservation.Users?.major &&
+              reservation.Users?.religion !== profileData?.data.religion
+          )
+        })
+      }
     }
 
     setDormitoryRoom(filteredRooms)
@@ -410,8 +479,6 @@ const ReservationRoomTest = () => {
   const handleClear = () => {
     router.reload()
   }
-
-
 
   return (
     <>
@@ -577,7 +644,7 @@ const ReservationRoomTest = () => {
             MATCHING ROOM
           </Button>
         </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' ,pl:3}}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', pl: 3 }}>
           <Button variant='contained' onClick={handleClear}>
             clear
           </Button>

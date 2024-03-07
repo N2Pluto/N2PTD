@@ -109,13 +109,7 @@ const LoginPage = () => {
         if (data?.user.role === 'admin') {
           router.push('/admin/dashboardadmin')
         } else if (data?.user.role === 'user') {
-          if (
-            !data?.user.name ||
-            !data?.user.course ||
-            !data?.user.school ||
-            !data?.user.lastname ||
-            !data?.user.religion
-          ) {
+          if (!data?.user.name || !data?.user.course || !data?.user.school) {
             router.push('/pages/newlogin')
           } else {
             console.log('data:', data)
