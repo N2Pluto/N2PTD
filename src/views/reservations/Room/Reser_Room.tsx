@@ -57,6 +57,7 @@ import HotelIcon from '@mui/icons-material/Hotel'
 import ConstructionIcon from '@mui/icons-material/Construction'
 import HolidayVillageIcon from '@mui/icons-material/HolidayVillage'
 import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices'
+import SuccessฺฺBarRoom from './component'
 
 interface Column {
   id: 'details' | 'room' | 'code' | 'reserve' | 'bedstatus'
@@ -463,6 +464,7 @@ const ReservationRoomTest = () => {
 
   return (
     <>
+      <SuccessฺฺBarRoom />
       <Grid pb={4}>
         <Card>
           <CardContent>

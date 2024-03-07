@@ -8,13 +8,6 @@ import { useEffect, useState } from 'react'
 import { styled } from '@mui/material/styles'
 import Grid, { GridProps } from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import Twitter from 'mdi-material-ui/Twitter'
-import Facebook from 'mdi-material-ui/Facebook'
-import Linkedin from 'mdi-material-ui/Linkedin'
-import GooglePlus from 'mdi-material-ui/GooglePlus'
-import ShareVariant from 'mdi-material-ui/ShareVariant'
 import { CardActions, Dialog, DialogContent, DialogTitle } from '@mui/material'
 import { userStore } from 'src/stores/userStore'
 import CloseIcon from '@mui/icons-material/Close'
@@ -23,7 +16,6 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import BedroomParentIcon from '@mui/icons-material/BedroomParent'
 import GroupIcon from '@mui/icons-material/Group'
-import Link from 'next/link'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import TransgenderIcon from '@mui/icons-material/Transgender'
 
@@ -96,6 +88,7 @@ const ReservationBuildingDetails = () => {
   return (
     <>
       <Grid pb={4}>
+
         <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
           <Card>
             <CardContent>
