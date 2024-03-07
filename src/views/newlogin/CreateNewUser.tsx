@@ -27,73 +27,264 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
 const school: SchoolOptionType[] = [
   {
     title: 'School of Management',
-    course: ['Marketing Management', 'Logistics Management', 'Tourism and Hospitality'],
-    major: ['Digital Marketing and Branding', 'Logistics Management', 'Hospitality Industry']
+    courses: [
+      {
+        name: 'Marketing Management',
+        majors: ['Digital Marketing and Branding']
+      },
+      {
+        name: 'Logistics Management',
+        majors: ['Logistics Management']
+      },
+      {
+        name: 'Tourism and Hospitality',
+        majors: ['Hospitality Industry']
+      }
+    ]
   },
-  { title: 'School of Nursing', course: ['Nursing Science'], major: ['Nursing Science'] },
+  {
+    title: 'School of Nursing',
+    courses: [
+      {
+        name: 'Nursing Science',
+        majors: ['Nursing Science Program']
+      }
+    ]
+  },
   {
     title: 'School of Political Science and Public Administration',
-    course: ['Public Administration', 'Political Science'],
-    major: ['Public Administration', 'Political Science']
+    courses: [
+      {
+        name: 'Public Administration',
+        majors: ['Public Administration Program']
+      },
+      {
+        name: 'Political Science',
+        majors: ['Political Science Program']
+      }
+    ]
   },
   {
     title: 'School of Engineering and Technology',
-    course: [
-      'Civil Engineering',
-      'Electrical Engineering',
-      'Materials Engineer',
-      'Mechanical Engineer',
-      'Chemical Engineer',
-      'Computer Engineer'
-    ],
-    major: [
-      'Civil Engineering',
-      'Electrical Engineering',
-      'Petrochemical and Polymer Engineering',
-      'Mechanical and Robotic Engineering',
-      'Chemical Engineering and Pharmaceutical Chemistry',
-      'Computer Engineering and Artificial Intelligence'
+    courses: [
+      {
+        name: 'Civil Engineering',
+        majors: ['Civil Engineering Program']
+      },
+      {
+        name: 'Electrical Engineering',
+        majors: ['Electrical Engineering Program']
+      },
+      {
+        name: 'Materials Engineer',
+        majors: ['Petrochemical and Polymer Engineering']
+      },
+      {
+        name: 'Mechanical Engineer',
+        majors: ['Mechanical and Robotic Engineering']
+      },
+      {
+        name: 'Chemical Engineer',
+        majors: ['Chemical Engineering and Pharmaceutical Chemistry']
+      },
+      {
+        name: 'Computer Engineer',
+        majors: ['Computer Engineering and Artificial Intelligence']
+      }
     ]
   },
   {
     title: 'School of Architecture and Design',
-    course: ['Architecture', 'Interior Architecture'],
-    major: ['Architecture Program', 'Interior Design Program']
+    courses: [
+      {
+        name: 'Architecture',
+        majors: ['Architecture Program']
+      },
+      {
+        name: 'Interior Architecture',
+        majors: ['Interior Design Program']
+      }
+    ]
   },
   {
     title: 'School of Public Health',
-    course: ['Public Health'],
-    major: ['Public Health Program in Community Public Health']
+    courses: [
+      {
+        name: 'Public Health',
+        majors: ['Public Health Program in Community Public Health']
+      }
+    ]
   },
-  { title: 'School of Medicine', course: ['Medicine'], major: ['Medicine Program'] },
+  {
+    title: 'School of Medicine',
+    courses: [
+      {
+        name: 'Medicine',
+        majors: ['Medicine Program']
+      }
+    ]
+  },
   {
     title: 'School of Science',
-    course: ['Physics', 'Chemistry', 'Biology'],
-    major: ['Physical Program', 'Chemical Program', 'Biology Program']
+    courses: [
+      {
+        name: 'Mathematics',
+        majors: ['Mathematics Program']
+      },
+      {
+        name: 'Physics',
+        majors: ['Physics Program']
+      },
+      {
+        name: 'Chemistry',
+        majors: ['Chemistry Program']
+      },
+      {
+        name: 'Biology',
+        majors: ['Biology Program']
+      }
+    ]
   },
   {
     title: 'International College of Dentistry',
-    course: ['Dental Surgery '],
-    major: ['Doctor of Dental Surgery Program']
+    courses: [
+      {
+        name: 'Dental Surgery',
+        majors: ['Doctor of Dental Surgery Program']
+      }
+    ]
   },
   {
     title: 'Akkhraratchakumari Veterinary College',
-    course: ['Veterinary Science'],
-    major: ['Doctor of Veterinary Medicine Program']
+    courses: [
+      {
+        name: 'Veterinary Science',
+        majors: ['Doctor of Veterinary Medicine Program']
+      }
+    ]
   },
-  { title: 'School of Accounting and Finance' },
-  { title: 'School of Agricultural Technology and Food Industry' },
-  { title: 'School of Law' },
-  { title: 'International Veterinary College' },
-  { title: 'Faculty of Liberal Arts' },
-  { title: 'School of Information Science' },
-  { title: 'School of Allied Health Sciences' }
+  {
+    title: 'School of Accounting and Finance',
+    courses: [
+      {
+        name: 'Accounting and Finance',
+        majors: [
+          'Business Administration (Digital Age Business and Financial Management)',
+          'Business Administration, Finance, and Economics (Digital Age Business and Financial Management, Economics)',
+          'Accounting',
+          'Economics'
+        ]
+      }
+    ]
+  },
+  {
+    title: 'School of Law',
+    courses: [
+      {
+        name: 'Law',
+        majors: ['Bachelor of Laws']
+      }
+    ]
+  },
+  {
+    title: 'Faculty of Liberal Arts',
+    courses: [
+      {
+        name: 'Education',
+        majors: [
+          'Education (Mathematics)',
+          'Education (Computer Studies)',
+          'Education (Dramatic Arts)',
+          'Education (Early Childhood)',
+          'Education (Biology)',
+          'Education (Physical Education)',
+          'Education (Thai Language)',
+          'Education (English Language)',
+          'Education (General Science)',
+          'Education (Social Studies)'
+        ]
+      },
+      {
+        name: 'Liberal Arts',
+        majors: [
+          'Bachelor of Arts Program in Chinese',
+          'Bachelor of Arts Program in English',
+          'Bachelor of Arts (Thai Language for Communication)'
+        ]
+      }
+    ]
+  },
+
+  {
+    title: 'School of Information Science',
+    courses: [
+      {
+        name: 'Information Science',
+        majors: [
+          'Digital Content and Media',
+          'Digital Technology in Medicine',
+          'Digital Communication Arts',
+          'Intelligent Information Technology',
+          'Interactive Multimedia, Animation, and Games'
+        ]
+      }
+    ]
+  },
+  {
+    title: 'School of Allied Health Sciences',
+    courses: [
+      {
+        name: 'Physical Therapy',
+        majors: ['Physical Therapy Program']
+      },
+      {
+        name: 'Medical Technology',
+        majors: ['Medical Technology Program', 'Medical Technology (International)']
+      }
+    ]
+  },
+  {
+    title: 'School of Agricultural Technology and food Industry',
+    courses: [
+      {
+        name: 'Agricultural Technology',
+        majors: ['Agriculture and Innovation']
+      },
+      {
+        name: 'Food Industry',
+        majors: ['Food Science and Innovation']
+      }
+    ]
+  },
+  {
+    title: 'School of Pharmacy',
+    courses: [
+      {
+        name: 'Pharmacy',
+        majors: ['Pharmacy Program']
+      }
+    ]
+  },
+
+  {
+    title: 'International College',
+    courses: [
+      {
+        name: 'Business Administration (International)',
+        majors: ['Business Administration (International) Program']
+      }
+    ]
+  }
 ]
+
+interface CourseOptionType {
+  name: string
+  majors: string[]
+}
 
 interface SchoolOptionType {
   title: string
-  course?: string[]
-  major?: string[]
+  courses: CourseOptionType[]
 }
 
 const schoolOptions = createFilterOptions({
@@ -404,26 +595,26 @@ const CreateNewUser = () => {
                   />
                 </Grid>
 
-                {selectedSchool && selectedSchool.course && (
+                {selectedSchool && (
                   <Grid item xs={12} sm={12}>
                     <Autocomplete
                       id='course-demo'
-                      options={selectedSchool.course}
-                      getOptionLabel={option => option}
+                      options={selectedSchool.courses}
+                      getOptionLabel={option => option.name}
                       onChange={(event, newValue) => {
                         setSelectedCourse(newValue)
-                        setFormData({ ...formData, course: newValue || '' })
+                        setFormData({ ...formData, course: newValue ? newValue.name : '' })
                       }}
                       renderInput={params => <TextField {...params} label='Course' />}
                     />
                   </Grid>
                 )}
 
-                {selectedCourse && selectedSchool?.major && (
+                {selectedCourse && (
                   <Grid item xs={12} sm={12}>
                     <Autocomplete
                       id='major-demo'
-                      options={selectedSchool.major}
+                      options={selectedCourse.majors}
                       getOptionLabel={option => option}
                       onChange={(event, newValue) => {
                         setFormData({ ...formData, major: newValue || '' })
