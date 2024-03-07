@@ -45,10 +45,20 @@ const Allresult = () => {
     <>
       <SuccessbarฺResult />
 
-      <Box sx={{ pt: 3 }}>
+      <Box >
         <Card>
-          <Grid container spacing={6} sx={{ pl: 2, pr: 2, pt: 2, pb: 2 }}>
-            <Grid item xs={12} md={6} lg={3}>
+          <Typography variant='h4' sx={{ pl: 6, pt: 3 , pb: 3 }}>
+            Reservation Information
+            </Typography>
+        </Card>
+      </Box>
+
+
+      <Box  sx={{ pt: 3 }}>
+        <Card>
+          <Grid container spacing={6} sx={{ pl: 5, pr: 5, pt: 5, pb: 5 }}>
+
+            <Grid item xs={12} md={6} lg={6}>
               <Card sx={{ border: 0, boxShadow: 0, color: 'common.white', backgroundColor: 'primary.main' }}>
                 <CardContent sx={{ padding: theme => `${theme.spacing(3.25, 5, 4.5)} !important` }}>
                   <Typography variant='h6' sx={{ display: 'flex', alignItems: 'center', color: 'common.white' }}>
@@ -65,7 +75,7 @@ const Allresult = () => {
               </Card>
             </Grid>
 
-            <Grid item xs={12} md={6} lg={3}>
+            <Grid item xs={12} md={6} lg={6}>
               <Card sx={{ border: 0, boxShadow: 0, color: 'common.white', backgroundColor: 'info.main' }}>
                 <CardContent sx={{ padding: theme => `${theme.spacing(3.25, 5, 4.5)} !important` }}>
                   <Typography variant='h6' sx={{ display: 'flex', alignItems: 'center', color: 'common.white' }}>
@@ -82,7 +92,7 @@ const Allresult = () => {
               </Card>
             </Grid>
 
-            <Grid item xs={12} md={6} lg={3}>
+            <Grid item xs={12} md={6} lg={6}>
               <Card sx={{ border: 0, boxShadow: 0, color: 'common.white', backgroundColor: 'error.main' }}>
                 <CardContent sx={{ padding: theme => `${theme.spacing(3.25, 5, 4.5)} !important` }}>
                   <Typography variant='h6' sx={{ display: 'flex', alignItems: 'center', color: 'common.white' }}>
@@ -99,7 +109,7 @@ const Allresult = () => {
               </Card>
             </Grid>
 
-            <Grid item xs={12} md={6} lg={3}>
+            <Grid item xs={12} md={6} lg={6}>
               <Card sx={{ border: 0, boxShadow: 0, color: 'common.white', backgroundColor: 'warning.main' }}>
                 <CardContent sx={{ padding: theme => `${theme.spacing(3.25, 5, 4.5)} !important` }}>
                   <Typography variant='h6' sx={{ display: 'flex', alignItems: 'center', color: 'common.white' }}>
