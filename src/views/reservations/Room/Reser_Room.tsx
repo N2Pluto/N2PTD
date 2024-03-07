@@ -3,45 +3,61 @@ import Typography from '@mui/material/Typography'
 import Card from '@mui/material/Card'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import {
+  CardHeader,
   Collapse,
+  Divider,
   Grid,
   IconButton,
   Paper,
+  Stack,
+  Step,
+  StepConnector,
+  StepLabel,
+  Stepper,
   Table,
   TableCell,
   TableContainer,
   TableHead,
+  stepConnectorClasses
 } from '@mui/material'
 import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
-import {  Dialog, DialogContent, DialogTitle } from '@mui/material'
+import { CardActions, Dialog, DialogContent, DialogTitle, StepIconProps } from '@mui/material'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import TablePagination from '@mui/material/TablePagination'
 import { auto } from '@popperjs/core'
-import { userStore } from 'src/stores/userStore'
+import { userStore, IUser } from 'src/stores/userStore'
+import { Refresh } from 'mdi-material-ui'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import PersonIcon from '@mui/icons-material/Person'
 import Tooltip from '@mui/material/Tooltip'
+import SettingsIcon from '@mui/icons-material/Settings'
+import { Theme, styled } from '@mui/material/styles'
+import CorporateFareIcon from '@mui/icons-material/CorporateFare'
+import BedIcon from '@mui/icons-material/Bed'
 import BedroomParentIcon from '@mui/icons-material/BedroomParent'
 import * as React from 'react'
-
+import { CircularProgress } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 
-
-
+import { IDormitoryBed } from 'src/interfaces/IDormitoryBed'
+import { set } from 'nprogress'
 import SchoolIcon from '@mui/icons-material/School'
 import MosqueIcon from '@mui/icons-material/Mosque'
 import PoolIcon from '@mui/icons-material/Pool'
 import DangerousIcon from '@mui/icons-material/Dangerous'
 import HotelIcon from '@mui/icons-material/Hotel'
 import ConstructionIcon from '@mui/icons-material/Construction'
+import HolidayVillageIcon from '@mui/icons-material/HolidayVillage'
+import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices'
 import SuccessฺฺBarRoom from './component'
-
 
 interface Column {
   id: 'details' | 'room' | 'code' | 'reserve' | 'bedstatus'
@@ -81,9 +97,11 @@ const ReservationRoomTest = () => {
   const [reservationData, setReservationData] = useState<Map<string, any[]>>(new Map())
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [roomFilter, setRoomFilter] = useState<string>('')
+
   const [bedAvailableFilter, setBedAvailableFilter] = useState<number | null>(null)
-  const [courseFilter, setCourseFilter] = useState<string>('')
-  const [religionFilter, setReligionFilter] = useState<string>('')
+  const [floorFilter, setFloorFilter] = useState<number | null>(null)
+  const [schoolFilter, setSchoolFilter] = useState('')
+
   const [profileData, setProfileData] = useState(null)
   const { user } = userStore()
 
@@ -217,19 +235,40 @@ const ReservationRoomTest = () => {
     let filteredRooms = []
 
     // Filter by school
+    if (schoolFilter === 'Same School') {
+      filteredRooms = dormitoryRoom.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.school === profileData?.data.school)
+      })
+    } else if (schoolFilter === 'Same Major') {
+      filteredRooms = dormitoryRoom.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.major === profileData?.data.major)
+      })
+    } else if (schoolFilter === 'Same Religion') {
+      filteredRooms = dormitoryRoom.filter(room => {
+        const reservations = reservationData.get(room.room_id) || []
+        return reservations.some(reservation => reservation.Users?.religion === profileData?.data.religion)
+      })
+    }
+
+    // Filter by school
     if (filterSchool === 'find roommates who attend the same school') {
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.school === profileData?.data.school)
       })
     } else if (filterSchool === 'find roommates from any school') {
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.school !== profileData?.data.school)
       })
     } else if (filterSchool === 'find both') {
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.school)
       })
     }
@@ -238,16 +277,19 @@ const ReservationRoomTest = () => {
     if (filterMajor === 'find roommates who attend the same major') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.major === profileData?.data.major)
       })
     } else if (filterMajor === 'find roommates from any major') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.major !== profileData?.data.major)
       })
     } else if (filterMajor === 'find both') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.major)
       })
     }
@@ -256,16 +298,19 @@ const ReservationRoomTest = () => {
     if (filterReligion === 'find roommates who attend the same religion') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.religion === profileData?.data.religion)
       })
     } else if (filterReligion === 'find roommates from any religion') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.religion !== profileData?.data.religion)
       })
     } else if (filterReligion === 'find both') {
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.religion)
       })
     }
@@ -274,6 +319,7 @@ const ReservationRoomTest = () => {
     if (filteredRooms.length === 0 && filterSleep) {
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => reservation.Users?.sleep === filterSleep)
       })
     }
@@ -283,8 +329,10 @@ const ReservationRoomTest = () => {
       const userActivities = filterActivity.split(',').map(activity => activity.trim())
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => {
           const activities = reservation.Users?.activity || []
+
           return userActivities.some(activity => activities.includes(activity))
         })
       })
@@ -295,8 +343,10 @@ const ReservationRoomTest = () => {
       const userRedflags = filterRedflag.split(',').map(redflag => redflag.trim())
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
+
         return reservations.some(reservation => {
           const redflags = reservation.Users?.filter_redflag || []
+
           return userRedflags.some(redflag => redflags.includes(redflag))
         })
       })
@@ -314,6 +364,7 @@ const ReservationRoomTest = () => {
         if (filterSleep) {
           filteredRooms = dormitoryRoom.filter(room => {
             const reservations = reservationData.get(room.room_id) || []
+
             return reservations.some(reservation => reservation.Users?.sleep === filterSleep)
           })
         }
@@ -321,8 +372,10 @@ const ReservationRoomTest = () => {
           const userActivities = filterActivity.split(',').map(activity => activity.trim())
           filteredRooms = dormitoryRoom.filter(room => {
             const reservations = reservationData.get(room.room_id) || []
+
             return reservations.some(reservation => {
               const activities = reservation.Users?.activity || []
+
               return userActivities.some(activity => activities.includes(activity))
             })
           })
@@ -331,8 +384,10 @@ const ReservationRoomTest = () => {
           const userRedflags = filterRedflag.split(',').map(redflag => redflag.trim())
           filteredRooms = dormitoryRoom.filter(room => {
             const reservations = reservationData.get(room.room_id) || []
+
             return reservations.some(reservation => {
               const redflags = reservation.Users?.filter_redflag || []
+
               return userRedflags.some(redflag => redflags.includes(redflag))
             })
           })
@@ -393,10 +448,23 @@ const ReservationRoomTest = () => {
     router.reload()
   }
 
+  const mapToFloorCategory = (floorNumber: number): number => {
+    if (floorNumber >= 101 && floorNumber <= 105) {
+      return 1
+    } else if (floorNumber >= 201 && floorNumber <= 205) {
+      return 2
+    } else if (floorNumber >= 301 && floorNumber <= 305) {
+      return 3
+    } else if (floorNumber >= 401 && floorNumber <= 405) {
+      return 4
+    } else {
+      return -1 // Or any other default value if the floor number doesn't match any category
+    }
+  }
+
   return (
     <>
-    <SuccessฺฺBarRoom />
-
+      <SuccessฺฺBarRoom />
       <Grid pb={4}>
         <Card>
           <CardContent>
@@ -420,11 +488,37 @@ const ReservationRoomTest = () => {
                 </Box>
               </DialogTitle>
               <DialogContent>
+                {' '}
                 <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ paddingRight: 2 }}>Bed Available</Typography>
-                  <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
+                  <HolidayVillageIcon fontSize='small' sx={{ marginRight: 2 }} />
+                  <Typography sx={{ paddingRight: 2 }}>Floor</Typography>
                 </Box>
-
+                <Grid container spacing={2} pb={5} pt={1}>
+                  <FormControlLabel
+                    control={<Checkbox checked={floorFilter === null} onChange={() => setFloorFilter(null)} />}
+                    label='All'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={floorFilter === 1} onChange={() => setFloorFilter(1)} />}
+                    label='1'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={floorFilter === 2} onChange={() => setFloorFilter(2)} />}
+                    label='2'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={floorFilter === 3} onChange={() => setFloorFilter(3)} />}
+                    label='3'
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={floorFilter === 4} onChange={() => setFloorFilter(4)} />}
+                    label='4'
+                  />
+                </Grid>
+                <Box sx={{ display: 'flex' }}>
+                  <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
+                  <Typography sx={{ paddingRight: 2 }}>Bed Available</Typography>
+                </Box>
                 <Grid container spacing={2} pb={5} pt={1}>
                   <FormControlLabel
                     control={
@@ -453,80 +547,51 @@ const ReservationRoomTest = () => {
                     label='4'
                   />
                 </Grid>
-
                 <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ paddingRight: 2 }}>Course</Typography>
-                  <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
+                  <MiscellaneousServicesIcon fontSize='small' sx={{ marginRight: 2 }} />
+                  <Typography sx={{ paddingRight: 2 }}>Requirement</Typography>
                 </Box>
                 <Grid container spacing={2} pb={5} pt={1}>
-                  <FormControlLabel
-                    control={<Checkbox checked={courseFilter === ''} onChange={() => setCourseFilter('')} />}
-                    label='All'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox checked={courseFilter === 'Single'} onChange={() => setCourseFilter('Single')} />
-                    }
-                    label='Single'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox checked={courseFilter === 'Double'} onChange={() => setCourseFilter('Double')} />
-                    }
-                    label='Double'
-                  />
+                  <Grid item xs={12}>
+                    <FormControlLabel
+                      control={<Checkbox checked={schoolFilter === ''} onChange={() => setSchoolFilter('')} />}
+                      label='All'
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={schoolFilter === 'Same School'}
+                          onChange={() => setSchoolFilter('Same School')}
+                        />
+                      }
+                      label='Same School'
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={schoolFilter === 'Same Major'}
+                          onChange={() => setSchoolFilter('Same Major')}
+                        />
+                      }
+                      label='Same Major'
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={schoolFilter === 'Same Religion'}
+                          onChange={() => setSchoolFilter('Same Religion')}
+                        />
+                      }
+                      label='Same Religion'
+                    />
+                  </Grid>
                 </Grid>
-
-                <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ paddingRight: 2 }}>Religion</Typography>
-                  <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
-                </Box>
-                <Grid container spacing={2} pb={5} pt={1}>
-                  <FormControlLabel
-                    control={<Checkbox checked={religionFilter === ''} onChange={() => setReligionFilter('')} />}
-                    label='All'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={religionFilter === 'Christianity'}
-                        onChange={() => setReligionFilter('Christianity')}
-                      />
-                    }
-                    label='Christianity'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox checked={religionFilter === 'Islam'} onChange={() => setReligionFilter('Islam')} />
-                    }
-                    label='Islam'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={religionFilter === 'Buddhism'}
-                        onChange={() => setReligionFilter('Buddhism')}
-                      />
-                    }
-                    label='Buddhism'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={religionFilter === 'Hinduism'}
-                        onChange={() => setReligionFilter('Hinduism')}
-                      />
-                    }
-                    label='Hinduism'
-                  />
-                </Grid>
-
                 <Grid container spacing={2} pb={5}>
                   <Button
                     onClick={() => {
                       setBedAvailableFilter(null)
-                      setCourseFilter('')
-                      setReligionFilter('')
+                      setFloorFilter(null)
+                      setSchoolFilter('')
                     }}
                   >
                     Clear
@@ -566,8 +631,19 @@ const ReservationRoomTest = () => {
             <TableBody>
               {dormitoryRoom
                 .filter(room => bedAvailableFilter === null || room.bed_available === bedAvailableFilter)
-                .filter(room => courseFilter === '' || room.course === courseFilter)
-                .filter(room => religionFilter === '' || room.religion === religionFilter)
+                .filter(room => floorFilter === null || mapToFloorCategory(room.room_number) === floorFilter)
+                .filter(room => {
+                  const reservations = reservationData.get(room.room_id) || []
+                  if (schoolFilter === 'Same School') {
+                    return reservations.some(reservation => reservation.Users?.school === profileData?.data.school)
+                  } else if (schoolFilter === 'Same Major') {
+                    return reservations.some(reservation => reservation.Users?.major === profileData?.data.major)
+                  } else if (schoolFilter === 'Same Religion') {
+                    return reservations.some(reservation => reservation.Users?.religion === profileData?.data.religion)
+                  } else {
+                    return true // If no school filter is selected, return true to include all rooms
+                  }
+                })
                 .map(room => (
                   <React.Fragment key={room.room_id}>
                     <TableRow hover role='checkbox' tabIndex={-1}>
