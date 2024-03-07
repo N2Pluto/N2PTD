@@ -20,13 +20,6 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  Stack,
-  Step,
-  StepConnector,
-  StepIconProps,
-  StepLabel,
-  Stepper,
-  stepConnectorClasses
 } from '@mui/material'
 import { userStore } from 'src/stores/userStore'
 import CloseIcon from '@mui/icons-material/Close'
@@ -37,13 +30,10 @@ import BedroomParentIcon from '@mui/icons-material/BedroomParent'
 import GroupIcon from '@mui/icons-material/Group'
 import * as React from 'react'
 
-import SettingsIcon from '@mui/icons-material/Settings'
-import CorporateFareIcon from '@mui/icons-material/CorporateFare'
-import BedIcon from '@mui/icons-material/Bed'
 import ShowerIcon from '@mui/icons-material/Shower'
-import { set } from 'nprogress'
 import HotelIcon from '@mui/icons-material/Hotel'
 import LocalAtmIcon from '@mui/icons-material/LocalAtm'
+import SuccessฺฺBarBuilding from './component'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -83,7 +73,6 @@ const ReservationBuilding = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
-  const steps = ['Reservation', 'Building', 'Room', 'Bed']
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -118,109 +107,7 @@ const ReservationBuilding = () => {
     }
   }, [user])
 
-  const QontoConnector = styled(StepConnector)(({ theme }) => ({
-    [`&.${stepConnectorClasses.alternativeLabel}`]: {
-      top: 10,
-      left: 'calc(-50% + 16px)',
-      right: 'calc(50% + 16px)'
-    },
-    [`&.${stepConnectorClasses.active}`]: {
-      [`& .${stepConnectorClasses.line}`]: {
-        borderColor: '#784af4'
-      }
-    },
-    [`&.${stepConnectorClasses.completed}`]: {
-      [`& .${stepConnectorClasses.line}`]: {
-        borderColor: '#784af4'
-      }
-    },
-    [`& .${stepConnectorClasses.line}`]: {
-      borderColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#eaeaf0',
-      borderTopWidth: 3,
-      borderRadius: 1
-    }
-  }))
 
-  const QontoStepIconRoot = styled('div')<{ ownerState: { active?: boolean } }>(({ theme, ownerState }) => ({
-    color: theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#eaeaf0',
-    display: 'flex',
-    height: 22,
-    alignItems: 'center',
-    ...(ownerState.active && {
-      color: '#784af4'
-    }),
-    '& .QontoStepIcon-completedIcon': {
-      color: '#784af4',
-      zIndex: 1,
-      fontSize: 18
-    },
-    '& .QontoStepIcon-circle': {
-      width: 8,
-      height: 8,
-      borderRadius: '50%',
-      backgroundColor: 'currentColor'
-    }
-  }))
-
-  const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
-    [`&.${stepConnectorClasses.alternativeLabel}`]: {
-      top: 22
-    },
-    [`&.${stepConnectorClasses.active}`]: {
-      [`& .${stepConnectorClasses.line}`]: {
-        backgroundImage: 'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
-      }
-    },
-    [`&.${stepConnectorClasses.completed}`]: {
-      [`& .${stepConnectorClasses.line}`]: {
-        backgroundImage: 'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
-      }
-    },
-    [`& .${stepConnectorClasses.line}`]: {
-      height: 3,
-      border: 0,
-      backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#eaeaf0',
-      borderRadius: 1
-    }
-  }))
-
-  const ColorlibStepIconRoot = styled('div')<{
-    ownerState: { completed?: boolean; active?: boolean }
-  }>(({ theme, ownerState }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#ccc',
-    zIndex: 1,
-    color: '#fff',
-    width: 50,
-    height: 50,
-    display: 'flex',
-    borderRadius: '50%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...(ownerState.active && {
-      backgroundImage: 'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
-      boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)'
-    }),
-    ...(ownerState.completed && {
-      backgroundImage: 'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)'
-    })
-  }))
-
-  function ColorlibStepIcon(props: StepIconProps) {
-    const { active, completed, className } = props
-
-    const icons: { [index: string]: React.ReactElement } = {
-      1: <SettingsIcon />,
-      2: <CorporateFareIcon />,
-      3: <BedroomParentIcon />,
-      4: <BedIcon />
-    }
-
-    return (
-      <ColorlibStepIconRoot ownerState={{ completed, active }} className={className}>
-        {icons[String(props.icon)]}
-      </ColorlibStepIconRoot>
-    )
-  }
 
   const handleReservation = (dorm_id: string) => {
     if (dorm_id) {
@@ -261,23 +148,9 @@ const ReservationBuilding = () => {
 
   return (
     <>
-      <Grid pb={4}>
-        <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
-          <Card>
-            <CardContent>
-              <Stack sx={{ width: '100%' }} spacing={4}>
-                <Stepper alternativeLabel activeStep={1} connector={<ColorlibConnector />}>
-                  {steps.map(label => (
-                    <Step key={label}>
-                      <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
-                    </Step>
-                  ))}
-                </Stepper>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Grid>
+      <SuccessฺฺBarBuilding />
 
+      <Grid pb={4}>
         <Card>
           <CardContent>
             <Box
