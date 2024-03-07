@@ -2,8 +2,8 @@
 import Grid from '@mui/material/Grid'
 import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
 import LayoutAuth from 'src/layouts/LayoutAuth'
-import ReservationBotton from 'src/views/reservations/reservations_page/Reservation_Botton'
-import ReservationsStatistics from 'src/views/reservations/reservations_page/Reservations_Statistics'
+import ReservationBotton from 'src/views/reservations/reservation/Reservation_Botton'
+import ReservationsStatistics from 'src/views/reservations/reservation/Reservations_Statistics'
 
 
 

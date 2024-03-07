@@ -2,7 +2,7 @@
 import Grid from '@mui/material/Grid'
 import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
 import LayoutAuth from 'src/layouts/LayoutAuth'
-import ReservationRoomTest from 'src/views/reservations/Reservation_Room'
+import ReservationRoomTest from 'src/views/reservations/Room/Reser_Room'
 
 
 const Reservation = () => {

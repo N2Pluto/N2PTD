@@ -2,8 +2,8 @@
 import Grid from '@mui/material/Grid'
 import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
 import LayoutAuth from 'src/layouts/LayoutAuth'
-import ReservationBuilding from 'src/views/reservations/Reservation_Building'
-import ReservationFilter from 'src/views/reservations/ReservationFilter'
+import ReservationBuilding from 'src/views/reservations/Building/reser_Building'
+
 
 const Reservation = () => {
   return (
