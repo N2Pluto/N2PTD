@@ -104,8 +104,8 @@ const ReservationBuilding = () => {
   const handleReservation = (dorm_id: string) => {
     if (dorm_id) {
       console.log('Reservation Building:', dorm_id)
-      setUser({ ...userStoreInstance.user, dorm_id }) // เปลี่ยน เป็นเก็บ ใน useState
-      console.log('user:', userStoreInstance.user)
+      // setUser({ ...userStoreInstance.user, dorm_id }) // เปลี่ยน เป็นเก็บ ใน useState
+      // console.log('user:', userStoreInstance.user)
       router.push(`/reservation/room/${dorm_id}`)
     } else {
       console.error('Invalid dorm_id:', dorm_id)

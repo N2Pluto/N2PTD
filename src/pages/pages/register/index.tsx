@@ -109,14 +109,12 @@ const RegisterPage = () => {
   const handleSignUp = async () => {
     try {
       // Check if student_id or email already exists
-      const isExistingUser = register.some(
-        (user) => user.student_id == values.student_id || user.email === values.email
-      );
+      const isExistingUser = register.some(user => user.student_id == values.student_id || user.email === values.email)
 
       if (isExistingUser) {
-        alert('Student ID or email is already in use.');
+        alert('Student ID or email is already in use.')
 
-        return;
+        return
       }
 
       if (!values.student_id || !values.email || !values.password) {
@@ -272,10 +270,18 @@ const RegisterPage = () => {
               </Typography>
               <Typography variant='body2'>
                 <Link passHref href='/pages/login'>
-                  <LinkStyled>Sign in instead</LinkStyled>
+                  <LinkStyled>Log in instead</LinkStyled>
                 </Link>
               </Typography>
             </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <Typography variant='body2'>
+                <Link passHref href='/'>
+                  <LinkStyled>Back to home</LinkStyled>
+                </Link>
+              </Typography>
+            </Box>
+
             {/* <Divider sx={{ my: 5 }}>or</Divider> */}
           </form>
         </CardContent>

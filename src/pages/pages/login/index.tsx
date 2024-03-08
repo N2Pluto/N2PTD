@@ -226,14 +226,14 @@ const LoginPage = () => {
               </Typography>
               <Typography variant='body2'>
                 <Link passHref href='/pages/register'>
-                  <LinkStyled>Create an account</LinkStyled>
+                  <LinkStyled>Register</LinkStyled>
                 </Link>
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'right', pt: 6 }}>
               <Typography variant='body2'>
                 <Link passHref href='/'>
-                  <LinkStyled>back to home</LinkStyled>
+                  <LinkStyled>Back to home</LinkStyled>
                 </Link>
               </Typography>
             </Box>

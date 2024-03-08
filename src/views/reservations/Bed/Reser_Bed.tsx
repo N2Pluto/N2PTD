@@ -102,8 +102,8 @@ const ReservationBedviwe = () => {
 
   const handleReservation = async (bed_id: string) => {
     console.log('Reservation Bed ID:', bed_id)
-    setUser({ ...userStoreInstance.user, bed_id })
-    console.log('user:', userStoreInstance.user)
+    // setUser({ ...userStoreInstance.user, bed_id })
+    // console.log('user:', userStoreInstance.user)
     try {
       if (!user) {
         console.error('User data is missing.')
