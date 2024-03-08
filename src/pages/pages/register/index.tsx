@@ -133,9 +133,9 @@ const RegisterPage = () => {
         return
       }
 
-      if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(values.email)) {
+      if (!/^[\w-]+(\.[\w-]+)*@mail\.wu\.ac\.th$/.test(values.email)) {
         console.error('Invalid email format')
-        alert('Invalid email format')
+        alert('Invalid email format need to be @mail.wu.ac.th')
 
         return
       }
@@ -208,8 +208,8 @@ const RegisterPage = () => {
             <TextField
               autoFocus
               fullWidth
-              id='student_id'
-              label='Student_ID'
+              id='student id'
+              label='Student ID'
               sx={{ marginBottom: 4 }}
               onChange={handleChange('student_id')}
             />
