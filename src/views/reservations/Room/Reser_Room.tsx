@@ -326,14 +326,14 @@ const ReservationRoomTest = () => {
 
     // If no rooms match the previous criteria, filter by activity
     if (filteredRooms.length === 0 && filterActivity) {
-      const userActivities = filterActivity.split(',').map(activity => activity.trim())
+      const userActivities = filterActivity.split(',').map((activity: string) => activity.trim())
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
 
         return reservations.some(reservation => {
           const activities = reservation.Users?.activity || []
 
-          return userActivities.some(activity => activities.includes(activity))
+          return userActivities.some((activity: string) => activities.includes(activity))
         })
       })
     }
@@ -347,7 +347,7 @@ const ReservationRoomTest = () => {
         return reservations.some(reservation => {
           const redflags = reservation.Users?.filter_redflag || []
 
-          return userRedflags.some(redflag => redflags.includes(redflag))
+          return userRedflags.some((redflag: string) => redflags.includes(redflag))
         })
       })
     }
