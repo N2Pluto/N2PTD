@@ -15,12 +15,7 @@ import Facebook from 'mdi-material-ui/Facebook'
 import Linkedin from 'mdi-material-ui/Linkedin'
 import GooglePlus from 'mdi-material-ui/GooglePlus'
 import ShareVariant from 'mdi-material-ui/ShareVariant'
-import {
-  CardActions,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from '@mui/material'
+import { CardActions, Dialog, DialogContent, DialogTitle } from '@mui/material'
 import { userStore } from 'src/stores/userStore'
 import CloseIcon from '@mui/icons-material/Close'
 import Checkbox from '@mui/material/Checkbox'
@@ -73,7 +68,6 @@ const ReservationBuilding = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
-
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -106,8 +100,6 @@ const ReservationBuilding = () => {
       fetchUserProfile()
     }
   }, [user])
-
-
 
   const handleReservation = (dorm_id: string) => {
     if (dorm_id) {
@@ -319,6 +311,7 @@ const ReservationBuilding = () => {
       </Grid>
 
       {dormitoryBuilding
+        .filter(dorm => genderFilter === '' || dorm.type_gender === genderFilter)
         .filter(dorm => buildingFilter === '' || dorm.type_building === buildingFilter)
         .filter(dorm => roommateFilter === '' || dorm.type_roommate === roommateFilter)
         .filter(dorm => bathroomFilter === '' || dorm.type_bathroom === bathroomFilter)
