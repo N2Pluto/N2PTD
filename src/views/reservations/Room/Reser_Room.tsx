@@ -235,210 +235,164 @@ const ReservationRoomTest = () => {
     let filteredRooms = []
 
     // Filter by school
-    if (schoolFilter === 'Same School') {
-      filteredRooms = dormitoryRoom.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
-        return reservations.some(reservation => reservation.Users?.school === profileData?.data.school)
-      })
-    } else if (schoolFilter === 'Same Major') {
-      filteredRooms = dormitoryRoom.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
-        return reservations.some(reservation => reservation.Users?.major === profileData?.data.major)
-      })
-    } else if (schoolFilter === 'Same Religion') {
-      filteredRooms = dormitoryRoom.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
-        return reservations.some(reservation => reservation.Users?.religion === profileData?.data.religion)
-      })
-    }
-
-    // Filter by school
     if (filterSchool === 'find roommates who attend the same school') {
+      console.log('Filtering by same school')
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
 
-        return reservations.some(reservation => reservation.Users?.school === profileData?.data.school)
+        return reservations.some(reservation => {
+          console.log('User Reservation School :', reservation.Users?.school)
+          console.log('User School :', profileData?.data.school)
+
+          return reservation.Users?.school === profileData?.data.school
+        })
       })
     } else if (filterSchool === 'find roommates from any school') {
+      console.log('Filtering by any school')
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
 
-        return reservations.some(reservation => reservation.Users?.school !== profileData?.data.school)
+        return reservations.some(reservation => {
+          console.log('User Reservation School :', reservation.Users?.school)
+          console.log('User School :', profileData?.data.school)
+
+          return reservation.Users?.school !== profileData?.data.school
+        })
       })
-    } else if (filterSchool === 'find both') {
+    } else if (filterSchool === 'find all school') {
+      console.log('Filtering by all schools')
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
 
-        return reservations.some(reservation => reservation.Users?.school)
+        return reservations.some(reservation => {
+          console.log('User Reservation School :', reservation.Users?.school)
+
+          return reservation.Users?.school
+        })
       })
     }
 
     // Filter by major
     if (filterMajor === 'find roommates who attend the same major') {
+      console.log('Filtering by same major')
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
 
-        return reservations.some(reservation => reservation.Users?.major === profileData?.data.major)
+        return reservations.some(reservation => {
+          console.log('Users Reservation Major', reservation.Users?.major)
+          console.log('User Major:', profileData?.data.major)
+
+          return reservation.Users?.major === profileData?.data.major
+        })
       })
     } else if (filterMajor === 'find roommates from any major') {
+      console.log('Filtering by any major')
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
 
-        return reservations.some(reservation => reservation.Users?.major !== profileData?.data.major)
+        return reservations.some(reservation => {
+          console.log('Users Reservation Major', reservation.Users?.major)
+          console.log('User Major:', profileData?.data.major)
+
+          return reservation.Users?.major !== profileData?.data.major
+        })
       })
-    } else if (filterMajor === 'find both') {
+    } else if (filterMajor === 'find all major') {
+      console.log('Filtering by all majors')
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
 
-        return reservations.some(reservation => reservation.Users?.major)
+        return reservations.some(reservation => {
+          console.log('Users Reservation Major', reservation.Users?.major)
+
+          return reservation.Users?.major
+        })
       })
     }
 
     // Filter by religion
-    if (filterReligion === 'find roommates who attend the same religion') {
+    if (filterReligion === 'find roommates who have the same religion') {
+      console.log('Filtering by same religion')
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
 
-        return reservations.some(reservation => reservation.Users?.religion === profileData?.data.religion)
+        return reservations.some(reservation => {
+          console.log('Users Reservation Religion', reservation.Users?.religion)
+          console.log('Users Religion', profileData?.data.religion)
+
+          return reservation.Users?.religion === profileData?.data.religion
+        })
       })
     } else if (filterReligion === 'find roommates from any religion') {
+      console.log('Filtering by any religion')
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
 
-        return reservations.some(reservation => reservation.Users?.religion !== profileData?.data.religion)
+        return reservations.some(reservation => {
+
+          console.log('Users Reservation Religion', reservation.Users?.religion)
+          console.log('Users Religion', profileData?.data.religion)
+
+          return reservation.Users?.religion !== profileData?.data.religion
+        })
       })
-    } else if (filterReligion === 'find both') {
+    } else if (filterReligion === 'find all religion') {
+      console.log('Filtering by all religions')
       filteredRooms = filteredRooms.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
 
-        return reservations.some(reservation => reservation.Users?.religion)
+        return reservations.some(reservation => {
+          console.log('Users Reservation Religion', reservation.Users?.religion)
+
+          return reservation.Users?.religion
+        })
       })
     }
 
     // If no rooms match the previous criteria, filter by sleep
     if (filteredRooms.length === 0 && filterSleep) {
+      console.log('Filtering by sleep')
       filteredRooms = dormitoryRoom.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
+      const reservations = reservationData.get(room.room_id) || []
 
-        return reservations.some(reservation => reservation.Users?.sleep === filterSleep)
+      return reservations.some(reservation => {
+        console.log('Users Reservation Sleep', reservation.Users?.sleep)
+
+        return reservation.Users?.sleep === filterSleep
+      })
       })
     }
 
     // If no rooms match the previous criteria, filter by activity
     if (filteredRooms.length === 0 && filterActivity) {
+      console.log('Filtering by activity')
       const userActivities = filterActivity.split(',').map(activity => activity.trim())
       filteredRooms = dormitoryRoom.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
+      const reservations = reservationData.get(room.room_id) || []
 
-        return reservations.some(reservation => {
-          const activities = reservation.Users?.activity || []
+      return reservations.some(reservation => {
+        const activities = reservation.Users?.activity || []
+        console.log('Users Reservation Activity', reservation.Users?.activity)
 
-          return userActivities.some(activity => activities.includes(activity))
-        })
+        return userActivities.some(activity => activities.includes(activity))
+      })
       })
     }
 
     // If no rooms match the previous criteria, filter by redflag
     if (filteredRooms.length === 0 && filterRedflag) {
+      console.log('Filtering by redflag')
       const userRedflags = filterRedflag.split(',').map(redflag => redflag.trim())
       filteredRooms = dormitoryRoom.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
+      const reservations = reservationData.get(room.room_id) || []
 
-        return reservations.some(reservation => {
-          const redflags = reservation.Users?.filter_redflag || []
+      return reservations.some(reservation => {
+        const redflags = reservation.Users?.filter_redflag || []
+        console.log('Users Reservation Redflag', reservation.Users?.filter_redflag)
 
-          return userRedflags.some(redflag => redflags.includes(redflag))
-        })
+        return userRedflags.some(redflag => redflags.includes(redflag))
       })
-    }
-
-    // Handle additional cases
-    if (filteredRooms.length === 0) {
-      if (
-        (filterSchool === 'find roommates from any school' || filterSchool === 'find both') &&
-        (filterMajor === 'find roommates from any major' || filterMajor === 'find both') &&
-        (filterReligion === 'find roommates who have the same religion' || filterReligion === 'find both')
-      ) {
-        // Case 1: No rooms match school, major, and religion filters
-        // Filter by sleep, activity, and redflag
-        if (filterSleep) {
-          filteredRooms = dormitoryRoom.filter(room => {
-            const reservations = reservationData.get(room.room_id) || []
-
-            return reservations.some(reservation => reservation.Users?.sleep === filterSleep)
-          })
-        }
-        if (filteredRooms.length === 0 && filterActivity) {
-          const userActivities = filterActivity.split(',').map(activity => activity.trim())
-          filteredRooms = dormitoryRoom.filter(room => {
-            const reservations = reservationData.get(room.room_id) || []
-
-            return reservations.some(reservation => {
-              const activities = reservation.Users?.activity || []
-
-              return userActivities.some(activity => activities.includes(activity))
-            })
-          })
-        }
-        if (filteredRooms.length === 0 && filterRedflag) {
-          const userRedflags = filterRedflag.split(',').map(redflag => redflag.trim())
-          filteredRooms = dormitoryRoom.filter(room => {
-            const reservations = reservationData.get(room.room_id) || []
-
-            return reservations.some(reservation => {
-              const redflags = reservation.Users?.filter_redflag || []
-
-              return userRedflags.some(redflag => redflags.includes(redflag))
-            })
-          })
-        }
-      } else if (
-        // Case 2: All filters are "from any" except for religion
-        filterSchool === 'find roommates from any school' &&
-        filterMajor === 'find roommates from any major' &&
-        filterReligion === 'find roommates who have the same religion'
-      ) {
-        // Filter by religion only
-        filteredRooms = dormitoryRoom.filter(room => {
-          const reservations = reservationData.get(room.room_id) || []
-
-          return reservations.some(reservation => reservation.Users?.religion === profileData?.data.religion)
-        })
-      } else if (
-        // Case 3: All filters are "find both" except for religion
-        filterSchool === 'find both' &&
-        filterMajor === 'find both' &&
-        filterReligion === 'find roommates from same religion'
-      ) {
-        // Filter by school, major, and religion
-        filteredRooms = dormitoryRoom.filter(room => {
-          const reservations = reservationData.get(room.room_id) || []
-
-          return reservations.some(
-            reservation =>
-              reservation.Users?.school &&
-              reservation.Users?.major &&
-              reservation.Users?.religion === profileData?.data.religion
-          )
-        })
-      } else if (
-        // Case 4: All filters are "find both" except for religion
-        filterSchool === 'find both' &&
-        filterMajor === 'find both' &&
-        filterReligion === 'find roommates from any religion'
-      ) {
-        // Filter by school, major, and religion
-        filteredRooms = dormitoryRoom.filter(room => {
-          const reservations = reservationData.get(room.room_id) || []
-
-          return reservations.some(
-            reservation =>
-              reservation.Users?.school &&
-              reservation.Users?.major &&
-              reservation.Users?.religion !== profileData?.data.religion
-          )
-        })
-      }
+      })
     }
 
     setDormitoryRoom(filteredRooms)
@@ -710,27 +664,75 @@ const ReservationRoomTest = () => {
                                   </Typography>
                                   <Grid container spacing={6}>
                                     <Grid item xs={12}>
-                                      <Box display='flex' alignItems='center'>
+                                      <Box
+                                        display='flex'
+                                        alignItems='center'
+                                        sx={
+                                          reservation.Users?.school === profileData?.data.school
+                                            ? { backgroundColor: '#ffecb3' }
+                                            : {}
+                                        }
+                                      >
                                         <SchoolIcon />
                                         <Typography variant='body1'>: {reservation.Users?.school}</Typography>
                                       </Box>
-                                      <Box display='flex' alignItems='center'>
+                                      <Box
+                                        display='flex'
+                                        alignItems='center'
+                                        sx={
+                                          reservation.Users?.major === profileData?.data.major
+                                            ? { backgroundColor: '#ffecb3' }
+                                            : {}
+                                        }
+                                      >
                                         <SchoolIcon />
                                         <Typography variant='body1'>: {reservation.Users?.major}</Typography>
                                       </Box>
-                                      <Box display='flex' alignItems='center'>
+                                      <Box
+                                        display='flex'
+                                        alignItems='center'
+                                        sx={
+                                          reservation.Users?.religion === profileData?.data.religion
+                                            ? { backgroundColor: '#ffecb3' }
+                                            : {}
+                                        }
+                                      >
                                         <MosqueIcon />
                                         <Typography variant='body1'>: {reservation.Users?.religion}</Typography>
                                       </Box>
-                                      <Box display='flex' alignItems='center'>
+                                      <Box
+                                        display='flex'
+                                        alignItems='center'
+                                        sx={
+                                          reservation.Users?.activity === profileData?.data.activity
+                                            ? { backgroundColor: '#ffecb3' }
+                                            : {}
+                                        }
+                                      >
                                         <PoolIcon />
                                         <Typography variant='body1'>: {reservation.Users?.activity}</Typography>
                                       </Box>
-                                      <Box display='flex' alignItems='center'>
+                                      <Box
+                                        display='flex'
+                                        alignItems='center'
+                                        sx={
+                                          reservation.Users?.filter_redflag === profileData?.data.filter_redflag
+                                            ? { backgroundColor: '#ffecb3' }
+                                            : {}
+                                        }
+                                      >
                                         <DangerousIcon />
                                         <Typography variant='body1'>: {reservation.Users?.filter_redflag}</Typography>
                                       </Box>
-                                      <Box display='flex' alignItems='center'>
+                                      <Box
+                                        display='flex'
+                                        alignItems='center'
+                                        sx={
+                                          reservation.Users?.sleep === profileData?.data.sleep
+                                            ? { backgroundColor: '#ffecb3' }
+                                            : {}
+                                        }
+                                      >
                                         <HotelIcon />
                                         <Typography variant='body1'>: {reservation.Users?.sleep}</Typography>
                                       </Box>
