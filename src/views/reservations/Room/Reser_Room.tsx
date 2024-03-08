@@ -179,7 +179,7 @@ const ReservationRoomTest = () => {
     }
 
     fetchDataAndUpdateStatus()
-    const intervalId = setInterval(fetchDataAndUpdateStatus, 10000)
+    const intervalId = setInterval(fetchDataAndUpdateStatus, 3000)
 
     return () => clearInterval(intervalId)
   }, []) // Remove dormitoryRoomStatus from dependencies
@@ -209,7 +209,7 @@ const ReservationRoomTest = () => {
     }
 
     fetchDataAndUpdateStatusRoom()
-    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 50000)
+    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 3000)
 
     return () => clearInterval(intervalId)
   }, [])

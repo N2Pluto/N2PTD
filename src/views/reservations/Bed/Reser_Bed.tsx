@@ -1,3 +1,4 @@
+
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Card from '@mui/material/Card'
@@ -75,7 +76,7 @@ const ReservationBedviwe = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchData = async () => {
     console.log('router.query.id:', router.query.id)
-    const { data } = await fetch(`/api/bed/${router.query.id}`).then(res => res.json())
+const { data } = await fetch(`/api/bed/${router.query.id}`).then(res => res.json())
     setDormitoryBed(data)
   }
 
@@ -88,7 +89,7 @@ const ReservationBedviwe = () => {
   useEffect(() => {
     const fetchDataBedByRoomID = async () => {
       console.log('router.query.id:', router.query.id)
-      const { data } = await fetch(`/api/bed/room/${router.query.id}`).then(res => res.json())
+const { data } = await fetch(`/api/bed/room/${router.query.id}`).then(res => res.json())
       setDormitoryRoom(data)
     }
     const fetchDataAndUpdateStatus = async () => {
@@ -102,8 +103,8 @@ const ReservationBedviwe = () => {
 
   const handleReservation = async (bed_id: string) => {
     console.log('Reservation Bed ID:', bed_id)
-    setUser({ ...userStoreInstance.user, bed_id })
-    console.log('user:', userStoreInstance.user)
+    // setUser({ ...userStoreInstance.user, bed_id })
+    // console.log('user:', userStoreInstance.user)
     try {
       if (!user) {
         console.error('User data is missing.')
@@ -111,7 +112,7 @@ const ReservationBedviwe = () => {
         return
       }
 
-      const checkResponse = await fetch(`/api/reservation/checkReservation?user_id=${user.user_id}`)
+const checkResponse = await fetch(`/api/reservation/checkReservation?user_id=${user.user_id}`)
       const { hasReservation } = await checkResponse.json()
 
       if (hasReservation) {
@@ -140,8 +141,6 @@ const ReservationBedviwe = () => {
         },
         body: JSON.stringify({
           user_id: user.user_id,
-          dorm_id: user.dorm_id,
-          room_id: user.room_id,
           bed_id: bed_id
         })
       })
@@ -230,6 +229,21 @@ const ReservationBedviwe = () => {
                                 </CardContent>
                               </Card>
                           </CardContent>
+
+
+                      // <Typography key={index} variant='body2' sx={{ marginBottom: 2 }}>
+                      //   <Box>
+                      //     <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                      //       Student_Year: {reservation.Users?.student_year}
+                      //     </Typography>
+                      //     <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                      //       Course: {reservation.Users?.course}
+                      //     </Typography>
+                      //     <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                      //       Religion: {reservation.Users?.religion}
+                      //     </Typography>
+                      //   </Box>
+                      // </Typography>
                     ))}
 
                   <Box

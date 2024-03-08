@@ -32,14 +32,18 @@ const Allresult = () => {
         setReservation(data[0])
       } catch (error) {
         console.error('Error fetching reservation data:', error)
-        console.log('asd')
       }
     }
 
+    // Call the function immediately
     fetchReservationData()
-  }, [user])
 
-  console.log('reservation:', reservation)
+    // Then set up the interval to call it every 10 seconds
+    const intervalId = setInterval(fetchReservationData, 3000)
+
+    // Don't forget to clear the interval when the component unmounts
+    return () => clearInterval(intervalId)
+  }, [user])
 
   return (
     <>

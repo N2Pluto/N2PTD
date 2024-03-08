@@ -50,15 +50,31 @@ async function updateBedAvailable(room_id) {
 
 function handler(req: any, res: any) {
   middleware(req, res, async () => {
-    const { user_id, dorm_id, room_id, bed_id } = req.body
+    const { user_id, bed_id } = req.body
 
     try {
+      // Fetch room_id from Dormitory_Bed table
+      const { data: bedData, error: bedError } = await supabase
+        .from('Dormitory_Bed')
+        .select('room_id')
+        .eq('bed_id', bed_id)
+      if (bedError) throw bedError
+      const room_id = bedData[0].room_id
+
+      // Fetch dorm_id from Dormitory_Room table
+      const { data: roomData, error: roomError } = await supabase
+        .from('Dormitory_Room')
+        .select('dorm_id')
+        .eq('room_id', room_id)
+      if (roomError) throw roomError
+      const dorm_id = roomData[0].dorm_id
+
       const { data, error } = await supabase.from('Reservation').insert([
         {
           user_id,
-          dorm_id,
+          bed_id,
           room_id,
-          bed_id
+          dorm_id
         }
       ])
 
@@ -66,7 +82,6 @@ function handler(req: any, res: any) {
         throw new Error('Error inserting data into Reservation table')
       }
 
-     
       await updateBedAvailable(room_id)
       await updateBedStatus(bed_id)
 
