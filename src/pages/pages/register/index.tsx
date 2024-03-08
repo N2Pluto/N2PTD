@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, Fragment, ChangeEvent, MouseEvent, ReactNode } from 'react'
+import { useState, Fragment, ChangeEvent, MouseEvent, ReactNode, useEffect } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
@@ -63,6 +63,20 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 }))
 
 const RegisterPage = () => {
+  const [register, setRegister] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await fetch('/api/register/checkRegister').then(res => res.json())
+        setRegister(data)
+      } catch (error) {
+        console.error('Error fetching dormitory room data:', error)
+      }
+    }
+    fetchData()
+  }, [])
+
   // ** States
   const [values, setValues] = useState<State>({
     password: '',
@@ -94,6 +108,17 @@ const RegisterPage = () => {
 
   const handleSignUp = async () => {
     try {
+      // Check if student_id or email already exists
+      const isExistingUser = register.some(
+        (user) => user.student_id == values.student_id || user.email === values.email
+      );
+
+      if (isExistingUser) {
+        alert('Student ID or email is already in use.');
+
+        return;
+      }
+
       if (!values.student_id || !values.email || !values.password) {
         console.error('Please fill in all fields')
         alert('Please fill in all fields')
@@ -108,9 +133,9 @@ const RegisterPage = () => {
         return
       }
 
-      if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(values.email)) {
+      if (!/^[\w-]+(\.[\w-]+)*@mail\.wu\.ac\.th$/.test(values.email)) {
         console.error('Invalid email format')
-        alert('Invalid email format')
+        alert('Invalid email format need to be @mail.wu.ac.th')
 
         return
       }
@@ -183,8 +208,8 @@ const RegisterPage = () => {
             <TextField
               autoFocus
               fullWidth
-              id='student_id'
-              label='Student_ID'
+              id='student id'
+              label='Student ID'
               sx={{ marginBottom: 4 }}
               onChange={handleChange('student_id')}
             />

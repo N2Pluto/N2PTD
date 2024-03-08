@@ -10,17 +10,6 @@ import BedIcon from '@mui/icons-material/Bed';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 
 
-const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  [theme.breakpoints.down('md')]: {
-    borderBottom: `1px solid ${theme.palette.divider}`
-  },
-  [theme.breakpoints.up('md')]: {
-    borderRight: `1px solid ${theme.palette.divider}`
-  }
-}))
 
 const SuccessฺฺBar = () => {
 
@@ -32,12 +21,12 @@ const SuccessฺฺBar = () => {
     },
     [`&.${stepConnectorClasses.active}`]: {
       [`& .${stepConnectorClasses.line}`]: {
-        backgroundImage: 'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
+        backgroundImage: 'linear-gradient(90deg, rgba(145,85,253,1) 0%, rgba(242,203,252,1) 54%, rgba(208,85,253,0.31169030112044815) 100%)'
       }
     },
     [`&.${stepConnectorClasses.completed}`]: {
       [`& .${stepConnectorClasses.line}`]: {
-        backgroundImage: 'linear-gradient( 95deg,rgb(242,113,33) 0%,rgb(233,64,87) 50%,rgb(138,35,135) 100%)'
+        backgroundImage: 'linear-gradient(90deg, rgba(145,85,253,1) 0%, rgba(242,203,252,1) 54%, rgba(208,85,253,0.31169030112044815) 100%)'
       }
     },
     [`& .${stepConnectorClasses.line}`]: {
@@ -62,7 +51,7 @@ const SuccessฺฺBar = () => {
     alignItems: 'center',
     ...(ownerState.active && {
       backgroundImage:
-        'linear-gradient( 136deg, rgb(242,113,33) 0%, rgb(233,64,87) 50%, rgb(138,35,135) 100%)',
+      'linear-gradient(90deg, rgba(145,85,253,1) 0%, rgba(208,85,253,0.31169030112044815) 81%, rgba(242,203,252,1) 100%)',
       boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',
     }),
     ...(ownerState.completed && {
