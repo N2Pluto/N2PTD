@@ -140,8 +140,6 @@ const ReservationBedviwe = () => {
         },
         body: JSON.stringify({
           user_id: user.user_id,
-          dorm_id: user.dorm_id,
-          room_id: user.room_id,
           bed_id: bed_id
         })
       })
