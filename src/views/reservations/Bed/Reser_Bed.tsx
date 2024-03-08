@@ -230,21 +230,6 @@ const ReservationBedviwe = () => {
                                 </CardContent>
                               </Card>
                           </CardContent>
-
-
-                      // <Typography key={index} variant='body2' sx={{ marginBottom: 2 }}>
-                      //   <Box>
-                      //     <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                      //       Student_Year: {reservation.Users?.student_year}
-                      //     </Typography>
-                      //     <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                      //       Course: {reservation.Users?.course}
-                      //     </Typography>
-                      //     <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                      //       Religion: {reservation.Users?.religion}
-                      //     </Typography>
-                      //   </Box>
-                      // </Typography>
                     ))}
 
                   <Box

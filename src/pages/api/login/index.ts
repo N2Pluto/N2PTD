@@ -7,9 +7,14 @@ const handler = async (req: any, res: any) => {
       return res.status(405).json({ message: 'Method Not Allowed' })
     }
 
-    const { email, password } = req.body
+    const { email, password, student_id } = req.body
 
-    const user = await supabase.from('Users').select('*').eq('email', email).limit(1).single()
+    let user;
+    if (email) {
+      user = await supabase.from('Users').select('*').eq('email', email).limit(1).single()
+    } else if (student_id) {
+      user = await supabase.from('Users').select('*').eq('student_id', student_id).limit(1).single()
+    }
 
     // Check password
     if (user?.data?.password !== password) {

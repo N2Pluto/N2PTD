@@ -1,11 +1,8 @@
-// ** React Imports
 import { ChangeEvent, MouseEvent, ReactNode, useEffect, useState } from 'react'
 
-// ** Next Imports
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
-// ** MUI Components
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -27,15 +24,11 @@ import { userStore } from 'src/stores/userStore'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 
-// ** Configs
 import themeConfig from 'src/configs/themeConfig'
 
-// ** Layout Import
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 
-// ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
-import { BedEmpty } from 'mdi-material-ui'
 
 interface State {
   email_student_id: string
@@ -43,7 +36,6 @@ interface State {
   showPassword: boolean
 }
 
-// ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
   [theme.breakpoints.up('sm')]: { width: '28rem' }
 }))
@@ -62,8 +54,10 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
 }))
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState(null)
+  const [password, setPassword] = useState(null)
+  const [student_id, setStudent_id] = useState(null)
+  const [check, setCheck] = useState(null)
   const { setUser } = userStore()
   const router = useRouter()
 
@@ -88,43 +82,68 @@ const LoginPage = () => {
     event.preventDefault()
   }
 
-  const handleLogin = async () => {
+  const handleCheck = async()=>{
+    if (check.includes('@')){
+      setEmail(check)
+      console.log('email:', check)
+
+      handleLogin(check)
+    }else{
+      setStudent_id(check)
+      console.log('student_id:', check)
+
+      handleLogin(check)
+    }
+  }
+
+  const handleLogin = async (check: string) => {
+
     try {
+      let body;
+      if (check.includes('@')) {
+        body = JSON.stringify({ email: check, password });
+      } else {
+        body = JSON.stringify({ student_id: check, password });
+      }
+
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password })
+        body: body
       })
 
-      if (response.ok) {
-        const data = await response.json()
+        if (response.ok) {
+          const data = await response.json()
 
-        setUser(data?.user)
+          setUser(data?.user)
 
-        localStorage.setItem('accessToken', data.accessToken)
+          localStorage.setItem('accessToken', data.accessToken)
 
-        //check role
-        if (data?.user.role === 'admin') {
-          router.push('/admin/dashboardadmin')
-        } else if (data?.user.role === 'user') {
-          if (!data?.user.name || !data?.user.course || !data?.user.school) {
-            router.push('/pages/newlogin')
-          } else {
-            console.log('data:', data)
-            router.push('/dashboard')
+          //check role
+          if (data?.user.role === 'admin') {
+            router.push('/admin/dashboardadmin')
+          } else if (data?.user.role === 'user') {
+            if (!data?.user.name || !data?.user.course || !data?.user.school) {
+              router.push('/pages/newlogin')
+            } else {
+              console.log('data:', data)
+              router.push('/dashboard')
+            }
           }
         }
-      } else {
-        const errorData = await response.json()
-        alert('Login failed : Email or password is incorrect.')
+        else {
+          const errorData = await response.json()
+          alert('Login failed : Email , Student id or password is incorrect.')
 
-        console.log('Login failed:', errorData.message)
+          console.log('Login failed:', errorData.message)
+        }
+      } catch (error) {
+        console.log('Error during login:', error)
       }
-    } catch (error) {
-      console.log('Error during login:', error)
-    }
+
+
   }
 
   useEffect(() => {
@@ -145,7 +164,7 @@ const LoginPage = () => {
     }
 
     fetchUserbyUserID()
-  }, [])
+  }, [router, setUser])
 
   return (
     <Box className='content-center'>
@@ -183,8 +202,8 @@ const LoginPage = () => {
               autoFocus
               fullWidth
               id='email_student_id'
-              label='Email or Student_ID'
-              onChange={e => setEmail(e.target.value)}
+              label='Mail Walailak University or Student ID'
+              onChange={e => setCheck(e.target.value)}
               sx={{ marginBottom: 4 }}
             />
             <FormControl fullWidth>
@@ -217,7 +236,7 @@ const LoginPage = () => {
                 <LinkStyled onClick={e => e.preventDefault()}>Forgot Password?</LinkStyled>
               </Link>
             </Box>
-            <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} onClick={handleLogin}>
+            <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} onClick={handleCheck}>
               Login
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
