@@ -14,6 +14,7 @@ import router from 'next/router'
 
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
+import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 
 const RoomControl = () => {
   const [room, setRoom] = useState([])
@@ -93,7 +94,7 @@ const RoomControl = () => {
               <TableCell align='center'>{room.bed_available}</TableCell>
               <TableCell align='center'>
                 <Button onClick={() => handleUserInfo(room.room_id, room.room_rehearse)}>
-                  {room.room_rehearse ? <CheckIcon /> : <CloseIcon color='primary' />}
+                  {room.room_rehearse ? <CheckIcon /> : <BuildCircleIcon color='error' />}
                 </Button>
               </TableCell>
 
