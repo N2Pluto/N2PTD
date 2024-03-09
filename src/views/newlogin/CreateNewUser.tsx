@@ -23,6 +23,7 @@ import router from 'next/router'
 import Card from '@mui/material/Card'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
+import supabase from 'src/libs/supabase'
 
 const school: SchoolOptionType[] = [
   {
@@ -390,7 +391,8 @@ const CreateNewUser = () => {
     gender: profileData?.data.gender,
     phone: profileData?.data.phone,
     facebook: profileData?.data.facebook,
-    instagram: profileData?.data.instagram
+    instagram: profileData?.data.instagram,
+    image: profileData?.image
   })
 
   console.log('profileData', profileData)
@@ -424,6 +426,34 @@ const CreateNewUser = () => {
 
   const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
 
+  const onChange = async (file: ChangeEvent) => {
+    const reader = new FileReader()
+    const { files } = file.target as HTMLInputElement
+
+    if (files && files.length !== 0) {
+      reader.onload = () => setImgSrc(reader.result as string)
+
+      reader.readAsDataURL(files[0])
+
+      // Upload file to Supabase
+      const filePath = `public/${files[0].name}`
+      const { error } = await supabase.storage.from('profile').upload(filePath, files[0])
+      if (error) {
+        console.error('Error uploading image: ', error.message)
+      } else {
+        console.log('Image uploaded successfully')
+        const { data, error: urlError } = await supabase.storage.from('profile').getPublicUrl(filePath)
+        if (urlError) {
+          console.error('Error getting public URL: ', urlError.message)
+        } else {
+          const { publicUrl } = data
+          setFormData(prevState => ({ ...prevState, image: publicUrl }))
+          console.log('Image URL:', publicUrl)
+        }
+      }
+    }
+  }
+
   const handleUserInfo = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
 
@@ -446,7 +476,8 @@ const CreateNewUser = () => {
           gender: formData?.gender,
           phone: formData?.phone,
           facebook: formData?.facebook,
-          instagram: formData?.instagram
+          instagram: formData?.instagram,
+          image: formData.image
         })
       })
 
@@ -471,15 +502,7 @@ const CreateNewUser = () => {
     })
   }
 
-  const onChange = (file: ChangeEvent) => {
-    const reader = new FileReader()
-    const { files } = file.target as HTMLInputElement
-    if (files && files.length !== 0) {
-      reader.onload = () => setImgSrc(reader.result as string)
-
-      reader.readAsDataURL(files[0])
-    }
-  }
+  
 
   return (
     <Grid container spacing={3}>

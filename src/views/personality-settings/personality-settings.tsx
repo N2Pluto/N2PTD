@@ -132,9 +132,7 @@ const school: SchoolType[] = [
   },
   {
     title: 'find roommates from any school',
-    majors: [
-      { title: 'find roommates from any major' }
-    ]
+    majors: [{ title: 'find roommates from any major' }]
   },
   {
     title: 'find all school',
@@ -150,7 +148,6 @@ const schoolTypeOption = createFilterOptions({
   matchFrom: 'start',
   stringify: (option: SchoolType) => option.title
 })
-
 
 const religion = [
   { title: 'find roommates who have the same religion' },
@@ -195,7 +192,7 @@ const PersonalitySettings = () => {
 
   const [profileData, setProfileData] = useState(null)
   const [selectedSchool, setSelectedSchool] = useState(null)
-const [majorOptions, setMajorOptions] = React.useState([])
+  const [majorOptions, setMajorOptions] = React.useState([])
 
   const [selectedOptions, setSelectedOptions] = useState([])
 

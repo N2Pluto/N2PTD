@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, SyntheticEvent, Fragment } from 'react'
+import { useState, SyntheticEvent, Fragment, useEffect } from 'react'
 
 // ** Next Import
 import { useRouter } from 'next/router'
@@ -36,12 +36,43 @@ const BadgeContentSpan = styled('span')(({ theme }) => ({
 
 const UserDropdown = () => {
   const { user, clearStore } = userStore()
+  const [profileData, setProfileData] = useState(null)
 
   // ** States
   const [anchorEl, setAnchorEl] = useState<Element | null>(null)
 
   // ** Hooks
   const router = useRouter()
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch('/api/profile/fetchUserProfile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_id: user.user_id }) // ส่ง user_id ไปยัง API
+        })
+        const data = await response.json()
+        setProfileData(data) // เซ็ตข้อมูลผู้ใช้ที่ได้รับจาก API
+      } catch (error) {
+        // console.error('Error fetching user profile:', error)
+      }
+    }
+
+    if (user?.user_id) {
+      fetchUserProfile()
+    }
+
+    const interval = setInterval(() => {
+      if (user?.user_id) {
+        fetchUserProfile()
+      }
+    }, 5000) // Fetch user profile every 5 seconds
+
+    return () => clearInterval(interval) // Clean up on component unmount
+  }, [user])
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
     setAnchorEl(event.currentTarget)
@@ -87,7 +118,7 @@ const UserDropdown = () => {
           alt='John Doe'
           onClick={handleDropdownOpen}
           sx={{ width: 40, height: 40 }}
-          src='/images/avatars/1.png'
+          src={profileData?.data.image}
         />
       </Badge>
       <Menu
@@ -105,7 +136,7 @@ const UserDropdown = () => {
               badgeContent={<BadgeContentSpan />}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             >
-              <Avatar alt='John Doe' src='/images/avatars/1.png' sx={{ width: '2.5rem', height: '2.5rem' }} />
+              <Avatar alt='John Doe' src={profileData?.data.image} sx={{ width: '2.5rem', height: '2.5rem' }} />
             </Badge>
             <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
               <Typography sx={{ fontWeight: 600 }}>{user?.student_id}</Typography>

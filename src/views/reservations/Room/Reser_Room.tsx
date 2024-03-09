@@ -209,7 +209,7 @@ const ReservationRoomTest = () => {
     }
 
     fetchDataAndUpdateStatusRoom()
-    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 3000)
+    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 15000)
 
     return () => clearInterval(intervalId)
   }, [])
@@ -329,7 +329,6 @@ const ReservationRoomTest = () => {
         const reservations = reservationData.get(room.room_id) || []
 
         return reservations.some(reservation => {
-
           console.log('Users Reservation Religion', reservation.Users?.religion)
           console.log('Users Religion', profileData?.data.religion)
 
@@ -353,13 +352,13 @@ const ReservationRoomTest = () => {
     if (filteredRooms.length === 0 && filterSleep) {
       console.log('Filtering by sleep')
       filteredRooms = dormitoryRoom.filter(room => {
-      const reservations = reservationData.get(room.room_id) || []
+        const reservations = reservationData.get(room.room_id) || []
 
-      return reservations.some(reservation => {
-        console.log('Users Reservation Sleep', reservation.Users?.sleep)
+        return reservations.some(reservation => {
+          console.log('Users Reservation Sleep', reservation.Users?.sleep)
 
-        return reservation.Users?.sleep === filterSleep
-      })
+          return reservation.Users?.sleep === filterSleep
+        })
       })
     }
 
@@ -368,14 +367,14 @@ const ReservationRoomTest = () => {
       console.log('Filtering by activity')
       const userActivities = filterActivity.split(',').map(activity => activity.trim())
       filteredRooms = dormitoryRoom.filter(room => {
-      const reservations = reservationData.get(room.room_id) || []
+        const reservations = reservationData.get(room.room_id) || []
 
-      return reservations.some(reservation => {
-        const activities = reservation.Users?.activity || []
-        console.log('Users Reservation Activity', reservation.Users?.activity)
+        return reservations.some(reservation => {
+          const activities = reservation.Users?.activity || []
+          console.log('Users Reservation Activity', reservation.Users?.activity)
 
-        return userActivities.some(activity => activities.includes(activity))
-      })
+          return userActivities.some(activity => activities.includes(activity))
+        })
       })
     }
 
@@ -384,14 +383,14 @@ const ReservationRoomTest = () => {
       console.log('Filtering by redflag')
       const userRedflags = filterRedflag.split(',').map(redflag => redflag.trim())
       filteredRooms = dormitoryRoom.filter(room => {
-      const reservations = reservationData.get(room.room_id) || []
+        const reservations = reservationData.get(room.room_id) || []
 
-      return reservations.some(reservation => {
-        const redflags = reservation.Users?.filter_redflag || []
-        console.log('Users Reservation Redflag', reservation.Users?.filter_redflag)
+        return reservations.some(reservation => {
+          const redflags = reservation.Users?.filter_redflag || []
+          console.log('Users Reservation Redflag', reservation.Users?.filter_redflag)
 
-        return userRedflags.some(redflag => redflags.includes(redflag))
-      })
+          return userRedflags.some(redflag => redflags.includes(redflag))
+        })
       })
     }
 
@@ -664,78 +663,92 @@ const ReservationRoomTest = () => {
                                   </Typography>
                                   <Grid container spacing={6}>
                                     <Grid item xs={12}>
-                                      <Box
-                                        display='flex'
-                                        alignItems='center'
-                                        sx={
-                                          reservation.Users?.school === profileData?.data.school
-                                            ? { backgroundColor: '#ffecb3' }
-                                            : {}
-                                        }
-                                      >
-                                        <SchoolIcon />
-                                        <Typography variant='body1'>: {reservation.Users?.school}</Typography>
-                                      </Box>
-                                      <Box
-                                        display='flex'
-                                        alignItems='center'
-                                        sx={
-                                          reservation.Users?.major === profileData?.data.major
-                                            ? { backgroundColor: '#ffecb3' }
-                                            : {}
-                                        }
-                                      >
-                                        <SchoolIcon />
-                                        <Typography variant='body1'>: {reservation.Users?.major}</Typography>
-                                      </Box>
-                                      <Box
-                                        display='flex'
-                                        alignItems='center'
-                                        sx={
-                                          reservation.Users?.religion === profileData?.data.religion
-                                            ? { backgroundColor: '#ffecb3' }
-                                            : {}
-                                        }
-                                      >
-                                        <MosqueIcon />
-                                        <Typography variant='body1'>: {reservation.Users?.religion}</Typography>
-                                      </Box>
-                                      <Box
-                                        display='flex'
-                                        alignItems='center'
-                                        sx={
-                                          reservation.Users?.activity === profileData?.data.activity
-                                            ? { backgroundColor: '#ffecb3' }
-                                            : {}
-                                        }
-                                      >
-                                        <PoolIcon />
-                                        <Typography variant='body1'>: {reservation.Users?.activity}</Typography>
-                                      </Box>
-                                      <Box
-                                        display='flex'
-                                        alignItems='center'
-                                        sx={
-                                          reservation.Users?.filter_redflag === profileData?.data.filter_redflag
-                                            ? { backgroundColor: '#ffecb3' }
-                                            : {}
-                                        }
-                                      >
-                                        <DangerousIcon />
-                                        <Typography variant='body1'>: {reservation.Users?.filter_redflag}</Typography>
-                                      </Box>
-                                      <Box
-                                        display='flex'
-                                        alignItems='center'
-                                        sx={
-                                          reservation.Users?.sleep === profileData?.data.sleep
-                                            ? { backgroundColor: '#ffecb3' }
-                                            : {}
-                                        }
-                                      >
-                                        <HotelIcon />
-                                        <Typography variant='body1'>: {reservation.Users?.sleep}</Typography>
-                                      </Box>
+                                      <Grid item xs={12}>
+                                        <Box
+                                          display='inline-flex'
+                                          alignItems='center'
+                                          sx={{
+                                            backgroundColor:
+                                              reservation.Users?.school === profileData?.data.school
+                                                ? '#ffe0e0'
+                                                : 'inherit'
+                                          }}
+                                        >
+                                          <SchoolIcon />
+                                          <Typography variant='body1'>: {reservation.Users?.school}</Typography>
+                                        </Box>
+                                      </Grid>
+                                      <Grid item xs={12}>
+                                        {' '}
+                                        <Box
+                                          display='inline-flex'
+                                          alignItems='center'
+                                          sx={
+                                            reservation.Users?.major === profileData?.data.major
+                                              ? { backgroundColor: '#ffe0e0' }
+                                              : {}
+                                          }
+                                        >
+                                          <SchoolIcon />
+                                          <Typography variant='body1'>: {reservation.Users?.major}</Typography>
+                                        </Box>
+                                      </Grid>
+                                      <Grid item xs={12}>
+                                        <Box
+                                          display='inline-flex'
+                                          alignItems='center'
+                                          sx={
+                                            reservation.Users?.religion === profileData?.data.religion
+                                              ? { backgroundColor: '#ffe0e0' }
+                                              : {}
+                                          }
+                                        >
+                                          <MosqueIcon />
+                                          <Typography variant='body1'>: {reservation.Users?.religion}</Typography>
+                                        </Box>
+                                      </Grid>
+                                      <Grid item xs={12}>
+                                        <Box
+                                          display='inline-flex'
+                                          alignItems='center'
+                                          sx={
+                                            reservation.Users?.activity === profileData?.data.activity
+                                              ? { backgroundColor: '#ffe0e0' }
+                                              : {}
+                                          }
+                                        >
+                                          <PoolIcon />
+                                          <Typography variant='body1'>: {reservation.Users?.activity}</Typography>
+                                        </Box>
+                                      </Grid>
+                                      <Grid item xs={12}>
+                                        <Box
+                                          display='inline-flex'
+                                          alignItems='center'
+                                          sx={
+                                            reservation.Users?.filter_redflag === profileData?.data.filter_redflag
+                                              ? { backgroundColor: '#ffe0e0' }
+                                              : {}
+                                          }
+                                        >
+                                          <DangerousIcon />
+                                          <Typography variant='body1'>: {reservation.Users?.filter_redflag}</Typography>
+                                        </Box>
+                                      </Grid>
+                                      <Grid item xs={12}>
+                                        <Box
+                                          display='inline-flex'
+                                          alignItems='center'
+                                          sx={
+                                            reservation.Users?.sleep === profileData?.data.sleep
+                                              ? { backgroundColor: '#ffe0e0' }
+                                              : {}
+                                          }
+                                        >
+                                          <HotelIcon />
+                                          <Typography variant='body1'>: {reservation.Users?.sleep}</Typography>
+                                        </Box>
+                                      </Grid>
                                     </Grid>
                                   </Grid>
                                 </CardContent>

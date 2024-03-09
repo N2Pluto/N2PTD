@@ -25,6 +25,14 @@ import { CircularProgress } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
+import SchoolIcon from '@mui/icons-material/School'
+import MosqueIcon from '@mui/icons-material/Mosque'
+import PoolIcon from '@mui/icons-material/Pool'
+import DangerousIcon from '@mui/icons-material/Dangerous'
+import HotelIcon from '@mui/icons-material/Hotel'
+import ConstructionIcon from '@mui/icons-material/Construction'
+import HolidayVillageIcon from '@mui/icons-material/HolidayVillage'
+import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices'
 
 interface Column {
   id: 'DETAILS' | 'room' | 'code' | 'Viewdetails' | 'bedstatus'
@@ -167,7 +175,7 @@ const ReservationRoomDetails = () => {
 
               <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
 
-              <Typography sx={{ whiteSpace: 'nowrap', pr: 3, pl: 3,color: 'text.primary' }} variant='body2'>
+              <Typography sx={{ whiteSpace: 'nowrap', pr: 3, pl: 3, color: 'text.primary' }} variant='body2'>
                 Building
               </Typography>
 
@@ -225,7 +233,7 @@ const ReservationRoomDetails = () => {
                             Details
                           </Button>
                         ) : (
-                          <Button onClick={() => handleReservation(room.room_id)} variant='contained' color='error' >
+                          <Button onClick={() => handleReservation(room.room_id)} variant='contained' color='error'>
                             Details
                           </Button>
                         )}
@@ -236,17 +244,66 @@ const ReservationRoomDetails = () => {
                     <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                       <Collapse in={open[room.room_id]} timeout='auto' unmountOnExit>
                         {' '}
-                        <Box sx={{ margin: 1 }}>
+                        <CardContent sx={{ margin: 0 }}>
                           {(reservationData.get(room.room_id) || []).map((reservation, index) => (
-                            <Typography key={index} variant='body1' gutterBottom component='div'>
-                              <strong>{`BED ${index + 1}:`}</strong>
-                              <strong>Student ID:</strong> {reservation.Users?.student_id}
-                              <strong>Year:</strong> {reservation.Users?.student_year}
-                              <strong>Course:</strong> {reservation.Users?.course}
-                              <strong>Religion:</strong> {reservation.Users?.religion}
-                            </Typography>
+                            <Card sx={{ margin: 5 }} key={index}>
+                              <CardContent>
+                                <Typography variant='h6' gutterBottom component='div'>
+                                  {`BED ${index + 1}:`}
+                                </Typography>
+                                <Grid container spacing={6}>
+                                  <Grid item xs={12}>
+                                    <Box
+                                      display='flex'
+                                      alignItems='center'
+                                    >
+                                      <SchoolIcon />
+                                      <Typography variant='body1'>: {reservation.Users?.school}</Typography>
+                                    </Box>
+                                    <Box
+                                      display='flex'
+                                      alignItems='center'
+                                      
+                                    >
+                                      <SchoolIcon />
+                                      <Typography variant='body1'>: {reservation.Users?.major}</Typography>
+                                    </Box>
+                                    <Box
+                                      display='flex'
+                                      alignItems='center'
+                                     
+                                    >
+                                      <MosqueIcon />
+                                      <Typography variant='body1'>: {reservation.Users?.religion}</Typography>
+                                    </Box>
+                                    <Box
+                                      display='flex'
+                                      alignItems='center'
+                                    >
+                                      <PoolIcon />
+                                      <Typography variant='body1'>: {reservation.Users?.activity}</Typography>
+                                    </Box>
+                                    <Box
+                                      display='flex'
+                                      alignItems='center'
+                                     
+                                    >
+                                      <DangerousIcon />
+                                      <Typography variant='body1'>: {reservation.Users?.filter_redflag}</Typography>
+                                    </Box>
+                                    <Box
+                                      display='flex'
+                                      alignItems='center'
+                                    >
+                                      <HotelIcon />
+                                      <Typography variant='body1'>: {reservation.Users?.sleep}</Typography>
+                                    </Box>
+                                  </Grid>
+                                </Grid>
+                              </CardContent>
+                            </Card>
                           ))}
-                        </Box>
+                        </CardContent>
                       </Collapse>
                     </TableCell>
                   </TableRow>

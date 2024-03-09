@@ -59,7 +59,7 @@ const Profile = () => {
           <CardMedia sx={{ height: '12.625rem' }} image='/images/cards/background-user.png' />
           <Avatar
             alt='Robert Meyer'
-            src='/images/avatars/1.png'
+            src={profileData?.data.image}
             sx={{
               width: 140,
               height: 140,
@@ -95,7 +95,7 @@ const Profile = () => {
         </Card>
       </Box>
 
-      <Grid item xs={12} md={6} lg={6} sx={{pt:3}}>
+      <Grid item xs={12} md={6} lg={6} sx={{ pt: 3 }}>
         <Card sx={{ position: 'relative' }}>
           <CardContent>
             <Box>
@@ -204,7 +204,7 @@ const Profile = () => {
         </Card>
       </Grid>
 
-      <Grid item xs={12} md={6} lg={6} sx={{pt:3}}>
+      <Grid item xs={12} md={6} lg={6} sx={{ pt: 3 }}>
         <Card sx={{ position: 'relative' }}>
           <CardContent>
             <Box>
@@ -267,7 +267,7 @@ const Profile = () => {
         </Card>
       </Grid>
 
-      <Grid item xs={12} md={6} lg={6} sx={{pt:3}}>
+      <Grid item xs={12} md={6} lg={6} sx={{ pt: 3 }}>
         <Card sx={{ position: 'relative' }}>
           <CardContent>
             <Box>
@@ -328,7 +328,7 @@ const Profile = () => {
         </Card>
       </Grid>
 
-      <Grid item xs={12} md={6} lg={6} sx={{pt:3}}>
+      <Grid item xs={12} md={6} lg={6} sx={{ pt: 3 }}>
         <Card sx={{ position: 'relative' }}>
           <CardContent>
             <Box>

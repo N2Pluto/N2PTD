@@ -113,40 +113,46 @@ const sleepTypeOption = createFilterOptions({
   stringify: (option: sleepType) => option.title
 })
 
-const school = [
-  { title: 'find roommates who attend the same school' },
-  { title: 'find roommates from any school' },
-  { title: 'find both' }
-]
-
-interface schoolType {
+interface SchoolType {
   title: string
 }
+
+interface Major {
+  title: string
+}
+
+const school: SchoolType[] = [
+  {
+    title: 'find roommates who attend the same school',
+    majors: [
+      { title: 'find roommates who study the same major' },
+      { title: 'find roommates from any major' },
+      { title: 'find all major' }
+    ]
+  },
+  {
+    title: 'find roommates from any school',
+    majors: [{ title: 'find roommates from any major' }]
+  },
+  {
+    title: 'find all school',
+    majors: [
+      { title: 'find roommates who study the same major' },
+      { title: 'find roommates from any major' },
+      { title: 'find all major' }
+    ]
+  }
+]
 
 const schoolTypeOption = createFilterOptions({
   matchFrom: 'start',
-  stringify: (option: schoolType) => option.title
-})
-
-const major = [
-  { title: 'find roommates who study the same major' },
-  { title: 'find roommates from any major' },
-  { title: 'find both' }
-]
-
-interface majorType {
-  title: string
-}
-
-const majorTypeOption = createFilterOptions({
-  matchFrom: 'start',
-  stringify: (option: majorType) => option.title
+  stringify: (option: SchoolType) => option.title
 })
 
 const religion = [
   { title: 'find roommates who have the same religion' },
   { title: 'find roommates from any religion' },
-  { title: 'find both' }
+  { title: 'find all religion' }
 ]
 
 interface religionType {
@@ -157,7 +163,6 @@ const religionTypeOption = createFilterOptions({
   matchFrom: 'start',
   stringify: (option: religionType) => option.title
 })
-
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 150,
@@ -186,6 +191,17 @@ const CreatePersonalityUser = () => {
   const { user } = userStore()
 
   const [profileData, setProfileData] = useState(null)
+   const [selectedSchool, setSelectedSchool] = useState(null)
+   const [majorOptions, setMajorOptions] = React.useState([])
+
+   const [selectedOptions, setSelectedOptions] = useState([])
+
+   const handleOnChange = (event, newValue) => {
+     if (newValue.length > 3) {
+       return
+     }
+     setSelectedOptions(newValue)
+   }
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -356,7 +372,11 @@ const CreatePersonalityUser = () => {
                     options={school}
                     getOptionLabel={option => option.title}
                     onChange={(event, newValue) => {
+                      setSelectedSchool(newValue) // เก็บข้อมูล school ที่ถูกเลือก
                       setFormData({ ...formData, filter_school: newValue ? newValue.title : '' })
+
+                      // เมื่อโรงเรียนที่เลือกเปลี่ยนแปลง อัปเดต options ของ Autocomplete สำหรับ Major
+                      setMajorOptions(newValue ? newValue.majors : [])
                     }}
                     style={{ width: 500 }}
                     renderInput={params => <TextField {...params} label='School Filter' fullWidth />}
@@ -364,16 +384,20 @@ const CreatePersonalityUser = () => {
                 </Grid>
 
                 <Grid item xs={12} sm={12}>
-                  <Autocomplete
-                    id='filter-demo'
-                    options={major}
-                    getOptionLabel={option => option.title}
-                    onChange={(event, newValue) => {
-                      setFormData({ ...formData, filter_major: newValue ? newValue.title : '' })
-                    }}
-                    style={{ width: 500 }}
-                    renderInput={params => <TextField {...params} label='Major Filter' fullWidth />}
-                  />
+                  {selectedSchool && (
+                    <Grid item xs={12} sm={12}>
+                      <Autocomplete
+                        id='filter-demo-major'
+                        options={majorOptions} // ใช้ majorOptions แทน major ที่เปลี่ยนแปลงไปตามโรงเรียนที่เลือก
+                        getOptionLabel={option => option.title}
+                        onChange={(event, newValue) => {
+                          setFormData({ ...formData, filter_major: newValue ? newValue.title : '' })
+                        }}
+                        style={{ width: 500 }}
+                        renderInput={params => <TextField {...params} label='Major Filter' fullWidth />}
+                      />
+                    </Grid>
+                  )}
                 </Grid>
 
                 <Grid item xs={12} sm={12}>
