@@ -4,7 +4,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { data, error } = await supabase
     .from('Dormitory_Building')
-    .select('name , images_url')
+    .select('*')
     .eq('dorm_id', req.query.id)
     .limit(1)
     .single()

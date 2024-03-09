@@ -124,13 +124,13 @@ const LoginPage = () => {
 
         //check role
         if (data?.user.role === 'admin') {
-          router.push('/admin/dashboardadmin')
+          router.push('/admin/userControl')
         } else if (data?.user.role === 'user') {
           if (!data?.user.name || !data?.user.course || !data?.user.school) {
             router.push('/pages/newlogin')
           } else {
             console.log('data:', data)
-            router.push('/dashboard')
+            router.push('/profile')
           }
         }
       } else {

@@ -20,8 +20,11 @@ import FacebookIcon from '@mui/icons-material/Facebook'
 import InstagramIcon from '@mui/icons-material/Instagram'
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone'
 import Link from 'next/link'
-import FooterIllustrationsV1 from '../pages/auth/FooterIllustration'
 import CustomizedMenus from './component/ButtonSpeedDial'
+import NightlifeIcon from '@mui/icons-material/Nightlife';
+import CloseIcon from '@mui/icons-material/Close';
+import BedtimeIcon from '@mui/icons-material/Bedtime';
+import TempleHinduIcon from '@mui/icons-material/TempleHindu';
 
 const Profile = () => {
   const { user } = userStore()
@@ -281,7 +284,7 @@ const Profile = () => {
 
               <Box sx={{ display: 'flex', pt: 3 }}>
                 <Box sx={{ pr: 3 }}>
-                  <FacebookIcon />
+                  <NightlifeIcon />
                 </Box>
                 <Box sx={{ pr: 2 }}>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
@@ -297,7 +300,7 @@ const Profile = () => {
 
               <Box sx={{ display: 'flex', pt: 3 }}>
                 <Box sx={{ pr: 3 }}>
-                  <FacebookIcon />
+                  <CloseIcon />
                 </Box>
                 <Box sx={{ pr: 2 }}>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
@@ -313,7 +316,7 @@ const Profile = () => {
 
               <Box sx={{ display: 'flex', pt: 2 }}>
                 <Box sx={{ pr: 3 }}>
-                  <LocalPhoneIcon />
+                  <BedtimeIcon />
                 </Box>
                 <Box sx={{ pr: 2 }}>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
@@ -342,7 +345,7 @@ const Profile = () => {
 
               <Box sx={{ display: 'flex', pt: 3 }}>
                 <Box sx={{ pr: 3 }}>
-                  <FacebookIcon />
+                  <SchoolIcon />
                 </Box>
                 <Box sx={{ pr: 2 }}>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
@@ -357,7 +360,7 @@ const Profile = () => {
               </Box>
               <Box sx={{ display: 'flex', pt: 3 }}>
                 <Box sx={{ pr: 3 }}>
-                  <FacebookIcon />
+                  <SchoolIcon />
                 </Box>
                 <Box sx={{ pr: 2 }}>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
@@ -372,7 +375,7 @@ const Profile = () => {
               </Box>
               <Box sx={{ display: 'flex', pt: 3 }}>
                 <Box sx={{ pr: 3 }}>
-                  <FacebookIcon />
+                  <TempleHinduIcon />
                 </Box>
                 <Box sx={{ pr: 2 }}>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>

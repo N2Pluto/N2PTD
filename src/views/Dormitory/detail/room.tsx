@@ -4,24 +4,18 @@ import Card from '@mui/material/Card'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import * as React from 'react'
-import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { CardHeader, Collapse, Divider, Grid, Paper, Table, TableCell, TableContainer, TableHead } from '@mui/material'
 import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
-import TablePagination from '@mui/material/TablePagination'
 import { auto } from '@popperjs/core'
 import { userStore, IUser } from 'src/stores/userStore'
-import { Refresh } from 'mdi-material-ui'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import PersonIcon from '@mui/icons-material/Person'
 import IconButton from '@mui/material/IconButton'
-import ChevronUp from 'mdi-material-ui/ChevronUp'
-import ChevronDown from 'mdi-material-ui/ChevronDown'
 import Tooltip from '@mui/material/Tooltip'
-import { CircularProgress } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
@@ -30,9 +24,9 @@ import MosqueIcon from '@mui/icons-material/Mosque'
 import PoolIcon from '@mui/icons-material/Pool'
 import DangerousIcon from '@mui/icons-material/Dangerous'
 import HotelIcon from '@mui/icons-material/Hotel'
-import ConstructionIcon from '@mui/icons-material/Construction'
-import HolidayVillageIcon from '@mui/icons-material/HolidayVillage'
-import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices'
+import CardMedia from '@mui/material/CardMedia'
+import FeedIcon from '@mui/icons-material/Feed'
+import AllInboxIcon from '@mui/icons-material/AllInbox'
 
 interface Column {
   id: 'DETAILS' | 'room' | 'code' | 'Viewdetails' | 'bedstatus'
@@ -138,6 +132,8 @@ const ReservationRoomDetails = () => {
     setDormitoryBuilding(data)
   }
 
+  console.log('dormitoryBuilding:', dormitoryBuilding)
+
   useEffect(() => {
     const fetchDataRoomByDormID = async () => {
       console.log('router.query.id:', router.query.id)
@@ -155,6 +151,8 @@ const ReservationRoomDetails = () => {
 
     return () => clearInterval(intervalId)
   }, [])
+
+  console.log('sdasdad:', dormitoryRoom)
 
   const handleReservation = (room_id: string) => {
     console.log('Reservation ROOM :', room_id)
@@ -189,7 +187,104 @@ const ReservationRoomDetails = () => {
         </Card>
       </Grid>
 
-      <h1> {dormitoryBuilding?.name}</h1>
+      <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
+        <Card sx={{pb:5}}>
+          <CardMedia sx={{ height: '14.5625rem' }} image={dormitoryBuilding?.images_url} />
+          <CardContent>
+            <Typography variant='h4' sx={{ marginBottom: 2 }}>
+              {dormitoryBuilding?.name}
+            </Typography>
+
+            <Grid container spacing={6} sx={{pt:5}}>
+              <Grid item xs={12} sm={12}>
+                <Box sx={{ display: 'flex', alignItems: 'center', pl: 3 }}>
+                  <Typography variant='body2' sx={{ pr: 2 }}>
+                    <FeedIcon sx={{ fontSize: 50 }} />
+                  </Typography>
+                  <Typography variant='h5'>Information</Typography>
+                </Box>
+                <Box sx={{ pl: 3, pt: 4 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', height: 10, pb: 5 }}>
+                    <Typography variant='body1' sx={{ width: 150 }}>
+                      Type building{' '}
+                    </Typography>
+                    <Typography variant='body1'> | {dormitoryBuilding?.type_building}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', height: 10, pb: 5 }}>
+                    <Typography variant='body1' sx={{ width: 150 }}>
+                      {' '}
+                      Gender{' '}
+                    </Typography>
+                    <Typography variant='body1'>| {dormitoryBuilding?.type_gender}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', height: 10, pb: 5 }}>
+                    <Typography variant='body1' sx={{ width: 150 }}>
+                      {' '}
+                      Price{' '}
+                    </Typography>
+                    <Typography variant='body1'>| {dormitoryBuilding?.price}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', height: 10, pb: 5 }}>
+                    <Typography variant='body1' sx={{ width: 150 }}>
+                      {' '}
+                      Bathroom{' '}
+                    </Typography>
+                    <Typography variant='body1'>| {dormitoryBuilding?.type_bathroom}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', height: 10, pb: 5 }}>
+                    <Typography variant='body1' sx={{ width: 150 }}>
+                      {' '}
+                      Roommate{' '}
+                    </Typography>
+                    <Typography variant='body1'>| {dormitoryBuilding?.type_roommate}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', height: 10, pb: 5 }}>
+                    <Typography variant='body1' sx={{ width: 150 }}>
+                      {' '}
+                      Bed type{' '}
+                    </Typography>
+                    <Typography variant='body1'>| {dormitoryBuilding?.type_bedtype}</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', height: 10, pb: 15 }}>
+                    <Typography variant='body1' sx={{ width: 150 }}>
+                      {' '}
+                      Bed capacity{' '}
+                    </Typography>
+                    <Typography variant='body1'>| {dormitoryBuilding?.type_bedcapacity}</Typography>
+                  </Box>
+                </Box>
+                <Divider />
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <Box sx={{ display: 'flex', alignItems: 'center', pl: 3 }}>
+                  <Typography variant='body1' sx={{ pr: 2 }}>
+                    <AllInboxIcon sx={{ fontSize: 50 }} />
+                  </Typography>
+                  <Typography variant='h5'>Facilities</Typography>
+                </Box>
+                <Box sx={{ pl: 3, pt: 4 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center'}}>
+                    <Typography variant='body1' sx={{ width: 150 }}>
+                      Furniture{' '}
+                    </Typography>
+                    <Typography variant='body1'> | {dormitoryBuilding?.type_furniture}</Typography>
+                  </Box>
+
+                  <Box sx={{ display: 'flex', alignItems: 'center' ,pb:10}}>
+                    <Typography variant='body1' sx={{ width: 150 }}>
+                    Facilities{' '}
+                    </Typography>
+                    <Typography variant='body1'> | {dormitoryBuilding?.type_facilities}</Typography>
+                  </Box>
+                </Box>
+                <Divider />
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+      </Grid>
+
+      <Typography variant='h3' sx={{ marginBottom: 2, ml: 2 }}></Typography>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer sx={{ maxHeight: auto }}>
           <Table stickyHeader aria-label='sticky table'>
@@ -253,48 +348,27 @@ const ReservationRoomDetails = () => {
                                 </Typography>
                                 <Grid container spacing={6}>
                                   <Grid item xs={12}>
-                                    <Box
-                                      display='flex'
-                                      alignItems='center'
-                                    >
+                                    <Box display='flex' alignItems='center'>
                                       <SchoolIcon />
                                       <Typography variant='body1'>: {reservation.Users?.school}</Typography>
                                     </Box>
-                                    <Box
-                                      display='flex'
-                                      alignItems='center'
-                                      
-                                    >
+                                    <Box display='flex' alignItems='center'>
                                       <SchoolIcon />
                                       <Typography variant='body1'>: {reservation.Users?.major}</Typography>
                                     </Box>
-                                    <Box
-                                      display='flex'
-                                      alignItems='center'
-                                     
-                                    >
+                                    <Box display='flex' alignItems='center'>
                                       <MosqueIcon />
                                       <Typography variant='body1'>: {reservation.Users?.religion}</Typography>
                                     </Box>
-                                    <Box
-                                      display='flex'
-                                      alignItems='center'
-                                    >
+                                    <Box display='flex' alignItems='center'>
                                       <PoolIcon />
                                       <Typography variant='body1'>: {reservation.Users?.activity}</Typography>
                                     </Box>
-                                    <Box
-                                      display='flex'
-                                      alignItems='center'
-                                     
-                                    >
+                                    <Box display='flex' alignItems='center'>
                                       <DangerousIcon />
                                       <Typography variant='body1'>: {reservation.Users?.filter_redflag}</Typography>
                                     </Box>
-                                    <Box
-                                      display='flex'
-                                      alignItems='center'
-                                    >
+                                    <Box display='flex' alignItems='center'>
                                       <HotelIcon />
                                       <Typography variant='body1'>: {reservation.Users?.sleep}</Typography>
                                     </Box>

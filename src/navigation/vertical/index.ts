@@ -55,11 +55,11 @@ const useNavigation = (): VerticalNavItemsType => {
 
   if (roleFilter === 'admin') {
     return [
-      {
-        title: 'Dashboard',
-        icon: HomeOutline,
-        path: '/admin/dashboardadmin'
-      },
+      // {
+      //   title: 'Dashboard',
+      //   icon: HomeOutline,
+      //   path: '/admin/dashboardadmin'
+      // },
       {
         title: 'User information',
         icon: HomeOutline,
@@ -69,48 +69,49 @@ const useNavigation = (): VerticalNavItemsType => {
         title: 'Building Control ',
         icon: HomeOutline,
         path: '/admin/buildingControl'
-      },
-      {
-        sectionTitle: 'User Interface'
-      },
-      {
-        title: 'Home',
-        icon: HomeOutline,
-        path: '/dashboard'
-      },
-      {
-        title: 'Typography',
-        icon: FormatLetterCase,
-        path: '/typography'
-      },
-      {
-        title: 'Icons',
-        path: '/icons',
-        icon: GoogleCirclesExtended
-      },
-      {
-        title: 'Cards',
-        icon: CreditCardOutline,
-        path: '/cards'
-      },
-      {
-        title: 'Tables',
-        icon: Table,
-        path: '/tables'
-      },
-      {
-        icon: CubeOutline,
-        title: 'Form Layouts',
-        path: '/form-layouts'
       }
+
+      // {
+      //   sectionTitle: 'User Interface'
+      // },
+      // {
+      //   title: 'Home',
+      //   icon: HomeOutline,
+      //   path: '/dashboard'
+      // },
+      // {
+      //   title: 'Typography',
+      //   icon: FormatLetterCase,
+      //   path: '/typography'
+      // },
+      // {
+      //   title: 'Icons',
+      //   path: '/icons',
+      //   icon: GoogleCirclesExtended
+      // },
+      // {
+      //   title: 'Cards',
+      //   icon: CreditCardOutline,
+      //   path: '/cards'
+      // },
+      // {
+      //   title: 'Tables',
+      //   icon: Table,
+      //   path: '/tables'
+      // },
+      // {
+      //   icon: CubeOutline,
+      //   title: 'Form Layouts',
+      //   path: '/form-layouts'
+      // }
     ]
   } else if (roleFilter === 'user') {
     return [
-      {
-        title: 'Home',
-        icon: HomeOutline,
-        path: '/dashboard'
-      },
+      // {
+      //   title: 'Home',
+      //   icon: HomeOutline,
+      //   path: '/dashboard'
+      // },
 
       {
         title: 'Dormitory',
@@ -164,34 +165,34 @@ const useNavigation = (): VerticalNavItemsType => {
       //   path: '/pages/error',
       //   openInNewTab: true
       // },
-      {
-        sectionTitle: 'User Interface'
-      },
-      {
-        title: 'Typography',
-        icon: FormatLetterCase,
-        path: '/typography'
-      },
-      {
-        title: 'Icons',
-        path: '/icons',
-        icon: GoogleCirclesExtended
-      },
-      {
-        title: 'Cards',
-        icon: CreditCardOutline,
-        path: '/cards'
-      },
-      {
-        title: 'Tables',
-        icon: Table,
-        path: '/tables'
-      },
-      {
-        icon: CubeOutline,
-        title: 'Form Layouts',
-        path: '/form-layouts'
-      }
+      // {
+      //   sectionTitle: 'User Interface'
+      // },
+      // {
+      //   title: 'Typography',
+      //   icon: FormatLetterCase,
+      //   path: '/typography'
+      // },
+      // {
+      //   title: 'Icons',
+      //   path: '/icons',
+      //   icon: GoogleCirclesExtended
+      // },
+      // {
+      //   title: 'Cards',
+      //   icon: CreditCardOutline,
+      //   path: '/cards'
+      // },
+      // {
+      //   title: 'Tables',
+      //   icon: Table,
+      //   path: '/tables'
+      // },
+      // {
+      //   icon: CubeOutline,
+      //   title: 'Form Layouts',
+      //   path: '/form-layouts'
+      // }
     ]
   }
 }
