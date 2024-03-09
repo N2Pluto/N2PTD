@@ -27,6 +27,7 @@ const ReservationBotton = () => {
   const [reservation, setReservation] = useState(null)
   const [snackbarOpen, setSnackbarOpen] = useState(false)
   const [snackbarMessage, setSnackbarMessage] = useState('')
+  const [profileData, setProfileData] = useState(null)
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -35,6 +36,29 @@ const ReservationBotton = () => {
   const handleClose = () => {
     setOpen(false)
   }
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch('/api/profile/fetchUserProfile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_id: user.user_id }) // ส่ง user_id ไปยัง API
+        })
+        const data = await response.json()
+        setProfileData(data) // เซ็ตข้อมูลผู้ใช้ที่ได้รับจาก API
+        console.log(data)
+      } catch (error) {
+        console.error('Error fetching user profile:', error)
+      }
+    }
+
+    if (user?.user_id) {
+      fetchUserProfile()
+    }
+  }, [user])
 
   useEffect(() => {
     const fetchReservationData = async () => {
@@ -87,7 +111,7 @@ const ReservationBotton = () => {
         <CardMedia sx={{ height: '12.625rem' }} image='/images/cards/background-user.png' />
         <Avatar
           alt='Robert Meyer'
-          src='/images/avatars/1.png'
+          src={profileData?.data.image}
           sx={{
             width: 75,
             height: 75,
@@ -108,9 +132,14 @@ const ReservationBotton = () => {
               justifyContent: 'space-between'
             }}
           >
+            {' '}
             <Box sx={{ mr: 2, mb: 1, display: 'flex', flexDirection: 'column' }}>
               <Typography variant='caption' sx={{ pl: 3 }}>
-                {user?.student_id}
+                <>
+                  {user?.student_id}
+                  <br />
+                  {profileData?.data.name} {profileData?.data.lastname}
+                </>
               </Typography>
             </Box>
             <Box sx={{ flexDirection: 'column', alignItems: 'flex-end' }}>

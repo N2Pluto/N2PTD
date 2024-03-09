@@ -191,17 +191,17 @@ const CreatePersonalityUser = () => {
   const { user } = userStore()
 
   const [profileData, setProfileData] = useState(null)
-   const [selectedSchool, setSelectedSchool] = useState(null)
-   const [majorOptions, setMajorOptions] = React.useState([])
+  const [selectedSchool, setSelectedSchool] = useState(null)
+  const [majorOptions, setMajorOptions] = React.useState([])
 
-   const [selectedOptions, setSelectedOptions] = useState([])
+  const [selectedOptions, setSelectedOptions] = useState([])
 
-   const handleOnChange = (event, newValue) => {
-     if (newValue.length > 3) {
-       return
-     }
-     setSelectedOptions(newValue)
-   }
+  const handleOnChange = (event, newValue) => {
+    if (newValue.length > 3) {
+      return
+    }
+    setSelectedOptions(newValue)
+  }
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -379,7 +379,7 @@ const CreatePersonalityUser = () => {
                       setMajorOptions(newValue ? newValue.majors : [])
                     }}
                     style={{ width: 500 }}
-                    renderInput={params => <TextField {...params} label='School Filter' fullWidth />}
+                    renderInput={params => <TextField {...params} label='School Filter' fullWidth required />}
                   />
                 </Grid>
 
@@ -394,7 +394,7 @@ const CreatePersonalityUser = () => {
                           setFormData({ ...formData, filter_major: newValue ? newValue.title : '' })
                         }}
                         style={{ width: 500 }}
-                        renderInput={params => <TextField {...params} label='Major Filter' fullWidth />}
+                        renderInput={params => <TextField {...params} label='Major Filter' fullWidth required />}
                       />
                     </Grid>
                   )}
@@ -409,7 +409,7 @@ const CreatePersonalityUser = () => {
                       setFormData({ ...formData, filter_religion: newValue ? newValue.title : '' })
                     }}
                     style={{ width: 500 }}
-                    renderInput={params => <TextField {...params} label='Religion Filter' fullWidth />}
+                    renderInput={params => <TextField {...params} label='Religion Filter' fullWidth required />}
                   />
                 </Grid>
                 <Grid item xs={12} sm={12}>
@@ -426,6 +426,9 @@ const CreatePersonalityUser = () => {
                     disableCloseOnSelect
                     getOptionLabel={option => option.title}
                     onChange={(event, newValue) => {
+                      if (newValue.length > 3) {
+                        return
+                      }
                       setFormData({ ...formData, activity: newValue.map(option => option.title).join(', ') })
                     }}
                     renderOption={(props, option, { selected }) => (
@@ -457,7 +460,7 @@ const CreatePersonalityUser = () => {
                     )}
                     style={{ width: 500 }}
                     renderInput={params => (
-                      <TextField {...params} label='Red Flag Filter' placeholder='Favorites' fullWidth />
+                      <TextField {...params} label='Red Flag Filter' placeholder='Favorites' fullWidth  />
                     )}
                   />
                 </Grid>
@@ -471,7 +474,7 @@ const CreatePersonalityUser = () => {
                       setFormData({ ...formData, sleep: newValue ? newValue.title : '' })
                     }}
                     style={{ width: 500 }}
-                    renderInput={params => <TextField {...params} label='Sleep Style' fullWidth />}
+                    renderInput={params => <TextField {...params} label='Sleep Style' fullWidth required />}
                   />
                 </Grid>
 

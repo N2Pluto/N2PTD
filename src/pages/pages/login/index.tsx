@@ -82,28 +82,29 @@ const LoginPage = () => {
     event.preventDefault()
   }
 
-  const handleCheck = async()=>{
-    if (check.includes('@')){
-      setEmail(check)
-      console.log('email:', check)
-
-      handleLogin(check)
-    }else{
-      setStudent_id(check)
-      console.log('student_id:', check)
-
-      handleLogin(check)
+  const handleCheck = async () => {
+    if (check.trim() !== '') {
+      if (check.includes('@')) {
+        setEmail(check)
+        console.log('email:', check)
+        handleLogin(check)
+      } else {
+        setStudent_id(check)
+        console.log('student_id:', check)
+        handleLogin(check)
+      }
+    } else {
+      alert('Please fill in all fields')
     }
   }
 
   const handleLogin = async (check: string) => {
-
     try {
-      let body;
+      let body
       if (check.includes('@')) {
-        body = JSON.stringify({ email: check, password });
+        body = JSON.stringify({ email: check, password })
       } else {
-        body = JSON.stringify({ student_id: check, password });
+        body = JSON.stringify({ student_id: check, password })
       }
 
       const response = await fetch('/api/login', {
@@ -114,36 +115,33 @@ const LoginPage = () => {
         body: body
       })
 
-        if (response.ok) {
-          const data = await response.json()
+      if (response.ok) {
+        const data = await response.json()
 
-          setUser(data?.user)
+        setUser(data?.user)
 
-          localStorage.setItem('accessToken', data.accessToken)
+        localStorage.setItem('accessToken', data.accessToken)
 
-          //check role
-          if (data?.user.role === 'admin') {
-            router.push('/admin/dashboardadmin')
-          } else if (data?.user.role === 'user') {
-            if (!data?.user.name || !data?.user.course || !data?.user.school) {
-              router.push('/pages/newlogin')
-            } else {
-              console.log('data:', data)
-              router.push('/dashboard')
-            }
+        //check role
+        if (data?.user.role === 'admin') {
+          router.push('/admin/dashboardadmin')
+        } else if (data?.user.role === 'user') {
+          if (!data?.user.name || !data?.user.course || !data?.user.school) {
+            router.push('/pages/newlogin')
+          } else {
+            console.log('data:', data)
+            router.push('/dashboard')
           }
         }
-        else {
-          const errorData = await response.json()
-          alert('Login failed : Email , Student id or password is incorrect.')
+      } else {
+        const errorData = await response.json()
+        alert('Login failed : Email , Student id or password is incorrect.')
 
-          console.log('Login failed:', errorData.message)
-        }
-      } catch (error) {
-        console.log('Error during login:', error)
+        console.log('Login failed:', errorData.message)
       }
-
-
+    } catch (error) {
+      console.log('Error during login:', error)
+    }
   }
 
   useEffect(() => {
@@ -195,16 +193,17 @@ const LoginPage = () => {
             <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
               Welcome to {themeConfig.templateName}
             </Typography>
-            <Typography variant='body2'>Please sign-in to your account </Typography>
+            <Typography variant='body2'>Please Login to your account </Typography>
           </Box>
           <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
             <TextField
               autoFocus
               fullWidth
               id='email_student_id'
-              label='Mail Walailak University or Student ID'
+              label='Email Walailak University or Student ID'
               onChange={e => setCheck(e.target.value)}
               sx={{ marginBottom: 4 }}
+              required
             />
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
@@ -226,12 +225,14 @@ const LoginPage = () => {
                     </IconButton>
                   </InputAdornment>
                 }
+                required
               />
             </FormControl>
             <Box
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
             >
-              <FormControlLabel control={<Checkbox />} label='Remember Me' />
+              <Box></Box>
+              {/* <FormControlLabel control={<Checkbox />} label='Remember Me' /> */}
               <Link passHref href='/'>
                 <LinkStyled onClick={e => e.preventDefault()}>Forgot Password?</LinkStyled>
               </Link>
@@ -245,14 +246,14 @@ const LoginPage = () => {
               </Typography>
               <Typography variant='body2'>
                 <Link passHref href='/pages/register'>
-                  <LinkStyled>Create an account</LinkStyled>
+                  <LinkStyled>Register Account</LinkStyled>
                 </Link>
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'right', pt: 6 }}>
               <Typography variant='body2'>
                 <Link passHref href='/'>
-                  <LinkStyled>back to home</LinkStyled>
+                  <LinkStyled>Back to home</LinkStyled>
                 </Link>
               </Typography>
             </Box>

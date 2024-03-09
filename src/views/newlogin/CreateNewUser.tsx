@@ -502,8 +502,6 @@ const CreateNewUser = () => {
     })
   }
 
-  
-
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} sm={12} md={12} lg={12}>
@@ -587,11 +585,15 @@ const CreateNewUser = () => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label='Name'
+                    label='Firstname'
                     name='name'
                     value={formData.name}
                     onChange={handleChange}
                     required
+                    inputProps={{
+                      pattern: '^[a-zA-Z]+$'
+                    }}
+                    helperText='Only English letters are allowed'
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -601,6 +603,11 @@ const CreateNewUser = () => {
                     name='lastname'
                     value={formData.lastname}
                     onChange={handleChange}
+                    required
+                    inputProps={{
+                      pattern: '^[a-zA-Z]+$'
+                    }}
+                    helperText='Only English letters are allowed'
                   />
                 </Grid>
 
@@ -614,9 +621,10 @@ const CreateNewUser = () => {
                       setSelectedCourse(null)
                       setFormData({ ...formData, school: newValue ? newValue.title : '' })
                     }}
-                    renderInput={params => <TextField {...params} label='School' />}
+                    renderInput={params => <TextField {...params} label='School' required />}
                   />
                 </Grid>
+                {/* ...rest of your Grid items */}
 
                 {selectedSchool && (
                   <Grid item xs={12} sm={12}>
@@ -628,7 +636,7 @@ const CreateNewUser = () => {
                         setSelectedCourse(newValue)
                         setFormData({ ...formData, course: newValue ? newValue.name : '' })
                       }}
-                      renderInput={params => <TextField {...params} label='Course' />}
+                      renderInput={params => <TextField {...params} label='Course' required />}
                     />
                   </Grid>
                 )}
@@ -642,7 +650,7 @@ const CreateNewUser = () => {
                       onChange={(event, newValue) => {
                         setFormData({ ...formData, major: newValue || '' })
                       }}
-                      renderInput={params => <TextField {...params} label='Major' />}
+                      renderInput={params => <TextField {...params} label='Major' required />}
                     />
                   </Grid>
                 )}
@@ -655,11 +663,11 @@ const CreateNewUser = () => {
                     onChange={(event, newValue) => {
                       setFormData({ ...formData, religion: newValue ? newValue.title : '' })
                     }}
-                    renderInput={params => <TextField {...params} label='Religion' />}
+                    renderInput={params => <TextField {...params} label='Religion' required />}
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={12}>
+                {/* <Grid item xs={12} sm={12}>
                   <TextField
                     fullWidth
                     label='Facebook'
@@ -679,9 +687,9 @@ const CreateNewUser = () => {
                     onChange={handleChange}
                     required
                   />
-                </Grid>
+                </Grid> */}
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} sm={12}>
                   <TextField
                     fullWidth
                     label='Phone'
@@ -689,6 +697,10 @@ const CreateNewUser = () => {
                     value={formData.phone}
                     onChange={handleChange}
                     required
+                    inputProps={{
+                      pattern: '\\d{10}'
+                    }}
+                    helperText='Phone number must be 10 digits'
                   />
                 </Grid>
 

@@ -654,11 +654,11 @@ const ReservationRoomTest = () => {
                       <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                         <Collapse in={open[room.room_id]} timeout='auto' unmountOnExit>
                           {' '}
-                          <CardContent sx={{ margin: 0 }}>
+                          <CardContent sx={{ margin: -5 }}>
                             {(reservationData.get(room.room_id) || []).map((reservation, index) => (
-                              <Card sx={{ margin: 5 }} key={index}>
-                                <CardContent>
-                                  <Typography variant='h6' gutterBottom component='div'>
+                              <Card sx={{ margin: 3 }} key={index}>
+                                <CardContent sx={{ mt: -5, mb: -5 }}>
+                                  <Typography variant='body1' gutterBottom component='div'>
                                     {`BED ${index + 1}:`}
                                   </Typography>
                                   <Grid container spacing={6}>
@@ -675,7 +675,7 @@ const ReservationRoomTest = () => {
                                           }}
                                         >
                                           <SchoolIcon />
-                                          <Typography variant='body1'>: {reservation.Users?.school}</Typography>
+                                          <Typography variant='body2'>: {reservation.Users?.school}</Typography>
                                         </Box>
                                       </Grid>
                                       <Grid item xs={12}>
@@ -690,7 +690,7 @@ const ReservationRoomTest = () => {
                                           }
                                         >
                                           <SchoolIcon />
-                                          <Typography variant='body1'>: {reservation.Users?.major}</Typography>
+                                          <Typography variant='body2'>: {reservation.Users?.major}</Typography>
                                         </Box>
                                       </Grid>
                                       <Grid item xs={12}>
@@ -704,7 +704,7 @@ const ReservationRoomTest = () => {
                                           }
                                         >
                                           <MosqueIcon />
-                                          <Typography variant='body1'>: {reservation.Users?.religion}</Typography>
+                                          <Typography variant='body2'>: {reservation.Users?.religion}</Typography>
                                         </Box>
                                       </Grid>
                                       <Grid item xs={12}>
@@ -718,7 +718,7 @@ const ReservationRoomTest = () => {
                                           }
                                         >
                                           <PoolIcon />
-                                          <Typography variant='body1'>: {reservation.Users?.activity}</Typography>
+                                          <Typography variant='body2'>: {reservation.Users?.activity}</Typography>
                                         </Box>
                                       </Grid>
                                       <Grid item xs={12}>
@@ -732,7 +732,7 @@ const ReservationRoomTest = () => {
                                           }
                                         >
                                           <DangerousIcon />
-                                          <Typography variant='body1'>: {reservation.Users?.filter_redflag}</Typography>
+                                          <Typography variant='body2'>: {reservation.Users?.filter_redflag}</Typography>
                                         </Box>
                                       </Grid>
                                       <Grid item xs={12}>
@@ -746,7 +746,7 @@ const ReservationRoomTest = () => {
                                           }
                                         >
                                           <HotelIcon />
-                                          <Typography variant='body1'>: {reservation.Users?.sleep}</Typography>
+                                          <Typography variant='body2'>: {reservation.Users?.sleep}</Typography>
                                         </Box>
                                       </Grid>
                                     </Grid>

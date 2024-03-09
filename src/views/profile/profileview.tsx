@@ -212,39 +212,43 @@ const Profile = () => {
                 Social
               </Typography>
 
-              <Box sx={{ display: 'flex', pt: 3 }}>
-                <Box sx={{ pr: 3 }}>
-                  <FacebookIcon />
-                </Box>
-                <Box sx={{ pr: 2 }}>
-                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    Facebook :
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.facebook}
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Box sx={{ display: 'flex', pt: 2 }}>
-                <Box sx={{ pr: 3 }}>
-                  <InstagramIcon />
-                </Box>
-                <Box sx={{ pr: 2 }}>
-                  <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    Instagram :
-                  </Typography>
-                </Box>
-                <Box>
-                  <Link href={`https://www.instagram.com/${profileData?.data.instagram}`} passHref>
+              {profileData?.data.facebook && (
+                <Box sx={{ display: 'flex', pt: 3 }}>
+                  <Box sx={{ pr: 3 }}>
+                    <FacebookIcon />
+                  </Box>
+                  <Box sx={{ pr: 2 }}>
                     <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                      {profileData?.data.instagram}
+                      Facebook :
                     </Typography>
-                  </Link>
+                  </Box>
+                  <Box>
+                    <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                      {profileData?.data.facebook}
+                    </Typography>
+                  </Box>
                 </Box>
-              </Box>
+              )}
+
+              {profileData?.data.instagram && (
+                <Box sx={{ display: 'flex', pt: 2 }}>
+                  <Box sx={{ pr: 3 }}>
+                    <InstagramIcon />
+                  </Box>
+                  <Box sx={{ pr: 2 }}>
+                    <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                      Instagram :
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Link href={`https://www.instagram.com/${profileData?.data.instagram}`} passHref>
+                      <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                        {profileData?.data.instagram}
+                      </Typography>
+                    </Link>
+                  </Box>
+                </Box>
+              )}
 
               <Box sx={{ display: 'flex', pt: 2 }}>
                 <Box sx={{ pr: 3 }}>

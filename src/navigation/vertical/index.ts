@@ -15,8 +15,6 @@ import { VerticalNavItemsType } from 'src/@core/layouts/types'
 import { userStore } from 'src/stores/userStore'
 import { useEffect, useState } from 'react'
 
-
-
 const useNavigation = (): VerticalNavItemsType => {
   const { user } = userStore()
   const [roleFilter, setRoleFilter] = useState<string>('')
@@ -30,37 +28,32 @@ const useNavigation = (): VerticalNavItemsType => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({ user_id: user.user_id })
-        });
-        const data = await response.json();
+        })
+        const data = await response.json()
 
         // เปลี่ยนไปใช้ data ที่ได้จากการ fetch โดยตรง
-        console.log('', data.data.role);
+        console.log('', data.data.role)
 
         if (data.data.role === 'admin') {
-          console.log('admin');
-          setRoleFilter('admin');
+          console.log('admin')
+          setRoleFilter('admin')
         } else if (data.data.role === 'user') {
-          console.log('user');
-          setRoleFilter('user');
+          console.log('user')
+          setRoleFilter('user')
         }
-
       } catch (error) {
-        console.error('Error fetching user profile:', error);
+        console.error('Error fetching user profile:', error)
       }
-    };
+    }
 
     if (user?.user_id) {
-      fetchUserProfile();
+      fetchUserProfile()
     }
-  }, [user]);
+  }, [user])
 
+  console.log('user', user)
 
-
-
-
-  console.log('user',user)
-
-  if(roleFilter === 'admin'){
+  if (roleFilter === 'admin') {
     return [
       {
         title: 'Dashboard',
@@ -110,9 +103,8 @@ const useNavigation = (): VerticalNavItemsType => {
         title: 'Form Layouts',
         path: '/form-layouts'
       }
-
     ]
-  }else if(roleFilter === 'user'){
+  } else if (roleFilter === 'user') {
     return [
       {
         title: 'Home',
@@ -125,7 +117,6 @@ const useNavigation = (): VerticalNavItemsType => {
         icon: HomeOutline,
         path: '/Dormitory'
       },
-
 
       {
         title: 'Reservation',
@@ -202,10 +193,7 @@ const useNavigation = (): VerticalNavItemsType => {
         path: '/form-layouts'
       }
     ]
-
   }
-
-
 }
 
 export default useNavigation

@@ -109,14 +109,12 @@ const RegisterPage = () => {
   const handleSignUp = async () => {
     try {
       // Check if student_id or email already exists
-      const isExistingUser = register.some(
-        (user) => user.student_id == values.student_id || user.email === values.email
-      );
+      const isExistingUser = register.some(user => user.student_id == values.student_id || user.email === values.email)
 
       if (isExistingUser) {
-        alert('Student ID or email is already in use.');
+        alert('Student ID or email is already in use.')
 
-        return;
+        return
       }
 
       if (!values.student_id || !values.email || !values.password) {
@@ -126,9 +124,9 @@ const RegisterPage = () => {
         return
       }
 
-      if (!/^\d+$/.test(values.student_id)) {
-        console.error('Student ID must be a number')
-        alert('Student ID must be a number')
+      if (!/^\d{8}$/.test(values.student_id)) {
+        console.error('Student ID must be a number and exactly 8 digits long')
+        alert('Student ID must be a number and exactly 8 digits long')
 
         return
       }
@@ -202,7 +200,6 @@ const RegisterPage = () => {
             <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
               REGISTER
             </Typography>
-            <Typography variant='body2'>Make your app </Typography>
           </Box>
           <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
             <TextField
@@ -250,7 +247,7 @@ const RegisterPage = () => {
                 }
               />
             </FormControl>
-            <FormControlLabel
+            {/* <FormControlLabel
               control={<Checkbox />}
               label={
                 <Fragment>
@@ -262,8 +259,8 @@ const RegisterPage = () => {
                   </Link>
                 </Fragment>
               }
-            />
-            <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} onClick={handleSignUp}>
+            /> */}
+            <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7, mt: 4 }} onClick={handleSignUp}>
               Sign up
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -272,7 +269,14 @@ const RegisterPage = () => {
               </Typography>
               <Typography variant='body2'>
                 <Link passHref href='/pages/login'>
-                  <LinkStyled>Sign in instead</LinkStyled>
+                  <LinkStyled>Login Instead</LinkStyled>
+                </Link>
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'right', pt: 6 }}>
+              <Typography variant='body2'>
+                <Link passHref href='/'>
+                  <LinkStyled>Back to home</LinkStyled>
                 </Link>
               </Typography>
             </Box>
