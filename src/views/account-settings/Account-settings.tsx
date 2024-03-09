@@ -23,7 +23,7 @@ import router from 'next/router'
 import Card from '@mui/material/Card'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import FooterIllustrationsV1 from '../pages/auth/FooterIllustration'
-import { Divider } from '@mui/material'
+import { Backdrop, CircularProgress, Divider } from '@mui/material'
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
 import supabase from 'src/libs/supabase'
 
@@ -489,13 +489,26 @@ const AccountSettings = () => {
       }
     }
 
- 
+
 
   const handleChange = (e: { target: { name: any; value: any } }) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     })
+  }
+
+  const [open, setOpen] = useState(false)
+
+  const handleOnChange = event => {
+    onChange(event) // Call the original onChange function
+
+    setOpen(true) // Show the Backdrop
+
+    // Hide the Backdrop after 5 seconds
+    setTimeout(() => {
+      setOpen(false)
+    }, 3000)
   }
 
 
@@ -533,20 +546,24 @@ const AccountSettings = () => {
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <Typography variant='body2' sx={{ marginTop: 5 }}>
-                      Allowed PNG or JPEG. Max size of 800K.
+                      Allowed PNG or JPG. Max size of 800K.
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 3 }}>
-                    <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
+                  <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
                       Upload Photo
                       <input
                         hidden
                         type='file'
-                        onChange={onChange}
-                        accept='image/png, image/jpeg'
+                        onChange={handleOnChange}
+                        accept='image/png, image/jpeg , image/JPG, image/jpg, image/JPEG, image/PNG'
                         id='account-settings-upload-image'
                       />
                     </ButtonStyled>
+
+                    <Backdrop sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }} open={open}>
+                      <CircularProgress color='inherit' />
+                    </Backdrop>
                   </Box>
                 </Box>
               </Grid>

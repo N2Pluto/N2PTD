@@ -18,12 +18,13 @@ import FormControl from '@mui/material/FormControl'
 import Button, { ButtonProps } from '@mui/material/Button'
 import { ConsoleNetwork } from 'mdi-material-ui'
 import { userStore } from 'src/stores/userStore'
-import { user, setUser } from 'src/stores/userStore'
 import router from 'next/router'
 import Card from '@mui/material/Card'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
 import supabase from 'src/libs/supabase'
+import Backdrop from '@mui/material/Backdrop'
+import CircularProgress from '@mui/material/CircularProgress'
 
 const school: SchoolOptionType[] = [
   {
@@ -351,10 +352,22 @@ const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
 
 const CreateNewUser = () => {
   const { user } = userStore()
+  const [open, setOpen] = useState(false)
 
   const [profileData, setProfileData] = useState(null)
   const [selectedSchool, setSelectedSchool] = useState<SchoolOptionType | null>(null)
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
+
+  const handleOnChange = event => {
+    onChange(event) // Call the original onChange function
+
+    setOpen(true) // Show the Backdrop
+
+    // Hide the Backdrop after 5 seconds
+    setTimeout(() => {
+      setOpen(false)
+    }, 5000)
+  }
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -537,11 +550,15 @@ const CreateNewUser = () => {
                       <input
                         hidden
                         type='file'
-                        onChange={onChange}
-                        accept='image/png, image/jpeg'
+                        onChange={handleOnChange}
+                        accept='image/png, image/jpeg , image/JPG, image/jpg, image/JPEG, image/PNG'
                         id='account-settings-upload-image'
                       />
                     </ButtonStyled>
+
+                    <Backdrop sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }} open={open}>
+                      <CircularProgress color='inherit' />
+                    </Backdrop>
                   </Box>
                 </Box>
               </Grid>
