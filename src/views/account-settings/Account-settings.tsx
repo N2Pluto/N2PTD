@@ -500,7 +500,7 @@ const AccountSettings = () => {
 
   const [open, setOpen] = useState(false)
 
-  const handleOnChange = event => {
+  const handleOnChange = (event: ChangeEvent<Element>) => {
     onChange(event) // Call the original onChange function
 
     setOpen(true) // Show the Backdrop

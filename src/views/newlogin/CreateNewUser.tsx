@@ -358,7 +358,7 @@ const CreateNewUser = () => {
   const [selectedSchool, setSelectedSchool] = useState<SchoolOptionType | null>(null)
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
 
-  const handleOnChange = event => {
+  const handleOnChange = (event: ChangeEvent<Element>) => {
     onChange(event) // Call the original onChange function
 
     setOpen(true) // Show the Backdrop
