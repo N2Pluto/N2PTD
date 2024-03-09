@@ -366,7 +366,7 @@ const CreateNewUser = () => {
     // Hide the Backdrop after 5 seconds
     setTimeout(() => {
       setOpen(false)
-    }, 5000)
+    }, 3000)
   }
 
   useEffect(() => {
