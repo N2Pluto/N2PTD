@@ -209,7 +209,7 @@ const ReservationRoomTest = () => {
     }
 
     fetchDataAndUpdateStatusRoom()
-    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 15000)
+    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 30000)
 
     return () => clearInterval(intervalId)
   }, [])
@@ -260,7 +260,7 @@ const ReservationRoomTest = () => {
         })
       })
     } else if (filterSchool === 'find all school') {
-      console.log('Filtering by all schools')
+      console.log('Filtering by all school')
       filteredRooms = dormitoryRoom.filter(room => {
         const reservations = reservationData.get(room.room_id) || []
 
@@ -361,9 +361,8 @@ const ReservationRoomTest = () => {
         })
       })
     }
-
     // If no rooms match the previous criteria, filter by activity
-    if (filteredRooms.length === 0 && filterActivity) {
+    else if (filteredRooms.length === 0 && filterActivity) {
       console.log('Filtering by activity')
       const userActivities = filterActivity.split(',').map(activity => activity.trim())
       filteredRooms = dormitoryRoom.filter(room => {
@@ -376,10 +375,8 @@ const ReservationRoomTest = () => {
           return userActivities.some(activity => activities.includes(activity))
         })
       })
-    }
-
-    // If no rooms match the previous criteria, filter by redflag
-    if (filteredRooms.length === 0 && filterRedflag) {
+    } // If no rooms match the previous criteria, filter by redflag
+    else if (filteredRooms.length === 0 && filterRedflag) {
       console.log('Filtering by redflag')
       const userRedflags = filterRedflag.split(',').map(redflag => redflag.trim())
       filteredRooms = dormitoryRoom.filter(room => {
@@ -393,7 +390,6 @@ const ReservationRoomTest = () => {
         })
       })
     }
-
     setDormitoryRoom(filteredRooms)
   }
 

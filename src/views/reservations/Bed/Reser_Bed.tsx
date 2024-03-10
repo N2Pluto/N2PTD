@@ -1,4 +1,3 @@
-
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Card from '@mui/material/Card'
@@ -17,8 +16,8 @@ import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContentText from '@mui/material/DialogContentText'
 import BedroomParentIcon from '@mui/icons-material/BedroomParent'
-import CorporateFareIcon from '@mui/icons-material/CorporateFare';
-import BedIcon from '@mui/icons-material/Bed';
+import CorporateFareIcon from '@mui/icons-material/CorporateFare'
+import BedIcon from '@mui/icons-material/Bed'
 import {
   DialogActions,
   DialogContent,
@@ -41,7 +40,6 @@ import DangerousIcon from '@mui/icons-material/Dangerous'
 import HotelIcon from '@mui/icons-material/Hotel'
 import ConstructionIcon from '@mui/icons-material/Construction'
 import SuccessฺฺBarBed from './component'
-
 
 const ReservationBedviwe = () => {
   const router = useRouter()
@@ -72,11 +70,10 @@ const ReservationBedviwe = () => {
     setOpen(false)
   }
 
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchData = async () => {
     console.log('router.query.id:', router.query.id)
-const { data } = await fetch(`/api/bed/${router.query.id}`).then(res => res.json())
+    const { data } = await fetch(`/api/bed/${router.query.id}`).then(res => res.json())
     setDormitoryBed(data)
   }
 
@@ -89,7 +86,7 @@ const { data } = await fetch(`/api/bed/${router.query.id}`).then(res => res.json
   useEffect(() => {
     const fetchDataBedByRoomID = async () => {
       console.log('router.query.id:', router.query.id)
-const { data } = await fetch(`/api/bed/room/${router.query.id}`).then(res => res.json())
+      const { data } = await fetch(`/api/bed/room/${router.query.id}`).then(res => res.json())
       setDormitoryRoom(data)
     }
     const fetchDataAndUpdateStatus = async () => {
@@ -112,7 +109,7 @@ const { data } = await fetch(`/api/bed/room/${router.query.id}`).then(res => res
         return
       }
 
-const checkResponse = await fetch(`/api/reservation/checkReservation?user_id=${user.user_id}`)
+      const checkResponse = await fetch(`/api/reservation/checkReservation?user_id=${user.user_id}`)
       const { hasReservation } = await checkResponse.json()
 
       if (hasReservation) {
@@ -162,7 +159,7 @@ const checkResponse = await fetch(`/api/reservation/checkReservation?user_id=${u
 
   return (
     <>
-    <SuccessฺฺBarBed/>
+      <SuccessฺฺBarBed />
 
       <Grid pb={4}>
         <Card>
@@ -194,42 +191,40 @@ const checkResponse = await fetch(`/api/reservation/checkReservation?user_id=${u
                   </Typography>
                   {userReservations[room.bed_id] &&
                     userReservations[room.bed_id].map((reservation, index) => (
-
-                      <CardContent sx={{ margin: 0 }} key={index} >
-                              <Card sx={{ margin: 5 }} key={index}>
-                                <CardContent>
-                                  <Grid container spacing={6}>
-                                    <Grid item xs={12}>
-                                      <Box display='flex' alignItems='center'>
-                                        <SchoolIcon sx={{pr:2}}/>
-                                        <Typography variant='body1'> : {reservation.Users?.school}</Typography>
-                                      </Box>
-                                      <Box display='flex' alignItems='center'>
-                                        <SchoolIcon sx={{pr:2}} />
-                                        <Typography variant='body1'> : {reservation.Users?.major}</Typography>
-                                      </Box>
-                                      <Box display='flex' alignItems='center'>
-                                        <MosqueIcon sx={{pr:2}}/>
-                                        <Typography variant='body1'> : {reservation.Users?.religion}</Typography>
-                                      </Box>
-                                      <Box display='flex' alignItems='center'>
-                                        <PoolIcon sx={{pr:2}}/>
-                                        <Typography variant='body1'> : {reservation.Users?.activity}</Typography>
-                                      </Box>
-                                      <Box display='flex' alignItems='center'>
-                                        <DangerousIcon sx={{pr:2}}/>
-                                        <Typography variant='body1'> : {reservation.Users?.filter_redflag}</Typography>
-                                      </Box>
-                                      <Box display='flex' alignItems='center'>
-                                        <HotelIcon sx={{pr:2}}/>
-                                        <Typography variant='body1'> : {reservation.Users?.sleep}</Typography>
-                                      </Box>
-                                    </Grid>
-                                  </Grid>
-                                </CardContent>
-                              </Card>
+                      <CardContent sx={{ margin: 0 }} key={index}>
+                        <Card sx={{ margin: 5 }} key={index}>
+                          <CardContent>
+                            <Grid container spacing={6}>
+                              <Grid item xs={12}>
+                                <Box display='flex' alignItems='center'>
+                                  <SchoolIcon sx={{ pr: 2 }} />
+                                  <Typography variant='body1'> : {reservation.Users?.school}</Typography>
+                                </Box>
+                                <Box display='flex' alignItems='center'>
+                                  <SchoolIcon sx={{ pr: 2 }} />
+                                  <Typography variant='body1'> : {reservation.Users?.major}</Typography>
+                                </Box>
+                                <Box display='flex' alignItems='center'>
+                                  <MosqueIcon sx={{ pr: 2 }} />
+                                  <Typography variant='body1'> : {reservation.Users?.religion}</Typography>
+                                </Box>
+                                <Box display='flex' alignItems='center'>
+                                  <PoolIcon sx={{ pr: 2 }} />
+                                  <Typography variant='body1'> : {reservation.Users?.activity}</Typography>
+                                </Box>
+                                <Box display='flex' alignItems='center'>
+                                  <DangerousIcon sx={{ pr: 2 }} />
+                                  <Typography variant='body1'> : {reservation.Users?.filter_redflag}</Typography>
+                                </Box>
+                                <Box display='flex' alignItems='center'>
+                                  <HotelIcon sx={{ pr: 2 }} />
+                                  <Typography variant='body1'> : {reservation.Users?.sleep}</Typography>
+                                </Box>
+                              </Grid>
+                            </Grid>
                           </CardContent>
-
+                        </Card>
+                      </CardContent>
 
                       // <Typography key={index} variant='body2' sx={{ marginBottom: 2 }}>
                       //   <Box>
