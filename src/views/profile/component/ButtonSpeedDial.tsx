@@ -90,7 +90,7 @@ export default function CustomizedMenus() {
         <Link href='/profile/personality-settings' passHref>
           <MenuItem onClick={handleClose} disableRipple>
             <FileCopyIcon />
-            Edit Personality
+            Edit Requirement
           </MenuItem>
         </Link>
 

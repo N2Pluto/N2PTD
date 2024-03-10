@@ -578,7 +578,7 @@ const AccountSettings = () => {
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={12}>
                   <Typography variant='h5' sx={{ mb: 3, pl: 2 }}>
-                    Personal Information
+                  Requirement Information
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>

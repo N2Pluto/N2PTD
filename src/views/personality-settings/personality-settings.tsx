@@ -350,7 +350,7 @@ const PersonalitySettings = () => {
           </Link>
           <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
           <Typography sx={{ whiteSpace: 'nowrap', pl: 3 }} variant='body2'>
-            Edit Personality
+            Edit Requirement
           </Typography>
         </Box>
       </Grid>

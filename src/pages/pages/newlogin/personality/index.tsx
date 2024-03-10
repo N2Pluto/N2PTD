@@ -13,7 +13,7 @@ const personality = () => {
       <Grid container spacing={6}>
         <Grid item xs={12} sx={{ paddingBottom: 5 }}>
           <Box sx={{ mb: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', pt: 9 }}>
-            <Typography variant='h5'>Personal Information </Typography>
+            <Typography variant='h5'> Requirement Information</Typography>
           </Box>
         </Grid>
         <Grid item xs={12} sm={12} md={12}>
