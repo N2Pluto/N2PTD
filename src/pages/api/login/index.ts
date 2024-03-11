@@ -37,7 +37,6 @@ const handler = async (req: any, res: any) => {
         user_status: user?.data?.user_status,
         gender : user?.data?.gender,
         role : user?.data?.role
-
       },
       process.env.JWT_SECRET,
       { expiresIn: '30m' }
