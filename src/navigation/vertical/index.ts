@@ -1,5 +1,4 @@
 // ** Icon imports
-import Login from 'mdi-material-ui/Login'
 import Table from 'mdi-material-ui/Table'
 import CubeOutline from 'mdi-material-ui/CubeOutline'
 import HomeOutline from 'mdi-material-ui/HomeOutline'
@@ -69,41 +68,47 @@ const useNavigation = (): VerticalNavItemsType => {
         title: 'Building Control ',
         icon: HomeOutline,
         path: '/admin/buildingControl'
+      },
+      {
+        title: 'Building',
+        icon: HomeOutline,
+        path: '/admin/building'
       }
+      ,
 
-      // {
-      //   sectionTitle: 'User Interface'
-      // },
-      // {
-      //   title: 'Home',
-      //   icon: HomeOutline,
-      //   path: '/dashboard'
-      // },
-      // {
-      //   title: 'Typography',
-      //   icon: FormatLetterCase,
-      //   path: '/typography'
-      // },
-      // {
-      //   title: 'Icons',
-      //   path: '/icons',
-      //   icon: GoogleCirclesExtended
-      // },
-      // {
-      //   title: 'Cards',
-      //   icon: CreditCardOutline,
-      //   path: '/cards'
-      // },
-      // {
-      //   title: 'Tables',
-      //   icon: Table,
-      //   path: '/tables'
-      // },
-      // {
-      //   icon: CubeOutline,
-      //   title: 'Form Layouts',
-      //   path: '/form-layouts'
-      // }
+      {
+        sectionTitle: 'User Interface'
+      },
+      {
+        title: 'Home',
+        icon: HomeOutline,
+        path: '/dashboard'
+      },
+      {
+        title: 'Typography',
+        icon: FormatLetterCase,
+        path: '/typography'
+      },
+      {
+        title: 'Icons',
+        path: '/icons',
+        icon: GoogleCirclesExtended
+      },
+      {
+        title: 'Cards',
+        icon: CreditCardOutline,
+        path: '/cards'
+      },
+      {
+        title: 'Tables',
+        icon: Table,
+        path: '/tables'
+      },
+      {
+        icon: CubeOutline,
+        title: 'Form Layouts',
+        path: '/form-layouts'
+      }
     ]
   } else if (roleFilter === 'user') {
     return [

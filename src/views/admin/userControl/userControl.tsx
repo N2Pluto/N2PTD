@@ -91,7 +91,7 @@ const UserControl = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await fetch('/api/userControl/fetch_user').then(res => res.json())
+        const { data } = await fetch('/api/controlUserAndAdmin/userControl/fetch_user').then(res => res.json())
         setUser(data)
       } catch (error) {
         console.error('Error fetching dormitory building data:', error)
@@ -100,9 +100,11 @@ const UserControl = () => {
     fetchData()
   }, [])
 
+  console.log('asdasd', user)
+
   const handleUserInfo = async (role: string, user_id: string) => {
     try {
-      const response = await fetch('/api/userControl/updateRole', {
+      const response = await fetch('/api/controlUserAndAdmin/userControl/updateRole', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

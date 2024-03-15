@@ -1,4 +1,3 @@
-
 import { PaletteMode } from '@mui/material'
 import { ContentWidth } from 'src/@core/layouts/types'
 
@@ -13,10 +12,16 @@ type ThemeConfig = {
   responsiveFontSizes: boolean
 }
 
+const getMode = () => {
+  const currentHour = new Date().getHours();
+  
+  return (currentHour >= 8 && currentHour <= 21) ? 'light' : 'dark';
+}
+
 const themeConfig: ThemeConfig = {
   // ** Layout Configs
   templateName: 'Walailak University' /* App Name */,
-  mode: 'light' /* light | dark */,
+  mode: getMode() /* light | dark */,
   contentWidth: 'boxed' /* full | boxed */,
 
   // ** Routing Configs
@@ -24,7 +29,7 @@ const themeConfig: ThemeConfig = {
 
   // ** Navigation (Menu) Configs
   menuTextTruncate: true /* true | false */,
-  navigationSize: 260 /* Number in PX(Pixels) /*! Note: This is for Vertical navigation menu only */,
+  navigationSize: 250 /* Number in PX(Pixels) /*! Note: This is for Vertical navigation menu only */,
 
   // ** Other Configs
   responsiveFontSizes: true /* true | false */,

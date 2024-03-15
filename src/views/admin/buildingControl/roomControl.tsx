@@ -8,13 +8,14 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import { useEffect, useState } from 'react'
 import Button from '@mui/material/Button'
+import Switch from '@mui/material/Switch'
 import router from 'next/router'
 
 // ** MUI Icons
 
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
-import BuildCircleIcon from '@mui/icons-material/BuildCircle';
+import BuildCircleIcon from '@mui/icons-material/BuildCircle'
 
 const RoomControl = () => {
   const [room, setRoom] = useState([])
@@ -59,10 +60,14 @@ const RoomControl = () => {
       router.reload()
 
       // ... rest of the function
-
     } catch (error) {
       console.error('Error Update data into Users table:', error.message)
     }
+  }
+
+  const handleInputfield = (id: string) => {
+    console.log('id:', id)
+    router.push(`/admin/buildingControl/room/${id}`)
   }
 
   return (
@@ -93,9 +98,13 @@ const RoomControl = () => {
               <TableCell align='center'>{room.bed_capacity}</TableCell>
               <TableCell align='center'>{room.bed_available}</TableCell>
               <TableCell align='center'>
-                <Button onClick={() => handleUserInfo(room.room_id, room.room_rehearse)}>
-                  {room.room_rehearse ? <CheckIcon /> : <BuildCircleIcon color='error' />}
-                </Button>
+                <Switch
+                  checked={room.room_rehearse}
+                  onChange={() => handleUserInfo(room.room_id, room.room_rehearse)}
+                  icon={
+                    <BuildCircleIcon sx={{ display: 'flex', alignItems: 'center',mt:-0.3 }} color='error' />
+                  }
+                />
               </TableCell>
 
               <TableCell align='center'>
@@ -112,3 +121,7 @@ const RoomControl = () => {
 }
 
 export default RoomControl
+
+
+
+// onChange={() => handleUserInfo(room.room_id, room.room_rehearse)}
