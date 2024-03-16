@@ -16,19 +16,13 @@ const MUITable = () => {
         <Grid item xs={12}>
           <Typography variant='h5' sx={{pl:4}}>Building Control </Typography>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={12} lg={12}>
           <Card>
-            <CardHeader title='Building Control Table' titleTypographyProps={{ variant: 'h6' }} />
+            <CardHeader title='Adding a building ' titleTypographyProps={{ variant: 'h6' }} />
             <Addbuilding />
           </Card>
         </Grid>
 
-        <Grid item xs={12}>
-          <Card>
-            <CardHeader title='Building Control Table' titleTypographyProps={{ variant: 'h6' }} />
-            <Building />
-          </Card>
-        </Grid>
       </Grid>
     </AdminLayout>
   )
