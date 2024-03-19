@@ -210,7 +210,7 @@ const RegisterPage = () => {
               sx={{ marginBottom: 4 }}
               onChange={handleChange('student_id')}
             />
-            <FormControl fullWidth sx={{ marginBottom: 4 }}>
+            {/* <FormControl fullWidth sx={{ marginBottom: 4 }}>
               <InputLabel id='gender-label'>Gender</InputLabel>
               <Select
                 labelId='gender-label'
@@ -222,7 +222,7 @@ const RegisterPage = () => {
                 <MenuItem value='male'>male</MenuItem>
                 <MenuItem value='female'>female</MenuItem>
               </Select>
-            </FormControl>
+            </FormControl> */}
 
             <TextField fullWidth type='email' label='Email' sx={{ marginBottom: 4 }} onChange={handleChange('email')} />
             <FormControl fullWidth>

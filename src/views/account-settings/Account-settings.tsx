@@ -382,19 +382,19 @@ const AccountSettings = () => {
   }, [user])
 
   const [formData, setFormData] = useState({
-    name: profileData?.data.name,
-    lastname: profileData?.data.lastname,
-    student_year: profileData?.data.student_year,
-    school: profileData?.data.school,
-    course: profileData?.data.course,
-    religion: profileData?.data.religion,
-    region: profileData?.data.region,
-    major: profileData?.data.major,
-    gender: profileData?.data.gender,
-    facebook: profileData?.data.facebook,
-    instagram: profileData?.data.instagram,
-    phone: profileData?.data.phone,
-    image: profileData?.data.image
+    name: profileData?.userInfoData.name,
+    lastname: profileData?.userInfoData.lastname,
+    student_year: profileData?.userInfoData.student_year,
+    school: profileData?.userInfoData.school,
+    course: profileData?.userInfoData.course,
+    religion: profileData?.userInfoData.religion,
+    region: profileData?.userInfoData.region,
+    major: profileData?.userInfoData.major,
+    gender: profileData?.userInfoData.gender,
+    facebook: profileData?.userInfoData.facebook,
+    instagram: profileData?.userInfoData.instagram,
+    phone: profileData?.userInfoData.phone,
+    image: profileData?.userInfoData.image
   })
 
   console.log('profileData', profileData)
@@ -550,7 +550,7 @@ const AccountSettings = () => {
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 3 }}>
-                  <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
+                    <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
                       Upload Photo
                       <input
                         hidden
@@ -578,7 +578,7 @@ const AccountSettings = () => {
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={12}>
                   <Typography variant='h5' sx={{ mb: 3, pl: 2 }}>
-                  Requirement Information
+                    Requirement Information
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -639,7 +639,7 @@ const AccountSettings = () => {
                         setSelectedCourse(newValue)
                         setFormData({ ...formData, course: newValue ? newValue.name : '' })
                       }}
-                      renderInput={params => <TextField {...params} label='Course' />}
+                      renderInput={params => <TextField {...params} label='Department' />}
                     />
                   </Grid>
                 )}

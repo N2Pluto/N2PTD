@@ -1,9 +1,9 @@
 import supabase from 'src/libs/supabase'
 
 const handler = async (req: any, res: any) => {
-  const { student_id, email, password, gender } = req.body
+  const { student_id, email, password } = req.body
 
-  const { data, error } = await supabase.from('Users').insert([{ student_id, email, password, gender ,role: 'user'}])
+  const { data, error } = await supabase.from('Users').insert([{ student_id, email, password ,role: 'user'}])
 
   if (error) {
     console.error('Error inserting data:', error)

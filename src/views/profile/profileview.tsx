@@ -21,20 +21,23 @@ import InstagramIcon from '@mui/icons-material/Instagram'
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone'
 import Link from 'next/link'
 import CustomizedMenus from './component/ButtonSpeedDial'
-import NightlifeIcon from '@mui/icons-material/Nightlife';
-import CloseIcon from '@mui/icons-material/Close';
-import BedtimeIcon from '@mui/icons-material/Bedtime';
-import TempleHinduIcon from '@mui/icons-material/TempleHindu';
+import NightlifeIcon from '@mui/icons-material/Nightlife'
+import CloseIcon from '@mui/icons-material/Close'
+import BedtimeIcon from '@mui/icons-material/Bedtime'
+import TempleHinduIcon from '@mui/icons-material/TempleHindu'
 
 const Profile = () => {
   const { user } = userStore()
   console.log(user)
+
+  const [loading, setLoading] = useState(true) // Add this line
 
   const [profileData, setProfileData] = useState(null)
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
+        setLoading(true) // Add this line
         const response = await fetch('/api/profile/fetchUserProfile', {
           method: 'POST',
           headers: {
@@ -47,6 +50,8 @@ const Profile = () => {
         console.log(data)
       } catch (error) {
         console.error('Error fetching user profile:', error)
+      } finally {
+        setLoading(false) // Add this line
       }
     }
 
@@ -55,6 +60,10 @@ const Profile = () => {
     }
   }, [user])
 
+  if (loading) {
+    return <div>Loading...</div> // Or your custom loading spinner
+  }
+
   return (
     <Grid item xs={12} sm={6} md={12}>
       <Box sx={{ pb: 3 }}>
@@ -62,7 +71,7 @@ const Profile = () => {
           <CardMedia sx={{ height: '12.625rem' }} image='/images/cards/background-user.png' />
           <Avatar
             alt='Robert Meyer'
-            src={profileData?.data.image}
+            src={profileData?.userInfoData.image}
             sx={{
               width: 140,
               height: 140,
@@ -85,9 +94,9 @@ const Profile = () => {
             >
               <Box sx={{ mr: 2, mt: 2, display: 'flex', flexDirection: 'column' }}>
                 <Typography variant='h6'>
-                  {profileData?.data.name} {'  '} {profileData?.data.lastname}
+                  {profileData?.userInfoData.name} {'  '} {profileData?.userInfoData.lastname}
                 </Typography>
-                <Typography variant='caption'>{profileData?.data.student_id}</Typography>
+                <Typography variant='caption'>{profileData?.userData.student_id}</Typography>
               </Box>
               {/* <Link href='/profile/account-settings' passHref>
                 <Button variant='contained'>Edit</Button>
@@ -117,7 +126,7 @@ const Profile = () => {
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.student_id}
+                    {profileData?.userData.student_id}
                   </Typography>
                 </Box>
               </Box>
@@ -133,7 +142,7 @@ const Profile = () => {
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.email}
+                    {profileData?.userData.email}
                   </Typography>
                 </Box>
               </Box>
@@ -149,7 +158,7 @@ const Profile = () => {
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.school}
+                    {profileData?.userInfoData.school}
                   </Typography>
                 </Box>
               </Box>
@@ -160,12 +169,12 @@ const Profile = () => {
                 </Box>
                 <Box sx={{ pr: 2 }}>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    Course :
+                    Department :
                   </Typography>
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.course}
+                    {profileData?.userInfoData.course}
                   </Typography>
                 </Box>
               </Box>
@@ -181,7 +190,7 @@ const Profile = () => {
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.major}
+                    {profileData?.userInfoData.major}
                   </Typography>
                 </Box>
               </Box>
@@ -197,7 +206,7 @@ const Profile = () => {
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.religion}
+                    {profileData?.userInfoData.religion}
                   </Typography>
                 </Box>
               </Box>
@@ -215,7 +224,7 @@ const Profile = () => {
                 Social
               </Typography>
 
-              {profileData?.data.facebook && (
+              {profileData?.userInfoData.facebook && (
                 <Box sx={{ display: 'flex', pt: 3 }}>
                   <Box sx={{ pr: 3 }}>
                     <FacebookIcon />
@@ -227,13 +236,13 @@ const Profile = () => {
                   </Box>
                   <Box>
                     <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                      {profileData?.data.facebook}
+                      {profileData?.userInfoData.facebook}
                     </Typography>
                   </Box>
                 </Box>
               )}
 
-              {profileData?.data.instagram && (
+              {profileData?.userInfoData.instagram && (
                 <Box sx={{ display: 'flex', pt: 2 }}>
                   <Box sx={{ pr: 3 }}>
                     <InstagramIcon />
@@ -244,9 +253,9 @@ const Profile = () => {
                     </Typography>
                   </Box>
                   <Box>
-                    <Link href={`https://www.instagram.com/${profileData?.data.instagram}`} passHref>
+                    <Link href={`https://www.instagram.com/${profileData?.userInfoData.instagram}`} passHref>
                       <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                        {profileData?.data.instagram}
+                        {profileData?.userInfoData.instagram}
                       </Typography>
                     </Link>
                   </Box>
@@ -264,7 +273,7 @@ const Profile = () => {
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.phone}
+                    {profileData?.userInfoData.phone}
                   </Typography>
                 </Box>
               </Box>
@@ -293,7 +302,7 @@ const Profile = () => {
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.activity}
+                    {profileData?.userReqData.activity}
                   </Typography>
                 </Box>
               </Box>
@@ -309,7 +318,7 @@ const Profile = () => {
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.filter_redflag}
+                    {profileData?.userReqData.filter_redflag}
                   </Typography>
                 </Box>
               </Box>
@@ -325,7 +334,7 @@ const Profile = () => {
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.sleep}
+                    {profileData?.userReqData.sleep}
                   </Typography>
                 </Box>
               </Box>
@@ -354,7 +363,7 @@ const Profile = () => {
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.filter_school}
+                    {profileData?.userReqData.filter_school}
                   </Typography>
                 </Box>
               </Box>
@@ -369,7 +378,7 @@ const Profile = () => {
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.filter_major}
+                    {profileData?.userReqData.filter_major}
                   </Typography>
                 </Box>
               </Box>
@@ -384,7 +393,7 @@ const Profile = () => {
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.data.filter_religion}
+                    {profileData?.userReqData.filter_religion}
                   </Typography>
                 </Box>
               </Box>

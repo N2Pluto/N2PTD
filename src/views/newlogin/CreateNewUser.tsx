@@ -391,24 +391,10 @@ const CreateNewUser = () => {
       fetchUserProfile()
     }
   }, [user])
+  console.log('userInfoData', profileData?.userInfoData)
 
-  const [formData, setFormData] = useState({
-    name: profileData?.data.name,
-    lastname: profileData?.data.lastname,
-    student_year: profileData?.data.student_year,
-    school: profileData?.data.school,
-    course: profileData?.data.course,
-    major: profileData?.data.major,
-    religion: profileData?.data.religion,
-    region: profileData?.data.region,
-    gender: profileData?.data.gender,
-    phone: profileData?.data.phone,
-    facebook: profileData?.data.facebook,
-    instagram: profileData?.data.instagram,
-    image: profileData?.image
-  })
+  const [formData, setFormData] = useState({})
 
-  console.log('profileData', profileData)
 
   useEffect(() => {
     if (user?.student_id.toString().startsWith('63')) {
@@ -471,7 +457,7 @@ const CreateNewUser = () => {
     e.preventDefault()
 
     try {
-      const response = await fetch('/api/account-setting/updateUser', {
+      const response = await fetch('/api/account-setting/createUser', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -653,7 +639,7 @@ const CreateNewUser = () => {
                         setSelectedCourse(newValue)
                         setFormData({ ...formData, course: newValue ? newValue.name : '' })
                       }}
-                      renderInput={params => <TextField {...params} label='Course' required />}
+                      renderInput={params => <TextField {...params} label='Department' required />}
                     />
                   </Grid>
                 )}

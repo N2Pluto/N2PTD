@@ -226,28 +226,8 @@ const CreatePersonalityUser = () => {
     }
   }, [user])
 
-  const [formData, setFormData] = useState({
-    name: profileData?.data.name,
-    lastname: profileData?.data.lastname,
-    student_year: profileData?.data.student_year,
-    school: profileData?.data.school,
-    course: profileData?.data.course,
-    religion: profileData?.data.religion,
-    region: profileData?.data.region,
-    major: profileData?.data.major,
-    gender: profileData?.data.gender,
-    facebook: profileData?.data.facebook,
-    instagram: profileData?.data.instagram,
-    phone: profileData?.data.phone,
-    activity: profileData?.data.activity,
-    sleep: profileData?.data.sleep,
-    filter_school: profileData?.data.filter_school,
-    filter_major: profileData?.data.filter_major,
-    filter_religion: profileData?.data.filter_religion,
-    filter_redflag: profileData?.data.filter_redflag
-  })
+  const [formData, setFormData] = useState({})
 
-  console.log('profileData', profileData)
 
   useEffect(() => {
     if (user?.student_id.toString().startsWith('63')) {
@@ -274,7 +254,7 @@ const CreatePersonalityUser = () => {
     e.preventDefault()
 
     try {
-      const response = await fetch('/api/account-setting/updateUser', {
+      const response = await fetch('/api/account-setting/createReq', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -460,7 +440,7 @@ const CreatePersonalityUser = () => {
                     )}
                     style={{ width: 500 }}
                     renderInput={params => (
-                      <TextField {...params} label='Red Flag Filter' placeholder='Favorites' fullWidth  />
+                      <TextField {...params} label='Red Flag Filter' placeholder='Favorites' fullWidth />
                     )}
                   />
                 </Grid>
