@@ -138,7 +138,7 @@ const ReservationBotton = () => {
                 <>
                   {user?.student_id}
                   <br />
-                  {profileData?.data.name} {profileData?.data.lastname}
+                  {profileData?.userInfoData.name} {profileData?.userInfoData.lastname}
                 </>
               </Typography>
             </Box>
