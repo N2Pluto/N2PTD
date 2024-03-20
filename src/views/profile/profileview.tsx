@@ -174,7 +174,7 @@ const Profile = () => {
                 </Box>
                 <Box>
                   <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                    {profileData?.userInfoData.course}
+                    {profileData?.userInfoData.department}
                   </Typography>
                 </Box>
               </Box>
