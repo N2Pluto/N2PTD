@@ -30,7 +30,6 @@ const useNavigation = (): VerticalNavItemsType => {
         })
         const data = await response.json()
 
-        // เปลี่ยนไปใช้ data ที่ได้จากการ fetch โดยตรง
 
         if (data.userData.role === 'admin') {
           console.log('admin')
