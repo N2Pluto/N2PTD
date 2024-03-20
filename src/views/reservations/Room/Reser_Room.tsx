@@ -226,12 +226,12 @@ const ReservationRoomTest = () => {
   }
 
   const handleSmartReservation = () => {
-    const filterSchool = profileData?.data.filter_school
-    const filterMajor = profileData?.data.filter_major
-    const filterReligion = profileData?.data.filter_religion
-    const filterActivity = profileData?.data.activity
-    const filterRedflag = profileData?.data.filter_redflag
-    const filterSleep = profileData?.data.sleep
+    const filterSchool = profileData?.userInfoData.filter_school
+    const filterMajor = profileData?.userInfoData.filter_major
+    const filterReligion = profileData?.userInfoData.filter_religion
+    const filterActivity = profileData?.userReqData.activity
+    const filterRedflag = profileData?.userReqData.filter_redflag
+    const filterSleep = profileData?.userReqData.sleep
     let filteredRooms = []
 
     // Filter by school
@@ -241,10 +241,10 @@ const ReservationRoomTest = () => {
         const reservations = reservationData.get(room.room_id) || []
 
         return reservations.some(reservation => {
-          console.log('User Reservation School :', reservation.Users?.school)
-          console.log('User School :', profileData?.data.school)
+          console.log('User Reservation School :', reservation.Users_Info?.school)
+          console.log('User School :', profileData?.userInfoData.school)
 
-          return reservation.Users?.school === profileData?.data.school
+          return reservation.Users_Info?.school === profileData?.userInfoData.school
         })
       })
     } else if (filterSchool === 'find roommates from any school') {
@@ -253,10 +253,10 @@ const ReservationRoomTest = () => {
         const reservations = reservationData.get(room.room_id) || []
 
         return reservations.some(reservation => {
-          console.log('User Reservation School :', reservation.Users?.school)
-          console.log('User School :', profileData?.data.school)
+          console.log('User Reservation School :', reservation.Users_Info?.school)
+          console.log('User School :', profileData?.userInfoData.school)
 
-          return reservation.Users?.school !== profileData?.data.school
+          return reservation.Users_Info?.school !== profileData?.userInfoData.school
         })
       })
     } else if (filterSchool === 'find all school') {
@@ -265,9 +265,9 @@ const ReservationRoomTest = () => {
         const reservations = reservationData.get(room.room_id) || []
 
         return reservations.some(reservation => {
-          console.log('User Reservation School :', reservation.Users?.school)
+          console.log('User Reservation School :', reservation.Users_Info?.school)
 
-          return reservation.Users?.school
+          return reservation.Users_Info?.school
         })
       })
     }
@@ -279,10 +279,10 @@ const ReservationRoomTest = () => {
         const reservations = reservationData.get(room.room_id) || []
 
         return reservations.some(reservation => {
-          console.log('Users Reservation Major', reservation.Users?.major)
-          console.log('User Major:', profileData?.data.major)
+          console.log('Users Reservation Major', reservation.Users_Info?.major)
+          console.log('User Major:', profileData?.userInfoData.major)
 
-          return reservation.Users?.major === profileData?.data.major
+          return reservation.Users_Info?.major === profileData?.userInfoData.major
         })
       })
     } else if (filterMajor === 'find roommates from any major') {
@@ -291,10 +291,10 @@ const ReservationRoomTest = () => {
         const reservations = reservationData.get(room.room_id) || []
 
         return reservations.some(reservation => {
-          console.log('Users Reservation Major', reservation.Users?.major)
-          console.log('User Major:', profileData?.data.major)
+          console.log('Users Reservation Major', reservation.Users_Info?.major)
+          console.log('User Major:', profileData?.userInfoData.major)
 
-          return reservation.Users?.major !== profileData?.data.major
+          return reservation.Users_Info?.major !== profileData?.userInfoData.major
         })
       })
     } else if (filterMajor === 'find all major') {
@@ -303,9 +303,9 @@ const ReservationRoomTest = () => {
         const reservations = reservationData.get(room.room_id) || []
 
         return reservations.some(reservation => {
-          console.log('Users Reservation Major', reservation.Users?.major)
+          console.log('Users Reservation Major', reservation.Users_Info?.major)
 
-          return reservation.Users?.major
+          return reservation.Users_Info?.major
         })
       })
     }
@@ -317,10 +317,10 @@ const ReservationRoomTest = () => {
         const reservations = reservationData.get(room.room_id) || []
 
         return reservations.some(reservation => {
-          console.log('Users Reservation Religion', reservation.Users?.religion)
-          console.log('Users Religion', profileData?.data.religion)
+          console.log('Users Reservation Religion', reservation.Users_Info?.religion)
+          console.log('Users Religion', profileData?.userInfoData.religion)
 
-          return reservation.Users?.religion === profileData?.data.religion
+          return reservation.Users_Info?.religion === profileData?.data.religion
         })
       })
     } else if (filterReligion === 'find roommates from any religion') {
@@ -329,10 +329,10 @@ const ReservationRoomTest = () => {
         const reservations = reservationData.get(room.room_id) || []
 
         return reservations.some(reservation => {
-          console.log('Users Reservation Religion', reservation.Users?.religion)
-          console.log('Users Religion', profileData?.data.religion)
+          console.log('Users Reservation Religion', reservation.Users_Info?.religion)
+          console.log('Users Religion', profileData?.userInfoData.religion)
 
-          return reservation.Users?.religion !== profileData?.data.religion
+          return reservation.Users_Info?.religion !== profileData?.data.religion
         })
       })
     } else if (filterReligion === 'find all religion') {
@@ -341,9 +341,9 @@ const ReservationRoomTest = () => {
         const reservations = reservationData.get(room.room_id) || []
 
         return reservations.some(reservation => {
-          console.log('Users Reservation Religion', reservation.Users?.religion)
+          console.log('Users Reservation Religion', reservation.Users_Info?.religion)
 
-          return reservation.Users?.religion
+          return reservation.Users_Info?.religion
         })
       })
     }
@@ -355,9 +355,9 @@ const ReservationRoomTest = () => {
         const reservations = reservationData.get(room.room_id) || []
 
         return reservations.some(reservation => {
-          console.log('Users Reservation Sleep', reservation.Users?.sleep)
+          console.log('Users Reservation Sleep', reservation.Users_Req?.sleep)
 
-          return reservation.Users?.sleep === filterSleep
+          return reservation.Users_Req?.sleep === filterSleep
         })
       })
     }
@@ -369,8 +369,8 @@ const ReservationRoomTest = () => {
         const reservations = reservationData.get(room.room_id) || []
 
         return reservations.some(reservation => {
-          const activities = reservation.Users?.activity || []
-          console.log('Users Reservation Activity', reservation.Users?.activity)
+          const activities = reservation.Users_Req?.activity || []
+          console.log('Users Reservation Activity', reservation.Users_Req?.activity)
 
           return userActivities.some(activity => activities.includes(activity))
         })
@@ -383,8 +383,8 @@ const ReservationRoomTest = () => {
         const reservations = reservationData.get(room.room_id) || []
 
         return reservations.some(reservation => {
-          const redflags = reservation.Users?.filter_redflag || []
-          console.log('Users Reservation Redflag', reservation.Users?.filter_redflag)
+          const redflags = reservation.Users_Req?.filter_redflag || []
+          console.log('Users Reservation Redflag', reservation.Users_Req?.filter_redflag)
 
           return userRedflags.some(redflag => redflags.includes(redflag))
         })
@@ -665,13 +665,13 @@ const ReservationRoomTest = () => {
                                           alignItems='center'
                                           sx={{
                                             backgroundColor:
-                                              reservation.Users?.school === profileData?.data.school
+                                              reservation.Users?.school === profileData?.userInfoData.school
                                                 ? '#ffe0e0'
                                                 : 'inherit'
                                           }}
                                         >
                                           <SchoolIcon />
-                                          <Typography variant='body2'>: {reservation.Users?.school}</Typography>
+                                          <Typography variant='body2'>: {reservation.Users_Info?.school}</Typography>
                                         </Box>
                                       </Grid>
                                       <Grid item xs={12}>
@@ -680,13 +680,13 @@ const ReservationRoomTest = () => {
                                           display='inline-flex'
                                           alignItems='center'
                                           sx={
-                                            reservation.Users?.major === profileData?.data.major
+                                            reservation.Users?.major === profileData?.userInfoData.major
                                               ? { backgroundColor: '#ffe0e0' }
                                               : {}
                                           }
                                         >
                                           <SchoolIcon />
-                                          <Typography variant='body2'>: {reservation.Users?.major}</Typography>
+                                          <Typography variant='body2'>: {reservation.Users_Info?.major}</Typography>
                                         </Box>
                                       </Grid>
                                       <Grid item xs={12}>
@@ -694,13 +694,13 @@ const ReservationRoomTest = () => {
                                           display='inline-flex'
                                           alignItems='center'
                                           sx={
-                                            reservation.Users?.religion === profileData?.data.religion
+                                            reservation.Users?.religion === profileData?.userInfoData.religion
                                               ? { backgroundColor: '#ffe0e0' }
                                               : {}
                                           }
                                         >
                                           <MosqueIcon />
-                                          <Typography variant='body2'>: {reservation.Users?.religion}</Typography>
+                                          <Typography variant='body2'>: {reservation.Users_Info?.religion}</Typography>
                                         </Box>
                                       </Grid>
                                       <Grid item xs={12}>
@@ -708,13 +708,13 @@ const ReservationRoomTest = () => {
                                           display='inline-flex'
                                           alignItems='center'
                                           sx={
-                                            reservation.Users?.activity === profileData?.data.activity
+                                            reservation.Users?.activity === profileData?.userInfoData.activity
                                               ? { backgroundColor: '#ffe0e0' }
                                               : {}
                                           }
                                         >
                                           <PoolIcon />
-                                          <Typography variant='body2'>: {reservation.Users?.activity}</Typography>
+                                          <Typography variant='body2'>: {reservation.Users_Req?.activity}</Typography>
                                         </Box>
                                       </Grid>
                                       <Grid item xs={12}>
@@ -722,13 +722,16 @@ const ReservationRoomTest = () => {
                                           display='inline-flex'
                                           alignItems='center'
                                           sx={
-                                            reservation.Users?.filter_redflag === profileData?.data.filter_redflag
+                                            reservation.Users?.filter_redflag ===
+                                            profileData?.userInfoData.filter_redflag
                                               ? { backgroundColor: '#ffe0e0' }
                                               : {}
                                           }
                                         >
                                           <DangerousIcon />
-                                          <Typography variant='body2'>: {reservation.Users?.filter_redflag}</Typography>
+                                          <Typography variant='body2'>
+                                            : {reservation.Users_Req?.filter_redflag}
+                                          </Typography>
                                         </Box>
                                       </Grid>
                                       <Grid item xs={12}>
@@ -736,13 +739,13 @@ const ReservationRoomTest = () => {
                                           display='inline-flex'
                                           alignItems='center'
                                           sx={
-                                            reservation.Users?.sleep === profileData?.data.sleep
+                                            reservation.Users?.sleep === profileData?.userInfoData.sleep
                                               ? { backgroundColor: '#ffe0e0' }
                                               : {}
                                           }
                                         >
                                           <HotelIcon />
-                                          <Typography variant='body2'>: {reservation.Users?.sleep}</Typography>
+                                          <Typography variant='body2'>: {reservation.Users_Req?.sleep}</Typography>
                                         </Box>
                                       </Grid>
                                     </Grid>
