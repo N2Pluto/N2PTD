@@ -1,8 +1,8 @@
-//this is api/account-setting/updateUser
+// this is api/account-setting/createUser
 import supabase from 'src/libs/supabase'
 import middleware from '../middleware'
 
-async function updateUserInfo(
+async function insertUserInfo(
   user_id: string,
   name: string,
   lastname: string,
@@ -15,51 +15,27 @@ async function updateUserInfo(
   facebook: string,
   instagram: string,
   phone: string,
-  image: string,
-  activity: string,
-  sleep: string,
-  filter_school: string,
-  filter_major: string,
-  filter_religion: string,
-  filter_redflag: string
+  image: string
 ) {
   try {
-    const { data: data1, error: error1 } = await supabase
-      .from('Users_Info')
-      .update({
-        name,
-        lastname,
-        student_year,
-        school,
-        department,
-        religion,
-        major,
-        gender,
-        facebook,
-        instagram,
-        phone,
-        image
-      })
-      .eq('user_id', user_id)
+    const { data: data1, error: error1 } = await supabase.from('Users_Info').insert({
+      user_id,
+      name,
+      lastname,
+      student_year,
+      school,
+      department,
+      religion,
+      major,
+      gender,
+      facebook,
+      instagram,
+      phone,
+      image
+    })
 
     if (error1) {
       console.error(error1.message)
-    }
-
-    const { data: data2, error: error2 } = await supabase
-      .from('Users_Req')
-      .update({
-        activity,
-        sleep,
-        filter_school,
-        filter_major,
-        filter_religion,
-        filter_redflag
-      })
-      .eq('user_id', user_id)
-
-    if (error2) {
-      console.error(error2.message)
     }
   } catch (error) {
     throw new Error(error.message)
@@ -81,14 +57,9 @@ const handler = async (req: any, res: any) => {
       facebook,
       instagram,
       phone,
-      image,
-      activity,
-      sleep,
-      filter_school,
-      filter_major,
-      filter_religion,
-      filter_redflag
+      image
     } = req.body
+
     console.log('user_id', user_id)
 
     if (!user_id) {
@@ -96,7 +67,7 @@ const handler = async (req: any, res: any) => {
     }
 
     try {
-      await updateUserInfo(
+      await insertUserInfo(
         user_id,
         name,
         lastname,
@@ -109,13 +80,7 @@ const handler = async (req: any, res: any) => {
         facebook,
         instagram,
         phone,
-        image,
-        activity,
-        sleep,
-        filter_school,
-        filter_major,
-        filter_religion,
-        filter_redflag
+        image
       )
 
       res.status(200).json({
@@ -132,13 +97,7 @@ const handler = async (req: any, res: any) => {
           facebook,
           instagram,
           phone,
-          image,
-          activity,
-          sleep,
-          filter_school,
-          filter_major,
-          filter_religion,
-          filter_redflag
+          image
         }
       })
     } catch (error) {

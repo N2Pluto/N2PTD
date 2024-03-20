@@ -111,7 +111,7 @@ const ReservationBotton = () => {
         <CardMedia sx={{ height: '12.625rem' }} image='/images/cards/background-user.png' />
         <Avatar
           alt='Robert Meyer'
-          src={profileData?.data.image}
+          src={profileData?.userInfoData.image}
           sx={{
             width: 75,
             height: 75,

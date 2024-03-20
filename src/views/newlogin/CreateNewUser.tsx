@@ -29,7 +29,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 const school: SchoolOptionType[] = [
   {
     title: 'School of Management',
-    courses: [
+    departments: [
       {
         name: 'Marketing Management',
         majors: ['Digital Marketing and Branding']
@@ -46,7 +46,7 @@ const school: SchoolOptionType[] = [
   },
   {
     title: 'School of Nursing',
-    courses: [
+    departments: [
       {
         name: 'Nursing Science',
         majors: ['Nursing Science Program']
@@ -55,7 +55,7 @@ const school: SchoolOptionType[] = [
   },
   {
     title: 'School of Political Science and Public Administration',
-    courses: [
+    departments: [
       {
         name: 'Public Administration',
         majors: ['Public Administration Program']
@@ -68,7 +68,7 @@ const school: SchoolOptionType[] = [
   },
   {
     title: 'School of Engineering and Technology',
-    courses: [
+    departments: [
       {
         name: 'Civil Engineering',
         majors: ['Civil Engineering Program']
@@ -97,7 +97,7 @@ const school: SchoolOptionType[] = [
   },
   {
     title: 'School of Architecture and Design',
-    courses: [
+    departments: [
       {
         name: 'Architecture',
         majors: ['Architecture Program']
@@ -110,7 +110,7 @@ const school: SchoolOptionType[] = [
   },
   {
     title: 'School of Public Health',
-    courses: [
+    departments: [
       {
         name: 'Public Health',
         majors: ['Public Health Program in Community Public Health']
@@ -119,7 +119,7 @@ const school: SchoolOptionType[] = [
   },
   {
     title: 'School of Medicine',
-    courses: [
+    departments: [
       {
         name: 'Medicine',
         majors: ['Medicine Program']
@@ -128,7 +128,7 @@ const school: SchoolOptionType[] = [
   },
   {
     title: 'School of Science',
-    courses: [
+    departments: [
       {
         name: 'Mathematics',
         majors: ['Mathematics Program']
@@ -149,7 +149,7 @@ const school: SchoolOptionType[] = [
   },
   {
     title: 'International College of Dentistry',
-    courses: [
+    departments: [
       {
         name: 'Dental Surgery',
         majors: ['Doctor of Dental Surgery Program']
@@ -158,7 +158,7 @@ const school: SchoolOptionType[] = [
   },
   {
     title: 'Akkhraratchakumari Veterinary College',
-    courses: [
+    departments: [
       {
         name: 'Veterinary Science',
         majors: ['Doctor of Veterinary Medicine Program']
@@ -167,7 +167,7 @@ const school: SchoolOptionType[] = [
   },
   {
     title: 'School of Accounting and Finance',
-    courses: [
+    departments: [
       {
         name: 'Accounting and Finance',
         majors: [
@@ -181,7 +181,7 @@ const school: SchoolOptionType[] = [
   },
   {
     title: 'School of Law',
-    courses: [
+    departments: [
       {
         name: 'Law',
         majors: ['Bachelor of Laws']
@@ -190,7 +190,7 @@ const school: SchoolOptionType[] = [
   },
   {
     title: 'Faculty of Liberal Arts',
-    courses: [
+    departments: [
       {
         name: 'Education',
         majors: [
@@ -219,7 +219,7 @@ const school: SchoolOptionType[] = [
 
   {
     title: 'School of Information Science',
-    courses: [
+    departments: [
       {
         name: 'Information Science',
         majors: [
@@ -234,7 +234,7 @@ const school: SchoolOptionType[] = [
   },
   {
     title: 'School of Allied Health Sciences',
-    courses: [
+    departments: [
       {
         name: 'Physical Therapy',
         majors: ['Physical Therapy Program']
@@ -247,7 +247,7 @@ const school: SchoolOptionType[] = [
   },
   {
     title: 'School of Agricultural Technology and food Industry',
-    courses: [
+    departments: [
       {
         name: 'Agricultural Technology',
         majors: ['Agriculture and Innovation']
@@ -260,7 +260,7 @@ const school: SchoolOptionType[] = [
   },
   {
     title: 'School of Pharmacy',
-    courses: [
+    departments: [
       {
         name: 'Pharmacy',
         majors: ['Pharmacy Program']
@@ -270,7 +270,7 @@ const school: SchoolOptionType[] = [
 
   {
     title: 'International College',
-    courses: [
+    departments: [
       {
         name: 'Business Administration (International)',
         majors: ['Business Administration (International) Program']
@@ -279,14 +279,14 @@ const school: SchoolOptionType[] = [
   }
 ]
 
-interface CourseOptionType {
+interface DepartmentOptionType {
   name: string
   majors: string[]
 }
 
 interface SchoolOptionType {
   title: string
-  courses: CourseOptionType[]
+  departments: DepartmentOptionType[]
 }
 
 const schoolOptions = createFilterOptions({
@@ -299,22 +299,6 @@ const religion: ReligionOptionType = [
   { title: 'Christianity' },
   { title: 'Islam' },
   { title: 'Hinduism' },
-  { title: 'Sikhism' },
-  { title: 'Judaism' },
-  { title: 'Baháʼí Faith' },
-  { title: 'Jainism' },
-  { title: 'Shinto' },
-  { title: 'Cao Dai' },
-  { title: 'Zoroastrianism' },
-  { title: 'Tenrikyo' },
-  { title: 'Wicca' },
-  { title: 'Rastafari' },
-  { title: 'Unitarian Universalism' },
-  { title: 'Scientology' },
-  { title: 'Bahaism' },
-  { title: 'Paganism' },
-  { title: 'Atheism' },
-  { title: 'Agnosticism' },
   { title: 'Other' }
 ]
 
@@ -357,6 +341,7 @@ const CreateNewUser = () => {
   const [profileData, setProfileData] = useState(null)
   const [selectedSchool, setSelectedSchool] = useState<SchoolOptionType | null>(null)
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
+  const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null)
 
   const handleOnChange = (event: ChangeEvent<Element>) => {
     onChange(event) // Call the original onChange function
@@ -391,24 +376,9 @@ const CreateNewUser = () => {
       fetchUserProfile()
     }
   }, [user])
+  console.log('userInfoData', profileData?.userInfoData)
 
-  const [formData, setFormData] = useState({
-    name: profileData?.data.name,
-    lastname: profileData?.data.lastname,
-    student_year: profileData?.data.student_year,
-    school: profileData?.data.school,
-    course: profileData?.data.course,
-    major: profileData?.data.major,
-    religion: profileData?.data.religion,
-    region: profileData?.data.region,
-    gender: profileData?.data.gender,
-    phone: profileData?.data.phone,
-    facebook: profileData?.data.facebook,
-    instagram: profileData?.data.instagram,
-    image: profileData?.image
-  })
-
-  console.log('profileData', profileData)
+  const [formData, setFormData] = useState({})
 
   useEffect(() => {
     if (user?.student_id.toString().startsWith('63')) {
@@ -471,7 +441,7 @@ const CreateNewUser = () => {
     e.preventDefault()
 
     try {
-      const response = await fetch('/api/account-setting/updateUser', {
+      const response = await fetch('/api/account-setting/createUser', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -482,7 +452,7 @@ const CreateNewUser = () => {
           lastname: formData.lastname,
           student_year: formData.student_year,
           school: formData.school,
-          course: formData.course,
+          department: formData.department,
           major: formData?.major,
           religion: formData.religion,
           region: formData.region,
@@ -646,23 +616,23 @@ const CreateNewUser = () => {
                 {selectedSchool && (
                   <Grid item xs={12} sm={12}>
                     <Autocomplete
-                      id='course-demo'
-                      options={selectedSchool.courses}
+                      id='department-demo'
+                      options={selectedSchool.departments}
                       getOptionLabel={option => option.name}
                       onChange={(event, newValue) => {
-                        setSelectedCourse(newValue)
-                        setFormData({ ...formData, course: newValue ? newValue.name : '' })
+                        setSelectedDepartment(newValue)
+                        setFormData({ ...formData, department: newValue ? newValue.name : '' })
                       }}
-                      renderInput={params => <TextField {...params} label='Course' required />}
+                      renderInput={params => <TextField {...params} label='Department' required />}
                     />
                   </Grid>
                 )}
 
-                {selectedCourse && (
+                {selectedDepartment && (
                   <Grid item xs={12} sm={12}>
                     <Autocomplete
                       id='major-demo'
-                      options={selectedCourse.majors}
+                      options={selectedDepartment.majors}
                       getOptionLabel={option => option}
                       onChange={(event, newValue) => {
                         setFormData({ ...formData, major: newValue || '' })

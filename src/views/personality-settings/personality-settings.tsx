@@ -227,24 +227,12 @@ const PersonalitySettings = () => {
   }, [user])
 
   const [formData, setFormData] = useState({
-    name: profileData?.data.name,
-    lastname: profileData?.data.lastname,
-    student_year: profileData?.data.student_year,
-    school: profileData?.data.school,
-    course: profileData?.data.course,
-    religion: profileData?.data.religion,
-    region: profileData?.data.region,
-    major: profileData?.data.major,
-    gender: profileData?.data.gender,
-    facebook: profileData?.data.facebook,
-    instagram: profileData?.data.instagram,
-    phone: profileData?.data.phone,
-    activity: profileData?.data.activity,
-    sleep: profileData?.data.sleep,
-    filter_school: profileData?.data.filter_school,
-    filter_major: profileData?.data.filter_major,
-    filter_religion: profileData?.data.filter_religion,
-    filter_redflag: profileData?.data.filter_redflag
+    activity: profileData?.userReqData.activity,
+    sleep: profileData?.userReqData.sleep,
+    filter_school: profileData?.userReqData.filter_school,
+    filter_major: profileData?.userReqData.filter_major,
+    filter_religion: profileData?.userReqData.filter_religion,
+    filter_redflag: profileData?.userReqData.filter_redflag
   })
 
   console.log('profileData', profileData)
@@ -281,18 +269,6 @@ const PersonalitySettings = () => {
         },
         body: JSON.stringify({
           user_id: user.user_id,
-          name: formData.name,
-          lastname: formData.lastname,
-          student_year: formData.student_year,
-          school: formData.school,
-          course: formData.course,
-          religion: formData.religion,
-          region: formData.region,
-          major: formData.major,
-          gender: formData.gender,
-          facebook: formData.facebook,
-          instagram: formData.instagram,
-          phone: formData.phone,
           activity: formData.activity,
           sleep: formData.sleep,
           filter_school: formData.filter_school,
