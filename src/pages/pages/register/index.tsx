@@ -106,9 +106,20 @@ const RegisterPage = () => {
 
   const router = useRouter()
 
+  console.log('values.student_id:', values.student_id)
+
   const handleSignUp = async () => {
     try {
-      // Check if student_id or email already exists
+      // Check if student_id exists in the Student table
+    const studentResponse = await fetch(`/api/register/student/${values.student_id}`);
+    const studentData = await studentResponse.json();
+    console.log(studentData);
+
+    if (!studentData || !studentData.student_id) {
+      alert('Student ID does not exist in the system.')
+      
+      return
+    }
       const isExistingUser = register.some(user => user.student_id == values.student_id || user.email === values.email)
 
       if (isExistingUser) {
@@ -210,19 +221,6 @@ const RegisterPage = () => {
               sx={{ marginBottom: 4 }}
               onChange={handleChange('student_id')}
             />
-            {/* <FormControl fullWidth sx={{ marginBottom: 4 }}>
-              <InputLabel id='gender-label'>Gender</InputLabel>
-              <Select
-                labelId='gender-label'
-                id='gender'
-                value={values.gender}
-                label='Gender'
-                onChange={handleChange('gender')}
-              >
-                <MenuItem value='male'>male</MenuItem>
-                <MenuItem value='female'>female</MenuItem>
-              </Select>
-            </FormControl> */}
 
             <TextField fullWidth type='email' label='Email' sx={{ marginBottom: 4 }} onChange={handleChange('email')} />
             <FormControl fullWidth>
