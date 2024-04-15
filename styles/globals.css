@@ -22,3 +22,17 @@ code:not([class*='language-']):after {
 code[class*='language-'] {
   padding: 0;
 }
+
+df-messenger {
+  --df-messenger-bot-message: #d4c3e8;
+  --df-messenger-button-titlebar-color: #f1dfd1;
+  --df-messenger-button-titlebar-font-color: #724e91;
+  --df-messenger-chat-background-color: #f9f5f2;
+  --df-messenger-font-color: #724e91;
+  --df-messenger-input-box-color: #e6e0ec;
+  --df-messenger-input-font-color: #724e91;
+  --df-messenger-input-placeholder-font-color: #b8a9d3;
+  --df-messenger-minimized-chat-background-color: #f1dfd1;
+  --df-messenger-send-icon: #d4c3e8;
+  --df-messenger-user-message: #f7d9d0;
+}

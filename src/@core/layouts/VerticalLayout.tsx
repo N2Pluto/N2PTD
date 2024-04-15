@@ -20,6 +20,7 @@ import AppBar from './components/vertical/appBar'
 import Navigation from './components/vertical/navigation'
 import Footer from './components/shared-components/footer'
 import ScrollToTop from 'src/@core/components/scroll-to-top'
+import ChatBot from '../components/chatbot'
 
 // ** Styled Component
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
@@ -50,7 +51,7 @@ const ContentWrapper = styled('main')(({ theme }) => ({
 
 const VerticalLayout = (props: LayoutProps) => {
   // ** Props
-  const { settings, children, scrollToTop } = props
+  const { settings, children, scrollToTop , chatBot } = props
 
   // ** Vars
   const { contentWidth } = settings
@@ -100,6 +101,9 @@ const VerticalLayout = (props: LayoutProps) => {
           </DatePickerWrapper>
         </MainContentWrapper>
       </VerticalLayoutWrapper>
+
+      {/* Line Chat Bot */}
+      {chatBot ? chatBot(props) : <ChatBot style={{ marginTop: '-50vh' }} />}
 
       {/* Scroll to top button */}
       {scrollToTop ? (

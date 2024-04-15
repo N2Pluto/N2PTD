@@ -32,6 +32,7 @@ export type LayoutProps = {
   children: ReactNode
   verticalNavItems?: VerticalNavItemsType
   scrollToTop?: (props?: any) => ReactNode
+  chatBot?: (props?: any) => ReactNode
   saveSettings: (values: Settings) => void
   footerContent?: (props?: any) => ReactNode
   verticalAppBarContent?: (props?: any) => ReactNode
