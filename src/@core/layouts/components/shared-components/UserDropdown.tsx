@@ -16,12 +16,8 @@ import Typography from '@mui/material/Typography'
 
 // ** Icons Imports
 import CogOutline from 'mdi-material-ui/CogOutline'
-import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
-import EmailOutline from 'mdi-material-ui/EmailOutline'
 import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
-import MessageOutline from 'mdi-material-ui/MessageOutline'
-import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 import { userStore } from 'src/stores/userStore'
 import Link from 'next/link'
 
@@ -118,7 +114,7 @@ const UserDropdown = () => {
           alt='John Doe'
           onClick={handleDropdownOpen}
           sx={{ width: 40, height: 40 }}
-          src={profileData?.data.image}
+          src={profileData?.userInfoData.image}
         />
       </Badge>
       <Menu
@@ -136,7 +132,7 @@ const UserDropdown = () => {
               badgeContent={<BadgeContentSpan />}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             >
-              <Avatar alt='John Doe' src={profileData?.data.image} sx={{ width: '2.5rem', height: '2.5rem' }} />
+              <Avatar alt='John Doe' src={profileData?.userInfoData.image} sx={{ width: '2.5rem', height: '2.5rem' }} />
             </Badge>
             <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
               <Typography sx={{ fontWeight: 600 }}>{user?.student_id}</Typography>
@@ -148,7 +144,7 @@ const UserDropdown = () => {
         </Box>
         <Divider sx={{ mt: 0, mb: 1 }} />
         <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-          <Link href='/profile/'>
+          <Link href='/profile/' passHref>
             <Box sx={styles}>
               <AccountOutline sx={{ marginRight: 2 }} />
               Profile

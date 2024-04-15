@@ -30,13 +30,11 @@ const useNavigation = (): VerticalNavItemsType => {
         })
         const data = await response.json()
 
-        // เปลี่ยนไปใช้ data ที่ได้จากการ fetch โดยตรง
-        console.log('', data.data.role)
 
-        if (data.data.role === 'admin') {
+        if (data.userData.role === 'admin') {
           console.log('admin')
           setRoleFilter('admin')
-        } else if (data.data.role === 'user') {
+        } else if (data.userData.role === 'user') {
           console.log('user')
           setRoleFilter('user')
         }
@@ -73,9 +71,7 @@ const useNavigation = (): VerticalNavItemsType => {
         title: 'Building',
         icon: HomeOutline,
         path: '/admin/building'
-      }
-      ,
-
+      },
       {
         sectionTitle: 'User Interface'
       },
@@ -134,7 +130,7 @@ const useNavigation = (): VerticalNavItemsType => {
         title: 'Profile',
         icon: HomeOutline,
         path: '/profile'
-      },
+      }
 
       // {
       //   sectionTitle: 'Pages'

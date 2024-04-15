@@ -98,51 +98,61 @@ const LoginPage = () => {
     }
   }
 
-  const handleLogin = async (check: string) => {
-    try {
-      let body
-      if (check.includes('@')) {
-        body = JSON.stringify({ email: check, password })
-      } else {
-        body = JSON.stringify({ student_id: check, password })
-      }
+ const handleLogin = async (check: string) => {
+   try {
+     let body
+     if (check.includes('@')) {
+       body = JSON.stringify({ email: check, password })
+     } else {
+       body = JSON.stringify({ student_id: check, password })
+     }
 
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: body
-      })
+     const response = await fetch('/api/login', {
+       method: 'POST',
+       headers: {
+         'Content-Type': 'application/json'
+       },
+       body: body
+     })
 
-      if (response.ok) {
-        const data = await response.json()
+     if (response.ok) {
+       const data = await response.json()
 
-        setUser(data?.user)
+       setUser(data?.user)
+       console.log(data?.user)
+       localStorage.setItem('accessToken', data.accessToken)
 
-        localStorage.setItem('accessToken', data.accessToken)
+       // Fetch the name from Users_Info
+       const userInfoResponse = await fetch(`/api/login/check`, {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({ user_id: data?.user.user_id })
+       })
+       const userInfoData = await userInfoResponse.json()
 
-        //check role
-        if (data?.user.role === 'admin') {
-          router.push('/admin/userControl')
-        } else if (data?.user.role === 'user') {
-          if (!data?.user.name || !data?.user.course || !data?.user.school) {
-            router.push('/pages/newlogin')
-          } else {
-            console.log('data:', data)
-            router.push('/profile')
-          }
-        }
-      } else {
-        const errorData = await response.json()
-        alert('Login failed : Email , Student id or password is incorrect.')
+       //check role
+       if (data?.user.role === 'admin') {
+         router.push('/admin/userControl')
+       } else if (data?.user.role === 'user') {
+         if (!userInfoData?.name) {
+           router.push('/pages/newlogin')
+         } else {
+           console.log('data:', data)
+           router.push('/profile')
+         }
+       }
+     } else {
+       const errorData = await response.json()
+       alert('Login failed : Email , Student id or password is incorrect.')
 
-        console.log('Login failed:', errorData.message)
-      }
-    } catch (error) {
-      console.log('Error during login:', error)
-    }
-  }
+       console.log('Login failed:', errorData.message)
+     }
+   } catch (error) {
+     console.log('Error during login:', error)
+   }
+ }
 
   useEffect(() => {
     const fetchUserbyUserID = async () => {
