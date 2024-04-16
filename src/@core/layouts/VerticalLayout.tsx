@@ -51,7 +51,8 @@ const ContentWrapper = styled('main')(({ theme }) => ({
 
 const VerticalLayout = (props: LayoutProps) => {
   // ** Props
-  const { settings, children, scrollToTop , chatBot } = props
+  const { settings, children, scrollToTop   } = props
+  const { chatBot } = props
 
   // ** Vars
   const { contentWidth } = settings
@@ -102,10 +103,8 @@ const VerticalLayout = (props: LayoutProps) => {
         </MainContentWrapper>
       </VerticalLayoutWrapper>
 
-      {/* Line Chat Bot */}
       {chatBot ? chatBot(props) : <ChatBot style={{ marginTop: '-50vh' }} />}
 
-      {/* Scroll to top button */}
       {scrollToTop ? (
         scrollToTop(props)
       ) : (

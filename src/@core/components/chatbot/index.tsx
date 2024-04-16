@@ -22,7 +22,7 @@ const ChatBot = (props: ChatBotProps) => {
   const handleClick = () => {
     const anchor = document.querySelector('body')
     if (anchor) {
-      anchor.scrollIntoView({ behavior: 'smooth' })
+
     }
   }
 
@@ -32,7 +32,7 @@ const ChatBot = (props: ChatBotProps) => {
         {children}
         <script async src='https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1'></script>
         <df-messenger
-          chat-icon='https://play-lh.googleusercontent.com/74iMObG1vsR3Kfm82RjERFhf99QFMNIY211oMvN636_gULghbRBMjpVFTjOK36oxCbs=w240-h480-rw'
+          chat-icon='https://static.vecteezy.com/system/resources/thumbnails/018/930/710/small/line-logo-line-icon-transparent-free-png.png'
           chat-title='Dormitory'
           agent-id='ad149d2f-4edf-4292-ba63-35ce5ce9eb7e'
           language-code='th'
