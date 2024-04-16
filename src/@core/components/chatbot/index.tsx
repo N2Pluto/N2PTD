@@ -11,7 +11,7 @@ const ChatBotStyled = styled('div')(({ theme }) => ({
   zIndex: 11,
   position: 'fixed',
   right: 0,
-  top: '90%',
+  top: '92%',
   transform: 'translateY(-50%)'
 }))
 

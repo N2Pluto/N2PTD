@@ -15,6 +15,7 @@ const MUITable = () => {
       <Grid container spacing={6}>
         <Grid item xs={12}>
           <Typography variant='h5' sx={{pl:4}}>Building Control </Typography>
+          
         </Grid>
         <Grid item xs={12} md={12} lg={12}>
           <Card>

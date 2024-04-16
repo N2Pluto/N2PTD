@@ -7,7 +7,6 @@ import ReservationBotton from 'src/views/reservations/reservation/Reservation_Bo
 import ReservationsStatistics from 'src/views/reservations/reservation/Reservations_Statistics'
 
 
-
 const profile = () => {
   return (
     <LayoutAuth>

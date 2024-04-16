@@ -52,11 +52,11 @@ const useNavigation = (): VerticalNavItemsType => {
 
   if (roleFilter === 'admin') {
     return [
-      // {
-      //   title: 'Dashboard',
-      //   icon: HomeOutline,
-      //   path: '/admin/dashboardadmin'
-      // },
+      {
+        title: 'discord',
+        icon: HomeOutline,
+        path: '/admin/discord'
+      },
       {
         title: 'User information',
         icon: HomeOutline,
@@ -131,6 +131,8 @@ const useNavigation = (): VerticalNavItemsType => {
         icon: HomeOutline,
         path: '/profile'
       }
+
+
 
       // {
       //   sectionTitle: 'Pages'
