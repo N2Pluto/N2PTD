@@ -6,6 +6,7 @@ interface ChatBotProps {
   children: React.ReactNode
 }
 
+//Applications
 const ChatBotStyled = styled('div')(({ theme }) => ({
   zIndex: 11,
   position: 'fixed',
@@ -42,5 +43,5 @@ const ChatBot = (props: ChatBotProps) => {
     </>
   )
 }
-
 export default ChatBot
+
