@@ -1,3 +1,4 @@
+// this is the API route for /api/register
 import supabase from 'src/libs/supabase'
 
 const handler = async (req: any, res: any) => {

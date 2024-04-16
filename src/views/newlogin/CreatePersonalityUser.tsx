@@ -220,7 +220,6 @@ const CreatePersonalityUser = () => {
         console.error('Error fetching user profile:', error)
       }
     }
-
     if (user?.user_id) {
       fetchUserProfile()
     }
@@ -261,38 +260,45 @@ const CreatePersonalityUser = () => {
         },
         body: JSON.stringify({
           user_id: user.user_id,
-          name: formData.name,
-          lastname: formData.lastname,
-          student_year: formData.student_year,
-          school: formData.school,
-          course: formData.course,
-          religion: formData.religion,
-          region: formData.region,
-          major: formData.major,
-          gender: formData.gender,
-          facebook: formData.facebook,
-          instagram: formData.instagram,
-          phone: formData.phone,
           activity: formData.activity,
           sleep: formData.sleep,
           filter_school: formData.filter_school,
           filter_major: formData.filter_major,
           filter_religion: formData.filter_religion,
-          filter_redflag: formData.filter_redflag
+          filter_redflag: formData.filter_redflag,
         })
       })
 
       const { data, error } = await response.json()
 
       if (error) {
-        console.error('Error Update data into USers table:', error.message)
+        console.error('Error Update data into Users table:', error.message)
       } else {
         console.log('Data Update Success:', data)
         alert('Data Update Success')
+
+        // Call the createUserInfo API
+        const responseUserInfo = await fetch('/api/account-setting/createUserInfo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_id: user.user_id, student_year: formData.student_year})
+        })
+
+        const { data: userInfoData, error: userInfoError } = await responseUserInfo.json()
+
+        if (userInfoError) {
+          console.error('Error Update data into Users_Info table:', userInfoError.message)
+        } else {
+          console.log('Data Update Success:', userInfoData)
+          alert('Data Update Success')
+        }
+
         router.push('/profile/')
       }
     } catch (error) {
-      console.error('Error Update data into USers table:', error.message)
+      console.error('Error Update data into Users table:', error.message)
     }
   }
 
@@ -354,8 +360,6 @@ const CreatePersonalityUser = () => {
                     onChange={(event, newValue) => {
                       setSelectedSchool(newValue) // เก็บข้อมูล school ที่ถูกเลือก
                       setFormData({ ...formData, filter_school: newValue ? newValue.title : '' })
-
-                      // เมื่อโรงเรียนที่เลือกเปลี่ยนแปลง อัปเดต options ของ Autocomplete สำหรับ Major
                       setMajorOptions(newValue ? newValue.majors : [])
                     }}
                     style={{ width: 500 }}

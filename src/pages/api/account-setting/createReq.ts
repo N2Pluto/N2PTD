@@ -1,4 +1,4 @@
-//this is api/account-setting/createUser
+//this is api/account-setting/createReq
 import supabase from 'src/libs/supabase'
 import middleware from '../middleware'
 
