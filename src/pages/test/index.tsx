@@ -1,4 +1,4 @@
-import { sendDiscordMessage } from "../api/discord"
+import { sendDiscordMessage } from "../api/discord/admin"
 
 
 const test = async () => {

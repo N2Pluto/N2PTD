@@ -12,20 +12,37 @@ import Switch from '@mui/material/Switch'
 import router from 'next/router'
 
 // ** MUI Icons
-
-import CheckIcon from '@mui/icons-material/Check'
-import CloseIcon from '@mui/icons-material/Close'
 import BuildCircleIcon from '@mui/icons-material/BuildCircle'
+import { sendDiscordMessage } from 'src/pages/api/discord/admin'
+import { userStore } from 'src/stores/userStore'
 
 const RoomControl = () => {
   const [room, setRoom] = useState([])
+  const { user } = userStore()
+  const [dormitoryBuilding, setDormitoryBuilding] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log('router.query.id:', router.query.id)
+      const { data } = await fetch(`/api/building/${router.query.id}`).then(res => res.json())
+      setDormitoryBuilding(data)
+    }
+
+    // Call fetchData immediately
+    fetchData()
+
+    // Then call fetchData every 50 seconds
+    const intervalId = setInterval(fetchData, 50000)
+
+    // Clear interval on component unmount
+    return () => clearInterval(intervalId)
+  }, [])
 
   useEffect(() => {
     const fetchDataRoomByDormID = async () => {
       console.log('router.query.id:', router.query.id)
       const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
       setRoom(data)
-      console.log('data:', data)
     }
 
     const fetchDataAndUpdateStatusRoom = async () => {
@@ -44,7 +61,23 @@ const RoomControl = () => {
     alert(`Building with ID ${id} selected.`)
   }
 
-  const handleUserInfo = async (roomId: string, currentStatus: boolean) => {
+  const discordHandle = async (room_rehearse: boolean, room_number: string, dormitoryBuilding: string) => {
+    if (!room_rehearse) {
+      await sendDiscordMessage(
+        `${user.student_id}`,
+        `${user.email}`,
+        `ได้ทำการ ปิด ห้องที่ ${room_number} ของอาคาร ${dormitoryBuilding} แล้ว ❌`
+      )
+    } else {
+      await sendDiscordMessage(
+        `${user.student_id}`,
+        `${user.email}`,
+        `ได้ทำการ เปิด ห้องที่ ${room_number} ของอาคาร ${dormitoryBuilding} แล้ว ✅`
+      )
+    }
+  }
+
+  const handleUserInfo = async (roomId: string, currentStatus: boolean, roomNum: string, domname: string) => {
     try {
       const response = await fetch('/api/room/updateStatus', {
         method: 'POST',
@@ -53,13 +86,18 @@ const RoomControl = () => {
         },
         body: JSON.stringify({
           room_id: roomId,
-          room_rehearse: !currentStatus // Toggle the status
+          room_rehearse: !currentStatus,
+          roomNum: roomNum,
+          domname: domname
         })
       })
 
-      router.reload()
+      discordHandle(!currentStatus, roomNum, domname)
 
-      // ... rest of the function
+      setTimeout(() => {
+        router.reload()
+      }, 2000)
+
     } catch (error) {
       console.error('Error Update data into Users table:', error.message)
     }
@@ -100,10 +138,10 @@ const RoomControl = () => {
               <TableCell align='center'>
                 <Switch
                   checked={room.room_rehearse}
-                  onChange={() => handleUserInfo(room.room_id, room.room_rehearse)}
-                  icon={
-                    <BuildCircleIcon sx={{ display: 'flex', alignItems: 'center',mt:-0.3 }} color='error' />
+                  onChange={() =>
+                    handleUserInfo(room.room_id, room.room_rehearse, room.room_number, dormitoryBuilding.name)
                   }
+                  icon={<BuildCircleIcon sx={{ display: 'flex', alignItems: 'center', mt: -0.3 }} color='error' />}
                 />
               </TableCell>
 
@@ -121,7 +159,5 @@ const RoomControl = () => {
 }
 
 export default RoomControl
-
-
 
 // onChange={() => handleUserInfo(room.room_id, room.room_rehearse)}

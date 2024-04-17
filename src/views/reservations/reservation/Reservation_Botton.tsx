@@ -20,6 +20,7 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import HomeIcon from '@mui/icons-material/Home'
 import Link from 'next/link'
 import SuccessฺฺBar from './component'
+import { sendDiscordMessage } from 'src/pages/api/discord/user'
 
 const ReservationBotton = () => {
   const [open, setOpen] = useState(false)
@@ -28,6 +29,10 @@ const ReservationBotton = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false)
   const [snackbarMessage, setSnackbarMessage] = useState('')
   const [profileData, setProfileData] = useState(null)
+
+  const discordHandle = async (id: string, email: string) => {
+    await sendDiscordMessage(id, email, 'Cancel reservation')
+  }
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -96,7 +101,9 @@ const ReservationBotton = () => {
         setSnackbarMessage('Booking successfully deleted')
         setSnackbarOpen(true)
         setReservation(null)
+        discordHandle(user.student_id, user.email)
         router.reload() // Reload the page
+
       }
     } catch (error) {
       console.error('Error deleting reservation:', error)

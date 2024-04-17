@@ -19,11 +19,14 @@ import { userStore } from 'src/stores/userStore'
 import { useRouter } from 'next/router'
 import { Button } from '@mui/material'
 import SuccessbarฺResult from './component'
+import { sendDiscordMessage } from 'src/pages/api/discord/user'
 
 const Allresult = () => {
   const { user } = userStore()
   const router = useRouter()
   const [reservation, setReservation] = useState(null)
+
+
 
   useEffect(() => {
     const fetchReservationData = async () => {
@@ -44,6 +47,16 @@ const Allresult = () => {
     // Don't forget to clear the interval when the component unmounts
     return () => clearInterval(intervalId)
   }, [user])
+
+  const discordHandle = async (id: string ,email:string, domname: string, roomnum: string ,bednum :string) => {
+    await sendDiscordMessage(id, email, `Make a reservation\nDormitory Building : ${domname}  \nRoom Number : ${roomnum} \nBed Number : ${bednum}`
+    )
+  }
+
+  const handledsummit = (id:string,email:string , domname:string , roomnum : string , bednum : string) => {
+    discordHandle(id,email,domname,roomnum,bednum)
+    router.push(`/reservation/`)
+  }
 
   return (
     <>
@@ -146,7 +159,7 @@ const Allresult = () => {
             alignItems: 'center'
           }}
         >
-          <Button onClick={() => router.push('/reservation')} variant='contained'>
+          <Button onClick={() => handledsummit(user?.student_id ,user?.email, reservation?.Dormitory_Building.name ,reservation?.Dormitory_Room?.room_number ,reservation?.Dormitory_Bed?.bed_number)} variant='contained'>
             Go to Reservation
           </Button>
         </Card>

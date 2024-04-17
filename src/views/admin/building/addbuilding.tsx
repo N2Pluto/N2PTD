@@ -4,7 +4,7 @@ import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 import router from 'next/router'
-import { sendDiscordMessage } from 'src/pages/api/discord'
+import { sendDiscordMessage } from 'src/pages/api/discord/admin'
 
 const handleClick = async () => {
   router.push('/admin/building/formbuilding')
