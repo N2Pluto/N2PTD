@@ -27,7 +27,7 @@ import BedtimeIcon from '@mui/icons-material/Bedtime'
 import TempleHinduIcon from '@mui/icons-material/TempleHindu'
 
 const Profile = () => {
-  const { user } = userStore()
+  c
   console.log(user)
 
   const [loading, setLoading] = useState(true) // Add this line
