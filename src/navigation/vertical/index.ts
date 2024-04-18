@@ -48,7 +48,6 @@ const useNavigation = (): VerticalNavItemsType => {
     }
   }, [user])
 
-  console.log('user', user)
 
   if (roleFilter === 'admin') {
     return [

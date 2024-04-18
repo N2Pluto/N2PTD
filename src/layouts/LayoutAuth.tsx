@@ -24,19 +24,14 @@ const LayoutAuth: React.FC<LayoutProps> = ({ children }) => {
     setLoading(true)
 
     const token = localStorage.getItem('accessToken')
-    console.log('abd', token)
-
     if (token) {
-      console.log('asadsd', token)
       const user = await profileService.fetchMe()
       if (user?.data) {
         setUser(user?.data)
-
       } else {
         router.push(Link.HOME)
       }
     } else {
-
       router.push(Link.HOME)
     }
 
