@@ -3,12 +3,11 @@ import supabase from 'src/libs/supabase'
 
 function handler(req: any, res: any) {
   middleware(req, res, async () => {
-    console.log('user_d', req.user)
 
     try {
       const { data: userData, error: userError } = await supabase
         .from('Users')
-        .select('student_id, email, user_id')
+        .select('student_id, email, user_id , role')
         .eq('user_id', req.user.user_id)
         .limit(1)
         .single()

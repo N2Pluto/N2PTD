@@ -13,7 +13,6 @@ function handler(req: any, res: any) {
         .limit(1)
         .single()
 
-      console.log('userData', userData)
 
       const { data : reservationData} = await supabase
       .from('Reservation')
@@ -22,7 +21,6 @@ function handler(req: any, res: any) {
       .limit(1)
       .single()
 
-      console.log('reservationData', reservationData)
 
       if (userError) {
         res.status(500).json({ error: userError?.message  })
