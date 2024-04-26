@@ -7,7 +7,10 @@ import Fade from '@mui/material/Fade'
 import Paper from '@mui/material/Paper'
 import { FaLine } from 'react-icons/fa6'
 import QRCode from 'qrcode.react'
+
+
 import { createTheme } from '@mui/material/styles'
+
 interface ChatBotProps {
   className?: string
   children: React.ReactNode
@@ -19,21 +22,17 @@ const ChatBotStyled = styled('div')(({ theme }) => ({
   right: 15,
   top: '85%',
   transform: 'translateY(-50%)',
-  backgroundColor: theme.palette.primary.main,
-  borderRadius: 10,
-  boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-  borderRadius: '75%'
 }))
-
 const ChatBotButton = styled(Button)(({ theme }) => ({
-  borderRadius: '75%',
-  padding: '12px'
+
+  border: 'none',
+  borderRadius: '100%',
+  width: '50px',
+  height: '65px',
 }))
 
 const ChatBotPaper = styled(Paper)(({ theme }) => ({
-  backgroundColor: 'white',
   borderRadius: 10,
-  border: '2px solid #ddd',
   padding: 20,
   boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)'
 }))
@@ -46,10 +45,10 @@ const ChatBot = (props: ChatBotProps) => {
   const theme = createTheme({
     palette: {
       primary: {
-        main: '#000000'
+        main: '#w50057'
       },
       secondary: {
-        main: '#ffffff'
+        main: '#f50057'
       }
     }
   })
@@ -65,7 +64,7 @@ const ChatBot = (props: ChatBotProps) => {
       <ChatBotStyled className={className}>
         {children}
         <ChatBotButton variant='contained' onClick={handleClick('bottom-end')}>
-          <FaLine size={32} />
+        <FaLine size={60} />
         </ChatBotButton>
         <Popper open={open} anchorEl={anchorEl} placement={placement} transition>
           {({ TransitionProps }) => (
