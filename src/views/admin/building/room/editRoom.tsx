@@ -19,12 +19,54 @@ import Autocomplete from '@mui/material/Autocomplete'
 import Checkbox from '@mui/material/Checkbox'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
+import { styled } from '@mui/material/styles'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell, { tableCellClasses } from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import { IoSettingsOutline } from 'react-icons/io5'
 
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
+import SettingRoom from './settingRoom'
+import CreateRoom from './createRoom'
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
 const checkedIcon = <CheckBoxIcon fontSize='small' />
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14
+  }
+}))
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.action.hover
+  },
+  // hide last border
+  '&:last-child td, &:last-child th': {
+    border: 0
+  }
+}))
+
+function createData(
+  room_id: number,
+  dorm_id: number,
+  room_number: number,
+  bed_capacity: number
+) {
+  return { room_id, dorm_id, room_number, bed_capacity }
+}
+
+
 
 const furnitureOptions = [
   { title: 'closet' },
@@ -50,7 +92,23 @@ const EditRoom = () => {
   const [bedCapacity, setBedCapacity] = useState('')
   const [roomsPerFloor, setRoomsPerFloor] = useState<string[]>([])
   const [dormitoryBuilding, setDormitoryBuilding] = useState([])
+  const [dormitoryRoom, setDormitoryRoom] = useState([])
   const router = useRouter()
+
+ useEffect(() => {
+   const fetchDataRoomByDormID = async () => {
+     console.log('router.query.id:', router.query.id)
+     const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
+     setDormitoryRoom(data)
+     console.log('data:', data)
+   }
+
+   const intervalId = setInterval(fetchDataRoomByDormID, 5000) // Fetch data every 5 seconds
+
+   return () => clearInterval(intervalId) // Clean up the interval on component unmount
+ }, [])
+
+   const rows = dormitoryRoom.map(room => createData(room.room_id, room.dorm_id, room.room_number, room.bed_capacity))
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,7 +116,6 @@ const EditRoom = () => {
         const dorm_id = router.query.id
         const { data } = await fetch(`/api/admin/read/${dorm_id}`).then(res => res.json())
         if (data) {
-          // Ensure data is an array
           setDormitoryBuilding(Array.isArray(data) ? data : [data])
         } else {
           console.error('No data returned from API')
@@ -68,11 +125,12 @@ const EditRoom = () => {
       }
     }
 
-    fetchData()
+    const intervalId = setInterval(fetchData, 5000) // Fetch data every 5 seconds
+
+    return () => clearInterval(intervalId) // Clean up the interval on component unmount
   }, [])
 
-  console.log('building', dormitoryBuilding)
-
+ 
   const handleRoomsChange = (index: number, value: string) => {
     const newRoomsPerFloor = [...roomsPerFloor]
     newRoomsPerFloor[index] = value
@@ -101,94 +159,62 @@ const EditRoom = () => {
     event.preventDefault()
   }
 
+  const handleToSetting = (event: MouseEvent) => {
+    router.push('/admin/building/editBuilding')
+  }
+
   return (
     <>
-        <Card >
-          <CardHeader title='Form for Ediit Room' titleTypographyProps={{ variant: 'h6' }} />
-          <Divider sx={{ margin: 0 }} />
-          <form onSubmit={handleFormSubmit}>
-            <CardContent>
-              <Grid container spacing={5}>
-                <Grid item xs={12}>
-                  <Divider sx={{ marginBottom: 0 }} />
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant='body2' sx={{ fontWeight: 600 }}>
-                    2. Room Details
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <FormControl fullWidth>
-                    <InputLabel id='form-layouts-separator-select-label'>Floor</InputLabel>
-                    <Select
-                      label='Floor'
-                      value={floor}
-                      onChange={(event: SelectChangeEvent<string>) => {
-                        if (event.target.value === 'reset') {
-                          setFloor('')
-                          setRoomsPerFloor([])
-                        } else {
-                          handleFloorChange(event)
-                        }
-                      }}
-                      id='form-layouts-separator-select'
-                      labelId='form-layouts-separator-select-label'
-                    >
-                      <MenuItem value='reset'>Reset</MenuItem>
-                      <MenuItem value='1'>1</MenuItem>
-                      <MenuItem value='2'>2</MenuItem>
-                      <MenuItem value='3'>3</MenuItem>
-                      <MenuItem value='4'>4</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                {Array.from({ length: Number(floor) || 0 }, (_, index) => (
-                  <Grid item xs={12} sm={2} key={index} container justifyContent='space-between' alignItems='center'>
-                    <Grid item xs={10}>
-                      <TextField
-                        fullWidth
-                        label={`Rooms in Floor ${index + 1}`}
-                        placeholder='Input number of room'
-                        value={roomsPerFloor[index] || ''}
-                        onChange={event => handleRoomsChange(index, event.target.value)}
-                      />
-                    </Grid>
-                  </Grid>
+      <Card>
+        <CardHeader
+          title='Form for Edit Room'
+          titleTypographyProps={{ variant: 'h6' }}
+          action={
+            <CreateRoom id={dormitoryBuilding.dorm_id}>
+              <Button variant='contained' color='primary'>
+                Add Room
+              </Button>
+            </CreateRoom>
+          }
+        />
+        <Divider sx={{ margin: 0 }} />
+        <form onSubmit={handleFormSubmit}>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 700 }} aria-label='customized table'>
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell>Dorm ID</StyledTableCell>
+                  <StyledTableCell align='right'>Room ID</StyledTableCell>
+                  <StyledTableCell align='right'>Room Number</StyledTableCell>
+                  <StyledTableCell align='right'>Bed Capacity</StyledTableCell>
+                  <StyledTableCell align='right'>Setting</StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map(row => (
+                  <StyledTableRow key={row.room_id}>
+                    <StyledTableCell component='th' scope='row'>
+                      {row.dorm_id}
+                    </StyledTableCell>
+                    <StyledTableCell align='right'>{row.room_id}</StyledTableCell>
+                    <StyledTableCell align='right'>{row.room_number}</StyledTableCell>
+                    <StyledTableCell align='right'>{row.bed_capacity}</StyledTableCell>
+                    <StyledTableCell align='right'>
+                      <SettingRoom id={row.room_id}>
+                        <Button>
+                          <IoSettingsOutline size={25} />
+                        </Button>
+                      </SettingRoom>
+                    </StyledTableCell>
+                  </StyledTableRow>
                 ))}
-                <Grid item xs={12} sm={12}>
-                  <Typography variant='body2' sx={{ fontWeight: 600 }}>
-                    Room Numbers: {generateRoomNumbers().join(', ')}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={12}>
-                  <FormControl fullWidth>
-                    <InputLabel id='form-layouts-separator-select-label'>Bed Capacity</InputLabel>
-                    <Select
-                      label='Bed Capacity'
-                      value={bedCapacity}
-                      onChange={event => setBedCapacity(event.target.value)}
-                      defaultValue=''
-                      id='form-layouts-separator-select'
-                      labelId='form-layouts-separator-select-label'
-                    >
-                      <MenuItem value='2'>2</MenuItem>
-                      <MenuItem value='4'>4</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </Grid>
-            </CardContent>
-            <Divider sx={{ margin: 0 }} />
-            <CardActions>
-              <Button size='large' type='submit' sx={{ mr: 2 }} variant='contained'>
-                Submit
-              </Button>
-              <Button size='large' color='secondary' variant='outlined'>
-                Cancel
-              </Button>
-            </CardActions>
-          </form>
-        </Card>
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Divider sx={{ margin: 0 }} />
+       
+        </form>
+      </Card>
     </>
   )
 }
