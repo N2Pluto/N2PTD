@@ -1,74 +1,103 @@
-// ** MUI Imports
-import Paper from '@mui/material/Paper'
-import Table from '@mui/material/Table'
-import TableRow from '@mui/material/TableRow'
-import TableHead from '@mui/material/TableHead'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import { useEffect, useState } from 'react'
+import Card from '@mui/material/Card'
 import Button from '@mui/material/Button'
+import CardMedia from '@mui/material/CardMedia'
+import Typography from '@mui/material/Typography'
+import CardContent from '@mui/material/CardContent'
 import router from 'next/router'
+import { sendDiscordMessage } from 'src/pages/api/discord/admin'
+import { useEffect, useState } from 'react'
+import Grid from '@mui/material/Grid'
+import Box from '@mui/material/Box'
+import { CardActions, Dialog, DialogContent, DialogTitle, CardActionArea } from '@mui/material'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
+import { styled } from '@mui/material/styles'
+import { useRouter } from 'next/router'
+
+const handleClick = async () => {
+  router.push('/admin/building/formbuilding')
+}
+
+// const testhandleClick = async () => {
+//   await sendDiscordMessage('Hello World!')
+//   console.log('test')
+// }
 
 const Building = () => {
-  const [building, setBuilding] = useState([])
+  const [dormitoryBuilding, setDormitoryBuilding] = useState([])
+  const router = useRouter()
+
+  const handleEdit = (id: string) => {
+    router.push(`/admin/building/editBuilding/${id}`)
+  }
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await fetch('/api/building/fetch_building').then(res => res.json())
-        setBuilding(data)
+        const { data } = await fetch('/api/admin/read/fetch_building').then(res => res.json())
+        if (data) {
+          setDormitoryBuilding(data)
+        } else {
+          console.error('No data returned from API')
+        }
       } catch (error) {
         console.error('Error fetching dormitory building data:', error)
       }
     }
+
     fetchData()
   }, [])
 
-  const handleSelect = (id: string) => {
-    // Handle the selection of the building by its ID
-    console.log(`Building with ID ${id} selected.`)
-    router.push(`/admin/buildingControl/room/${id}`)
-  }
-
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label='simple table'>
-        <TableHead>
-          <TableRow>
-            <TableCell>Building name</TableCell>
-            <TableCell align='right'>gender</TableCell>
-            <TableCell align='right'>price </TableCell>
-            <TableCell align='center'>room total </TableCell>
-            <TableCell align='center'>detail </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {building.map(building => (
-            <TableRow
-              key={building.name}
-              sx={{
-                '&:last-of-type td, &:last-of-type th': {
-                  border: 0
-                }
-              }}
-            >
-              <TableCell component='th' scope='row'>
-                {building.name}
-              </TableCell>
-              <TableCell align='right'>{building.type_gender}</TableCell>
-              <TableCell align='right'>{building.price}</TableCell>
-              <TableCell align='center'>{building.room_total}</TableCell>
-              <TableCell align='center'>
-                <Button variant='contained' onClick={() => handleSelect(building.dorm_id)}>
-                  Select
-                </Button>
-              </TableCell>
-            </TableRow>
+    <>
+      <Card>
+        <CardMedia
+          sx={{ height: '20.375rem' }}
+          image='https://cdn.pixabay.com/photo/2022/06/26/16/07/shop-7285838_1280.png'
+        />
+        <CardContent sx={{ padding: theme => `${theme.spacing(3, 5.25, 4)} !important` }}>
+          <Typography variant='h6' sx={{ marginBottom: 2 }}>
+            Dormitory
+          </Typography>
+          <Typography variant='body2'>Click to add a dormitory. for building a new dormitory</Typography>
+        </CardContent>
+        <Button
+          onClick={handleClick}
+          variant='contained'
+          sx={{ py: 2.5, width: '100%', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+        >
+          Add To Dormitory
+        </Button>
+      </Card>
+
+      <Grid container spacing={3}>
+        {dormitoryBuilding &&
+          dormitoryBuilding.map(dorm => (
+            <Grid key={dorm.dorm_id} item xs={12} sm={4}>
+              <Card sx={{ maxWidth: 345 }}>
+                <CardActionArea>
+                  <CardMedia component='img' height='140' image={dorm.images_url} alt='green iguana' />
+                  <CardContent>
+                    <Typography gutterBottom variant='h5' component='div'>
+                      {dorm.name}
+                    </Typography>
+                    <Typography variant='body2' color='text.secondary'>
+                      {dorm.dorm_description}
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+                <CardActions>
+                  <Button size='small' color='primary' onClick={() => handleEdit(dorm.dorm_id)}>
+                    EDIT
+                  </Button>
+                  <Button size='small' color='primary'>
+                    DELETE
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
           ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+      </Grid>
+    </>
   )
 }
 

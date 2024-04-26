@@ -7,7 +7,7 @@ import CardHeader from '@mui/material/CardHeader'
 
 import AdminLayout from 'src/layouts/AdminLayout'
 import Building from 'src/views/admin/building/building'
-import Addbuilding from 'src/views/admin/building/addbuilding'
+import Addbuilding from 'src/views/admin/building/building'
 
 const MUITable = () => {
   return (
