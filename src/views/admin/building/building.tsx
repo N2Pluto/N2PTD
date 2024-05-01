@@ -12,6 +12,7 @@ import { CardActions, Dialog, DialogContent, DialogTitle, CardActionArea } from 
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import { styled } from '@mui/material/styles'
 import { useRouter } from 'next/router'
+import DeleteBuilding from './deleteBuilding'
 
 const handleClick = async () => {
   router.push('/admin/building/formbuilding')
@@ -22,7 +23,7 @@ const handleClick = async () => {
 //   console.log('test')
 // }
 
-const Building = () => {
+const Building = ({ dorm_id }) => {
   const [dormitoryBuilding, setDormitoryBuilding] = useState([])
   const router = useRouter()
 
@@ -46,6 +47,29 @@ const Building = () => {
 
     fetchData()
   }, [])
+
+   const handleDeleteBuilding = async dorm_id => {
+     try {
+       const response = await fetch('/api/admin/delete/building/deleteBuildingByID', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({ dorm_id })
+       })
+
+       if (!response.ok) {
+         throw new Error(`Response is not ok. Status: ${response.status}, Status Text: ${response.statusText}`)
+       }
+
+       // Refresh the dormitoryBuilding data after successful deletion
+       const { data } = await fetch('/api/admin/read/fetch_building').then(res => res.json())
+       // Update the dormitoryBuilding state with the new data
+       setDormitoryBuilding(data)
+     } catch (error) {
+       console.error(error)
+     }
+   }
 
   return (
     <>
@@ -89,9 +113,11 @@ const Building = () => {
                   <Button size='small' color='primary' onClick={() => handleEdit(dorm.dorm_id)}>
                     EDIT
                   </Button>
-                  <Button size='small' color='primary'>
-                    DELETE
-                  </Button>
+                  <DeleteBuilding dorm_id={dorm.dorm_id} handleDeleteBuilding={handleDeleteBuilding}>
+                    <Button size='small' color='primary'>
+                      DELETE
+                    </Button>
+                  </DeleteBuilding>
                 </CardActions>
               </Card>
             </Grid>
