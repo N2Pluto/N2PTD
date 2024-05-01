@@ -7,6 +7,8 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Slide from '@mui/material/Slide'
 import { TransitionProps } from '@mui/material/transitions'
+import { sendDiscordMessage } from 'src/pages/api/discord/admin/deleteBuilding'
+import { userStore } from 'src/stores/userStore'
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -17,8 +19,9 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction='up' ref={ref} {...props} />
 })
 
-export default function DeleteBuilding({ dorm_id, handleDeleteBuilding }) {
+export default function DeleteBuilding({ dorm_id ,name,handleDeleteBuilding }) {
   const [open, setOpen] = React.useState(false)
+  const { user } = userStore()
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -28,8 +31,17 @@ export default function DeleteBuilding({ dorm_id, handleDeleteBuilding }) {
     setOpen(false)
   }
 
+  const discordHandle = async (id: number, email: string, name: string) => {
+    await sendDiscordMessage(
+      id,
+      email,
+      `Delete building\nDelete all buildings, rooms, and beds of  Dormitory Building : ${name}`
+    )
+  }
+
   const handleDelete = () => {
     handleDeleteBuilding(dorm_id)
+    discordHandle(user.student_id, user.email,name)
     handleClose()
   }
 

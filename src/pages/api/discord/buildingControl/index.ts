@@ -13,7 +13,7 @@ export const sendDiscordMessage = async (messageID: number,messageEmail: string,
         ]
       }],
     };
-    await fetch(process.env.NEXT_PUBLIC_DISCORD_WEBHOOKUSER_URL!, {
+    await fetch(process.env.NEXT_PUBLIC_DISCORD_WEBHOOKBDCR_URL!, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

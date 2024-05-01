@@ -22,6 +22,8 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox'
 
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
+import { sendDiscordMessage } from 'src/pages/api/discord/buildingControl'
+import { userStore } from 'src/stores/userStore'
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
 const checkedIcon = <CheckBoxIcon fontSize='small' />
@@ -43,25 +45,53 @@ const facilityOptions = [
   { title: '7-11 Automatic Food Cabinet' }
 ]
 
-
 const FormBuilding = () => {
   // ** States
-   const [name, setName] = useState('')
-   const [room_total, setRoomTotal] = useState('')
-   const [images_url, setImagesUrl] = useState('')
-   const [type_gender, setTypeGender] = useState('')
-   const [price, setPrice] = useState('')
-   const [type_building, setTypeBuilding] = useState('')
-   const [type_bathroom, setTypeBathroom] = useState('')
-   const [type_bedtype, setTypeBed] = useState('')
-   const [type_bedcapacity, setTypeBedCapacity] = useState('')
-   const [type_roommate, setTypeRoommate] = useState('')
-   const [type_furniture, setFurniture] = useState([])
-   const [type_facilities, setFacility] = useState([])
-   const [floor, setFloor] = useState('')
-   const [bedCapacity, setBedCapacity] = useState('')
-   const [roomsPerFloor, setRoomsPerFloor] = useState<string[]>([])
-   const router = useRouter()
+  const { user } = userStore()
+  const [name, setName] = useState('')
+  const [room_total, setRoomTotal] = useState('')
+  const [images_url, setImagesUrl] = useState('')
+  const [type_gender, setTypeGender] = useState('')
+  const [price, setPrice] = useState('')
+  const [type_building, setTypeBuilding] = useState('')
+  const [type_bathroom, setTypeBathroom] = useState('')
+  const [type_bedtype, setTypeBed] = useState('')
+  const [type_bedcapacity, setTypeBedCapacity] = useState('')
+  const [type_roommate, setTypeRoommate] = useState('')
+  const [type_furniture, setFurniture] = useState([])
+  const [type_facilities, setFacility] = useState([])
+  const [floor, setFloor] = useState('')
+  const [bedCapacity, setBedCapacity] = useState('')
+  const [roomsPerFloor, setRoomsPerFloor] = useState<string[]>([])
+  const router = useRouter()
+
+  const discordHandle = async (
+    id: number,
+    email: string,
+    name: string,
+    room_total: number,
+    type_gender: string,
+    price: string,
+    type_building: string,
+    type_bathroom: string,
+    type_bedtype: string,
+    type_bedcapacity: string,
+    type_roommate: string
+  ) => {
+    await sendDiscordMessage(
+      id,
+      email,
+      `ได้สร้าง\nDormitory Building : ${name}  \nroom total : ${room_total} ห้อง\ntype gender  : ${type_gender}\nprice : ${price}\ntype building : ${type_building}\ntype bathroom : ${type_bathroom}\ntype bedtype : ${type_bedtype}\ntype bedcapacity : ${type_bedcapacity}\ntype roommate : ${type_roommate}`
+    )
+  }
+
+  // const discordHandle = async (id: number, email: string, name: string, room_total: string, type_gender: string) => {
+  //   await sendDiscordMessage(
+  //     id,
+  //     email,
+  //     `ได้สร้าง\nDormitory Building : ${name}  \nroom total : ${room_total} ห้อง\type gender  : ${type_gender}`
+  //   )
+  // }
 
   const handleRoomsChange = (index: number, value: string) => {
     const newRoomsPerFloor = [...roomsPerFloor]
@@ -90,6 +120,7 @@ const FormBuilding = () => {
   const handleFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
 
+    const roomNumbers = generateRoomNumbers()
     const response = await fetch('/api/admin/create/createBuilding', {
       method: 'POST',
       headers: {
@@ -97,7 +128,7 @@ const FormBuilding = () => {
       },
       body: JSON.stringify({
         name,
-        room_total,
+        room_total: roomNumbers.length,
         images_url,
         type_gender,
         price,
@@ -105,7 +136,7 @@ const FormBuilding = () => {
         type_bathroom,
         type_bedtype,
         type_bedcapacity,
-        type_roommate,
+        type_roommate: type_bedcapacity,
         type_furniture: type_furniture.map(furniture => furniture.title),
         type_facilities: type_facilities.map(facility => facility.title)
       })
@@ -157,11 +188,23 @@ const FormBuilding = () => {
           }
         }
       }
+
+      discordHandle(
+        user.student_id,
+        user.email,
+        name,
+        roomNumbers.length,
+        type_gender,
+        price,
+        type_building,
+        type_bathroom,
+        type_bedtype,
+        type_bedcapacity,
+        type_bedcapacity
+      )
       router.push('/admin/building')
     }
   }
-
-
 
   return (
     <>
@@ -183,15 +226,6 @@ const FormBuilding = () => {
                   placeholder='WU Dormitory'
                   value={name}
                   onChange={event => setName(event.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} sm={12}>
-                <TextField
-                  fullWidth
-                  label='Room total'
-                  placeholder='Room total.'
-                  value={room_total}
-                  onChange={event => setRoomTotal(event.target.value)}
                 />
               </Grid>
               <Grid item xs={12} sm={12}>
@@ -295,22 +329,7 @@ const FormBuilding = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel id='form-layouts-separator-select-label'>Roommate</InputLabel>
-                  <Select
-                    label='type_roommate'
-                    value={type_roommate}
-                    onChange={event => setTypeRoommate(event.target.value)}
-                    defaultValue=''
-                    id='form-layouts-separator-select'
-                    labelId='form-layouts-separator-select-label'
-                  >
-                    <MenuItem value='2'>2</MenuItem>
-                    <MenuItem value='4 '>4</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
+
               <Grid item xs={12} sm={6}>
                 <Autocomplete
                   multiple
@@ -433,7 +452,6 @@ const FormBuilding = () => {
           </CardActions>
         </form>
       </Card>
-
     </>
   )
 }

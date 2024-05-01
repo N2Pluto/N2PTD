@@ -41,7 +41,7 @@ interface User {
 interface EnhancedTableToolbarProps {
   numSelected: number
   selected: readonly number[]
-   resetSelected: () => void
+  resetSelected: () => void
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
@@ -52,7 +52,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   return (
     <Toolbar
       sx={{
-        pl: { sm: 2 },
+        pl: { sm: 10 },
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
           bgcolor: theme => alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity)
@@ -65,7 +65,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Typography>
       ) : (
         <Typography sx={{ flex: '1 1 100%' }} variant='h6' id='tableTitle' component='div'>
-          Nutrition
+          User
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -177,7 +177,6 @@ const UserManagement = () => {
 
   const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
-
   }
 
   return (
@@ -224,7 +223,7 @@ const UserManagement = () => {
                     <TableCell>{row.religion}</TableCell>
                     <TableCell>{row.gender}</TableCell>
                     <TableCell align='right'>
-                      <EditUser id={row.id}>
+                      <EditUser id={Number(row.id)}>
                         <Button onClick={handleButtonClick}>
                           <FaEdit />
                         </Button>
@@ -251,7 +250,10 @@ const UserManagement = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label='Dense padding' />
+      <FormControlLabel
+        control={<Switch sx={{ pl: '10' }} checked={dense} onChange={handleChangeDense} />}
+        label='Dense padding'
+      />
     </Box>
   )
 }

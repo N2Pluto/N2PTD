@@ -4,7 +4,7 @@ import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 import router from 'next/router'
-import { sendDiscordMessage } from 'src/pages/api/discord/admin'
+
 import { useEffect, useState } from 'react'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
@@ -14,18 +14,18 @@ import { styled } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import DeleteBuilding from './deleteBuilding'
 
+import { userStore } from 'src/stores/userStore'
+
 const handleClick = async () => {
   router.push('/admin/building/formbuilding')
 }
 
-// const testhandleClick = async () => {
-//   await sendDiscordMessage('Hello World!')
-//   console.log('test')
-// }
+
 
 const Building = ({ dorm_id }) => {
   const [dormitoryBuilding, setDormitoryBuilding] = useState([])
   const router = useRouter()
+  const { user } = userStore()
 
   const handleEdit = (id: string) => {
     router.push(`/admin/building/editBuilding/${id}`)
@@ -47,29 +47,33 @@ const Building = ({ dorm_id }) => {
 
     fetchData()
   }, [])
+  console.log('dormitoryBuilding:', dormitoryBuilding)
 
-   const handleDeleteBuilding = async dorm_id => {
-     try {
-       const response = await fetch('/api/admin/delete/building/deleteBuildingByID', {
-         method: 'POST',
-         headers: {
-           'Content-Type': 'application/json'
-         },
-         body: JSON.stringify({ dorm_id })
-       })
+  const handleDeleteBuilding = async (dorm_id ,name) => {
+    try {
+      const response = await fetch('/api/admin/delete/building/deleteBuildingByID', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ dorm_id })
+      })
 
-       if (!response.ok) {
-         throw new Error(`Response is not ok. Status: ${response.status}, Status Text: ${response.statusText}`)
-       }
+      if (!response.ok) {
+        throw new Error(`Response is not ok. Status: ${response.status}, Status Text: ${response.statusText}`)
+      }
 
-       // Refresh the dormitoryBuilding data after successful deletion
-       const { data } = await fetch('/api/admin/read/fetch_building').then(res => res.json())
-       // Update the dormitoryBuilding state with the new data
-       setDormitoryBuilding(data)
-     } catch (error) {
-       console.error(error)
-     }
-   }
+      // Assuming user is available in the scope
+      console.log('name:', name)
+
+      // Refresh the dormitoryBuilding data after successful deletion
+      const { data } = await fetch('/api/admin/read/fetch_building').then(res => res.json())
+
+      setDormitoryBuilding(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   return (
     <>
@@ -113,7 +117,11 @@ const Building = ({ dorm_id }) => {
                   <Button size='small' color='primary' onClick={() => handleEdit(dorm.dorm_id)}>
                     EDIT
                   </Button>
-                  <DeleteBuilding dorm_id={dorm.dorm_id} handleDeleteBuilding={handleDeleteBuilding}>
+                  <DeleteBuilding
+                    dorm_id={dorm.dorm_id}
+                    name={dorm.name}
+                    handleDeleteBuilding={handleDeleteBuilding} // ตรวจสอบว่า handleDeleteBuilding ที่นี่เป็นฟังก์ชัน
+                  >
                     <Button size='small' color='primary'>
                       DELETE
                     </Button>

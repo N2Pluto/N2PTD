@@ -45,6 +45,7 @@ const ReservationHomePage = () => {
         router.push('/reservation/reservation')
       } else {
         setShowDialog(true)
+
       }
     } catch (error) {
       console.error('Error checking reservation qualification:', error)
@@ -88,13 +89,18 @@ const ReservationHomePage = () => {
     }
   }, [user])
 
+  useEffect(() => {
+    if (profileData) {
+      handleNavigate()
+    }
+  }, [profileData])
+
+  const handleReservation = () => {
+    router.push('/Dormitory')
+  }
+
   return (
     <>
-      <div>user_id : {profileData?.userInfoData?.user_id}</div>
-      <div>student year : {profileData?.userInfoData?.student_year}</div>
-      <Card sx={{ position: 'relative' }}>
-        <Button onClick={handleNavigate}>CHECK</Button>
-      </Card>
 
       <Dialog
         open={showDialog}
@@ -109,7 +115,7 @@ const ReservationHomePage = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowDialog(false)} autoFocus>
+          <Button onClick={() => handleReservation()} autoFocus>
             ปิด
           </Button>
         </DialogActions>

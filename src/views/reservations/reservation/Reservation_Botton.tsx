@@ -30,7 +30,7 @@ const ReservationBotton = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('')
   const [profileData, setProfileData] = useState(null)
 
-  const discordHandle = async (id: string, email: string) => {
+  const discordHandle = async (id: number, email: string) => {
     await sendDiscordMessage(id, email, 'Cancel reservation')
   }
 
@@ -97,13 +97,13 @@ const ReservationBotton = () => {
       if (error) {
         console.error('Error deleting reservation:', error)
       } else {
-        console.log('Reservation deleted successfully:', data)
         setSnackbarMessage('Booking successfully deleted')
         setSnackbarOpen(true)
         setReservation(null)
         discordHandle(user.student_id, user.email)
-        router.reload() // Reload the page
-
+        setTimeout(() => {
+          router.reload()
+        }, 2000)
       }
     } catch (error) {
       console.error('Error deleting reservation:', error)
