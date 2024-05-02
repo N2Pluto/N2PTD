@@ -51,7 +51,7 @@ const ReservationsStatistics = () => {
 
   const salesData: DataType[] = [
     {
-      stats: user?.student_id?.toString() ,
+      stats: user?.student_id?.toString(),
       title: 'Student ID',
       color: 'primary',
       icon: <PermIdentityIcon sx={{ fontSize: '1.75rem' }} />
@@ -60,7 +60,7 @@ const ReservationsStatistics = () => {
       stats: reservation?.Dormitory_Building?.name,
       title: 'Dormitory Name',
       color: 'error',
-      icon: <CorporateFareIcon  sx={{ fontSize: '1.75rem' }} />
+      icon: <CorporateFareIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
       stats: reservation?.Dormitory_Room?.room_number,
@@ -71,6 +71,18 @@ const ReservationsStatistics = () => {
     {
       stats: reservation?.Dormitory_Bed?.bed_number,
       title: 'Bed Number',
+      color: 'primary',
+      icon: <BedIcon sx={{ fontSize: '1.75rem' }} />
+    },
+    {
+      stats: reservation?.status,
+      title: 'Status',
+      color: 'primary',
+      icon: <BedIcon sx={{ fontSize: '1.75rem' }} />
+    },
+    {
+      stats: reservation?.round_id,
+      title: 'Round ID',
       color: 'primary',
       icon: <BedIcon sx={{ fontSize: '1.75rem' }} />
     }

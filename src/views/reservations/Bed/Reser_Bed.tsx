@@ -52,6 +52,7 @@ const ReservationBedviwe = () => {
   const [value, setValue] = useState<string>('1')
   const [open, setOpen] = useState(false)
   const steps = ['Reservation', 'Building', 'Room', 'Bed']
+  const [roundData, setRoundData] = useState(null)
 
   const handleChange = async (event: SyntheticEvent, newValue: string) => {
     setValue(newValue)
@@ -98,6 +99,21 @@ const ReservationBedviwe = () => {
     return () => clearInterval(intervalId)
   }, [router.query.id])
 
+   useEffect(() => {
+     const fetchRoundProfile = async () => {
+       try {
+         const response = await fetch('/api/reservation/fetchRoundProfile', {
+           method: 'GET'
+         })
+         const data = await response.json()
+         setRoundData(data)
+         console.log('Round Info', data)
+       } catch (error) {
+         console.error('Error fetching round profile:', error)
+       }
+     }
+     fetchRoundProfile()
+   }, [])
   
 
   const handleReservation = async (bed_id: string) => {
@@ -138,7 +154,8 @@ const ReservationBedviwe = () => {
         },
         body: JSON.stringify({
           user_id: user.user_id,
-          bed_id: bed_id
+          bed_id: bed_id,
+          round_id: roundData?.data?.id
         })
       })
 

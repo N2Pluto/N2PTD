@@ -50,7 +50,7 @@ async function updateBedAvailable(room_id) {
 
 function handler(req: any, res: any) {
   middleware(req, res, async () => {
-    const { user_id, bed_id } = req.body
+    const { user_id, bed_id , round_id} = req.body
 
     try {
       // Fetch room_id from Dormitory_Bed table
@@ -74,7 +74,8 @@ function handler(req: any, res: any) {
           user_id,
           bed_id,
           room_id,
-          dorm_id
+          dorm_id,
+          round_id
         }
       ])
 

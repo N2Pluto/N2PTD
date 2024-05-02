@@ -28,6 +28,7 @@ const ReservationHomePage = () => {
   const [profileData, setProfileData] = useState(null)
   const [isEligible, setIsEligible] = useState(false)
   const [showDialog, setShowDialog] = useState(false)
+  const [roundData, setRoundData] = useState(null)
 
   const handleNavigate = async () => {
     try {
@@ -50,6 +51,22 @@ const ReservationHomePage = () => {
       console.error('Error checking reservation qualification:', error)
     }
   }
+
+  useEffect(() => {
+    const fetchRoundProfile = async () => {
+      try {
+        const response = await fetch('/api/reservation/fetchRoundProfile', {
+          method: 'GET'
+        })
+        const data = await response.json()
+        setRoundData(data)
+        console.log('Round Info' , data)
+      } catch (error) {
+        console.error('Error fetching round profile:', error)
+      }
+    }
+    fetchRoundProfile()
+  }, [])
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -90,12 +107,17 @@ const ReservationHomePage = () => {
 
   return (
     <>
+      <Typography variant='h6'>User Info</Typography>
       <div>user_id : {profileData?.userInfoData?.user_id}</div>
       <div>student year : {profileData?.userInfoData?.student_year}</div>
+      <Typography variant='h6'>Round Info</Typography>
+      <div>round_id : {roundData?.data?.id}</div>
+      <div>round_name : {roundData?.data?.round_name}</div>
+      <div>start_date : {roundData?.data?.start_date}</div>
+      <div>end_date : {roundData?.data?.end_date}</div>
       <Card sx={{ position: 'relative' }}>
         <Button onClick={handleNavigate}>CHECK</Button>
       </Card>
-
       <Dialog
         open={showDialog}
         onClose={() => setShowDialog(false)}
