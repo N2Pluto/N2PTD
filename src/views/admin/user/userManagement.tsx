@@ -24,6 +24,8 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import { alpha } from '@mui/material/styles'
 import DeleteUser from './deleteUser'
+import { userStore } from 'src/stores/userStore'
+import { sendDiscordMessageUseredit } from 'src/pages/api/discord/adminuserEdit'
 
 interface User {
   id: number
@@ -46,8 +48,6 @@ interface EnhancedTableToolbarProps {
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected, selected, resetSelected } = props
-  console.log('numSelected', numSelected)
-  console.log('selected', selected)
 
   return (
     <Toolbar
@@ -65,7 +65,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Typography>
       ) : (
         <Typography sx={{ flex: '1 1 100%' }} variant='h6' id='tableTitle' component='div'>
-          User
+          User Edit information Table
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -95,6 +95,12 @@ const UserManagement = () => {
   const [page, setPage] = React.useState(0)
   const [dense, setDense] = React.useState(false)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
+  const {user} = userStore()
+
+
+  const discordHandle = async (u) => {
+    await sendDiscordMessageUseredit(user.id, user.email, 'User information has been edited')
+  }
 
   const resetSelected = () => {
     setSelected([])

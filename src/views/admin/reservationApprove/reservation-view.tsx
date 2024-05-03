@@ -264,7 +264,6 @@ const ReservationApprove = () => {
   const visibleRows = React.useMemo(() => {
     const lowerCaseSearchValue = searchValue.toLowerCase()
 
-    console.log('user', user)
     const filteredUsersBySearch = filteredUsersByTab.filter(user =>
       `${user.Users_Info?.name} ${user.Users_Info?.lastname}`.toLowerCase().includes(lowerCaseSearchValue)
     )

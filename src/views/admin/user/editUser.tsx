@@ -24,6 +24,8 @@ import { IoSchoolOutline } from 'react-icons/io5'
 import { LiaSchoolSolid } from 'react-icons/lia'
 import { LuSchool } from 'react-icons/lu'
 import { useEffect, useState } from 'react'
+import { userStore } from 'src/stores/userStore'
+import { sendDiscordMessageUseredit } from 'src/pages/api/discord/adminuserEdit'
 
 interface User {
   id: number
@@ -40,7 +42,7 @@ interface User {
 
 export default function EditUser({ id }: { id: number }) {
   const [open, setOpen] = React.useState(false)
-  const [user, setUser] = useState<User | null>(null)
+  const [users, setUser] = useState<User | null>(null)
   const [fullWidth, setFullWidth] = React.useState(true)
   const [maxWidth, setMaxWidth] = React.useState<DialogProps['maxWidth']>('lg')
   const [name, setName] = useState('')
@@ -51,32 +53,69 @@ export default function EditUser({ id }: { id: number }) {
   const [school, setSchool] = useState('')
   const [department, setDepartment] = useState('')
   const [major, setMajor] = useState('')
+  const { user } = userStore()
+
+  const discordHandle = async (
+    id: any,
+    email: any,
+    l_name: any,
+    l_lastname: any,
+    l_id: any,
+    l_gender: any,
+    l_religion: any,
+    l_school: any,
+    l_department: any,
+    l_major: any,
+    name: any,
+    lastname: any,
+    studentId: any,
+    gender: any,
+    religion: any,
+    school: any,
+    department: any,
+    major: any
+  ) => {
+    await sendDiscordMessageUseredit(
+      id,
+      email,
+      `Name : ${l_name} ${l_lastname} \nStudent id : ${l_id} \nGender : ${l_gender} \nReligion : ${l_religion} \nSchool : ${l_school} \nDepartment : ${l_department} \nMajor : ${l_major} \n-----------------\nto \nName : ${name} ${lastname} \nStudent id : ${studentId} \ngender : ${gender} \nReligion : ${religion} \nSchool : ${school} \nDepartment : ${department} \nMajor : ${major}`
+    )
+  }
 
   useEffect(() => {
-    if (user) {
-      setName(user.name)
-      setLastname(user.lastname)
-      setStudentId(user.Users.student_id)
-      setGender(user.gender)
-      setReligion(user.religion)
-      setSchool(user.school)
-      setDepartment(user.department)
-      setMajor(user.major)
+    if (users) {
+      setName(users.name)
+      setLastname(users.lastname)
+      setStudentId(users.Users.student_id)
+      setGender(users.gender)
+      setReligion(users.religion)
+      setSchool(users.school)
+      setDepartment(users.department)
+      setMajor(users.major)
     }
-  }, [user])
+  }, [users])
 
-  const handleUpdate = async () => {
+  const handleUpdate = async (
+    l_name: any,
+    l_lastname: any,
+    l_id: any,
+    l_gender: any,
+    l_religion: any,
+    l_school: any,
+    l_department: any,
+    l_major: any
+  ) => {
     const res = await fetch('/api/admin/user/update/updateUser', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        id: user?.id,
+        id: users?.id,
         name,
         lastname,
         student_id: studentId,
-        user_id: user?.user_id,
+        user_id: users?.user_id,
         gender,
         religion,
         school,
@@ -86,10 +125,30 @@ export default function EditUser({ id }: { id: number }) {
     })
     const data = await res.json()
 
-    // Check if the update was successful
     if (res.ok) {
-      // Close the dialog
-      handleClose()
+      discordHandle(
+        user?.student_id,
+        user?.email,
+        l_name,
+        l_lastname,
+        l_id,
+        l_gender,
+        l_religion,
+        l_school,
+        l_department,
+        l_major,
+        name,
+        lastname,
+        studentId,
+        gender,
+        religion,
+        school,
+        department,
+        major
+      )
+      setTimeout(() => {
+        handleClose()
+      }, 2000)
     } else {
       // Handle the error...
     }
@@ -266,7 +325,23 @@ export default function EditUser({ id }: { id: number }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Close</Button>
-          <Button onClick={handleUpdate}>Submit</Button>
+          <Button
+            onClick={() =>
+              handleUpdate(
+                users.name,
+                users.lastname,
+                users.Users.student_id,
+                users.gender,
+                users.religion,
+                users.school,
+                users.department,
+                users.major
+              )
+            }
+            component='button'
+          >
+            Submit
+          </Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
