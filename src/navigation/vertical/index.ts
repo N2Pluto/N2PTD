@@ -57,6 +57,11 @@ const useNavigation = (): VerticalNavItemsType => {
         path: '/admin/discord'
       },
       {
+        title: 'Reservation ',
+        icon: HomeOutline,
+        path: '/admin/reservationApprove'
+      },
+      {
         title: 'Reservation System',
         icon: HomeOutline,
         path: '/admin/reservationSystem'

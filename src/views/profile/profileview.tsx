@@ -34,35 +34,44 @@ const Profile = () => {
 
   const [profileData, setProfileData] = useState(null)
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        setLoading(true) // Add this line
-        const response = await fetch('/api/profile/fetchUserProfile', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ user_id: user.user_id }) // ส่ง user_id ไปยัง API
-        })
-        const data = await response.json()
-        setProfileData(data) // เซ็ตข้อมูลผู้ใช้ที่ได้รับจาก API
-        console.log(data)
-      } catch (error) {
-        console.error('Error fetching user profile:', error)
-      } finally {
-        setLoading(false) // Add this line
-      }
-    }
+ useEffect(() => {
+   const fetchUserProfile = async () => {
+     try {
+       const response = await fetch('/api/profile/fetchUserProfile', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({ user_id: user.user_id })
+       })
+       const data = await response.json()
+       setProfileData(data)
+       console.log(data)
 
-    if (user?.user_id) {
-      fetchUserProfile()
-    }
-  }, [user])
+       // Check round status
+       const roundResponse = await fetch('/api/reservation/checkRoundStatus', {
+         method: 'GET'
+       })
+       const roundData = await roundResponse.json()
 
-  if (loading) {
-    return <div>Loading...</div> // Or your custom loading spinner
-  }
+       if (roundResponse.status === 500) {
+         console.error('Error checking round status:', roundData.error)
+       } else if (roundResponse.status === 404) {
+         console.error('No active round found')
+       } else {
+         console.log('Round status checked successfully')
+       }
+     } catch (error) {
+       console.error('Error fetching user profile:', error)
+     }
+   }
+
+   if (user?.user_id) {
+     fetchUserProfile()
+   }
+ }, [user])
+
+
 
   return (
     <Grid item xs={12} sm={6} md={12}>

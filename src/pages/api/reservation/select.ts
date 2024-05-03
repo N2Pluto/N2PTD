@@ -11,6 +11,8 @@ const handler = async (req: any, res: any) => {
         user_id,
         room_id,
         bed_id,
+        round_id,
+        status,
         Dormitory_Building (name),
         Dormitory_Room (room_number),
         Dormitory_Bed (bed_number)
