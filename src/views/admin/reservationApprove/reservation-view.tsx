@@ -291,7 +291,7 @@ const ReservationApprove = () => {
     roundname: string,
     status: string
   ) => {
-    await sendDiscordMessageApprove(id, email, `have done ${status} \n Name : ${student_year} ${name} ${lastname}\nDormitory : ${dome}  Room : ${roomnum} Bed : ${bed} Roundname : ${roundname} `)
+    await sendDiscordMessageApprove(id, email, `have done ${status} \n Name : ${student_year} ${name} ${lastname}\nDormitory : ${dome}  Room : ${roomnum} Bed : ${bed} \nRoundname : ${roundname} `)
   }
 
   const formatDate = (dateString: string) => {
