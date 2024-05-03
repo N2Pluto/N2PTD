@@ -30,7 +30,7 @@
   }
 
   const headCells: readonly { id: keyof User; numeric: boolean; disablePadding: boolean; label: string }[] = [
-    { id: 'id', numeric: false, disablePadding: true, label: 'ID' },
+    { id: 'id', numeric: false, disablePadding: true, label: 'Student year' },
     { id: 'user_id', numeric: false, disablePadding: false, label: 'User Name' },
     { id: 'dorm_id', numeric: false, disablePadding: false, label: 'Dormitory' },
     { id: 'room_id', numeric: false, disablePadding: true, label: 'Room No. ' },

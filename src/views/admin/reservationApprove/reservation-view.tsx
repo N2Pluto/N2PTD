@@ -44,6 +44,10 @@ import InputAdornment from '@mui/material/InputAdornment'
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import SearchIcon from '@mui/icons-material/Search'
+import { sendDiscordMessageApprove } from 'src/pages/api/discord/adminapprove'
+import e from 'express'
+import { useStore } from 'zustand'
+import { userStore } from 'src/stores/userStore'
 
 interface User {
   id: number
@@ -64,7 +68,6 @@ interface EnhancedTableToolbarProps {
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected, selected, resetSelected } = props
-
 
   return (
     <Toolbar
@@ -115,6 +118,7 @@ const ReservationApprove = () => {
   const [searchValue, setSearchValue] = React.useState('')
   const [roundNames, setRoundNames] = React.useState<string[]>([])
   const [filteredUsers, setFilteredUsers] = React.useState<User[]>([])
+  const { user } = userStore()
 
   const handleSelectChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     const selectedRoundId = event.target.value as number
@@ -159,7 +163,7 @@ const ReservationApprove = () => {
 
           return { round_name: user.Reservation_System.round_name, round_id: user.round_id }
         })
-        setRoundNames(uniqueRoundNames )
+        setRoundNames(uniqueRoundNames)
       } else {
         console.error('No data returned from API')
       }
@@ -260,6 +264,7 @@ const ReservationApprove = () => {
   const visibleRows = React.useMemo(() => {
     const lowerCaseSearchValue = searchValue.toLowerCase()
 
+    console.log('user', user)
     const filteredUsersBySearch = filteredUsersByTab.filter(user =>
       `${user.Users_Info?.name} ${user.Users_Info?.lastname}`.toLowerCase().includes(lowerCaseSearchValue)
     )
@@ -274,12 +279,37 @@ const ReservationApprove = () => {
     event.stopPropagation()
   }
 
+  const discordHandle = async (
+    id: number,
+    email: string,
+    student_year: number,
+    name: string,
+    lastname: string,
+    dome: string,
+    roomnum: string,
+    bed: string,
+    roundname: string,
+    status: string
+  ) => {
+    await sendDiscordMessageApprove(id, email, `have done ${status} \n Name : ${student_year} ${name} ${lastname}\nDormitory : ${dome}  Room : ${roomnum} Bed : ${bed} Roundname : ${roundname} `)
+  }
+
   const formatDate = (dateString: string) => {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
+
     return new Date(dateString).toLocaleDateString(undefined, options)
   }
 
-  const handleApprove = async (id: number) => {
+  const handleApprove = async (
+    id: any,
+    student_year: any,
+    name: any,
+    lastname: any,
+    buildingName: any,
+    roomNumber: any,
+    bedNumber: any,
+    roundName: any
+  ) => {
     const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
       method: 'POST',
       headers: {
@@ -291,9 +321,31 @@ const ReservationApprove = () => {
     if (!response.ok) {
       console.error('Failed to update reservation status')
     }
+
+    discordHandle(
+      user.student_id,
+      user.email,
+      student_year,
+      name,
+      lastname,
+      buildingName,
+      roomNumber,
+      bedNumber,
+      roundName,
+      'Approve'
+    )
   }
 
-  const handleEject = async (id: number) => {
+  const handleEject = async (
+    id: any,
+    student_year: any,
+    name: any,
+    lastname: any,
+    buildingName: any,
+    roomNumber: any,
+    bedNumber: any,
+    roundName: any
+  ) => {
     const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
       method: 'POST',
       headers: {
@@ -305,6 +357,18 @@ const ReservationApprove = () => {
     if (!response.ok) {
       console.error('Failed to update reservation status')
     }
+    discordHandle(
+      user.student_id,
+      user.email,
+      student_year,
+      name,
+      lastname,
+      buildingName,
+      roomNumber,
+      bedNumber,
+      roundName,
+      'Eject'
+    )
   }
 
   const getStatusColor = (status: string) => {
@@ -461,8 +525,8 @@ const ReservationApprove = () => {
                     <TableCell padding='checkbox'>
                       <Checkbox color='primary' checked={isItemSelected} inputProps={{ 'aria-labelledby': labelId }} />
                     </TableCell>
-                    <TableCell component='th' id={labelId} scope='row' padding='none'>
-                      {row.id}
+                    <TableCell component='th' id={labelId} scope='row' padding='center'>
+                      {row.Users_Info?.student_year}
                     </TableCell>
                     <TableCell>
                       {row.Users_Info?.name} {row.Users_Info?.lastname}
@@ -483,7 +547,16 @@ const ReservationApprove = () => {
                         sx={{ minWidth: '30px', marginRight: '10px' }}
                         onClick={event => {
                           event.stopPropagation()
-                          handleEject(row.id)
+                          handleEject(
+                            row.id,
+                            row.Users_Info.student_year,
+                            row.Users_Info?.name,
+                            row.Users_Info?.lastname,
+                            row.Dormitory_Building.name,
+                            row.Dormitory_Room.room_number,
+                            row.Dormitory_Bed.bed_number,
+                            row.Reservation_System.round_name
+                          )
                         }}
                       >
                         <CloseIcon color='error' />
@@ -495,7 +568,14 @@ const ReservationApprove = () => {
                         sx={{ minWidth: '30px' }}
                         onClick={event => {
                           event.stopPropagation()
-                          handleApprove(row.id)
+                          handleApprove(row.id,
+                            row.Users_Info.student_year,
+                            row.Users_Info?.name,
+                            row.Users_Info?.lastname,
+                            row.Dormitory_Building.name,
+                            row.Dormitory_Room.room_number,
+                            row.Dormitory_Bed.bed_number,
+                            row.Reservation_System.round_name)
                         }}
                       >
                         <CheckIcon color='success' />
