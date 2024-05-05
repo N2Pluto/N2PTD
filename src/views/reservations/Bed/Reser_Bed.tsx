@@ -215,27 +215,33 @@ const ReservationBedviwe = () => {
                               <Grid item xs={12}>
                                 <Box display='flex' alignItems='center'>
                                   <SchoolIcon sx={{ pr: 2 }} />
-                                  <Typography variant='body1'> : {reservation.Users?.school}</Typography>
+                                  <Typography variant='body1'> : {reservation.Users?.Users_Info[0]?.school}</Typography>
                                 </Box>
                                 <Box display='flex' alignItems='center'>
                                   <SchoolIcon sx={{ pr: 2 }} />
-                                  <Typography variant='body1'> : {reservation.Users?.major}</Typography>
+                                  <Typography variant='body1'> : {reservation.Users?.Users_Info[0]?.major}</Typography>
                                 </Box>
                                 <Box display='flex' alignItems='center'>
                                   <MosqueIcon sx={{ pr: 2 }} />
-                                  <Typography variant='body1'> : {reservation.Users?.religion}</Typography>
+                                  <Typography variant='body1'>
+                                    {' '}
+                                    : {reservation.Users?.Users_Info[0]?.religion}
+                                  </Typography>
                                 </Box>
                                 <Box display='flex' alignItems='center'>
                                   <PoolIcon sx={{ pr: 2 }} />
-                                  <Typography variant='body1'> : {reservation.Users?.activity}</Typography>
+                                  <Typography variant='body1'>
+                                    {' '}
+                                    : {reservation.Users?.Users_Req[0]?.activity}
+                                  </Typography>
                                 </Box>
                                 <Box display='flex' alignItems='center'>
                                   <DangerousIcon sx={{ pr: 2 }} />
-                                  <Typography variant='body1'> : {reservation.Users?.filter_redflag}</Typography>
+                                  <Typography variant='body1'> : {reservation.Users?.Users_Req[0].filter_redflag}</Typography>
                                 </Box>
                                 <Box display='flex' alignItems='center'>
                                   <HotelIcon sx={{ pr: 2 }} />
-                                  <Typography variant='body1'> : {reservation.Users?.sleep}</Typography>
+                                  <Typography variant='body1'> : {reservation.Users?.Users_Req[0].sleep}</Typography>
                                 </Box>
                               </Grid>
                             </Grid>

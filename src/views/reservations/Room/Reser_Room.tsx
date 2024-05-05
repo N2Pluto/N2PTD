@@ -3,27 +3,18 @@ import Typography from '@mui/material/Typography'
 import Card from '@mui/material/Card'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import {
-  CardHeader,
   Collapse,
-  Divider,
   Grid,
   IconButton,
   Paper,
-  Stack,
-  Step,
-  StepConnector,
-  StepLabel,
-  Stepper,
   Table,
   TableCell,
   TableContainer,
   TableHead,
-  stepConnectorClasses
 } from '@mui/material'
 import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
@@ -32,23 +23,15 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import TablePagination from '@mui/material/TablePagination'
 import { auto } from '@popperjs/core'
 import { userStore, IUser } from 'src/stores/userStore'
-import { Refresh } from 'mdi-material-ui'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import PersonIcon from '@mui/icons-material/Person'
 import Tooltip from '@mui/material/Tooltip'
-import SettingsIcon from '@mui/icons-material/Settings'
-import { Theme, styled } from '@mui/material/styles'
-import CorporateFareIcon from '@mui/icons-material/CorporateFare'
-import BedIcon from '@mui/icons-material/Bed'
 import BedroomParentIcon from '@mui/icons-material/BedroomParent'
 import * as React from 'react'
-import { CircularProgress } from '@mui/material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 
-import { IDormitoryBed } from 'src/interfaces/IDormitoryBed'
-import { set } from 'nprogress'
 import SchoolIcon from '@mui/icons-material/School'
 import MosqueIcon from '@mui/icons-material/Mosque'
 import PoolIcon from '@mui/icons-material/Pool'
@@ -119,7 +102,6 @@ const ReservationRoomTest = () => {
         })
         const data = await response.json()
         setProfileData(data) // เซ็ตข้อมูลผู้ใช้ที่ได้รับจาก API
-        console.log(data)
       } catch (error) {
         console.error('Error fetching user profile:', error)
       }
@@ -179,7 +161,7 @@ const ReservationRoomTest = () => {
     }
 
     fetchDataAndUpdateStatus()
-    const intervalId = setInterval(fetchDataAndUpdateStatus, 3000)
+    const intervalId = setInterval(fetchDataAndUpdateStatus, 5000)
 
     return () => clearInterval(intervalId)
   }, []) // Remove dormitoryRoomStatus from dependencies
@@ -196,23 +178,37 @@ const ReservationRoomTest = () => {
     setDormitoryBuilding(data)
   }
 
-  useEffect(() => {
-    const fetchDataRoomByDormID = async () => {
-      console.log('router.query.id:', router.query.id)
-      const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
-      setDormitoryRoom(data)
-      console.log('data:', data)
+useEffect(() => {
+  const fetchDataRoomByDormID = async () => {
+    console.log('router.query.id:', router.query.id)
+    const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
+    setDormitoryRoom(data)
+
+    // Call the new API for each room
+    if (data) {
+      data.forEach(async room => {
+        const response = await fetch('/api/reservation/room/checkRoomSize', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ dorm_id: router.query.id, room_id: room.room_id })
+        })
+        const result = await response.json()
+        console.log('checkBedStatus result:', result)
+      })
     }
+  }
 
-    const fetchDataAndUpdateStatusRoom = async () => {
-      await fetchDataRoomByDormID() // Fetch the updated data
-    }
+  const fetchDataAndUpdateStatusRoom = async () => {
+    await fetchDataRoomByDormID() // Fetch the updated data
+  }
 
-    fetchDataAndUpdateStatusRoom()
-    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 30000)
+  fetchDataAndUpdateStatusRoom()
+  const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 5000)
 
-    return () => clearInterval(intervalId)
-  }, [])
+  return () => clearInterval(intervalId)
+}, [])
 
   const handleReservation = (room_id: string) => {
     console.log('Reservation ROOM :', room_id)
@@ -232,164 +228,8 @@ const ReservationRoomTest = () => {
     const filterActivity = profileData?.userReqData.activity
     const filterRedflag = profileData?.userReqData.filter_redflag
     const filterSleep = profileData?.userReqData.sleep
-    let filteredRooms = []
+    // let filteredRooms = []
 
-    // Filter by school
-    if (filterSchool === 'find roommates who attend the same school') {
-      console.log('Filtering by same school')
-      filteredRooms = dormitoryRoom.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
-
-        return reservations.some(reservation => {
-          console.log('User Reservation School :', reservation.Users_Info?.school)
-          console.log('User School :', profileData?.userInfoData.school)
-
-          return reservation.Users_Info?.school === profileData?.userInfoData.school
-        })
-      })
-    } else if (filterSchool === 'find roommates from any school') {
-      console.log('Filtering by any school')
-      filteredRooms = dormitoryRoom.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
-
-        return reservations.some(reservation => {
-          console.log('User Reservation School :', reservation.Users_Info?.school)
-          console.log('User School :', profileData?.userInfoData.school)
-
-          return reservation.Users_Info?.school !== profileData?.userInfoData.school
-        })
-      })
-    } else if (filterSchool === 'find all school') {
-      console.log('Filtering by all school')
-      filteredRooms = dormitoryRoom.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
-
-        return reservations.some(reservation => {
-          console.log('User Reservation School :', reservation.Users_Info?.school)
-
-          return reservation.Users_Info?.school
-        })
-      })
-    }
-
-    // Filter by major
-    if (filterMajor === 'find roommates who attend the same major') {
-      console.log('Filtering by same major')
-      filteredRooms = filteredRooms.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
-
-        return reservations.some(reservation => {
-          console.log('Users Reservation Major', reservation.Users_Info?.major)
-          console.log('User Major:', profileData?.userInfoData.major)
-
-          return reservation.Users_Info?.major === profileData?.userInfoData.major
-        })
-      })
-    } else if (filterMajor === 'find roommates from any major') {
-      console.log('Filtering by any major')
-      filteredRooms = filteredRooms.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
-
-        return reservations.some(reservation => {
-          console.log('Users Reservation Major', reservation.Users_Info?.major)
-          console.log('User Major:', profileData?.userInfoData.major)
-
-          return reservation.Users_Info?.major !== profileData?.userInfoData.major
-        })
-      })
-    } else if (filterMajor === 'find all major') {
-      console.log('Filtering by all majors')
-      filteredRooms = filteredRooms.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
-
-        return reservations.some(reservation => {
-          console.log('Users Reservation Major', reservation.Users_Info?.major)
-
-          return reservation.Users_Info?.major
-        })
-      })
-    }
-
-    // Filter by religion
-    if (filterReligion === 'find roommates who have the same religion') {
-      console.log('Filtering by same religion')
-      filteredRooms = filteredRooms.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
-
-        return reservations.some(reservation => {
-          console.log('Users Reservation Religion', reservation.Users_Info?.religion)
-          console.log('Users Religion', profileData?.userInfoData.religion)
-
-          return reservation.Users_Info?.religion === profileData?.data.religion
-        })
-      })
-    } else if (filterReligion === 'find roommates from any religion') {
-      console.log('Filtering by any religion')
-      filteredRooms = filteredRooms.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
-
-        return reservations.some(reservation => {
-          console.log('Users Reservation Religion', reservation.Users_Info?.religion)
-          console.log('Users Religion', profileData?.userInfoData.religion)
-
-          return reservation.Users_Info?.religion !== profileData?.data.religion
-        })
-      })
-    } else if (filterReligion === 'find all religion') {
-      console.log('Filtering by all religions')
-      filteredRooms = filteredRooms.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
-
-        return reservations.some(reservation => {
-          console.log('Users Reservation Religion', reservation.Users_Info?.religion)
-
-          return reservation.Users_Info?.religion
-        })
-      })
-    }
-
-    // If no rooms match the previous criteria, filter by sleep
-    if (filteredRooms.length === 0 && filterSleep) {
-      console.log('Filtering by sleep')
-      filteredRooms = dormitoryRoom.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
-
-        return reservations.some(reservation => {
-          console.log('Users Reservation Sleep', reservation.Users_Req?.sleep)
-
-          return reservation.Users_Req?.sleep === filterSleep
-        })
-      })
-    }
-    // If no rooms match the previous criteria, filter by activity
-    else if (filteredRooms.length === 0 && filterActivity) {
-      console.log('Filtering by activity')
-      const userActivities = filterActivity.split(',').map(activity => activity.trim())
-      filteredRooms = dormitoryRoom.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
-
-        return reservations.some(reservation => {
-          const activities = reservation.Users_Req?.activity || []
-          console.log('Users Reservation Activity', reservation.Users_Req?.activity)
-
-          return userActivities.some(activity => activities.includes(activity))
-        })
-      })
-    } // If no rooms match the previous criteria, filter by redflag
-    else if (filteredRooms.length === 0 && filterRedflag) {
-      console.log('Filtering by redflag')
-      const userRedflags = filterRedflag.split(',').map(redflag => redflag.trim())
-      filteredRooms = dormitoryRoom.filter(room => {
-        const reservations = reservationData.get(room.room_id) || []
-
-        return reservations.some(reservation => {
-          const redflags = reservation.Users_Req?.filter_redflag || []
-          console.log('Users Reservation Redflag', reservation.Users_Req?.filter_redflag)
-
-          return userRedflags.some(redflag => redflags.includes(redflag))
-        })
-      })
-    }
     setDormitoryRoom(filteredRooms)
   }
 
@@ -660,74 +500,32 @@ const ReservationRoomTest = () => {
                                   <Grid container spacing={6}>
                                     <Grid item xs={12}>
                                       <Grid item xs={12}>
-                                        <Box
-                                          display='inline-flex'
-                                          alignItems='center'
-                                          sx={{
-                                            backgroundColor:
-                                              reservation.Users?.school === profileData?.userInfoData.school
-                                                ? '#ffe0e0'
-                                                : 'inherit'
-                                          }}
-                                        >
+                                        <Box display='inline-flex' alignItems='center'>
                                           <SchoolIcon />
                                           <Typography variant='body2'>: {reservation.Users_Info?.school}</Typography>
                                         </Box>
                                       </Grid>
                                       <Grid item xs={12}>
                                         {' '}
-                                        <Box
-                                          display='inline-flex'
-                                          alignItems='center'
-                                          sx={
-                                            reservation.Users?.major === profileData?.userInfoData.major
-                                              ? { backgroundColor: '#ffe0e0' }
-                                              : {}
-                                          }
-                                        >
+                                        <Box display='inline-flex' alignItems='center'>
                                           <SchoolIcon />
                                           <Typography variant='body2'>: {reservation.Users_Info?.major}</Typography>
                                         </Box>
                                       </Grid>
                                       <Grid item xs={12}>
-                                        <Box
-                                          display='inline-flex'
-                                          alignItems='center'
-                                          sx={
-                                            reservation.Users?.religion === profileData?.userInfoData.religion
-                                              ? { backgroundColor: '#ffe0e0' }
-                                              : {}
-                                          }
-                                        >
+                                        <Box display='inline-flex' alignItems='center'>
                                           <MosqueIcon />
                                           <Typography variant='body2'>: {reservation.Users_Info?.religion}</Typography>
                                         </Box>
                                       </Grid>
                                       <Grid item xs={12}>
-                                        <Box
-                                          display='inline-flex'
-                                          alignItems='center'
-                                          sx={
-                                            reservation.Users?.activity === profileData?.userInfoData.activity
-                                              ? { backgroundColor: '#ffe0e0' }
-                                              : {}
-                                          }
-                                        >
+                                        <Box display='inline-flex' alignItems='center'>
                                           <PoolIcon />
                                           <Typography variant='body2'>: {reservation.Users_Req?.activity}</Typography>
                                         </Box>
                                       </Grid>
                                       <Grid item xs={12}>
-                                        <Box
-                                          display='inline-flex'
-                                          alignItems='center'
-                                          sx={
-                                            reservation.Users?.filter_redflag ===
-                                            profileData?.userInfoData.filter_redflag
-                                              ? { backgroundColor: '#ffe0e0' }
-                                              : {}
-                                          }
-                                        >
+                                        <Box display='inline-flex' alignItems='center'>
                                           <DangerousIcon />
                                           <Typography variant='body2'>
                                             : {reservation.Users_Req?.filter_redflag}
@@ -735,15 +533,7 @@ const ReservationRoomTest = () => {
                                         </Box>
                                       </Grid>
                                       <Grid item xs={12}>
-                                        <Box
-                                          display='inline-flex'
-                                          alignItems='center'
-                                          sx={
-                                            reservation.Users?.sleep === profileData?.userInfoData.sleep
-                                              ? { backgroundColor: '#ffe0e0' }
-                                              : {}
-                                          }
-                                        >
+                                        <Box display='inline-flex' alignItems='center'>
                                           <HotelIcon />
                                           <Typography variant='body2'>: {reservation.Users_Req?.sleep}</Typography>
                                         </Box>

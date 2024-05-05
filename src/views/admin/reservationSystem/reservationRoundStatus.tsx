@@ -58,7 +58,7 @@ export default function ReservationRoundStatus() {
     }
 
     fetchRoundStatus()
-    const intervalId = setInterval(fetchRoundStatus, 5000)
+    const intervalId = setInterval(fetchRoundStatus, 1000)
 
     return () => clearInterval(intervalId)
   }, [])
@@ -82,15 +82,15 @@ export default function ReservationRoundStatus() {
           {rows.map(row => (
             <StyledTableRow key={row.id}>
               <StyledTableCell>{row.round_name}</StyledTableCell>
-              <StyledTableCell>{new Date(row.start_date).toLocaleDateString()}</StyledTableCell>
-              <StyledTableCell>{new Date(row.end_date).toLocaleDateString()}</StyledTableCell>
+              <StyledTableCell>{new Date(row.start_date).toLocaleDateString('en-US')}</StyledTableCell>
+              <StyledTableCell>{new Date(row.end_date).toLocaleDateString('en-US')}</StyledTableCell>
               {/* <StyledTableCell>{row.gender}</StyledTableCell> */}
               <StyledTableCell>{row.student_year}</StyledTableCell>
               <StyledTableCell>
                 {row.round_status ? (
-                  <Chip label='OPEN' color='success' />
+                  <Chip label='อยู่ในช่วงเวลา' color='success' />
                 ) : (
-                  <Chip label='EXPIRE' sx={{ backgroundColor: 'red', color: 'white' }} />
+                  <Chip label='ไม่อยู่ในช่วงเวลา' sx={{ backgroundColor: 'red', color: 'white' }} />
                 )}
               </StyledTableCell>
               <StyledTableCell>

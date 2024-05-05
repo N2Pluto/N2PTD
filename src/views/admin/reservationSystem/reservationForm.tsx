@@ -27,19 +27,12 @@ import OutlinedInput from '@mui/material/OutlinedInput'
 import InputAdornment from '@mui/material/InputAdornment'
 import { useState } from 'react'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
-import DatePicker from 'react-datepicker'
 
-const StartDateInput = forwardRef((props, ref) => {
-  return <TextField fullWidth {...props} inputRef={ref} label='Start Date' autoComplete='off' />
-})
+import DatePicker from '@mui/lab/DatePicker'
+import AdapterDateFns from '@mui/lab/AdapterDateFns'
+import LocalizationProvider from '@mui/lab/LocalizationProvider'
 
-const EndDateInput = forwardRef((props, ref) => {
-  return <TextField fullWidth {...props} inputRef={ref} label='End Date' autoComplete='off' />
-})
 
-const CustomInput = forwardRef((props, ref) => {
-  return <TextField fullWidth {...props} inputRef={ref} label='Birth Date' autoComplete='off' />
-})
 
 export default function ReservationForm() {
   const [open, setOpen] = React.useState(false)
@@ -159,7 +152,7 @@ export default function ReservationForm() {
           <Card>
             <CardContent>
               <Grid container spacing={3}>
-                <Grid item xs={12}>
+                {/* <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     style={{ width: '283px' }}
@@ -168,27 +161,26 @@ export default function ReservationForm() {
                     label='Round Name'
                     placeholder='รอบที่ 1 ผู้ชาย ปี1 เท่านั้น'
                   />
-                </Grid>
-
-                {/* <Grid item xs={12} sm={12}>
-                  <FormControl fullWidth style={{ width: '283px' }}>
-                    <InputLabel id='form-layouts-separator-select-label'>Gender</InputLabel>
+                </Grid> */}
+                <Grid item xs={12} sm={6}>
+                  <FormControl fullWidth>
+                    <InputLabel id='form-layouts-separator-multiple-select-label'>Round</InputLabel>
                     <Select
-                      label='Gender'
-                      value={gender}
-                      onChange={handleGenderChange}
-                      defaultValue=''
-                      id='form-layouts-separator-select'
-                      labelId='form-layouts-separator-select-label'
+                      value={roundName}
+                      onChange={handleRoundNameChange}
+                      id='form-layouts-separator-multiple-select'
+                      labelId='form-layouts-separator-multiple-select-label'
+                      input={<OutlinedInput label='Language' id='select-multiple-language' />}
                     >
-                      <MenuItem value='male'>Male</MenuItem>
-                      <MenuItem value='female'>Female</MenuItem>
-                      <MenuItem value='all'>All</MenuItem>
+                      <MenuItem value='2023'>2023</MenuItem>
+                      <MenuItem value='2024'>2024</MenuItem>
+                      <MenuItem value='2025'>2025</MenuItem>
+                      <MenuItem value='2026'>2026</MenuItem>
                     </Select>
                   </FormControl>
-                </Grid> */}
+                </Grid>
 
-                <Grid item xs={12} sm={12}>
+                <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <InputLabel id='form-layouts-separator-multiple-select-label'>Student Year</InputLabel>
                     <Select
@@ -207,28 +199,30 @@ export default function ReservationForm() {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <DatePicker
-                    selected={startDate}
-                    showYearDropdown
-                    showMonthDropdown
-                    placeholderText='MM-DD-YYYY'
-                    customInput={<StartDateInput />}
-                    id='form-layouts-separator-date'
-                    onChange={(date: Date) => setStartDate(date)}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <DatePicker
-                    selected={endDate}
-                    showYearDropdown
-                    showMonthDropdown
-                    placeholderText='MM-DD-YYYY'
-                    customInput={<EndDateInput />}
-                    id='form-layouts-separator-date'
-                    onChange={(date: Date) => setEndDate(date)}
-                  />
-                </Grid>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <Grid item xs={12} sm={6}>
+                    <DatePicker
+                      label='Start Date'
+                      value={startDate}
+                      onChange={newValue => {
+                        setStartDate(newValue)
+                      }}
+                      renderInput={params => <TextField {...params} />}
+                      format='dd/MM/yyyy'
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <DatePicker
+                      label='End Date'
+                      value={endDate}
+                      onChange={newValue => {
+                        setEndDate(newValue)
+                      }}
+                      renderInput={params => <TextField {...params} />}
+                      format='dd/MM/yyyy'
+                    />
+                  </Grid>
+                </LocalizationProvider>
               </Grid>
             </CardContent>
           </Card>

@@ -80,8 +80,6 @@ const ReservationHomePage = () => {
         })
         const data = await response.json()
         setProfileData(data)
-        console.log(data)
-
         // Check round status
         const roundResponse = await fetch('/api/reservation/checkRoundStatus', {
           method: 'GET'

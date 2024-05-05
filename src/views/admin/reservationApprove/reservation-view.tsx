@@ -44,6 +44,8 @@ import InputAdornment from '@mui/material/InputAdornment'
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import SearchIcon from '@mui/icons-material/Search'
+import FadeMenu from './components/FadeMenu'
+import DialogReject from './reservation-reject'
 
 interface User {
   id: number
@@ -64,7 +66,6 @@ interface EnhancedTableToolbarProps {
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected, selected, resetSelected } = props
- 
 
   return (
     <Toolbar
@@ -110,7 +111,7 @@ const ReservationApprove = () => {
   const [page, setPage] = React.useState(0)
   const [dense, setDense] = React.useState(false)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
-  const [tab, setTab] = React.useState('all')
+  const [tab, setTab] = React.useState('pending')
   const [selectValue, setSelectValue] = React.useState('')
   const [searchValue, setSearchValue] = React.useState('')
   const [roundNames, setRoundNames] = React.useState<string[]>([])
@@ -250,8 +251,8 @@ const ReservationApprove = () => {
         return user.status === 'Pending'
       case 'approve':
         return user.status === 'Approve'
-      case 'eject':
-        return user.status === 'Eject'
+      case 'reject':
+        return user.status === 'Reject'
       default:
         return true
     }
@@ -293,13 +294,13 @@ const ReservationApprove = () => {
     }
   }
 
-  const handleEject = async (id: number) => {
+  const handleReject = async (id: number) => {
     const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ id, status: 'Eject' })
+      body: JSON.stringify({ id, status: 'Reject' })
     })
 
     if (!response.ok) {
@@ -311,7 +312,7 @@ const ReservationApprove = () => {
     switch (status) {
       case 'Pending':
         return 'warning'
-      case 'Eject':
+      case 'Reject':
         return 'error'
       case 'Approve':
         return 'success'
@@ -323,7 +324,7 @@ const ReservationApprove = () => {
   const allCount = filteredUsers.length
   const pendingCount = filteredUsers.filter(user => user.status === 'Pending').length
   const approveCount = filteredUsers.filter(user => user.status === 'Approve').length
-  const ejectCount = filteredUsers.filter(user => user.status === 'Eject').length
+  const rejectCount = filteredUsers.filter(user => user.status === 'Reject').length
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -331,17 +332,21 @@ const ReservationApprove = () => {
         <Tab
           label={
             <span
-              style={{ color: tab === 'all' ? 'black' : undefined, fontWeight: tab === 'all' ? 'bold' : undefined }}
+              style={{
+                color: tab === 'pending' ? 'black' : undefined,
+                fontWeight: tab === 'pending' ? 'bold' : undefined
+              }}
             >
-              ALL{' '}
-              <span style={{ backgroundColor: '#36454F', padding: '4px 8px', borderRadius: '5px', color: 'white' }}>
+              REQ LIST{' '}
+              <span style={{ backgroundColor: '#ffffba', padding: '4px 8px', borderRadius: '5px' }}>
                 {' '}
-                {allCount}{' '}
+                {pendingCount}{' '}
               </span>
             </span>
           }
-          value='all'
+          value='pending'
         />
+
         <Tab
           label={
             <span
@@ -359,40 +364,7 @@ const ReservationApprove = () => {
           }
           value='approve'
         />
-        <Tab
-          label={
-            <span
-              style={{
-                color: tab === 'pending' ? 'black' : undefined,
-                fontWeight: tab === 'pending' ? 'bold' : undefined
-              }}
-            >
-              Pending{' '}
-              <span style={{ backgroundColor: '#ffffba', padding: '4px 8px', borderRadius: '5px' }}>
-                {' '}
-                {pendingCount}{' '}
-              </span>
-            </span>
-          }
-          value='pending'
-        />
-        <Tab
-          label={
-            <span
-              style={{
-                color: tab === 'eject' ? 'black' : undefined,
-                fontWeight: tab === 'eject' ? 'bold' : undefined
-              }}
-            >
-              Eject{' '}
-              <span style={{ backgroundColor: '#ffabab', padding: '4px 8px', borderRadius: '5px' }}>
-                {' '}
-                {ejectCount}{' '}
-              </span>
-            </span>
-          }
-          value='eject'
-        />
+
       </Tabs>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', margin: 5 }}>
         <Grid item xs={12} sm={3}>
@@ -476,30 +448,35 @@ const ReservationApprove = () => {
                     </TableCell>
                     <TableCell>{formatDate(row.created_at)}</TableCell>
                     <TableCell align='left'>
-                      <Button
-                        variant='outlined'
-                        color='error'
-                        size='small'
-                        sx={{ minWidth: '30px', marginRight: '10px' }}
-                        onClick={event => {
-                          event.stopPropagation()
-                          handleEject(row.id)
-                        }}
-                      >
-                        <CloseIcon color='error' />
-                      </Button>
-                      <Button
-                        variant='outlined'
-                        color='success'
-                        size='small'
-                        sx={{ minWidth: '30px' }}
-                        onClick={event => {
-                          event.stopPropagation()
-                          handleApprove(row.id)
-                        }}
-                      >
-                        <CheckIcon color='success' />
-                      </Button>
+                      {tab === 'pending' && (
+                        <>
+                            <Button
+                              variant='outlined'
+                              color='error'
+                              size='small'
+                              sx={{ minWidth: '30px', marginRight: '10px' }}
+                              onClick={event => {
+                                event.stopPropagation()
+                                handleReject(row.id)
+                              }}
+                            >
+                              <CloseIcon color='error' />
+                            </Button>
+
+                          <Button
+                            variant='outlined'
+                            color='success'
+                            size='small'
+                            sx={{ minWidth: '30px' }}
+                            onClick={event => {
+                              event.stopPropagation()
+                              handleApprove(row.id)
+                            }}
+                          >
+                            <CheckIcon color='success' />
+                          </Button>
+                        </>
+                      )}
                     </TableCell>
                   </TableRow>
                 )
@@ -512,6 +489,7 @@ const ReservationApprove = () => {
             </TableBody>
           </Table>
         </TableContainer>
+
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
