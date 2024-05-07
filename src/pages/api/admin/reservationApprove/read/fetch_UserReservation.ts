@@ -6,7 +6,7 @@ const handler = async (req: any, res: any) => {
   const { data: reservationData, error: reservationError } = await supabase
     .from('Reservation')
     .select(
-      '*,Dormitory_Building(name),Dormitory_Room(room_number),Dormitory_Bed(bed_number),Reservation_System(round_name)'
+      '*,Users(email),Dormitory_Building(name),Dormitory_Room(room_number),Dormitory_Bed(bed_number),Reservation_System(round_name)'
     )
 
   if (reservationError) return res.status(500).json({ error: reservationError.message })

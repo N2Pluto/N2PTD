@@ -35,6 +35,9 @@ import InputAdornment from '@mui/material/InputAdornment'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import SearchIcon from '@mui/icons-material/Search'
 import MenuItem from '@mui/material/MenuItem'
+import EditResident from './editResident'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import Papa from 'papaparse'
 
 interface User {
   id: number
@@ -53,10 +56,11 @@ interface EnhancedTableToolbarProps {
   numSelected: number
   selected: readonly number[]
   resetSelected: () => void
+  deleteResident: (id: number) => void
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected, selected, resetSelected } = props
+  const { numSelected, selected, resetSelected, deleteResident } = props
   console.log('numSelected', numSelected)
   console.log('selected', selected)
 
@@ -81,7 +85,12 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       )}
       {numSelected > 0 ? (
         <Tooltip title='Delete'>
-          <IconButton>
+          <IconButton
+            onClick={() => {
+              selected.forEach(id => deleteResident(id))
+              resetSelected()
+            }}
+          >
             <DeleteIcon />
           </IconButton>
         </Tooltip>
@@ -106,7 +115,41 @@ const DormitoryResidentControl = () => {
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
   const [selectedDormitory, setSelectedDormitory] = React.useState(null)
   const [searchTerm, setSearchTerm] = React.useState('')
-const [selectedFloor, setSelectedFloor] = React.useState<string | null>(null)
+  const [selectedFloor, setSelectedFloor] = React.useState<string | null>(null)
+  const [selectedDormitoryForDownload, setSelectedDormitoryForDownload] = React.useState<number | null>(null)
+
+
+  const deleteResident = async (id: number) => {
+    try {
+      const response = await fetch(`/api/admin/dormitoryResident/delete/deleteResident`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id })
+      })
+
+      if (!response.ok) {
+        throw new Error('Error deleting resident')
+      }
+
+      // Remove the deleted resident from the users state
+      setUsers(users => users.filter(user => user.id !== id))
+    } catch (error) {
+      console.error('Error deleting resident:', error)
+    }
+  }
+
+  const exportToCSV = (dormitoryId: number | null) => {
+    const filteredUsers = users.filter(user => dormitoryId === null || user.dorm_id === dormitoryId)
+    const csv = Papa.unparse(filteredUsers)
+    const csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const csvURL = window.URL.createObjectURL(csvData)
+    let tempLink = document.createElement('a')
+    tempLink.href = csvURL
+    tempLink.setAttribute('download', `data_${dormitoryId || 'all'}.csv`)
+    tempLink.click()
+  }
 
   // Add a function to handle changes to the search field
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -226,13 +269,25 @@ const [selectedFloor, setSelectedFloor] = React.useState<string | null>(null)
               id='form-layouts-separator-select'
               labelId='form-layouts-separator-select-label'
             >
-              <MenuItem value='-1' onClick={() => setSelectedDormitory(null)}>
+              <MenuItem
+                value='-1'
+                onClick={() => {
+                  setSelectedDormitory(null)
+                  setSelectedDormitoryForDownload(null)
+                }}
+              >
                 รายชื่อนักศึกษาทุกหอพัก
               </MenuItem>
               {uniqueDormitories.map(dorm_id => {
                 const dormitoryName = users.find(user => user.dorm_id === dorm_id)?.Dormitory_Building.name
                 return (
-                  <MenuItem value={dorm_id} onClick={() => setSelectedDormitory(dorm_id)}>
+                  <MenuItem
+                    value={dorm_id}
+                    onClick={() => {
+                      setSelectedDormitory(dorm_id)
+                      setSelectedDormitoryForDownload(dorm_id)
+                    }}
+                  >
                     {dormitoryName}
                   </MenuItem>
                 )
@@ -240,6 +295,7 @@ const [selectedFloor, setSelectedFloor] = React.useState<string | null>(null)
             </Select>
           </FormControl>
         </Grid>
+
         <Grid item xs={12} sm={2}>
           <FormControl fullWidth sx={{ flexGrow: 1, marginLeft: 5, marginRight: 6 }}>
             <InputLabel id='form-layouts-separator-select-label'>Round</InputLabel>
@@ -286,7 +342,13 @@ const [selectedFloor, setSelectedFloor] = React.useState<string | null>(null)
         </Grid>
       </Box>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} selected={selected} resetSelected={resetSelected} />
+        <Button onClick={() => exportToCSV(selectedDormitoryForDownload)}>Export to CSV</Button>
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          selected={selected}
+          resetSelected={resetSelected}
+          deleteResident={deleteResident}
+        />
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>
             <EnhancedTableHead
@@ -327,10 +389,8 @@ const [selectedFloor, setSelectedFloor] = React.useState<string | null>(null)
                     <TableCell>{row.Dormitory_Room.room_number}</TableCell>
                     <TableCell>{row.Dormitory_Bed.bed_number}</TableCell>
                     <TableCell>{row.Reservation_System.round_name}</TableCell>
-                    <TableCell align='right'>
-                      <Button onClick={handleButtonClick}>
-                        <FaEdit />
-                      </Button>
+                    <TableCell>
+                      <EditResident />
                     </TableCell>
                   </TableRow>
                 )

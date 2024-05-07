@@ -154,6 +154,7 @@ const ReservationApprove = () => {
       const data = await response.json()
       if (data) {
         setUsers(data)
+      
         const uniqueRoundIds = Array.from(new Set(data.map((user: User) => user.round_id)))
         const uniqueRoundNames = uniqueRoundIds.map(id => {
           const user = data.find((user: User) => user.round_id === id)
@@ -173,6 +174,7 @@ const ReservationApprove = () => {
 
     return () => clearInterval(intervalId)
   }, [])
+
 
   const handleSearchChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setSearchValue(event.target.value as string)
@@ -280,33 +282,172 @@ const ReservationApprove = () => {
     return new Date(dateString).toLocaleDateString(undefined, options)
   }
 
-  const handleApprove = async (id: number) => {
-    const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ id, status: 'Approve' })
-    })
+ const handleApprove = async (id: number) => {
+   const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
+     method: 'POST',
+     headers: {
+       'Content-Type': 'application/json'
+     },
+     body: JSON.stringify({ id, status: 'Approve' })
+   })
 
-    if (!response.ok) {
-      console.error('Failed to update reservation status')
+   if (!response.ok) {
+     console.error('Failed to update reservation status')
+   } else {
+     // Find the user
+     const user = users.find(user => user.id === id)
+     if (user) {
+       // Send email to the user
+       await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({
+           to: user.Users.email,
+           subject: 'Reservation Approved',
+           html: `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <style>
+                  body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f4f4;
+                  }
+                  .container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    background-color: #ffffff;
+                    padding: 20px;
+                    border-radius: 5px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                  }
+                  h1 {
+                    color: #333333;
+                    text-align: center;
+                    margin-top: 0;
+                  }
+                  p {
+                    line-height: 1.5;
+                    color: #555555;
+                  }
+                  .button {
+                    display: inline-block;
+                    background-color: #007bff;
+                    color: #ffffff;
+                    padding: 10px 20px;
+                    text-decoration: none;
+                    border-radius: 5px;
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <h1>Your Reservation is Approved</h1>
+                  <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
+                  <p>We are delighted to inform you that your reservation has been approved. We look forward to welcoming you to our establishment.</p>
+                  <p>Please find the details of your reservation below:</p>
+                  <ul>
+                    <li>Building: ${user.Dormitory_Building.name}</li>
+                    <li>Room: ${user.Dormitory_Room.room_number}</li>
+                    <li>Bed: ${user.Dormitory_Bed.bed_number}</li>
+                  </ul>
+                  <p>If you have any further questions or concerns, please do not hesitate to contact us.</p>
+                  <p>Best regards,<br>WU Dormitory</p>
+                </div>
+              </body>
+            </html>
+          `
+         })
+       })
+     }
+   }
+ }
+const handleReject = async (id: number) => {
+  const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id, status: 'Reject' })
+  })
+
+  if (!response.ok) {
+    console.error('Failed to update reservation status')
+  } else {
+    // Find the user
+    const user = users.find(user => user.id === id)
+    if (user) {
+      // Send email to the user
+      await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          to: user.Users.email,
+          subject: 'Reservation Rejected',
+          html: `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <style>
+                  body {
+                    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                    background-color: #f7f7f7;
+                  }
+                  .container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    background-color: #ffffff;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                  }
+                  h1 {
+                    color: #333333;
+                    text-align: center;
+                    margin-top: 0;
+                    font-weight: 600;
+                  }
+                  p {
+                    line-height: 1.6;
+                    color: #555555;
+                  }
+                  ul {
+                    list-style-type: none;
+                    padding: 0;
+                    margin: 20px 0;
+                  }
+                  li {
+                    margin-bottom: 10px;
+                    color: #777777;
+                  }
+                 
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <h1>Your Reservation is Rejected</h1>
+                  <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
+                  <p>We regret to inform you that your reservation has been rejected due to the following reasons:</p>
+                  <ul>
+                    <li>Reason 1</li>
+                    <li>Reason 2</li>
+                    <li>Reason 3</li>
+                  </ul>
+                  <p>We apologize for any inconvenience this may have caused you. If you have any further questions or concerns, please do not hesitate to contact our support team.</p>
+                  <p>Best regards,<br>WU Dormitory</p>
+                </div>
+              </body>
+            </html>
+          `
+        })
+      })
     }
   }
-
-  const handleReject = async (id: number) => {
-    const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ id, status: 'Reject' })
-    })
-
-    if (!response.ok) {
-      console.error('Failed to update reservation status')
-    }
-  }
+}
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -364,7 +505,6 @@ const ReservationApprove = () => {
           }
           value='approve'
         />
-
       </Tabs>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', margin: 5 }}>
         <Grid item xs={12} sm={3}>
@@ -450,18 +590,18 @@ const ReservationApprove = () => {
                     <TableCell align='left'>
                       {tab === 'pending' && (
                         <>
-                            <Button
-                              variant='outlined'
-                              color='error'
-                              size='small'
-                              sx={{ minWidth: '30px', marginRight: '10px' }}
-                              onClick={event => {
-                                event.stopPropagation()
-                                handleReject(row.id)
-                              }}
-                            >
-                              <CloseIcon color='error' />
-                            </Button>
+                          <Button
+                            variant='outlined'
+                            color='error'
+                            size='small'
+                            sx={{ minWidth: '30px', marginRight: '10px' }}
+                            onClick={event => {
+                              event.stopPropagation()
+                              handleReject(row.id)
+                            }}
+                          >
+                            <CloseIcon color='error' />
+                          </Button>
 
                           <Button
                             variant='outlined'
