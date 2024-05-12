@@ -22,15 +22,9 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import { alpha } from '@mui/material/styles'
 import Button from '@mui/material/Button'
-import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import Fade from '@mui/material/Fade'
-import { CiMenuKebab } from 'react-icons/ci'
-import CheckBoxIcon from '@mui/icons-material/CheckBox'
-import { MdCancel } from 'react-icons/md'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import Chip from '@mui/material/Chip'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
@@ -40,6 +34,8 @@ import InputLabel from '@mui/material/InputLabel'
 import Grid from '@mui/material/Grid'
 import FormControl from '@mui/material/FormControl'
 import InputAdornment from '@mui/material/InputAdornment'
+import CSVReader from 'react-csv-reader'
+import Papa from 'papaparse'
 
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
@@ -103,7 +99,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   )
 }
 
-const ReservationApprove = () => {
+const ResidentApprove = () => {
   const [users, setUsers] = React.useState<User[]>([])
   const [order, setOrder] = React.useState<'asc' | 'desc'>('asc')
   const [orderBy, setOrderBy] = React.useState<keyof User>('id')
@@ -111,11 +107,54 @@ const ReservationApprove = () => {
   const [page, setPage] = React.useState(0)
   const [dense, setDense] = React.useState(false)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
-  const [tab, setTab] = React.useState('pending')
+  const [tab, setTab] = React.useState('Waiting')
   const [selectValue, setSelectValue] = React.useState('')
   const [searchValue, setSearchValue] = React.useState('')
   const [roundNames, setRoundNames] = React.useState<string[]>([])
   const [filteredUsers, setFilteredUsers] = React.useState<User[]>([])
+  const [selectedRound, setSelectedRound] = React.useState(null)
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files[0]
+    if (file) {
+      Papa.parse(file, {
+        header: true,
+        complete: function (results) {
+          handleImportCSV(results.data)
+        }
+      })
+    } else {
+      console.log('No file selected')
+    }
+  }
+
+  const handleImportCSV = async (data: any[]) => {
+    // Assuming each row in the CSV is in the format [user_id, status]
+    console.log('Imported CSV data:', data)
+
+    const updatedUsers = [...users]
+    data.forEach(({ user_id, status }) => {
+      const userIndex = updatedUsers.findIndex(user => user.user_id === user_id)
+      if (userIndex !== -1) {
+        updatedUsers[userIndex].status = status
+      }
+    })
+    setUsers(updatedUsers)
+    console.log('updatedUsers', updatedUsers)
+
+    // Make a POST request to the API endpoint with the updated users data
+    const response = await fetch('/api/admin/residentApprove/update/updateResidentApprove', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ updatedUsers })
+    })
+
+    if (!response.ok) {
+      console.error('Failed to update users:', await response.text())
+    }
+  }
 
   const handleSelectChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     const selectedRoundId = event.target.value as number
@@ -147,14 +186,14 @@ const ReservationApprove = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('/api/admin/reservationApprove/read/fetch_UserReservation')
+      const response = await fetch('/api/admin/residentApprove/read/fetchResidentApprove')
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       const data = await response.json()
       if (data) {
         setUsers(data)
-      
+
         const uniqueRoundIds = Array.from(new Set(data.map((user: User) => user.round_id)))
         const uniqueRoundNames = uniqueRoundIds.map(id => {
           const user = data.find((user: User) => user.round_id === id)
@@ -174,7 +213,6 @@ const ReservationApprove = () => {
 
     return () => clearInterval(intervalId)
   }, [])
-
 
   const handleSearchChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setSearchValue(event.target.value as string)
@@ -249,12 +287,14 @@ const ReservationApprove = () => {
 
   const filteredUsersByTab = filteredUsers.filter(user => {
     switch (tab) {
-      case 'pending':
-        return user.status === 'Pending'
-      case 'approve':
-        return user.status === 'Approve'
-      case 'reject':
-        return user.status === 'Reject'
+      case 'Waiting':
+        return user.status === 'Waiting'
+      case 'TRUE':
+        return user.status === 'TRUE'
+      case 'FALSE':
+        return user.status === 'FALSE'
+      case 'SUCCESS':
+        return user.status === 'SUCCESS'
       default:
         return true
     }
@@ -273,40 +313,129 @@ const ReservationApprove = () => {
     )
   }, [order, orderBy, page, rowsPerPage, filteredUsersByTab, searchValue])
 
-  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleApprove = async (id: number) => {
+    console.log(`Button clicked with id: ${id}`)
     event.stopPropagation()
+
+    // Call the API endpoint
+    const response = await fetch('/api/admin/residentApprove/update/updateResident', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id })
+    })
+
+    if (!response.ok) {
+      console.error('Failed to update reservation status')
+      return
+    } else {
+      // Find the user
+      const user = users.find(user => user.id === id)
+      if (user) {
+        // Send email to the user
+        await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            to: user.Users.email,
+            subject: 'คุณได้รับอนุมัติในการยืนยันตัวเข้าสู่หอพัก Walailak University',
+            html: `
+  <!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f4;
+        direction: ltr; /* Set the writing direction to left-to-right */
+        text-align: left; /* Align text to the left */
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333333;
+        text-align: center;
+        margin-top: 0;
+      }
+      p {
+        line-height: 1.5;
+        color: #555555;
+        text-align: justify; /* Justify the text for better readability */
+      }
+      .button {
+        display: inline-block;
+        background-color: #007bff;
+        color: #ffffff;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Welcome to Walailak University Dormitory</h1>
+      <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
+      <p>We are pleased to inform you that your application to reside in the Walailak University Dormitory has been approved. We are excited to welcome you to our community.</p>
+      <p>Please find the details of your reservation below:</p>
+      <ul>
+        <li>Building: ${user.Dormitory_Building.name}</li>
+        <li>Room: ${user.Dormitory_Room.room_number}</li>
+        <li>Bed: ${user.Dormitory_Bed.bed_number}</li>
+      </ul>
+      <p>Should you have any questions or concerns, please do not hesitate to contact us.</p>
+      <p>Sincerely,<br>Walailak University Dormitory</p>
+    </div>
+  </body>
+</html>
+`
+          })
+        })
+      }
+    }
+
+    const result = await response.json()
+    console.log(result.message)
   }
 
-  const formatDate = (dateString: string) => {
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
-    return new Date(dateString).toLocaleDateString(undefined, options)
-  }
+  const handleReject = async (id: number) => {
+    event.stopPropagation()
 
- const handleApprove = async (id: number) => {
-   const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
-     method: 'POST',
-     headers: {
-       'Content-Type': 'application/json'
-     },
-     body: JSON.stringify({ id, status: 'Approve' })
-   })
+    // Call the API endpoint
+    const response = await fetch('/api/admin/residentApprove/delete/deleteResident', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id })
+    })
 
-   if (!response.ok) {
-     console.error('Failed to update reservation status')
-   } else {
-     // Find the user
-     const user = users.find(user => user.id === id)
-     if (user) {
-       // Send email to the user
-       await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
-         method: 'POST',
-         headers: {
-           'Content-Type': 'application/json'
-         },
-         body: JSON.stringify({
-           to: user.Users.email,
-           subject: 'Reservation Approved',
-           html: `
+    if (!response.ok) {
+      console.error('Failed to delete reservation')
+      return
+    } else {
+      // Find the user
+      const user = users.find(user => user.id === id)
+      if (user) {
+        // Send email to the user
+        await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            to: user.Users.email,
+            subject: 'Reservation Approved',
+            html: `
             <!DOCTYPE html>
             <html>
               <head>
@@ -359,113 +488,45 @@ const ReservationApprove = () => {
               </body>
             </html>
           `
-         })
-       })
-     }
-   }
- }
-const handleReject = async (id: number) => {
-  const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ id, status: 'Reject' })
-  })
-
-  if (!response.ok) {
-    console.error('Failed to update reservation status')
-  } else {
-    // Find the user
-    const user = users.find(user => user.id === id)
-    if (user) {
-      // Send email to the user
-      await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          to: user.Users.email,
-          subject: 'Reservation Rejected',
-          html: `
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <style>
-                  body {
-                    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-                    background-color: #f7f7f7;
-                  }
-                  .container {
-                    max-width: 600px;
-                    margin: 0 auto;
-                    background-color: #ffffff;
-                    padding: 30px;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                  }
-                  h1 {
-                    color: #333333;
-                    text-align: center;
-                    margin-top: 0;
-                    font-weight: 600;
-                  }
-                  p {
-                    line-height: 1.6;
-                    color: #555555;
-                  }
-                  ul {
-                    list-style-type: none;
-                    padding: 0;
-                    margin: 20px 0;
-                  }
-                  li {
-                    margin-bottom: 10px;
-                    color: #777777;
-                  }
-                 
-                </style>
-              </head>
-              <body>
-                <div class="container">
-                  <h1>Your Reservation is Rejected</h1>
-                  <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
-                  <p>We regret to inform you that your reservation has been rejected due to the following reasons:</p>
-                  <ul>
-                    <li>Reason 1</li>
-                    <li>Reason 2</li>
-                    <li>Reason 3</li>
-                  </ul>
-                  <p>We apologize for any inconvenience this may have caused you. If you have any further questions or concerns, please do not hesitate to contact our support team.</p>
-                  <p>Best regards,<br>WU Dormitory</p>
-                </div>
-              </body>
-            </html>
-          `
+          })
         })
-      })
+      }
     }
+
+    const result = await response.json()
+    console.log(result.message)
   }
-}
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Pending':
+      case 'Waiting':
         return 'warning'
-      case 'Reject':
-        return 'error'
-      case 'Approve':
+      case 'TRUE':
         return 'success'
+      case 'FALSE':
+        return 'error'
+      case 'SUCCESS':
+        return 'primary'
       default:
         return 'default'
     }
   }
 
-  const allCount = filteredUsers.length
-  const pendingCount = filteredUsers.filter(user => user.status === 'Pending').length
-  const approveCount = filteredUsers.filter(user => user.status === 'Approve').length
-  const rejectCount = filteredUsers.filter(user => user.status === 'Reject').length
+  const waitingCount = filteredUsers.filter(user => user.status === 'Waiting').length
+  const trueCount = filteredUsers.filter(user => user.status === 'TRUE').length
+  const falseCount = filteredUsers.filter(user => user.status === 'FALSE').length
+  const successCount = filteredUsers.filter(user => user.status === 'SUCCESS').length
+
+  const exportToCSV = (roundId: number | null) => {
+    const filteredUsers = users.filter(user => roundId === null || user.round_id === roundId)
+    const csv = Papa.unparse(filteredUsers)
+    const csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const csvURL = window.URL.createObjectURL(csvData)
+    let tempLink = document.createElement('a')
+    tempLink.href = csvURL
+    tempLink.setAttribute('download', `data_${roundId || 'all'}.csv`)
+    tempLink.click()
+  }
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -474,38 +535,75 @@ const handleReject = async (id: number) => {
           label={
             <span
               style={{
-                color: tab === 'pending' ? 'black' : undefined,
-                fontWeight: tab === 'pending' ? 'bold' : undefined
+                color: tab === 'Waiting' ? 'black' : undefined,
+                fontWeight: tab === 'Waiting' ? 'bold' : undefined
               }}
             >
-              REQ LIST{' '}
+              WAITING LIST{' '}
               <span style={{ backgroundColor: '#ffffba', padding: '4px 8px', borderRadius: '5px' }}>
                 {' '}
-                {pendingCount}{' '}
+                {waitingCount}{' '}
               </span>
             </span>
           }
-          value='pending'
+          value='Waiting'
         />
 
         <Tab
           label={
             <span
               style={{
-                color: tab === 'approve' ? 'black' : undefined,
-                fontWeight: tab === 'approve' ? 'bold' : undefined
+                color: tab === 'TRUE' ? 'black' : undefined,
+                fontWeight: tab === 'TRUE' ? 'bold' : undefined
               }}
             >
-              Approve{' '}
-              <span style={{ backgroundColor: '#b8ffb8', padding: '4px 8px', borderRadius: '5px' }}>
+              PAID{' '}
+              <span style={{ backgroundColor: '#b8ffb8', padding: '4px 8px', borderRadius: '5px' }}> {trueCount} </span>
+            </span>
+          }
+          value='TRUE'
+        />
+        <Tab
+          label={
+            <span
+              style={{
+                color: tab === 'FALSE' ? 'black' : undefined,
+                fontWeight: tab === 'FALSE' ? 'bold' : undefined
+              }}
+            >
+              NOT PAID{' '}
+              <span style={{ backgroundColor: '#ffb8b8', padding: '4px 8px', borderRadius: '5px' }}>
                 {' '}
-                {approveCount}{' '}
+                {falseCount}{' '}
               </span>
             </span>
           }
-          value='approve'
+          value='FALSE'
+        />
+        <Tab
+          label={
+            <span
+              style={{
+                color: tab === 'SUCCESS' ? 'black' : undefined,
+                fontWeight: tab === 'SUCCESS' ? 'bold' : undefined
+              }}
+            >
+              SUCCESS{' '}
+              <span style={{ backgroundColor: '#b8b8ff', padding: '4px 8px', borderRadius: '5px' }}>
+                {' '}
+                {successCount}{' '}
+              </span>
+            </span>
+          }
+          value='SUCCESS'
         />
       </Tabs>
+
+      <Button variant='contained' component='label'>
+        Import CSV
+        <input type='file' hidden onChange={handleFileUpload} />
+      </Button>
+
       <Box sx={{ display: 'flex', justifyContent: 'space-between', margin: 5 }}>
         <Grid item xs={12} sm={3}>
           <FormControl fullWidth>
@@ -517,11 +615,28 @@ const handleReject = async (id: number) => {
               labelId='form-layouts-separator-select-label'
               onChange={handleSelectChange}
             >
-              <MenuItem value='-1'>รอบจองหอพักทั้งหมด</MenuItem>
+              <MenuItem
+                value='-1'
+                onClick={() => {
+                  setSelectedRound(null)
+                }}
+              >
+                รอบจองหอพักทั้งหมด
+              </MenuItem>
               {roundNames.map(round => (
-                <MenuItem value={round.round_id}>{round.round_name}</MenuItem>
+                <MenuItem
+                  value={round.round_id}
+                  onClick={() => {
+                    setSelectedRound(round.round_id)
+                  }}
+                >
+                  {round.round_name}
+                </MenuItem>
               ))}
             </Select>
+            <Button variant='contained' component='label' onClick={() => exportToCSV(selectedRound)}>
+              Export CSV
+            </Button>
           </FormControl>
         </Grid>
         <Grid item xs={12}>
@@ -566,7 +681,8 @@ const handleReject = async (id: number) => {
                     role='checkbox'
                     aria-checked={isItemSelected}
                     tabIndex={-1}
-                    key={row.id}a
+                    key={row.id}
+                    a
                     selected={isItemSelected}
                     sx={{ cursor: 'pointer' }}
                   >
@@ -586,37 +702,34 @@ const handleReject = async (id: number) => {
                     <TableCell>
                       <Chip label={row.status} color={getStatusColor(row.status)} />
                     </TableCell>
-                    <TableCell>{formatDate(row.created_at)}</TableCell>
                     <TableCell align='left'>
-                      {tab === 'pending' && (
-                        <>
-                          <Button
-                            variant='outlined'
-                            color='error'
-                            size='small'
-                            sx={{ minWidth: '30px', marginRight: '10px' }}
-                            onClick={event => {
-                              event.stopPropagation()
-                              handleReject(row.id)
-                            }}
-                          >
-                            <CloseIcon color='error' />
-                          </Button>
-
-                          <Button
-                            variant='outlined'
-                            color='success'
-                            size='small'
-                            sx={{ minWidth: '30px' }}
-                            onClick={event => {
-                              event.stopPropagation()
-                              handleApprove(row.id)
-                            }}
-                          >
-                            <CheckIcon color='success' />
-                          </Button>
-                        </>
-                      )}
+                      {tab === 'TRUE' ? (
+                        <Button
+                          variant='outlined'
+                          color='success'
+                          size='small'
+                          sx={{ minWidth: '30px' }}
+                          onClick={event => {
+                            event.stopPropagation()
+                            handleApprove(row.id)
+                          }}
+                        >
+                          <CheckIcon color='success' />
+                        </Button>
+                      ) : tab === 'FALSE' ? (
+                        <Button
+                          variant='outlined'
+                          color='error'
+                          size='small'
+                          sx={{ minWidth: '30px', marginRight: '10px' }}
+                          onClick={event => {
+                            event.stopPropagation()
+                            handleReject(row.id)
+                          }}
+                        >
+                          <CloseIcon color='error' />
+                        </Button>
+                      ) : null}
                     </TableCell>
                   </TableRow>
                 )
@@ -645,4 +758,4 @@ const handleReject = async (id: number) => {
   )
 }
 
-export default ReservationApprove
+export default ResidentApprove

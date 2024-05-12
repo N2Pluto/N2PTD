@@ -38,7 +38,7 @@ const handler = async (req: any, res: any) => {
       return
     }
 
-    const { error: insertError } = await supabase.from('Dormitory_Resident').insert({
+    const { error: insertError } = await supabase.from('Dormitory_Approve').insert({
       dorm_id: data[0].dorm_id,
       room_id: data[0].room_id,
       bed_id: data[0].bed_id,

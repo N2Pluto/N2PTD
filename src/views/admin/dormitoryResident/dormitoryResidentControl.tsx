@@ -38,6 +38,7 @@ import MenuItem from '@mui/material/MenuItem'
 import EditResident from './editResident'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import Papa from 'papaparse'
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 
 interface User {
   id: number
@@ -64,6 +65,35 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   console.log('numSelected', numSelected)
   console.log('selected', selected)
 
+  const handleSwap = async (selectedIds: string[]) => {
+    // Check if exactly two IDs are selected
+    if (selectedIds.length !== 2) {
+      alert('Please select exactly two residents to swap.')
+      return
+    }
+
+    // Send a POST request to the API route
+    const response = await fetch('/api/admin/dormitoryResident/update/transferResident', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id1: selectedIds[0],
+        id2: selectedIds[1]
+      })
+    })
+
+    // Check if the request was successful
+    if (response.ok) {
+      alert('Successfully swapped residents')
+    } else {
+      const errorData = await response.json()
+      alert(`Error swapping residents: ${errorData.error}`)
+    }
+     resetSelected()
+  }
+
   return (
     <Toolbar
       sx={{
@@ -83,6 +113,16 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           Nutrition
         </Typography>
       )}
+      <Tooltip title='สลับห้อง'>
+        <IconButton
+          onClick={() => {
+            // Call a function with the selected IDs
+            handleSwap(selected)
+          }}
+        >
+          <SwapHorizIcon />
+        </IconButton>
+      </Tooltip>
       {numSelected > 0 ? (
         <Tooltip title='Delete'>
           <IconButton
@@ -390,7 +430,7 @@ const DormitoryResidentControl = () => {
                     <TableCell>{row.Dormitory_Bed.bed_number}</TableCell>
                     <TableCell>{row.Reservation_System.round_name}</TableCell>
                     <TableCell>
-                      <EditResident />
+                      <EditResident id={row.id} />
                     </TableCell>
                   </TableRow>
                 )

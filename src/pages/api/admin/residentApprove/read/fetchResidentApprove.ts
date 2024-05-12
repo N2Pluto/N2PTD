@@ -1,10 +1,10 @@
-// File: /pages/api/admin/reservationApprove/fetch_UserReservation.ts
+// File: /pages/api/admin/residentApprove/read/fetchResidentApprove.ts
 
 import supabase from 'src/libs/supabase'
 
 const handler = async (req: any, res: any) => {
   const { data: reservationData, error: reservationError } = await supabase
-    .from('Reservation')
+    .from('Dormitory_Approve')
     .select(
       '*,Users(email,student_id),Dormitory_Building(name),Dormitory_Room(room_number),Dormitory_Bed(bed_number),Reservation_System(round_name)'
     )
@@ -16,8 +16,8 @@ const handler = async (req: any, res: any) => {
   if (usersInfoError) return res.status(500).json({ error: usersInfoError.message })
 
   const data = reservationData.map(reservation => {
-   
     const userInfo = usersInfoData.find(user => user.user_id === reservation.user_id)
+    
     return { ...reservation, Users_Info: userInfo }
   })
 

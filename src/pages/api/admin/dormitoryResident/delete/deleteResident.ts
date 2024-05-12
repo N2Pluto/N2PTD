@@ -15,6 +15,14 @@ const handler = async (req: any, res: any) => {
 
   const userId = resident[0].user_id
 
+  // Delete the corresponding entries in the Dormitory_Approve table
+  const { error: deleteApproveError } = await supabase.from('Dormitory_Approve').delete().eq('user_id', userId)
+
+  if (deleteApproveError) {
+    console.error('Error deleting approval:', deleteApproveError)
+    return res.status(500).json({ error: 'Error deleting approval' })
+  }
+
   // Delete the corresponding entries in the Reservation table
   const { error: deleteReservationError } = await supabase.from('Reservation').delete().eq('user_id', userId)
 
@@ -31,7 +39,7 @@ const handler = async (req: any, res: any) => {
     return res.status(500).json({ error: 'Error deleting resident' })
   }
 
-  return res.status(200).json({ message: 'Resident and corresponding reservations deleted successfully' })
+  return res.status(200).json({ message: 'Resident, corresponding reservations, and approvals deleted successfully' })
 }
 
 export default handler

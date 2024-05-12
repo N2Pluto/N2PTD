@@ -11,6 +11,9 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import DeleteIcon from '@mui/icons-material/Delete'
+import { Transfer } from 'mdi-material-ui'
+import TransferRoom from './dormitoryTransferRoom'
+import ChangeRoom from './dormitoryChangeRoom'
 
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
@@ -49,14 +52,42 @@ const StyledMenu = styled((props: MenuProps) => (
   }
 }))
 
-export default function EditResident() {
+interface EditResidentProps {
+  id: string
+}
+
+export default function EditResident({ id }: EditResidentProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const [openTransferRoom, setOpenTransferRoom] = React.useState(false)
+  const [openChangeRoom, setOpenChangeRoom] = React.useState(false)
   const open = Boolean(anchorEl)
+
+  console.log('edit room id ' , id)
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
+
   const handleClose = () => {
     setAnchorEl(null)
+  }
+
+  const handleOpenTransferRoom = () => {
+    setOpenTransferRoom(true)
+    handleClose()
+  }
+
+  const handleCloseTransferRoom = () => {
+    setOpenTransferRoom(false)
+  }
+
+  const handleOpenChangeRoom = () => {
+    setOpenChangeRoom(true)
+    handleClose()
+  }
+
+  const handleCloseChangeRoom = () => {
+    setOpenChangeRoom(false)
   }
 
   return (
@@ -79,15 +110,15 @@ export default function EditResident() {
         open={open}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleClose} disableRipple>
-          <EditIcon />
+        {/* <MenuItem onClick={handleOpenTransferRoom} disableRipple>
+          แลกเปลี่ยนห้อง
+        </MenuItem> */}
+        <MenuItem onClick={handleOpenChangeRoom} disableRipple>
           ย้ายห้อง
         </MenuItem>
-        {/* <MenuItem onClick={handleClose} disableRipple>
-          <DeleteIcon />
-          Delelte
-        </MenuItem> */}
       </StyledMenu>
+      <TransferRoom open={openTransferRoom} onClose={handleCloseTransferRoom} id={id} />
+      <ChangeRoom open={openChangeRoom} onClose={handleCloseChangeRoom} id={id} />
     </div>
   )
 }
