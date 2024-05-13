@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 
 
-export const sendDiscordMessage = async (messageID: number,messageEmail: string,message: string) => {
+export const sendDiscordMessage = async (messageID: string,messageEmail: string,message: string) => {
   try {
     const webhookBody = {
       embeds: [{

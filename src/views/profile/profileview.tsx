@@ -71,7 +71,7 @@ const Profile = () => {
    }
  }, [user])
 
-
+ 
 
   return (
     <Grid item xs={12} sm={6} md={12}>

@@ -10,8 +10,12 @@ const handler = async (req: any, res: any) => {
     .from('Reservation')
     .select(
       `
-      user_id,
-      Users (*)
+    user_id,
+    Users (
+      *,
+      Users_Info (*),
+      Users_Req (*)
+    )
     `
     )
     .eq('bed_id', bed_id)

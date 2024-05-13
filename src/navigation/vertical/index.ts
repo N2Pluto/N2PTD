@@ -52,29 +52,35 @@ const useNavigation = (): VerticalNavItemsType => {
   if (roleFilter === 'admin') {
     return [
       {
-        title: 'discord',
+        title: 'ข้อมูลผู้อยู่อาศัย',
         icon: HomeOutline,
-        path: '/admin/discord'
+        path: '/admin/dormitoryResident'
       },
       {
-        title: 'Reservation ',
+        title: 'อนุมัติผู้อยู่อาศัย',
+        icon: HomeOutline,
+        path: '/admin/residentApprove'
+      },
+      {
+        title: 'อนุมัติการจอง ',
         icon: HomeOutline,
         path: '/admin/reservationApprove'
       },
       {
-        title: 'Reservation System',
+        title: 'รอบการจอง',
         icon: HomeOutline,
         path: '/admin/reservationSystem'
       },
+
       {
-        title: 'User information',
-        icon: HomeOutline,
-        path: '/admin/userControl'
-      },
-      {
-        title: 'User',
+        title: 'ข้อมูลผู้ใช้',
         icon: HomeOutline,
         path: '/admin/userManagement'
+      },
+      {
+        title: 'เปลี่ยน Role',
+        icon: HomeOutline,
+        path: '/admin/userControl'
       },
       {
         title: 'Building Control ',
@@ -85,6 +91,11 @@ const useNavigation = (): VerticalNavItemsType => {
         title: 'Building',
         icon: HomeOutline,
         path: '/admin/building'
+      },
+      {
+        title: 'discord',
+        icon: HomeOutline,
+        path: '/admin/discord'
       },
       {
         sectionTitle: 'User Interface'
@@ -122,11 +133,11 @@ const useNavigation = (): VerticalNavItemsType => {
     ]
   } else if (roleFilter === 'user') {
     return [
-      {
-        title: 'Home',
-        icon: HomeOutline,
-        path: '/dashboard'
-      },
+      // {
+      //   title: 'Home',
+      //   icon: HomeOutline,
+      //   path: '/dashboard'
+      // },
 
       {
         title: 'Dormitory',

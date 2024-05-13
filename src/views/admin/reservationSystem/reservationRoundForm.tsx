@@ -33,20 +33,10 @@ import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 
 // ** Third Party Imports
-import DatePicker from 'react-datepicker'
 import { CarBrakeFluidLevel } from 'mdi-material-ui'
-
-const StartDateInput = forwardRef((props, ref) => {
-  return <TextField fullWidth {...props} inputRef={ref} label='Start Date' autoComplete='off' />
-})
-
-const EndDateInput = forwardRef((props, ref) => {
-  return <TextField fullWidth {...props} inputRef={ref} label='End Date' autoComplete='off' />
-})
-
-const CustomInput = forwardRef((props, ref) => {
-  return <TextField fullWidth {...props} inputRef={ref} label='Birth Date' autoComplete='off' />
-})
+import DatePicker from '@mui/lab/DatePicker'
+import AdapterDateFns from '@mui/lab/AdapterDateFns'
+import LocalizationProvider from '@mui/lab/LocalizationProvider'
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -190,28 +180,28 @@ export default function DeleteRound({ id }: { id: number }) {
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12} sm={6}>
-                    <DatePicker
-                      selected={startDate}
-                      showYearDropdown
-                      showMonthDropdown
-                      placeholderText='MM-DD-YYYY'
-                      customInput={<StartDateInput />}
-                      id='form-layouts-separator-date'
-                      onChange={(date: Date) => setStartDate(date)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <DatePicker
-                      selected={endDate}
-                      showYearDropdown
-                      showMonthDropdown
-                      placeholderText='MM-DD-YYYY'
-                      customInput={<CustomInput />}
-                      id='form-layouts-separator-date'
-                      onChange={(date: Date) => setEndDate(date)}
-                    />
-                  </Grid>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <Grid item xs={12} sm={6}>
+                      <DatePicker
+                        label='Start Date'
+                        value={startDate}
+                        onChange={newValue => {
+                          setStartDate(newValue)
+                        }}
+                        renderInput={params => <TextField {...params} />}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <DatePicker
+                        label='End Date'
+                        value={endDate}
+                        onChange={newValue => {
+                          setEndDate(newValue)
+                        }}
+                        renderInput={params => <TextField {...params} />}
+                      />
+                    </Grid>
+                  </LocalizationProvider>
                 </Grid>
               </CardContent>
               <Divider sx={{ margin: 0 }} />
@@ -220,7 +210,7 @@ export default function DeleteRound({ id }: { id: number }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDelete}>Delete</Button>
-          <Button onClick={handleClose}>Disagree</Button>
+          <Button onClick={handleClose}>Close</Button>
           <Button onClick={handleUpdate}>Agree</Button>
         </DialogActions>
       </Dialog>

@@ -20,7 +20,6 @@ const handler = async (req: any, res: any) => {
 
   const data = reservationData.map(reservation => {
     const userInfo = usersInfoData.find(user => user.user_id === reservation.user_id)
-    
     return { ...reservation, Users_Info: userInfo }
   })
 

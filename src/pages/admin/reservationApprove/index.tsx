@@ -7,7 +7,6 @@ import CardHeader from '@mui/material/CardHeader'
 import AdminLayout from 'src/layouts/AdminLayout'
 import ReservationApprove from 'src/views/admin/reservationApprove/reservation-view'
 
-
 const MUITable = () => {
   return (
     <AdminLayout>

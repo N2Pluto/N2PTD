@@ -24,8 +24,6 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import { alpha } from '@mui/material/styles'
 import DeleteUser from './deleteUser'
-import { userStore } from 'src/stores/userStore'
-import { sendDiscordMessageUseredit } from 'src/pages/api/discord/adminuserEdit'
 
 interface User {
   id: number
@@ -43,16 +41,18 @@ interface User {
 interface EnhancedTableToolbarProps {
   numSelected: number
   selected: readonly number[]
-  resetSelected: () => void
+   resetSelected: () => void
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected, selected, resetSelected } = props
+  console.log('numSelected', numSelected)
+  console.log('selected', selected)
 
   return (
     <Toolbar
       sx={{
-        pl: { sm: 10 },
+        pl: { sm: 2 },
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
           bgcolor: theme => alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity)
@@ -65,7 +65,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Typography>
       ) : (
         <Typography sx={{ flex: '1 1 100%' }} variant='h6' id='tableTitle' component='div'>
-          User Edit information Table
+          Nutrition
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -95,12 +95,6 @@ const UserManagement = () => {
   const [page, setPage] = React.useState(0)
   const [dense, setDense] = React.useState(false)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
-  const {user} = userStore()
-
-
-  const discordHandle = async (u) => {
-    await sendDiscordMessageUseredit(user.id, user.email, 'User information has been edited')
-  }
 
   const resetSelected = () => {
     setSelected([])
@@ -183,6 +177,7 @@ const UserManagement = () => {
 
   const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
+
   }
 
   return (
@@ -229,7 +224,7 @@ const UserManagement = () => {
                     <TableCell>{row.religion}</TableCell>
                     <TableCell>{row.gender}</TableCell>
                     <TableCell align='right'>
-                      <EditUser id={Number(row.id)}>
+                      <EditUser id={row.id}>
                         <Button onClick={handleButtonClick}>
                           <FaEdit />
                         </Button>
@@ -256,10 +251,7 @@ const UserManagement = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel
-        control={<Switch sx={{ pl: '10' }} checked={dense} onChange={handleChangeDense} />}
-        label='Dense padding'
-      />
+      <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label='Dense padding' />
     </Box>
   )
 }

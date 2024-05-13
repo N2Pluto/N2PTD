@@ -44,10 +44,8 @@ import InputAdornment from '@mui/material/InputAdornment'
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import SearchIcon from '@mui/icons-material/Search'
-import { sendDiscordMessageApprove } from 'src/pages/api/discord/adminapprove'
-import e from 'express'
-import { useStore } from 'zustand'
-import { userStore } from 'src/stores/userStore'
+import FadeMenu from './components/FadeMenu'
+import DialogReject from './reservation-reject'
 
 interface User {
   id: number
@@ -113,12 +111,11 @@ const ReservationApprove = () => {
   const [page, setPage] = React.useState(0)
   const [dense, setDense] = React.useState(false)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
-  const [tab, setTab] = React.useState('all')
+  const [tab, setTab] = React.useState('pending')
   const [selectValue, setSelectValue] = React.useState('')
   const [searchValue, setSearchValue] = React.useState('')
   const [roundNames, setRoundNames] = React.useState<string[]>([])
   const [filteredUsers, setFilteredUsers] = React.useState<User[]>([])
-  const { user } = userStore()
 
   const handleSelectChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     const selectedRoundId = event.target.value as number
@@ -157,6 +154,7 @@ const ReservationApprove = () => {
       const data = await response.json()
       if (data) {
         setUsers(data)
+      
         const uniqueRoundIds = Array.from(new Set(data.map((user: User) => user.round_id)))
         const uniqueRoundNames = uniqueRoundIds.map(id => {
           const user = data.find((user: User) => user.round_id === id)
@@ -176,6 +174,7 @@ const ReservationApprove = () => {
 
     return () => clearInterval(intervalId)
   }, [])
+
 
   const handleSearchChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setSearchValue(event.target.value as string)
@@ -254,8 +253,8 @@ const ReservationApprove = () => {
         return user.status === 'Pending'
       case 'approve':
         return user.status === 'Approve'
-      case 'eject':
-        return user.status === 'Eject'
+      case 'reject':
+        return user.status === 'Reject'
       default:
         return true
     }
@@ -278,103 +277,183 @@ const ReservationApprove = () => {
     event.stopPropagation()
   }
 
-  const discordHandle = async (
-    id: number,
-    email: string,
-    student_year: number,
-    name: string,
-    lastname: string,
-    dome: string,
-    roomnum: string,
-    bed: string,
-    roundname: string,
-    status: string
-  ) => {
-    await sendDiscordMessageApprove(id, email, `have done ${status} \n Name : ${student_year} ${name} ${lastname}\nDormitory : ${dome}  Room : ${roomnum} Bed : ${bed} \nRoundname : ${roundname} `)
-  }
-
   const formatDate = (dateString: string) => {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
-
     return new Date(dateString).toLocaleDateString(undefined, options)
   }
 
-  const handleApprove = async (
-    id: any,
-    student_year: any,
-    name: any,
-    lastname: any,
-    buildingName: any,
-    roomNumber: any,
-    bedNumber: any,
-    roundName: any
-  ) => {
-    const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ id, status: 'Approve' })
-    })
+ const handleApprove = async (id: number) => {
+   const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
+     method: 'POST',
+     headers: {
+       'Content-Type': 'application/json'
+     },
+     body: JSON.stringify({ id, status: 'Approve' })
+   })
 
-    if (!response.ok) {
-      console.error('Failed to update reservation status')
+   if (!response.ok) {
+     console.error('Failed to update reservation status')
+   } else {
+     // Find the user
+     const user = users.find(user => user.id === id)
+     if (user) {
+       // Send email to the user
+       await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({
+           to: user.Users.email,
+           subject: 'Reservation Approved',
+           html: `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <style>
+                  body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f4f4;
+                  }
+                  .container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    background-color: #ffffff;
+                    padding: 20px;
+                    border-radius: 5px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                  }
+                  h1 {
+                    color: #333333;
+                    text-align: center;
+                    margin-top: 0;
+                  }
+                  p {
+                    line-height: 1.5;
+                    color: #555555;
+                  }
+                  .button {
+                    display: inline-block;
+                    background-color: #007bff;
+                    color: #ffffff;
+                    padding: 10px 20px;
+                    text-decoration: none;
+                    border-radius: 5px;
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <h1>Your Reservation is Approved</h1>
+                  <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
+                  <p>We are delighted to inform you that your reservation has been approved. We look forward to welcoming you to our establishment.</p>
+                  <p>Please find the details of your reservation below:</p>
+                  <ul>
+                    <li>Building: ${user.Dormitory_Building.name}</li>
+                    <li>Room: ${user.Dormitory_Room.room_number}</li>
+                    <li>Bed: ${user.Dormitory_Bed.bed_number}</li>
+                  </ul>
+                  <p>If you have any further questions or concerns, please do not hesitate to contact us.</p>
+                  <p>Best regards,<br>WU Dormitory</p>
+                </div>
+              </body>
+            </html>
+          `
+         })
+       })
+     }
+   }
+ }
+const handleReject = async (id: number) => {
+  const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id, status: 'Reject' })
+  })
+
+  if (!response.ok) {
+    console.error('Failed to update reservation status')
+  } else {
+    // Find the user
+    const user = users.find(user => user.id === id)
+    if (user) {
+      // Send email to the user
+      await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          to: user.Users.email,
+          subject: 'Reservation Rejected',
+          html: `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <style>
+                  body {
+                    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                    background-color: #f7f7f7;
+                  }
+                  .container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    background-color: #ffffff;
+                    padding: 30px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                  }
+                  h1 {
+                    color: #333333;
+                    text-align: center;
+                    margin-top: 0;
+                    font-weight: 600;
+                  }
+                  p {
+                    line-height: 1.6;
+                    color: #555555;
+                  }
+                  ul {
+                    list-style-type: none;
+                    padding: 0;
+                    margin: 20px 0;
+                  }
+                  li {
+                    margin-bottom: 10px;
+                    color: #777777;
+                  }
+                 
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <h1>Your Reservation is Rejected</h1>
+                  <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
+                  <p>We regret to inform you that your reservation has been rejected due to the following reasons:</p>
+                  <ul>
+                    <li>Reason 1</li>
+                    <li>Reason 2</li>
+                    <li>Reason 3</li>
+                  </ul>
+                  <p>We apologize for any inconvenience this may have caused you. If you have any further questions or concerns, please do not hesitate to contact our support team.</p>
+                  <p>Best regards,<br>WU Dormitory</p>
+                </div>
+              </body>
+            </html>
+          `
+        })
+      })
     }
-
-    discordHandle(
-      user.student_id,
-      user.email,
-      student_year,
-      name,
-      lastname,
-      buildingName,
-      roomNumber,
-      bedNumber,
-      roundName,
-      'Approve'
-    )
   }
-
-  const handleEject = async (
-    id: any,
-    student_year: any,
-    name: any,
-    lastname: any,
-    buildingName: any,
-    roomNumber: any,
-    bedNumber: any,
-    roundName: any
-  ) => {
-    const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ id, status: 'Eject' })
-    })
-
-    if (!response.ok) {
-      console.error('Failed to update reservation status')
-    }
-    discordHandle(
-      user.student_id,
-      user.email,
-      student_year,
-      name,
-      lastname,
-      buildingName,
-      roomNumber,
-      bedNumber,
-      roundName,
-      'Eject'
-    )
-  }
+}
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Pending':
         return 'warning'
-      case 'Eject':
+      case 'Reject':
         return 'error'
       case 'Approve':
         return 'success'
@@ -386,7 +465,7 @@ const ReservationApprove = () => {
   const allCount = filteredUsers.length
   const pendingCount = filteredUsers.filter(user => user.status === 'Pending').length
   const approveCount = filteredUsers.filter(user => user.status === 'Approve').length
-  const ejectCount = filteredUsers.filter(user => user.status === 'Eject').length
+  const rejectCount = filteredUsers.filter(user => user.status === 'Reject').length
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -394,17 +473,21 @@ const ReservationApprove = () => {
         <Tab
           label={
             <span
-              style={{ color: tab === 'all' ? 'black' : undefined, fontWeight: tab === 'all' ? 'bold' : undefined }}
+              style={{
+                color: tab === 'pending' ? 'black' : undefined,
+                fontWeight: tab === 'pending' ? 'bold' : undefined
+              }}
             >
-              ALL{' '}
-              <span style={{ backgroundColor: '#36454F', padding: '4px 8px', borderRadius: '5px', color: 'white' }}>
+              REQ LIST{' '}
+              <span style={{ backgroundColor: '#ffffba', padding: '4px 8px', borderRadius: '5px' }}>
                 {' '}
-                {allCount}{' '}
+                {pendingCount}{' '}
               </span>
             </span>
           }
-          value='all'
+          value='pending'
         />
+
         <Tab
           label={
             <span
@@ -421,40 +504,6 @@ const ReservationApprove = () => {
             </span>
           }
           value='approve'
-        />
-        <Tab
-          label={
-            <span
-              style={{
-                color: tab === 'pending' ? 'black' : undefined,
-                fontWeight: tab === 'pending' ? 'bold' : undefined
-              }}
-            >
-              Pending{' '}
-              <span style={{ backgroundColor: '#ffffba', padding: '4px 8px', borderRadius: '5px' }}>
-                {' '}
-                {pendingCount}{' '}
-              </span>
-            </span>
-          }
-          value='pending'
-        />
-        <Tab
-          label={
-            <span
-              style={{
-                color: tab === 'eject' ? 'black' : undefined,
-                fontWeight: tab === 'eject' ? 'bold' : undefined
-              }}
-            >
-              Eject{' '}
-              <span style={{ backgroundColor: '#ffabab', padding: '4px 8px', borderRadius: '5px' }}>
-                {' '}
-                {ejectCount}{' '}
-              </span>
-            </span>
-          }
-          value='eject'
         />
       </Tabs>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', margin: 5 }}>
@@ -517,15 +566,15 @@ const ReservationApprove = () => {
                     role='checkbox'
                     aria-checked={isItemSelected}
                     tabIndex={-1}
-                    key={row.id}
+                    key={row.id}a
                     selected={isItemSelected}
                     sx={{ cursor: 'pointer' }}
                   >
                     <TableCell padding='checkbox'>
                       <Checkbox color='primary' checked={isItemSelected} inputProps={{ 'aria-labelledby': labelId }} />
                     </TableCell>
-                    <TableCell component='th' id={labelId} scope='row' padding='center'>
-                      {row.Users_Info?.student_year}
+                    <TableCell component='th' id={labelId} scope='row' padding='none'>
+                      {row.Users?.student_id}
                     </TableCell>
                     <TableCell>
                       {row.Users_Info?.name} {row.Users_Info?.lastname}
@@ -539,46 +588,35 @@ const ReservationApprove = () => {
                     </TableCell>
                     <TableCell>{formatDate(row.created_at)}</TableCell>
                     <TableCell align='left'>
-                      <Button
-                        variant='outlined'
-                        color='error'
-                        size='small'
-                        sx={{ minWidth: '30px', marginRight: '10px' }}
-                        onClick={event => {
-                          event.stopPropagation()
-                          handleEject(
-                            row.id,
-                            row.Users_Info.student_year,
-                            row.Users_Info?.name,
-                            row.Users_Info?.lastname,
-                            row.Dormitory_Building.name,
-                            row.Dormitory_Room.room_number,
-                            row.Dormitory_Bed.bed_number,
-                            row.Reservation_System.round_name
-                          )
-                        }}
-                      >
-                        <CloseIcon color='error' />
-                      </Button>
-                      <Button
-                        variant='outlined'
-                        color='success'
-                        size='small'
-                        sx={{ minWidth: '30px' }}
-                        onClick={event => {
-                          event.stopPropagation()
-                          handleApprove(row.id,
-                            row.Users_Info.student_year,
-                            row.Users_Info?.name,
-                            row.Users_Info?.lastname,
-                            row.Dormitory_Building.name,
-                            row.Dormitory_Room.room_number,
-                            row.Dormitory_Bed.bed_number,
-                            row.Reservation_System.round_name)
-                        }}
-                      >
-                        <CheckIcon color='success' />
-                      </Button>
+                      {tab === 'pending' && (
+                        <>
+                          <Button
+                            variant='outlined'
+                            color='error'
+                            size='small'
+                            sx={{ minWidth: '30px', marginRight: '10px' }}
+                            onClick={event => {
+                              event.stopPropagation()
+                              handleReject(row.id)
+                            }}
+                          >
+                            <CloseIcon color='error' />
+                          </Button>
+
+                          <Button
+                            variant='outlined'
+                            color='success'
+                            size='small'
+                            sx={{ minWidth: '30px' }}
+                            onClick={event => {
+                              event.stopPropagation()
+                              handleApprove(row.id)
+                            }}
+                          >
+                            <CheckIcon color='success' />
+                          </Button>
+                        </>
+                      )}
                     </TableCell>
                   </TableRow>
                 )
@@ -591,6 +629,7 @@ const ReservationApprove = () => {
             </TableBody>
           </Table>
         </TableContainer>
+
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'

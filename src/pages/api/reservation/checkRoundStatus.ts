@@ -6,12 +6,11 @@ const handler = async (req: any, res: any) => {
     const { data, error } = await supabase
       .from('Reservation_System')
       .select('start_date, end_date, round_status')
-      .eq('round_status', true)
       .single()
 
     if (error) {
       console.error('Error fetching round data:', error)
-      
+
       return res.status(500).json({ error: 'Failed to fetch round data' })
     }
 
@@ -26,12 +25,12 @@ const handler = async (req: any, res: any) => {
 
     const isValidRound = currentDate >= start && currentDate <= end
 
-    if (!isValidRound && round_status) {
-      // Update round_status to false if current date is not within the range
+    if (isValidRound !== round_status) {
+      // Update round_status if it does not match isValidRound
       const { error: updateError } = await supabase
         .from('Reservation_System')
-        .update({ round_status: false })
-        .eq('round_status', true)
+        .update({ round_status: isValidRound })
+        .eq('round_status', !isValidRound)
 
       if (updateError) {
         console.error('Error updating round status:', updateError)
