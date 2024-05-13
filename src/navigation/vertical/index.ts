@@ -52,6 +52,11 @@ const useNavigation = (): VerticalNavItemsType => {
   if (roleFilter === 'admin') {
     return [
       {
+        title: 'dashboard',
+        icon: HomeOutline,
+        path: '/admin/dashboard'
+      },
+      {
         title: 'ข้อมูลผู้อยู่อาศัย',
         icon: HomeOutline,
         path: '/admin/dormitoryResident'
