@@ -114,9 +114,9 @@ const UserManagement = () => {
       }
     }
 
-    const intervalId = setInterval(fetchData, 5000) // Fetch data every 5 seconds
+    // const intervalId = setInterval(fetchData, 5000) // Fetch data every 5 seconds
 
-    return () => clearInterval(intervalId) // Clean up the interval on component unmount
+    // return () => clearInterval(intervalId) // Clean up the interval on component unmount
   }, [])
   console.log(users)
 

@@ -115,9 +115,10 @@ const ReservationRoomDetails = () => {
     }
 
     fetchDataAndUpdateStatus()
-    const intervalId = setInterval(fetchDataAndUpdateStatus, 10000)
 
-    return () => clearInterval(intervalId)
+    // const intervalId = setInterval(fetchDataAndUpdateStatus, 10000)
+
+    // return () => clearInterval(intervalId)
   }, []) // Remove dormitoryRoomStatus from dependencies
 
   useEffect(() => {
@@ -147,9 +148,11 @@ const ReservationRoomDetails = () => {
     }
 
     fetchDataAndUpdateStatusRoom()
-    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 10000)
 
-    return () => clearInterval(intervalId)
+    // const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 10000)
+
+    // return () => clearInterval(intervalId)
+    
   }, [])
 
   console.log('sdasdad:', dormitoryRoom)

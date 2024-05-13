@@ -164,9 +164,10 @@ const ReservationBedviwe = () => {
       await fetchDataBedByRoomID() // Fetch the updated data
     }
     fetchDataAndUpdateStatus()
-    const intervalId = setInterval(fetchDataAndUpdateStatus, 50000)
+    
+    // const intervalId = setInterval(fetchDataAndUpdateStatus, 50000)
 
-    return () => clearInterval(intervalId)
+    // return () => clearInterval(intervalId)
   }, [router.query.id])
 
   const handleReservation = async (bed_id: string) => {

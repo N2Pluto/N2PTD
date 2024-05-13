@@ -61,13 +61,8 @@ const UserDropdown = () => {
       fetchUserProfile()
     }
 
-    const interval = setInterval(() => {
-      if (user?.user_id) {
-        fetchUserProfile()
-      }
-    }, 5000) // Fetch user profile every 5 seconds
+    fetchUserProfile()
 
-    return () => clearInterval(interval) // Clean up on component unmount
   }, [user])
 
   const handleDropdownOpen = (event: SyntheticEvent) => {

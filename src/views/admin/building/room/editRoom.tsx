@@ -87,7 +87,7 @@ const facilityOptions = [
 
 const EditRoom = () => {
   // ** States
- 
+
   const [floor, setFloor] = useState('')
   const [bedCapacity, setBedCapacity] = useState('')
   const [roomsPerFloor, setRoomsPerFloor] = useState<string[]>([])
@@ -103,9 +103,9 @@ const EditRoom = () => {
      console.log('data:', data)
    }
 
-   const intervalId = setInterval(fetchDataRoomByDormID, 5000) // Fetch data every 5 seconds
+  //  const intervalId = setInterval(fetchDataRoomByDormID, 5000) // Fetch data every 5 seconds
 
-   return () => clearInterval(intervalId) // Clean up the interval on component unmount
+  //  return () => clearInterval() // Clean up the interval on component unmount
  }, [])
 
    const rows = dormitoryRoom.map(room => createData(room.room_id, room.dorm_id, room.room_number, room.bed_capacity))
@@ -125,12 +125,12 @@ const EditRoom = () => {
       }
     }
 
-    const intervalId = setInterval(fetchData, 5000) // Fetch data every 5 seconds
+    // const intervalId = setInterval(fetchData, 5000) // Fetch data every 5 seconds
 
-    return () => clearInterval(intervalId) // Clean up the interval on component unmount
+    // return () => clearInterval(intervalId) // Clean up the interval on component unmount
   }, [])
 
- 
+
   const handleRoomsChange = (index: number, value: string) => {
     const newRoomsPerFloor = [...roomsPerFloor]
     newRoomsPerFloor[index] = value
@@ -212,11 +212,11 @@ const EditRoom = () => {
             </Table>
           </TableContainer>
           <Divider sx={{ margin: 0 }} />
-       
+
         </form>
       </Card>
     </>
   )
 }
 
-export default EditRoom 
+export default EditRoom

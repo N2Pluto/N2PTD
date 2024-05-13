@@ -94,9 +94,10 @@ const ReservationBedviwe = () => {
       await fetchDataBedByRoomID() // Fetch the updated data
     }
     fetchDataAndUpdateStatus()
-    const intervalId = setInterval(fetchDataAndUpdateStatus, 50000)
+    
+    // const intervalId = setInterval(fetchDataAndUpdateStatus, 50000)
 
-    return () => clearInterval(intervalId)
+    // return () => clearInterval(intervalId)
   }, [router.query.id])
 
    useEffect(() => {
@@ -114,7 +115,7 @@ const ReservationBedviwe = () => {
      }
      fetchRoundProfile()
    }, [])
-  
+
 
   const handleReservation = async (bed_id: string) => {
     console.log('Reservation Bed ID:', bed_id)

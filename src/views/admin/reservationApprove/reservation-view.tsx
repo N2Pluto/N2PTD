@@ -154,7 +154,7 @@ const ReservationApprove = () => {
       const data = await response.json()
       if (data) {
         setUsers(data)
-      
+
         const uniqueRoundIds = Array.from(new Set(data.map((user: User) => user.round_id)))
         const uniqueRoundNames = uniqueRoundIds.map(id => {
           const user = data.find((user: User) => user.round_id === id)
@@ -170,9 +170,9 @@ const ReservationApprove = () => {
     }
   }
   useEffect(() => {
-    const intervalId = setInterval(fetchData, 1000)
+    // const intervalId = setInterval(fetchData, 1000)
 
-    return () => clearInterval(intervalId)
+    // return () => clearInterval(intervalId)
   }, [])
 
 
@@ -424,7 +424,7 @@ const handleReject = async (id: number) => {
                     margin-bottom: 10px;
                     color: #777777;
                   }
-                 
+
                 </style>
               </head>
               <body>

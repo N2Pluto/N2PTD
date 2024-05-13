@@ -32,7 +32,7 @@ const RoomControl = () => {
     fetchData()
 
     // Then call fetchData every 50 seconds
-    const intervalId = setInterval(fetchData, 50000)
+    // const intervalId = setInterval(fetchData, 50000)
 
     // Clear interval on component unmount
     return () => clearInterval(intervalId)
@@ -50,9 +50,9 @@ const RoomControl = () => {
     }
 
     fetchDataAndUpdateStatusRoom()
-    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 50000)
+    // const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 50000)
 
-    return () => clearInterval(intervalId)
+    // return () => clearInterval(intervalId)
   }, [])
 
   const handleSelect = (id: string) => {
