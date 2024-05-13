@@ -45,7 +45,9 @@ const ReservationHomePage = () => {
       if (data.isEligible) {
         router.push('/reservation/reservation')
       } else {
-        setShowDialog(true)
+        setTimeout(() => {
+          setShowDialog(true)
+        }, 1500)
       }
     } catch (error) {
       console.error('Error checking reservation qualification:', error)
@@ -60,7 +62,7 @@ const ReservationHomePage = () => {
         })
         const data = await response.json()
         setRoundData(data)
-        console.log('Round Info' , data)
+        console.log('Round Info', data)
       } catch (error) {
         console.error('Error fetching round profile:', error)
       }
@@ -80,7 +82,7 @@ const ReservationHomePage = () => {
         })
         const data = await response.json()
         setProfileData(data)
-        
+
         // Check round status
         const roundResponse = await fetch('/api/reservation/checkRoundStatus', {
           method: 'GET'
@@ -104,19 +106,12 @@ const ReservationHomePage = () => {
     }
   }, [user])
 
+  useEffect(() => {
+    handleNavigate()
+  }, [profileData])
+
   return (
     <>
-      <Typography variant='h6'>User Info</Typography>
-      <div>user_id : {profileData?.userInfoData?.user_id}</div>
-      <div>student year : {profileData?.userInfoData?.student_year}</div>
-      <Typography variant='h6'>Round Info</Typography>
-      <div>round_id : {roundData?.data?.id}</div>
-      <div>round_name : {roundData?.data?.round_name}</div>
-      <div>start_date : {roundData?.data?.start_date}</div>
-      <div>end_date : {roundData?.data?.end_date}</div>
-      <Card sx={{ position: 'relative' }}>
-        <Button onClick={handleNavigate}>CHECK</Button>
-      </Card>
       <Dialog
         open={showDialog}
         onClose={() => setShowDialog(false)}
