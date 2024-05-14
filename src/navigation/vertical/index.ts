@@ -138,11 +138,11 @@ const useNavigation = (): VerticalNavItemsType => {
     ]
   } else if (roleFilter === 'user') {
     return [
-      // {
-      //   title: 'Home',
-      //   icon: HomeOutline,
-      //   path: '/dashboard'
-      // },
+      {
+        title: 'Home',
+        icon: HomeOutline,
+        path: '/dashboard'
+      },
 
       {
         title: 'Dormitory',
