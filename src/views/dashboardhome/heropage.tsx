@@ -8,13 +8,7 @@ import CustomImageList from './component/ImageListTop'
 const HeroDashboard = () => {
   return (
     <Grid container spacing={6} className='bg-1'>
-      <Box sx={{ p: 5 }}>
-        <Grid  sx={{pb:5}} item xs={12} md={12} lg={12}>
-
-        <CustomImageList />
-
-
-        </Grid>
+      <Box>
         <Grid item xs={12} md={12} lg={12}>
           <TopHome />
         </Grid>

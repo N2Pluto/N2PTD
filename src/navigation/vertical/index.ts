@@ -97,6 +97,12 @@ const useNavigation = (): VerticalNavItemsType => {
         icon: HomeOutline,
         path: '/admin/building'
       },
+
+      {
+        icon: CubeOutline,
+        title: 'Post NEWS',
+        path: '/admin/facebookPost'
+      },
       {
         title: 'discord',
         icon: HomeOutline,
@@ -135,6 +141,9 @@ const useNavigation = (): VerticalNavItemsType => {
         title: 'Form Layouts',
         path: '/form-layouts'
       }
+
+
+
     ]
   } else if (roleFilter === 'user') {
     return [
