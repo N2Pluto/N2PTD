@@ -34,7 +34,14 @@ const PostCard: React.FC = () => {
           subheader='September 14, 2021'
         />
         <CardContent>
+<<<<<<< HEAD
           <img
+=======
+          <iframe src="https://www.facebook.com/friday.n2o/posts/pfbid02B6BBKbR4e7hvLzVJNt7tAFBfj64VkA1RUYDeYhMQcHMtWkKpFGNSRnw8QXij8ddZl" frameborder="0"></iframe>
+
+
+          {/* <img
+>>>>>>> d3453b5 (sdfd)
             src={imageUrl}
             alt={'Facebook Post'}
             loading='lazy'
@@ -42,7 +49,11 @@ const PostCard: React.FC = () => {
             height={700}
             style={{ cursor: 'pointer' }}
             onClick={() => handleClickOpen(imageUrl)}
+<<<<<<< HEAD
           />
+=======
+          /> */}
+>>>>>>> d3453b5 (sdfd)
           <Typography sx={{ pt: 2, pl: 1 }} variant='body2' color='text.secondary'>
             This is a sample Facebook post!
           </Typography>
