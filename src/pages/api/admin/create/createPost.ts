@@ -5,7 +5,9 @@ import supabase from 'src/libs/supabase'
 async function handler(req: any, res: any) {
   const { error } = await supabase.from('facebook').insert([
     {
-      href: req.body.href
+      header: req.body.header,
+      title: req.body.title,
+      image: req.body.image
     }
   ])
 

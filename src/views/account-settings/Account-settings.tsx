@@ -403,7 +403,7 @@ const AccountSettings = () => {
     }
   }, [user?.student_id])
 
-  const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
+    const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
 
     const onChange = async (file: ChangeEvent) => {
       const reader = new FileReader()
