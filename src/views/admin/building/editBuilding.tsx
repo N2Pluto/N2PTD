@@ -99,6 +99,7 @@ const EditBuilding = () => {
       setFormData({ ...formData, [name]: value })
     }
   }
+  
   const handleMultipleSelect = (name, value) => {
     setFormData({ ...formData, [name]: value })
   }

@@ -93,7 +93,7 @@ const Building = ({ dorm_id }) => {
         </Button>
       </Card>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={3} sx={{pt:5}}>
         {dormitoryBuilding &&
           dormitoryBuilding.map(dorm => (
             <Grid key={dorm.dorm_id} item xs={12} sm={4}>
