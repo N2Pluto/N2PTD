@@ -113,6 +113,17 @@ const useNavigation = (): VerticalNavItemsType => {
         icon: HomeOutline,
         path: '/admin/userManagementForm'
       },
+      ,
+      {
+        title: 'แบบฟอร์มย้ายห้อง',
+        icon: HomeOutline,
+        path: '/admin/dormitoryResident/changeRoomForm'
+      },
+      {
+        title: 'แบบฟอร์มสลับห้อง',
+        icon: HomeOutline,
+        path: '/admin/dormitoryResident/transferRoomForm'
+      },
       {
         title: 'discord',
         icon: HomeOutline,

@@ -12,8 +12,8 @@ const handler = async (req: any, res: any) => {
     .select('student_id, user_id, role, email')
     .eq('student_id', student_id)
 
-  if (userError) {
-    return res.status(400).json({ error: userError.message })
+  if (userError || userData.length === 0) {
+    return res.status(400).json({ error: userError ? userError.message : 'No user found with the provided student_id' })
   }
 
   const user_id = userData[0].user_id
