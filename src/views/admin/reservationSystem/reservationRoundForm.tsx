@@ -15,7 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import TextField from '@mui/material/TextField'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
-import{ useEffect } from 'react'
+import { useEffect } from 'react'
 import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
 import CardHeader from '@mui/material/CardHeader'
@@ -69,7 +69,7 @@ export default function DeleteRound({ id }: { id: number }) {
     fetchData()
   }, [id])
 
-  console.log('id',id)
+  console.log('id', id)
 
   const handleUpdate = async () => {
     const response = await fetch(`/api/admin/reservationSystem/update`, {
@@ -89,9 +89,11 @@ export default function DeleteRound({ id }: { id: number }) {
     if (response.ok) {
       handleClose()
     } else {
-      console.error('Failed to update round')
+      const responseData = await response.json()
+      alert(responseData.error) // Show an alert with the error message
     }
   }
+
   const handleRoundNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setRoundName(event.target.value)
   }

@@ -31,27 +31,30 @@ const ReservationHomePage = () => {
   const [roundData, setRoundData] = useState(null)
 
   const handleNavigate = async () => {
-    try {
-      const response = await fetch('/api/reservation/checkReservationQualification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userYear: profileData?.userInfoData?.student_year })
-      })
-      const data = await response.json()
-      setIsEligible(data.isEligible)
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await fetch('/api/reservation/checkReservationQualification', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userYear: profileData?.userInfoData?.student_year })
+        })
+        const data = await response.json()
+        setIsEligible(data.isEligible)
 
-      if (data.isEligible) {
-        router.push('/reservation/reservation')
-      } else {
-        setTimeout(() => {
-          setShowDialog(true)
-        }, 1500)
+        if (data.isEligible) {
+          clearInterval(intervalId) // Stop the interval when the user is eligible
+          router.push('/reservation/reservation')
+        } else {
+          setTimeout(() => {
+            setShowDialog(true)
+          }, 1500)
+        }
+      } catch (error) {
+        console.error('Error checking reservation qualification:', error)
       }
-    } catch (error) {
-      console.error('Error checking reservation qualification:', error)
-    }
+    }, 5000) // Fetch every 3 seconds
   }
 
   useEffect(() => {

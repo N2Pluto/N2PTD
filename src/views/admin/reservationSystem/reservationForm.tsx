@@ -32,8 +32,6 @@ import DatePicker from '@mui/lab/DatePicker'
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import LocalizationProvider from '@mui/lab/LocalizationProvider'
 
-
-
 export default function ReservationForm() {
   const [open, setOpen] = React.useState(false)
   const [fullWidth, setFullWidth] = React.useState(true)
@@ -133,7 +131,6 @@ export default function ReservationForm() {
 
     const data = await response.json()
     handleClose()
-    // Handle the response
   }
 
   return (
