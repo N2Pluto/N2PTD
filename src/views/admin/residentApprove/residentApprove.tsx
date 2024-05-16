@@ -209,10 +209,9 @@ const ResidentApprove = () => {
     }
   }
   useEffect(() => {
+    const intervalId = setInterval(fetchData, 1000)
 
-    // const intervalId = setInterval(fetchData, 1000)
-
-    // return () => clearInterval(intervalId)
+    return () => clearInterval(intervalId)
   }, [])
 
   const handleSearchChange = (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -422,6 +421,7 @@ const ResidentApprove = () => {
 
     if (!response.ok) {
       console.error('Failed to delete reservation')
+
       return
     } else {
       // Find the user
@@ -435,60 +435,48 @@ const ResidentApprove = () => {
           },
           body: JSON.stringify({
             to: user.Users.email,
-            subject: 'Reservation Approved',
+            subject: 'Reservation Denied',
             html: `
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <style>
-                  body {
-                    font-family: Arial, sans-serif;
-                    background-color: #f4f4f4;
-                  }
-                  .container {
-                    max-width: 600px;
-                    margin: 0 auto;
-                    background-color: #ffffff;
-                    padding: 20px;
-                    border-radius: 5px;
-                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                  }
-                  h1 {
-                    color: #333333;
-                    text-align: center;
-                    margin-top: 0;
-                  }
-                  p {
-                    line-height: 1.5;
-                    color: #555555;
-                  }
-                  .button {
-                    display: inline-block;
-                    background-color: #007bff;
-                    color: #ffffff;
-                    padding: 10px 20px;
-                    text-decoration: none;
-                    border-radius: 5px;
-                  }
-                </style>
-              </head>
-              <body>
-                <div class="container">
-                  <h1>Your Reservation is Approved</h1>
-                  <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
-                  <p>We are delighted to inform you that your reservation has been approved. We look forward to welcoming you to our establishment.</p>
-                  <p>Please find the details of your reservation below:</p>
-                  <ul>
-                    <li>Building: ${user.Dormitory_Building.name}</li>
-                    <li>Room: ${user.Dormitory_Room.room_number}</li>
-                    <li>Bed: ${user.Dormitory_Bed.bed_number}</li>
-                  </ul>
-                  <p>If you have any further questions or concerns, please do not hesitate to contact us.</p>
-                  <p>Best regards,<br>WU Dormitory</p>
-                </div>
-              </body>
-            </html>
-          `
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+          color: #333333;
+          text-align: center;
+          margin-top: 0;
+        }
+        p {
+          line-height: 1.5;
+          color: #555555;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>Reservation Denied</h1>
+        <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
+        <p>We regret to inform you that your reservation for the Walailak University Dormitory has been denied. This is due to the non-payment of the reservation confirmation fee within the specified timeframe.</p>
+        <p>To proceed with your reservation, please make the necessary payment as soon as possible. You can find the payment details in your reservation confirmation email.</p>
+        <p>If you have already made the payment and believe this is an error, please contact us immediately so we can investigate further.</p>
+        <p>We apologize for any inconvenience this may cause.</p>
+        <p>Sincerely,<br>Walailak University Dormitory</p>
+      </div>
+    </body>
+  </html>
+`
           })
         })
       }

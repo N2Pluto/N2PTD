@@ -109,6 +109,11 @@ const useNavigation = (): VerticalNavItemsType => {
         path: '/admin/facebookPost'
       },
       {
+        title: 'แบบฟอร์มคำร้องผู้ใช้',
+        icon: HomeOutline,
+        path: '/admin/userManagementForm'
+      },
+      {
         title: 'discord',
         icon: HomeOutline,
         path: '/admin/discord'
