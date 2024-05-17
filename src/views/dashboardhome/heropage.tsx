@@ -4,13 +4,22 @@ import TopHome from './component/top'
 import { Box } from '@mui/material'
 
 import CustomImageList from './component/ImageListTop'
+import Statistics from './component/statistics/statistics'
 
 const HeroDashboard = () => {
   return (
-    <Grid container spacing={6} className='bg-1'>
+    <Grid  spacing={6} >
       <Box>
-        <Grid item xs={12} md={12} lg={12}>
-          <TopHome />
+        <Grid spacing={6} container sx={{ pt: 10 }}>
+          <Grid item xs={12} md={12} lg={12}>
+            <Statistics />
+          </Grid>
+          <Grid item xs={12} md={12} lg={8}>
+            <TopHome />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <TopHome />
+          </Grid>
         </Grid>
       </Box>
     </Grid>

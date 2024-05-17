@@ -23,7 +23,7 @@ const FacebookPost: React.FC = () => {
   return (
     <>
       {post.map((post: any) => (
-        <Card sx={{ maxWidth: 800, marginBottom: 2 }} key={post.id}>
+        <Card sx={{ maxWidth: 1000, marginBottom: 6 }} key={post.id}>
         <CardHeader
           avatar={<Avatar alt='Profile Picture' src='/static/images/avatar/1.jpg' />}
           title='ADMIN'
