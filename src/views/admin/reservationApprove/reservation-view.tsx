@@ -170,11 +170,10 @@ const ReservationApprove = () => {
     }
   }
   useEffect(() => {
-    // const intervalId = setInterval(fetchData, 1000)
+    const intervalId = setInterval(fetchData, 1000)
 
-    // return () => clearInterval(intervalId)
+    return () => clearInterval(intervalId)
   }, [])
-
 
   const handleSearchChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setSearchValue(event.target.value as string)
@@ -282,31 +281,31 @@ const ReservationApprove = () => {
     return new Date(dateString).toLocaleDateString(undefined, options)
   }
 
- const handleApprove = async (id: number) => {
-   const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
-     method: 'POST',
-     headers: {
-       'Content-Type': 'application/json'
-     },
-     body: JSON.stringify({ id, status: 'Approve' })
-   })
+  const handleApprove = async (id: number) => {
+    const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id, status: 'Approve' })
+    })
 
-   if (!response.ok) {
-     console.error('Failed to update reservation status')
-   } else {
-     // Find the user
-     const user = users.find(user => user.id === id)
-     if (user) {
-       // Send email to the user
-       await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
-         method: 'POST',
-         headers: {
-           'Content-Type': 'application/json'
-         },
-         body: JSON.stringify({
-           to: user.Users.email,
-           subject: 'Reservation Approved',
-           html: `
+    if (!response.ok) {
+      console.error('Failed to update reservation status')
+    } else {
+      // Find the user
+      const user = users.find(user => user.id === id)
+      if (user) {
+        // Send email to the user
+        await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            to: user.Users.email,
+            subject: 'Reservation Approved',
+            html: `
             <!DOCTYPE html>
             <html>
               <head>
@@ -359,36 +358,36 @@ const ReservationApprove = () => {
               </body>
             </html>
           `
-         })
-       })
-     }
-   }
- }
-const handleReject = async (id: number) => {
-  const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ id, status: 'Reject' })
-  })
+          })
+        })
+      }
+    }
+  }
+  const handleReject = async (id: number) => {
+    const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id, status: 'Reject' })
+    })
 
-  if (!response.ok) {
-    console.error('Failed to update reservation status')
-  } else {
-    // Find the user
-    const user = users.find(user => user.id === id)
-    if (user) {
-      // Send email to the user
-      await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          to: user.Users.email,
-          subject: 'Reservation Rejected',
-          html: `
+    if (!response.ok) {
+      console.error('Failed to update reservation status')
+    } else {
+      // Find the user
+      const user = users.find(user => user.id === id)
+      if (user) {
+        // Send email to the user
+        await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            to: user.Users.email,
+            subject: 'Reservation Rejected',
+            html: `
             <!DOCTYPE html>
             <html>
               <head>
@@ -443,11 +442,11 @@ const handleReject = async (id: number) => {
               </body>
             </html>
           `
+          })
         })
-      })
+      }
     }
   }
-}
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -566,7 +565,8 @@ const handleReject = async (id: number) => {
                     role='checkbox'
                     aria-checked={isItemSelected}
                     tabIndex={-1}
-                    key={row.id}a
+                    key={row.id}
+                    a
                     selected={isItemSelected}
                     sx={{ cursor: 'pointer' }}
                   >

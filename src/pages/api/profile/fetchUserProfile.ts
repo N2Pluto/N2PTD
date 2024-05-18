@@ -31,7 +31,17 @@ const handler = async (req: any, res: any) => {
       throw new Error(userReqError?.message || 'No user request found')
     }
 
-    res.status(200).json({ userData: userData[0], userInfoData: userInfoData[0], userReqData: userReqData[0] })
+    // Fetch data from Reservation table
+    const { data: reservationData, error: reservationError } = await supabase
+      .from('Reservation')
+      .select('*')
+      .eq('user_id', user_id)
+
+    if (reservationError) {
+      throw new Error(reservationError.message || 'No reservation found')
+    }
+
+    res.status(200).json({ userData: userData[0], userInfoData: userInfoData[0], userReqData: userReqData[0] , reservationData: reservationData[0]})
   } catch (error) {
     res.status(500).json({ error: error.message })
   }

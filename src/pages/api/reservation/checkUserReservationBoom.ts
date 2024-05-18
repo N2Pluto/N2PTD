@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Assuming you have a 'reservations', 'Users_Information', and 'Users_Req' table in your database
     const { data: reservationData, error: reservationError } = await supabase
       .from('Reservation')
-      .select('user_id, Users (*)')
+      .select('*, Users (*)')
       .eq('room_id', room_id)
 
     if (reservationError) {
@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Merge the data as needed
     const data = reservationData.map(reservation => ({
-      ...reservation,
+      Reservation_Info: reservation,
       Users_Info: usersInfoData.find(userInfo => userInfo.user_id === reservation.user_id),
       Users_Req: usersReqData.find(userReq => userReq.user_id === reservation.user_id)
     }))

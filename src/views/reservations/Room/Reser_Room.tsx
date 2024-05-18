@@ -6,16 +6,7 @@ import { useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
-import {
-  Collapse,
-  Grid,
-  IconButton,
-  Paper,
-  Table,
-  TableCell,
-  TableContainer,
-  TableHead,
-} from '@mui/material'
+import { Collapse, Grid, IconButton, Paper, Table, TableCell, TableContainer, TableHead } from '@mui/material'
 import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
 import { CardActions, Dialog, DialogContent, DialogTitle, StepIconProps } from '@mui/material'
@@ -41,6 +32,10 @@ import ConstructionIcon from '@mui/icons-material/Construction'
 import HolidayVillageIcon from '@mui/icons-material/HolidayVillage'
 import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices'
 import SuccessฺฺBarRoom from './component'
+import RoomFilterDialog from './RoomFilterDialog'
+import { Container } from '@mui/material'
+import { CodeJson } from 'mdi-material-ui'
+import { Console } from 'console'
 
 interface Column {
   id: 'details' | 'room' | 'code' | 'reserve' | 'bedstatus'
@@ -89,6 +84,15 @@ const ReservationRoomTest = () => {
   const { user } = userStore()
 
   const [open, setOpen] = useState({}) // Change this line
+  const [selectedRoom, setSelectedRoom] = useState(null)
+
+  const handleDialogOpen = () => {
+    setDialogOpen(true)
+  }
+
+  const handleDialogClose = () => {
+    setDialogOpen(false)
+  }
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -122,10 +126,12 @@ const ReservationRoomTest = () => {
 
   useEffect(() => {
     const fetchReservationData = async (roomId: string) => {
+      console.log('roomId:', roomId)
       try {
         setLoading(true)
         const response = await fetch(`/api/reservation/checkUserReservationBoom?room_id=${roomId}`)
         const data = await response.json()
+        console.log('checkUserReservationBoom?room:', data)
         setReservationData(prevData => {
           const newData = new Map(prevData)
           newData.set(roomId, data)
@@ -161,11 +167,11 @@ const ReservationRoomTest = () => {
     }
 
     fetchDataAndUpdateStatus()
-    
-    // const intervalId = setInterval(fetchDataAndUpdateStatus, 5000)
 
-    // return () => clearInterval(intervalId)
-  }, []) // Remove dormitoryRoomStatus from dependencies
+    const intervalId = setInterval(fetchDataAndUpdateStatus, 500000)
+
+    return () => clearInterval(intervalId)
+  }, [])
 
   useEffect(() => {
     if (router.query.id) {
@@ -179,38 +185,38 @@ const ReservationRoomTest = () => {
     setDormitoryBuilding(data)
   }
 
-useEffect(() => {
-  const fetchDataRoomByDormID = async () => {
-    console.log('router.query.id:', router.query.id)
-    const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
-    setDormitoryRoom(data)
+  useEffect(() => {
+    const fetchDataRoomByDormID = async () => {
+      console.log('router.query.id:', router.query.id)
+      const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
+      setDormitoryRoom(data)
 
-    // Call the new API for each room
-    if (data) {
-      data.forEach(async room => {
-        const response = await fetch('/api/reservation/room/checkRoomSize', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ dorm_id: router.query.id, room_id: room.room_id })
+      // Call the new API for each room
+      if (data) {
+        data.forEach(async room => {
+          const response = await fetch('/api/reservation/room/checkRoomSize', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ dorm_id: router.query.id, room_id: room.room_id })
+          })
+          const result = await response.json()
+          console.log('checkBedStatus result:', result)
         })
-        const result = await response.json()
-        console.log('checkBedStatus result:', result)
-      })
+      }
     }
-  }
 
-  const fetchDataAndUpdateStatusRoom = async () => {
-    await fetchDataRoomByDormID() // Fetch the updated data
-  }
+    const fetchDataAndUpdateStatusRoom = async () => {
+      await fetchDataRoomByDormID() // Fetch the updated data
+    }
 
-  fetchDataAndUpdateStatusRoom()
+    fetchDataAndUpdateStatusRoom()
 
-  // const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 5000)
+    const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 50000)
 
-  // return () => clearInterval(intervalId)
-}, [])
+    return () => clearInterval(intervalId)
+  }, [])
 
   const handleReservation = (room_id: string) => {
     console.log('Reservation ROOM :', room_id)
@@ -221,18 +227,6 @@ useEffect(() => {
 
   const handleDialogToggle = () => {
     setDialogOpen(!dialogOpen)
-  }
-
-  const handleSmartReservation = () => {
-    const filterSchool = profileData?.userInfoData.filter_school
-    const filterMajor = profileData?.userInfoData.filter_major
-    const filterReligion = profileData?.userInfoData.filter_religion
-    const filterActivity = profileData?.userReqData.activity
-    const filterRedflag = profileData?.userReqData.filter_redflag
-    const filterSleep = profileData?.userReqData.sleep
-    // let filteredRooms = []
-
-    setDormitoryRoom(filteredRooms)
   }
 
   const handleClear = () => {
@@ -249,8 +243,276 @@ useEffect(() => {
     } else if (floorNumber >= 401 && floorNumber <= 405) {
       return 4
     } else {
-      return -1 // Or any other default value if the floor number doesn't match any category
+      return -1
     }
+  }
+
+  const handleSmartReservation = () => {
+    const userSchoolReq = profileData?.userReqData?.filter_school
+    const userMajorReq = profileData?.userReqData?.filter_major
+    const userReligionReq = profileData?.userReqData?.filter_religion
+    const userActivityReq = profileData?.userReqData?.activity
+    const userRedflagReq = profileData?.userReqData?.filter_redflag
+    const userSleepReq = profileData?.userReqData?.sleep
+
+    const userSchool = profileData?.userInfoData?.school
+    const userMajor = profileData?.userInfoData?.major
+    const userReligion = profileData?.userInfoData?.religion
+
+    if (!(reservationData instanceof Map)) {
+      console.error('reservationData is not a Map:', reservationData)
+
+      return
+    }
+
+    const reservationArray = Array.from(reservationData.values())
+
+    reservationArray.forEach((data, index) => {
+      if (Array.isArray(data) && data.length !== 0) {
+        console.log(`reservationData at index ${index}:`, data)
+      }
+    })
+
+    console.log('dormitoryRoom:', dormitoryRoom)
+
+    const parseCommaSeparatedValues = str => str.split(',').map(s => s.trim())
+    let roomMatches = []
+    const filteredRooms = dormitoryRoom.filter(room => {
+      console.log('Checking room:', room)
+      if (!room || !room.room_id) {
+        console.error('Invalid room:', room)
+
+        return false
+      }
+
+      const roomId = room.room_id.toString().trim()
+
+      const roomReservations = reservationArray.filter(
+        reservationArrayItem =>
+          Array.isArray(reservationArrayItem) &&
+          reservationArrayItem.some(reservation => {
+            const reservationRoomId = reservation.Reservation_Info?.room_id?.toString().trim()
+            const reservationBedId = reservation.Reservation_Info?.bed_id?.toString().trim()
+
+            const isMatch = reservationRoomId === roomId
+            if (isMatch) {
+              console.log(`Room ID: ${roomId}, Bed ID : ${reservationBedId}`)
+            }
+
+            return isMatch
+          })
+      )
+
+      console.log(`roomReservations:`, roomReservations)
+      let matchCount = 0
+      const matchesSchool = userSchoolReq
+        ? roomReservations.forEach(reservationArrayItem =>
+            reservationArrayItem.forEach(reservation => {
+              let match = false
+              switch (userSchoolReq) {
+                case 'find roommates who attend the same school':
+                  match = reservation.Users_Info?.school === userSchool
+                  break
+                case 'find roommates from any school':
+                  match = reservation.Users_Info?.school !== userSchool
+                  break
+                case 'find all school':
+                  match = true
+                  break
+              }
+              if (match) {
+                matchCount++ // Increment counter if match is true
+                const reservationBedId = reservation.Reservation_Info?.bed_id?.toString().trim()
+                console.log(
+                  `Room ID: ${roomId}, Bed ID : ${reservationBedId}, สำนักผู้ใช้ที่จองแล้ว: ${reservation.Users_Info?.school}, ผู้ใช้: ${userSchool}, Match: ${match}, userSchoolReq: ${userSchoolReq}`
+                )
+              }
+
+              return match
+            })
+          )
+        : true
+
+      let matchMajorCount = 0
+      const matchesMajor = userMajorReq
+        ? roomReservations.forEach(reservationArrayItem =>
+            reservationArrayItem.forEach(reservation => {
+              let match = false
+              switch (userMajorReq) {
+                case 'find roommates who attend the same major':
+                  match = reservation.Users_Info?.major === userMajor
+                  break
+                case 'find roommates from any major':
+                  match = reservation.Users_Info?.major !== userMajor
+                  break
+                case 'find all major':
+                  match = true
+                  break
+              }
+              if (match) {
+                matchMajorCount++ // Increment counter if match is true
+                const reservationBedId = reservation.Reservation_Info?.bed_id?.toString().trim()
+                console.log(
+                  `Room ID: ${roomId}, Bed ID : ${reservationBedId}, หลักสูตรผู้ใช้ที่จองแล้ว: ${reservation.Users_Info?.major}, ผู้ใช้: ${userMajor}, Match: ${match}, userMajorReq: ${userMajorReq}`
+                )
+              }
+
+              return match
+            })
+          )
+        : true
+
+      let matchReligionCount = 0 // Initialize counter
+
+      const matchesReligion = userReligionReq
+        ? roomReservations.forEach(reservationArrayItem =>
+            reservationArrayItem.forEach(reservation => {
+              let match = false
+              switch (userReligionReq) {
+                case 'find roommates who attend the same religion':
+                  match = reservation.Users_Info?.religion === userReligion
+                  break
+                case 'find roommates from any religion':
+                  match = reservation.Users_Info?.religion !== userReligion
+                  break
+                case 'find all religion':
+                  match = true
+                  break
+              }
+              if (match) {
+                matchReligionCount++ // Increment counter if match is true
+                const reservationBedId = reservation.Reservation_Info?.bed_id?.toString().trim()
+                console.log(
+                  `Room ID: ${roomId}, Bed ID : ${reservationBedId}, ศาสนาผู้ใช้ที่จองแล้ว: ${reservation.Users_Info?.religion}, ผู้ใช้: ${userReligion}, Match: ${match}, userReligionReq: ${userReligionReq}`
+                )
+              }
+
+              return match
+            })
+          )
+        : true
+
+      let matchActivityCount = 0 // Initialize counter
+
+      const matchesActivity = userActivityReq
+        ? roomReservations.map(reservationArrayItem =>
+            reservationArrayItem.filter(reservation => {
+              const userActivities = parseCommaSeparatedValues(userActivityReq)
+              const reservationActivities = reservation.Users_Req?.activity
+                ? parseCommaSeparatedValues(reservation.Users_Req.activity)
+                : []
+
+              const reservationBedId = reservation.Reservation_Info?.bed_id?.toString().trim()
+
+              let matchingActivities = userActivities.filter(activity => reservationActivities.includes(activity))
+              const match = matchingActivities.length > 0
+              console.log(`Bed ID: ${reservationBedId} , Matching Activities: ${matchingActivities.join(', ')} `)
+
+              if (match) {
+                matchActivityCount++ // Increment counter if match is true
+              }
+              console.log(
+                `Room ID: ${roomId}, Bed ID : ${reservationBedId}, ผู้ใช้: ${userActivityReq}, Match: ${match}`
+              )
+
+              return match
+            })
+          )
+        : true
+
+      let matchRedflagCount = 0 // Initialize counter
+
+      const matchesRedflag = userRedflagReq
+        ? roomReservations.map(reservationArrayItem =>
+            reservationArrayItem.filter(reservation => {
+              const userRedflags = parseCommaSeparatedValues(userRedflagReq)
+              const reservationRedflags = reservation.Users_Req?.filter_redflag
+                ? parseCommaSeparatedValues(reservation.Users_Req.filter_redflag)
+                : []
+
+              const reservationBedId = reservation.Reservation_Info?.bed_id?.toString().trim()
+
+              let matchingRedflags = userRedflags.filter(redflag => reservationRedflags.includes(redflag))
+              const match = matchingRedflags.length > 0
+              console.log(`Bed ID: ${reservationBedId} , Matching Redflags: ${matchingRedflags.join(', ')} `)
+
+              if (match) {
+                matchRedflagCount++ // Increment counter if match is true
+              }
+              console.log(
+                `Room ID: ${roomId}, Bed ID : ${reservationBedId}, ผู้ใช้: ${userRedflagReq}, Match: ${match}`
+              )
+
+              return match
+            })
+          )
+        : true
+
+      let matchSleepCount = 0 // Initialize counter
+
+      const matchesSleep = userSleepReq
+        ? roomReservations.forEach(reservationArrayItem =>
+            reservationArrayItem.forEach(reservation => {
+              const match = reservation.Users_Req?.sleep === userSleepReq
+              if (match) {
+                matchSleepCount++ // Increment counter if match is true
+              }
+              const reservationBedId = reservation.Reservation_Info?.bed_id?.toString().trim()
+              console.log(
+                `Room ID: ${roomId} , Bed ID : ${reservationBedId}, ผู้ใช้: ${userSleepReq}, Match: ${match} , เวลานอนของผู้ใช้ที่จองแล้ว: ${reservation.Users_Req?.sleep} `
+              )
+
+              return match
+            })
+          )
+        : true
+
+      console.log(
+        `ห้อง: ${roomId} , matchesSchool count: ${matchCount} , matchesMajor count: ${matchMajorCount} , matchesReligion count: ${matchReligionCount} , matchesActivity count: ${matchActivityCount} , matchesRedflag count: ${matchRedflagCount} , matchesSleep count: ${matchSleepCount}  `
+      )
+
+      const matchInfo = matchCount + matchMajorCount + matchReligionCount
+      const matchReq = matchActivityCount + matchRedflagCount + matchSleepCount
+
+      let matchInfoLog = `Total matches Info for room ${roomId}: ${matchInfo}`
+      console.log(matchInfoLog)
+
+      let matchReqLog = `Total matches Reqfor room ${roomId}: ${matchReq}`
+      console.log(matchReqLog)
+
+      roomMatches.push({
+        roomId,
+        matchInfo,
+        matchReq,
+        totalMatches: matchInfo + matchReq
+      })
+
+      const result =
+        matchesSchool && matchesMajor && matchesReligion && matchesActivity && matchesRedflag && matchesSleep
+      console.log('Room match result:', result)
+
+      return matchesSchool && matchesMajor && matchesReligion && matchesActivity && matchesRedflag && matchesSleep
+    })
+
+    roomMatches.sort((a, b) => b.totalMatches - a.totalMatches)
+    const top3Rooms = roomMatches.slice(0, 5)
+
+    console.log('top3Rooms:', top3Rooms)
+
+    const top3RoomIds = top3Rooms.map(room => room.roomId.toString())
+    console.log('top3RoomIds:', top3RoomIds)
+
+    let finalFilteredRooms = dormitoryRoom.filter(room => top3RoomIds.includes(room.room_id.toString()))
+    console.log('finalFilteredRooms:', finalFilteredRooms)
+
+    // Sort finalFilteredRooms based on the order of top3RoomIds
+    finalFilteredRooms = finalFilteredRooms.sort(
+      (a, b) => top3RoomIds.indexOf(a.room_id.toString()) - top3RoomIds.indexOf(b.room_id.toString())
+    )
+
+    console.log('Sorted finalFilteredRooms:', finalFilteredRooms)
+
+    setDormitoryRoom(finalFilteredRooms)
   }
 
   return (
@@ -266,131 +528,18 @@ useEffect(() => {
                 alignItems: 'center',
                 justifyContent: 'space-between'
               }}
-            >
-              <Button onClick={handleDialogToggle}>Filter Room</Button>
-            </Box>
-            <Dialog open={dialogOpen} onClose={handleDialogToggle}>
-              <DialogTitle>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography>Filter Room</Typography>
-                  <IconButton onClick={handleDialogToggle}>
-                    <CloseIcon />
-                  </IconButton>
-                </Box>
-              </DialogTitle>
-              <DialogContent>
-                {' '}
-                <Box sx={{ display: 'flex' }}>
-                  <HolidayVillageIcon fontSize='small' sx={{ marginRight: 2 }} />
-                  <Typography sx={{ paddingRight: 2 }}>Floor</Typography>
-                </Box>
-                <Grid container spacing={2} pb={5} pt={1}>
-                  <FormControlLabel
-                    control={<Checkbox checked={floorFilter === null} onChange={() => setFloorFilter(null)} />}
-                    label='All'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={floorFilter === 1} onChange={() => setFloorFilter(1)} />}
-                    label='1'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={floorFilter === 2} onChange={() => setFloorFilter(2)} />}
-                    label='2'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={floorFilter === 3} onChange={() => setFloorFilter(3)} />}
-                    label='3'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={floorFilter === 4} onChange={() => setFloorFilter(4)} />}
-                    label='4'
-                  />
-                </Grid>
-                <Box sx={{ display: 'flex' }}>
-                  <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
-                  <Typography sx={{ paddingRight: 2 }}>Bed Available</Typography>
-                </Box>
-                <Grid container spacing={2} pb={5} pt={1}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox checked={bedAvailableFilter === null} onChange={() => setBedAvailableFilter(null)} />
-                    }
-                    label='All'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={bedAvailableFilter === 0} onChange={() => setBedAvailableFilter(0)} />}
-                    label='0'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={bedAvailableFilter === 1} onChange={() => setBedAvailableFilter(1)} />}
-                    label='1'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={bedAvailableFilter === 2} onChange={() => setBedAvailableFilter(2)} />}
-                    label='2'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={bedAvailableFilter === 3} onChange={() => setBedAvailableFilter(3)} />}
-                    label='3'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={bedAvailableFilter === 4} onChange={() => setBedAvailableFilter(4)} />}
-                    label='4'
-                  />
-                </Grid>
-                <Box sx={{ display: 'flex' }}>
-                  <MiscellaneousServicesIcon fontSize='small' sx={{ marginRight: 2 }} />
-                  <Typography sx={{ paddingRight: 2 }}>Requirement</Typography>
-                </Box>
-                <Grid container spacing={2} pb={5} pt={1}>
-                  <Grid item xs={12}>
-                    <FormControlLabel
-                      control={<Checkbox checked={schoolFilter === ''} onChange={() => setSchoolFilter('')} />}
-                      label='All'
-                    />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={schoolFilter === 'Same School'}
-                          onChange={() => setSchoolFilter('Same School')}
-                        />
-                      }
-                      label='Same School'
-                    />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={schoolFilter === 'Same Major'}
-                          onChange={() => setSchoolFilter('Same Major')}
-                        />
-                      }
-                      label='Same Major'
-                    />
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={schoolFilter === 'Same Religion'}
-                          onChange={() => setSchoolFilter('Same Religion')}
-                        />
-                      }
-                      label='Same Religion'
-                    />
-                  </Grid>
-                </Grid>
-                <Grid container spacing={2} pb={5}>
-                  <Button
-                    onClick={() => {
-                      setBedAvailableFilter(null)
-                      setFloorFilter(null)
-                      setSchoolFilter('')
-                    }}
-                  >
-                    Clear
-                  </Button>
-                  <Button onClick={handleDialogToggle}>Apply</Button>
-                </Grid>
-              </DialogContent>
-            </Dialog>
+            ></Box>
+            <div>
+              <Button onClick={handleDialogOpen}>Filter</Button>
+              <RoomFilterDialog
+                open={dialogOpen}
+                onClose={handleDialogClose}
+                bedAvailableFilter={bedAvailableFilter}
+                setBedAvailableFilter={setBedAvailableFilter}
+                floorFilter={floorFilter}
+                setFloorFilter={setFloorFilter}
+              />
+            </div>
           </CardContent>
         </Card>
       </Grid>
@@ -423,18 +572,6 @@ useEffect(() => {
               {dormitoryRoom
                 .filter(room => bedAvailableFilter === null || room.bed_available === bedAvailableFilter)
                 .filter(room => floorFilter === null || mapToFloorCategory(room.room_number) === floorFilter)
-                .filter(room => {
-                  const reservations = reservationData.get(room.room_id) || []
-                  if (schoolFilter === 'Same School') {
-                    return reservations.some(reservation => reservation.Users?.school === profileData?.data.school)
-                  } else if (schoolFilter === 'Same Major') {
-                    return reservations.some(reservation => reservation.Users?.major === profileData?.data.major)
-                  } else if (schoolFilter === 'Same Religion') {
-                    return reservations.some(reservation => reservation.Users?.religion === profileData?.data.religion)
-                  } else {
-                    return true // If no school filter is selected, return true to include all rooms
-                  }
-                })
                 .map(room => (
                   <React.Fragment key={room.room_id}>
                     <TableRow hover role='checkbox' tabIndex={-1}>

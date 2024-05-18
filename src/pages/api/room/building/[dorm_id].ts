@@ -7,7 +7,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         .select('*')
         .eq('dorm_id', req.query.dorm_id)
         .order('room_id', { ascending: true });
-    console.log('data:', data)
+    // console.log('data:', data)
     res?.status(200).json({ data })
     
 }

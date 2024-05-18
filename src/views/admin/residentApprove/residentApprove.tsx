@@ -191,6 +191,7 @@ const ResidentApprove = () => {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       const data = await response.json()
+      console.log('Data:', data)
       if (data) {
         setUsers(data)
 
