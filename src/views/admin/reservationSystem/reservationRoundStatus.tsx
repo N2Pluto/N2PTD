@@ -58,10 +58,10 @@ export default function ReservationRoundStatus() {
     }
 
     fetchRoundStatus()
-    
-    // const intervalId = setInterval(fetchRoundStatus, 1000)
 
-    // return () => clearInterval(intervalId)
+    const intervalId = setInterval(fetchRoundStatus, 5000)
+
+    return () => clearInterval(intervalId)
   }, [])
 
 

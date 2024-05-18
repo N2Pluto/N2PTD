@@ -2,48 +2,41 @@
 
 import supabase from 'src/libs/supabase'
 
-
 const handler = async (req: any, res: any) => {
   const { start_date, end_date } = req.body
 
-  // Check if there is already a reservation with round_status == true
-  const { data: activeRoundData, error: activeRoundError } = await supabase
-    .from('Reservation_System')
-    .select('*')
-    .eq('round_status', true)
+  // Fetch all records from the database
+  const { data: allRecords, error: fetchError } = await supabase.from('Reservation_System').select('*')
 
-  if (activeRoundError) {
-    console.error('Error checking active round:', activeRoundError)
-    res.status(500).json({ error: 'Failed to check active round' })
+  if (fetchError) {
+    console.error('Error fetching records:', fetchError)
+    res.status(500).json({ error: 'Failed to fetch records' })
 
     return
   }
 
-  if (activeRoundData.length > 0) {
-    res.status(400).json({ error: 'A round is already active.' })
-    
-    return
+  const start = new Date(start_date)
+  start.setHours(0, 0, 0, 0) // Strip off time part
+
+  const end = new Date(end_date)
+  end.setHours(0, 0, 0, 0) // Strip off time part
+
+  // Check if the new date range overlaps with any existing date ranges
+  for (let record of allRecords) {
+    const recordStart = new Date(record.start_date)
+    recordStart.setHours(0, 0, 0, 0)
+
+    const recordEnd = new Date(record.end_date)
+    recordEnd.setHours(0, 0, 0, 0)
+
+    if ((start >= recordStart && start <= recordEnd) || (end >= recordStart && end <= recordEnd)) {
+      res.status(200).json({ isDuplicate: true })
+
+      return
+    }
   }
 
-  // Check for duplicate dates
-  const { data, error } = await supabase
-    .from('Reservation_System')
-    .select('*')
-    .gte('start_date', start_date)
-    .lte('end_date', end_date)
-
-  if (error) {
-    console.error('Error checking duplicate dates:', error)
-    res.status(500).json({ error: 'Failed to check duplicate dates' })
-
-    return
-  }
-
-  if (data.length > 0) {
-    res.status(200).json({ isDuplicate: true })
-  } else {
-    res.status(200).json({ isDuplicate: false })
-  }
+  res.status(200).json({ isDuplicate: false })
 }
 
 export default handler
