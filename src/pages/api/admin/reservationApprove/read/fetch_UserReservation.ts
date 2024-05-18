@@ -16,8 +16,9 @@ const handler = async (req: any, res: any) => {
   if (usersInfoError) return res.status(500).json({ error: usersInfoError.message })
 
   const data = reservationData.map(reservation => {
-   
+
     const userInfo = usersInfoData.find(user => user.user_id === reservation.user_id)
+
     return { ...reservation, Users_Info: userInfo }
   })
 

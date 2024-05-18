@@ -81,14 +81,14 @@ const ReservationBuilding = () => {
         const data = await response.json()
 
         // เปลี่ยนไปใช้ data ที่ได้จากการ fetch โดยตรง
-        console.log('gender', data.data.gender)
+        console.log('gender', data.userInfoData.gender)
 
-        if (data.data.gender === 'male') {
-          console.log('male', data.data.gender)
+        if (data.userInfoData.gender === 'male') {
+          console.log('setGenderFilter', data.userInfoData.gender)
           setGenderFilter('male')
         }
-        if (data.data.gender === 'female') {
-          console.log('female', data.data.gender)
+        if (data.userInfoData.gender === 'female') {
+          console.log('setGenderFilter', data.userInfoData.gender)
           setGenderFilter('female')
         }
       } catch (error) {

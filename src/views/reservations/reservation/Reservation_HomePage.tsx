@@ -52,9 +52,9 @@ const ReservationHomePage = () => {
           }, 1500)
         }
       } catch (error) {
-        console.error('Error checking reservation qualification:', error)
+        // console.error('Error checking reservation qualification:', error)
       }
-    }, 5000) // Fetch every 3 seconds
+    }, 1000) // Fetch every 3 seconds
   }
 
   useEffect(() => {

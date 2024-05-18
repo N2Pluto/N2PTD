@@ -8,7 +8,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .eq('dorm_id', req.query.id)
     .limit(1)
     .single()
-  console.log('data:', data)
+
+    
   res?.status(200).json({ data })
 }
 
