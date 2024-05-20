@@ -63,7 +63,7 @@ export default function EditUserForm({ id, student_id }: { id: number; student_i
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/admin/user/userForm/read/readByID/${id}`)
+        const response = await fetch(`/api/admin/user/userForm/read/readByID/${id}/`)
         const { data } = await response.json()
         if (data) {
           setNewUsers(Array.isArray(data) ? data : [data])
@@ -78,6 +78,8 @@ export default function EditUserForm({ id, student_id }: { id: number; student_i
 
     fetchData()
   }, [id])
+
+  console.log('newUsers', newUsers)
 
   useEffect(() => {
     const fetchData = async () => {
