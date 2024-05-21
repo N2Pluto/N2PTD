@@ -9,6 +9,7 @@ import LayoutAuth from 'src/layouts/LayoutAuth'
 import CardImgTop from 'src/views/cards/CardImgTop'
 import CardInfluencer from 'src/views/cards/CardInfluencer'
 import FacebookPost from 'src/views/dashboardhome/component/facebook'
+import Round from 'src/views/dashboardhome/component/round'
 import CardBedStatistics from 'src/views/dashboardhome/component/statistics/component/bedStatistics'
 import CardBuildingStatistics from 'src/views/dashboardhome/component/statistics/component/buildingStatistics'
 import CardRoomStatistics from 'src/views/dashboardhome/component/statistics/component/roomStatistics'
@@ -38,7 +39,7 @@ const Dashboard = () => {
         </Grid>
         <Grid item xs={12} sm={4}>
           <Grid item xs={12} sm={12} sx={{ pb: 6 }}>
-            <CardInfluencer />
+            <Round />
           </Grid>
           <Grid item xs={12} sm={12} sx={{ pb: 6 }}>
             <CardImgTop />

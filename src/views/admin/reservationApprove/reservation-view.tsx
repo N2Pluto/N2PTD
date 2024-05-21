@@ -20,7 +20,7 @@ import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import DeleteIcon from '@mui/icons-material/Delete'
 import FilterListIcon from '@mui/icons-material/FilterList'
-import { alpha } from '@mui/material/styles'
+import { alpha, useTheme } from '@mui/material/styles'
 import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -44,8 +44,8 @@ import InputAdornment from '@mui/material/InputAdornment'
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import SearchIcon from '@mui/icons-material/Search'
-import FadeMenu from './components/FadeMenu'
-import DialogReject from './reservation-reject'
+
+
 
 interface User {
   id: number
@@ -82,8 +82,8 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography sx={{ flex: '1 1 100%' }} variant='h6' id='tableTitle' component='div'>
-          Nutrition
+        <Typography sx={{ flex: '1 1 100%' ,pl:5}} variant='h6' id='tableTitle' component='div'>
+          Reservation Control
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -640,7 +640,7 @@ const ReservationApprove = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label='Dense' />
+      {/* <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label='Dense' /> */}
     </Box>
   )
 }

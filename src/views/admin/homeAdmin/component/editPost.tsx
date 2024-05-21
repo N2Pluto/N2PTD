@@ -58,6 +58,12 @@ export default function EditPost({ id }: { id: any }) {
         body: JSON.stringify({ id, ...formData })
       })
       const data = await response.json()
+
+      console.log('response',response)
+      if (response.ok) {
+        alert('Post updated successfully')
+        router.reload()
+      }
       console.log(data)
     } catch (error) {
       console.error('Error updating post data:', error)
@@ -86,7 +92,7 @@ export default function EditPost({ id }: { id: any }) {
 
   const handleEdit = () => {
     handleEditPost(id)
-    router.reload()
+
     handleClose()
   }
 

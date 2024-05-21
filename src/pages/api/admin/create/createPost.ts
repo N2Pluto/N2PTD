@@ -1,5 +1,3 @@
-// this is /api/admin/create/createBuilding.ts
-
 import supabase from 'src/libs/supabase'
 
 async function handler(req: any, res: any) {
@@ -10,6 +8,14 @@ async function handler(req: any, res: any) {
       image: req.body.image
     }
   ])
+
+  if (error) {
+    console.error(error);
+    
+    return res.status(500).json({ error: 'Error inserting data' });
+  }
+
+  return res.status(200).json({ message: 'Data inserted successfully' });
 }
 
 export default handler

@@ -64,8 +64,8 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography sx={{ flex: '1 1 100%' }} variant='h6' id='tableTitle' component='div'>
-          Nutrition
+        <Typography sx={{ flex: '1 1 100%'}} variant='h6' id='tableTitle' component='div'>
+          User Management
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -251,7 +251,7 @@ const UserManagement = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label='Dense padding' />
+      {/* <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label='Dense padding' /> */}
     </Box>
   )
 }
