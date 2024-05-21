@@ -128,6 +128,7 @@ const Building = ({ dorm_id }) => {
 
           ))}
       </Grid>
+      
     </>
   )
 }
