@@ -24,12 +24,10 @@ const MUITable = () => {
   }, [])
 
   const fetchData = async () => {
-    console.log('router.query.id:', router.query.id)
     const { data } = await fetch(`/api/building/${router.query.id}`).then(res => res.json())
     setDormitoryBuilding(data)
   }
 
-  console.log('dormitoryBuilding:', dormitoryBuilding)
 
 
   return (

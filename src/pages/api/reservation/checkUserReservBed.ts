@@ -4,7 +4,6 @@ import supabase from 'src/libs/supabase'
 
 const handler = async (req: any, res: any) => {
   const { bed_id } = req.query
-  console.log('bed_id:', bed_id)
 
   const { data, error } = await supabase
     .from('Reservation')

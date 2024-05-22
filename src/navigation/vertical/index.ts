@@ -32,10 +32,9 @@ const useNavigation = (): VerticalNavItemsType => {
 
 
         if (data.userData.role === 'admin') {
-          console.log('admin')
+
           setRoleFilter('admin')
         } else if (data.userData.role === 'user') {
-          console.log('user')
           setRoleFilter('user')
         }
       } catch (error) {

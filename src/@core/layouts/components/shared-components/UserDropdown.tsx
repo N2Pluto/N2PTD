@@ -53,7 +53,6 @@ const UserDropdown = () => {
         const data = await response.json()
         setProfileData(data) // เซ็ตข้อมูลผู้ใช้ที่ได้รับจาก API
       } catch (error) {
-        // console.error('Error fetching user profile:', error)
       }
     }
 

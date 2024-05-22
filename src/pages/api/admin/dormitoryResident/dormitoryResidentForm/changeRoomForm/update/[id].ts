@@ -3,8 +3,6 @@ import { google } from 'googleapis'
 
 const handler = async (req: any, res: any) => {
   const { id, status } = req.body
-  console.log('Received id:', id)
-  console.log('Received status:', status)
 
   try {
     const auth = new google.auth.GoogleAuth({

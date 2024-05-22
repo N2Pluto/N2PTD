@@ -49,7 +49,6 @@ const ModeColor = () => {
   // Function to handle color change
   const handleColorChange = (color: string) => {
     setColors(color);
-    console.log('Updated Palette:', color);
   }
 
   // Render ModeColor component

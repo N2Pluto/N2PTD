@@ -58,7 +58,6 @@ const AdminLayout: React.FC<LayoutProps> = ({ children }) => {
     if (token) {
       const user = await profileService.fetchMe()
       if (user?.data) {
-        console.log('user?.data', user?.data)
         setUser(user?.data)
         if (user?.data.role != 'admin') {
           router.push(Link.HOME)

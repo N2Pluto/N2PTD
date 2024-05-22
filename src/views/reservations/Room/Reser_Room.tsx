@@ -100,7 +100,6 @@ const ReservationRoomTest = () => {
 
     if (user?.user_id) {
       fetchUserProfile()
-      console.log('usasdsader:', profileData)
     }
   }, [user])
 
@@ -113,12 +112,10 @@ const ReservationRoomTest = () => {
 
   useEffect(() => {
     const fetchReservationData = async (roomId: string) => {
-      console.log('roomId:', roomId)
       try {
         setLoading(true)
         const response = await fetch(`/api/reservation/checkUserReservationBoom?room_id=${roomId}`)
         const data = await response.json()
-        console.log('checkUserReservationBoom?room:', data)
         setReservationData(prevData => {
           const newData = new Map(prevData)
           newData.set(roomId, data)
@@ -144,7 +141,6 @@ const ReservationRoomTest = () => {
         const response = await fetch(`/api/reservation/checkStatusRoom?dorm_id=${dorm_id}`)
         const data = await response.json()
         setDormitoryRoomStatus(data)
-        console.log('data bed capacity:', data)
       } catch (error) {
         console.error('Error fetching room status:', error)
       }
@@ -167,13 +163,11 @@ const ReservationRoomTest = () => {
   }, [router.query.id])
 
   const fetchData = async () => {
-    console.log('router.query.id:', router.query.id)
     const { data } = await fetch(`/api/building/${router.query.id}`).then(res => res.json())
     setDormitoryBuilding(data)
   }
 
   const fetchDataRoomByDormID = async () => {
-    console.log('router.query.id:', router.query.id)
     const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
     setDormitoryRoom(data)
 
@@ -188,7 +182,6 @@ const ReservationRoomTest = () => {
           body: JSON.stringify({ dorm_id: router.query.id, room_id: room.room_id })
         })
         const result = await response.json()
-        console.log('checkBedStatus result:', result)
       })
     }
   }
@@ -210,9 +203,7 @@ const ReservationRoomTest = () => {
   }
 
   const handleReservation = (room_id: string) => {
-    console.log('Reservation ROOM :', room_id)
     setUser({ ...userStoreInstance.user, room_id }) // Store room_id in userStore
-    console.log('user:', userStoreInstance.user)
     router.push(`/reservation/bed/${room_id}`)
   }
 
@@ -256,7 +247,6 @@ const ReservationRoomTest = () => {
 
     reservationArray.forEach((data, index) => {
       if (Array.isArray(data) && data.length !== 0) {
-        console.log(`reservationData at index ${index}:`, data)
       }
     })
 
@@ -265,7 +255,6 @@ const ReservationRoomTest = () => {
     const parseCommaSeparatedValues = str => str.split(',').map(s => s.trim())
     let roomMatches = []
     const filteredRooms = dormitoryRoom.filter(room => {
-      console.log('Checking room:', room)
       if (!room || !room.room_id) {
         console.error('Invalid room:', room)
 
@@ -290,7 +279,6 @@ const ReservationRoomTest = () => {
           })
       )
 
-      console.log(`roomReservations:`, roomReservations)
       let matchCount = 0
       const matchesSchool = userSchoolReq
         ? roomReservations.forEach(reservationArrayItem =>
@@ -456,9 +444,7 @@ const ReservationRoomTest = () => {
           )
         : true
 
-      console.log(
-        `ห้อง: ${roomId} , matchesSchool count: ${matchCount} , matchesMajor count: ${matchMajorCount} , matchesReligion count: ${matchReligionCount} , matchesActivity count: ${matchActivityCount} , matchesRedflag count: ${matchRedflagCount} , matchesSleep count: ${matchSleepCount}  `
-      )
+
 
       const matchInfo = matchCount + matchMajorCount + matchReligionCount
       const matchReq = matchActivityCount + matchRedflagCount + matchSleepCount
@@ -471,15 +457,13 @@ const ReservationRoomTest = () => {
       const scoreSleep = matchSleepCount
 
       let matchInfoLog = `Total matches Info for room ${roomId}: ${matchInfo}`
-      console.log(matchInfoLog)
 
       let matchReqLog = `Total matches Reqfor room ${roomId}: ${matchReq}`
-      console.log(matchReqLog)
+
 
       let matchActivityEachRoom = `${matchingActivities.join(', ')}`
       let matchRedflagEachRoom = `${matchingRedflags.join(', ')}`
-      console.log(matchActivityEachRoom)
-      console.log(matchRedflagEachRoom)
+
 
       roomMatches.push({
         roomId,
@@ -511,7 +495,6 @@ const ReservationRoomTest = () => {
     roomMatches.sort((a, b) => b.totalMatches - a.totalMatches)
     const top3Rooms = roomMatches.slice(0, 3)
 
-    console.log('top3Rooms:', top3Rooms)
 
     const top3RoomIds = top3Rooms.map(room => ({
       roomId: room.roomId.toString(),
@@ -536,7 +519,6 @@ const ReservationRoomTest = () => {
       scoreSleep: room.scoreSleep,
       totalMatches: room.totalMatches
     }))
-    console.log('top3RoomIds:', top3RoomIds)
     let finalFilteredRooms = dormitoryRoom
       .map(room => {
         const roomInTop3 = top3RoomIds.find(topRoom => topRoom.roomId === room.room_id.toString())
@@ -568,7 +550,7 @@ const ReservationRoomTest = () => {
       })
       .filter(room => room !== null)
 
-    console.log('finalFilteredRooms:', finalFilteredRooms)
+
 
     // Create an array of room IDs from top3RoomIds
     const top3RoomIdsArray = top3RoomIds.map(room => room.roomId)
@@ -578,14 +560,14 @@ const ReservationRoomTest = () => {
       (a, b) => top3RoomIdsArray.indexOf(a.room_id.toString()) - top3RoomIdsArray.indexOf(b.room_id.toString())
     )
 
-    console.log('Sorted finalFilteredRooms:', finalFilteredRooms)
+
 
     setDormitoryRoom(finalFilteredRooms)
 
     setFinalFilteredRooms(finalFilteredRooms)
     setOpenDialog(true)
   }
-  console.log('finalFilteredRooms', finalFilteredRooms)
+
 
   return (
     <>

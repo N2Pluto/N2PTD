@@ -12,7 +12,7 @@ async function insertUserInfo(
   filter_redflag: string
 ) {
   try {
-   
+
     const { data: data2, error: error2 } = await supabase.from('Users_Req').insert({
       user_id,
       activity,
@@ -34,7 +34,6 @@ async function insertUserInfo(
 const handler = async (req: any, res: any) => {
   middleware(req, res, async () => {
     const { user_id, activity, sleep, filter_school, filter_major, filter_religion, filter_redflag } = req.body
-    console.log('user_id', user_id)
 
     if (!user_id) {
       return res.status(400).json({ error: 'user_id is required' })
