@@ -50,7 +50,7 @@ const RoomDetailsDialog = ({ open, handleClose, roomData, selectedRoomIndex }) =
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
               <Card className={classes.card}>
-                <CardContent style={{ height: '250px' }}>
+                <CardContent style={{ height: '350px' }}>
                   <Typography variant='h6' className={classes.cardTitle}>
                     User Requests
                   </Typography>
@@ -79,7 +79,7 @@ const RoomDetailsDialog = ({ open, handleClose, roomData, selectedRoomIndex }) =
             </Grid>
             <Grid item xs={12} sm={6}>
               <Card className={classes.card}>
-                <CardContent style={{ height: '250px' }}>
+                <CardContent style={{ height: '350px' }}>
                   <Typography variant='h6' className={classes.cardTitle}>
                     Activity & Other Requests
                   </Typography>
@@ -93,23 +93,29 @@ const RoomDetailsDialog = ({ open, handleClose, roomData, selectedRoomIndex }) =
                     <b>Sleep Request:</b> {roomData[selectedRoomIndex].userSleepReq}
                   </Typography>
                   <Typography className={classes.cardText}>
-                    <Typography>
-                      {roomData[selectedRoomIndex].matchActivityEachRoom ? (
-                        <>
-                          <b style={{ textDecoration: 'underline' }}>
-                            {roomData[selectedRoomIndex].matchActivityEachRoom}
-                          </b>{' '}
-                          Activities is Matching with {roomData[selectedRoomIndex].scoreActivity} Person
-                        </>
-                      ) : (
-                        'No Activities Match'
-                      )}
-                    </Typography>
+                    {roomData[selectedRoomIndex].scoreActivity === 0 ? (
+                      'No Activities Match.'
+                    ) : (
+                      <Typography>
+                        <b style={{ textDecoration: 'underline' }}>
+                          {roomData[selectedRoomIndex].matchActivityEachRoom}:
+                        </b>{' '}
+                        Activities is Matching with {roomData[selectedRoomIndex].scoreActivity} Person
+                      </Typography>
+                    )}
                   </Typography>
 
                   <Typography className={classes.cardText}>
-                    <b style={{ textDecoration: 'underline' }}>{roomData[selectedRoomIndex].matchRedflagEachRoom}:</b>{' '}
-                    Redflag is Matching with {roomData[selectedRoomIndex].scoreRedflag} Person.
+                    {roomData[selectedRoomIndex].scoreRedflag === 0 ? (
+                      'No Redflag Match.'
+                    ) : (
+                      <>
+                        <b style={{ textDecoration: 'underline' }}>
+                          {roomData[selectedRoomIndex].matchRedflagEachRoom}:
+                        </b>{' '}
+                        Redflag is Matching with {roomData[selectedRoomIndex].scoreRedflag} Person.
+                      </>
+                    )}
                   </Typography>
                   <Typography className={classes.cardText}>
                     <b style={{ textDecoration: 'underline' }}> {roomData[selectedRoomIndex].userSleepReq}</b> is

@@ -27,6 +27,22 @@ import ConstructionIcon from '@mui/icons-material/Construction'
 import SuccessฺฺBarRoom from './component'
 import RoomFilterDialog from './RoomFilterDialog'
 import SmartReservationDialog from './SmartReservationDialog'
+import RoomCard from './RoomCard'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Checkbox from '@mui/material/Checkbox'
+import ListItemText from '@mui/material/ListItemText'
+import { makeStyles } from '@mui/styles'
+
+const useStyles = makeStyles({
+  highlightText: {
+    backgroundColor: 'lightpink',
+    padding: '0 4px', // เพิ่มการเติมพื้นที่รอบข้อความสำหรับขอบเขตของสี
+    borderRadius: '4px' // ทำให้มีเส้นขอบโค้ง
+  }
+})
 
 interface Column {
   id: 'details' | 'room' | 'code' | 'reserve' | 'bedstatus'
@@ -56,6 +72,8 @@ const columns: readonly Column[] = [
 ]
 
 const ReservationRoomTest = () => {
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const router = useRouter()
   const [dormitoryBuilding, setDormitoryBuilding] = useState(null)
   const [dormitoryRoom, setDormitoryRoom] = useState([])
@@ -72,6 +90,15 @@ const ReservationRoomTest = () => {
   const [open, setOpen] = React.useState(false)
   const [openDialog, setOpenDialog] = React.useState(false)
   const [finalFilteredRooms, setFinalFilteredRooms] = useState([])
+  const [showCard, setShowCard] = useState(false)
+  const [showRoomCard, setShowRoomCard] = useState(false)
+  const [key, setKey] = React.useState(0)
+
+  const HighlightText = ({ children }) => {
+    const classes = useStyles()
+
+    return <span className={classes.highlightText}>{children}</span>
+  }
 
   const handleDialogOpen = () => {
     setDialogOpen(true)
@@ -103,10 +130,10 @@ const ReservationRoomTest = () => {
     }
   }, [user])
 
-  const handleClick = id => {
+  const handleClick = roomId => {
     setOpen(prevOpen => ({
       ...prevOpen,
-      [id]: !prevOpen[id]
+      [roomId]: !prevOpen[roomId]
     }))
   }
 
@@ -239,7 +266,6 @@ const ReservationRoomTest = () => {
 
     if (!(reservationData instanceof Map)) {
       console.error('reservationData is not a Map:', reservationData)
-
       return
     }
 
@@ -253,11 +279,12 @@ const ReservationRoomTest = () => {
     console.log('dormitoryRoom:', dormitoryRoom)
 
     const parseCommaSeparatedValues = str => str.split(',').map(s => s.trim())
+
     let roomMatches = []
+
     const filteredRooms = dormitoryRoom.filter(room => {
       if (!room || !room.room_id) {
         console.error('Invalid room:', room)
-
         return false
       }
 
@@ -266,159 +293,112 @@ const ReservationRoomTest = () => {
       const roomReservations = reservationArray.filter(
         reservationArrayItem =>
           Array.isArray(reservationArrayItem) &&
-          reservationArrayItem.some(reservation => {
-            const reservationRoomId = reservation.Reservation_Info?.room_id?.toString().trim()
-            const reservationBedId = reservation.Reservation_Info?.bed_id?.toString().trim()
-
-            const isMatch = reservationRoomId === roomId
-            if (isMatch) {
-              console.log(`Room ID: ${roomId}, Bed ID : ${reservationBedId}`)
-            }
-
-            return isMatch
-          })
+          reservationArrayItem.some(reservation => reservation.Reservation_Info?.room_id?.toString().trim() === roomId)
       )
 
       let matchCount = 0
-      const matchesSchool = userSchoolReq
-        ? roomReservations.forEach(reservationArrayItem =>
-            reservationArrayItem.forEach(reservation => {
-              let match = false
-              switch (userSchoolReq) {
-                case 'find roommates who attend the same school':
-                  match = reservation.Users_Info?.school === userSchool
-                  break
-                case 'find roommates from any school':
-                  match = reservation.Users_Info?.school !== userSchool
-                  break
-                case 'find all school':
-                  match = true
-                  break
-              }
-              if (match) {
-                matchCount++ // Increment counter if match is true
-                const reservationBedId = reservation.Reservation_Info?.bed_id?.toString().trim()
-                console.log(
-                  `Room ID: ${roomId}, Bed ID : ${reservationBedId}, สำนักผู้ใช้ที่จองแล้ว: ${reservation.Users_Info?.school}, ผู้ใช้: ${userSchool}, Match: ${match}, userSchoolReq: ${userSchoolReq}`
-                )
-              }
-
-              return match
-            })
-          )
-        : true
-
       let matchMajorCount = 0
-      const matchesMajor = userMajorReq
-        ? roomReservations.forEach(reservationArrayItem =>
-            reservationArrayItem.forEach(reservation => {
-              let match = false
-              switch (userMajorReq) {
-                case 'find roommates who study the same major':
-                  match = reservation.Users_Info?.major === userMajor
-                  break
-                case 'find roommates from any major':
-                  match = reservation.Users_Info?.major !== userMajor
-                  break
-                case 'find all major':
-                  match = true
-                  break
-              }
-              if (match) {
-                matchMajorCount++ // Increment counter if match is true
-                const reservationBedId = reservation.Reservation_Info?.bed_id?.toString().trim()
-                console.log(
-                  `Room ID: ${roomId}, Bed ID : ${reservationBedId}, หลักสูตรผู้ใช้ที่จองแล้ว: ${reservation.Users_Info?.major}, ผู้ใช้: ${userMajor}, Match: ${match}, userMajorReq: ${userMajorReq}`
-                )
-              }
+      let matchReligionCount = 0
+      let matchActivityCount = 0
+      let matchRedflagCount = 0
+      let matchSleepCount = 0
+      let matchingActivities = new Set()
+      let matchingRedflags = new Set()
 
-              return match
-            })
-          )
-        : true
+      roomReservations.forEach(reservationArrayItem =>
+        reservationArrayItem.forEach(reservation => {
+          const reservationBedId = reservation.Reservation_Info?.bed_id?.toString().trim()
 
-      let matchReligionCount = 0 // Initialize counter
+          console.log(`Room ID: ${roomId}, Bed ID : ${reservationBedId}`)
 
-      const matchesReligion = userReligionReq
-        ? roomReservations.forEach(reservationArrayItem =>
-            reservationArrayItem.forEach(reservation => {
-              let match = false
-              switch (userReligionReq) {
-                case 'find roommates who attend the same religion':
-                  match = reservation.Users_Info?.religion === userReligion
-                  break
-                case 'find roommates from any religion':
-                  match = reservation.Users_Info?.religion !== userReligion
-                  break
-                case 'find all religion':
-                  match = true
-                  break
-              }
-              if (match) {
-                matchReligionCount++ // Increment counter if match is true
-                const reservationBedId = reservation.Reservation_Info?.bed_id?.toString().trim()
-                console.log(
-                  `Room ID: ${roomId}, Bed ID : ${reservationBedId}, ศาสนาผู้ใช้ที่จองแล้ว: ${reservation.Users_Info?.religion}, ผู้ใช้: ${userReligion}, Match: ${match}, userReligionReq: ${userReligionReq}`
-                )
-              }
+          if (userSchoolReq) {
+            let match = false
+            switch (userSchoolReq) {
+              case 'find roommates who attend the same school':
+                match = reservation.Users_Info?.school === userSchool
+                break
+              case 'find roommates from any school':
+                match = reservation.Users_Info?.school !== userSchool
+                break
+              case 'find all school':
+                match = true
+                break
+            }
+            if (match) matchCount++
+            console.log(
+              `สำนักผู้ใช้ที่จองแล้ว: ${reservation.Users_Info?.school}, ผู้ใช้: ${userSchool}, Match: ${match}, userSchoolReq: ${userSchoolReq}`
+            )
+          }
 
-              return match
-            })
-          )
-        : true
+          if (userMajorReq) {
+            let match = false
+            switch (userMajorReq) {
+              case 'find roommates who study the same major':
+                match = reservation.Users_Info?.major === userMajor
+                break
+              case 'find roommates from any major':
+                match = reservation.Users_Info?.major !== userMajor
+                break
+              case 'find all major':
+                match = true
+                break
+            }
+            if (match) matchMajorCount++
+            console.log(
+              `หลักสูตรผู้ใช้ที่จองแล้ว: ${reservation.Users_Info?.major}, ผู้ใช้: ${userMajor}, Match: ${match}, userMajorReq: ${userMajorReq}`
+            )
+          }
 
-      let matchActivityCount = 0 // Initialize counter
-      let matchingActivities = []
+          if (userReligionReq) {
+            let match = false
+            switch (userReligionReq) {
+              case 'find roommates who have the same religion':
+                match = reservation.Users_Info?.religion === userReligion
+                break
+              case 'find roommates from any religion':
+                match = reservation.Users_Info?.religion !== userReligion
+                break
+              case 'find all religion':
+                match = true
+                break
+            }
+            if (match) matchReligionCount++
+            console.log(
+              `ศาสนาผู้ใช้ที่จองแล้ว: ${reservation.Users_Info?.religion}, ผู้ใช้: ${userReligion}, Match: ${match}, userReligionReq: ${userReligionReq}`
+            )
+          }
 
-      const matchesActivity = userActivityReq
-        ? roomReservations.map(reservationArrayItem =>
-            reservationArrayItem.filter(reservation => {
-              const userActivities = parseCommaSeparatedValues(userActivityReq)
-              const reservationActivities = reservation.Users_Req?.activity
-                ? parseCommaSeparatedValues(reservation.Users_Req.activity)
-                : []
-
-              const reservationBedId = reservation.Reservation_Info?.bed_id?.toString().trim()
-
-              matchingActivities = userActivities.filter(activity => reservationActivities.includes(activity))
-              const match = matchingActivities.length > 0
-              console.log(`Bed ID: ${reservationBedId} , Matching Activities: ${matchingActivities.join(', ')} `)
-
-              if (match) {
-                matchActivityCount++ // Increment counter if match is true
-              }
+          if (userActivityReq) {
+            const userActivities = parseCommaSeparatedValues(userActivityReq)
+            const reservationActivities = reservation.Users_Req?.activity
+              ? parseCommaSeparatedValues(reservation.Users_Req.activity)
+              : []
+            const currentMatchingActivities = userActivities.filter(activity =>
+              reservationActivities.includes(activity)
+            )
+            if (currentMatchingActivities.length > 0) {
+              matchActivityCount += currentMatchingActivities.length
+              currentMatchingActivities.forEach(activity => matchingActivities.add(activity))
               console.log(
-                `Room ID: ${roomId}, Bed ID : ${reservationBedId}, ผู้ใช้: ${userActivityReq}, Match: ${match}`
+                `กิจกรรมผู้ใช้: ${userActivities}, กิจของผู้ใช้ที่จองแล้ว: ${reservationActivities}, Matching Activities: ${currentMatchingActivities}`
               )
+            }
+          }
 
-              return match
-            })
-          )
-        : true
-
-      let matchRedflagCount = 0 // Initialize counter
-      let matchingRedflags = []
-
-      const matchesRedflag = userRedflagReq
-        ? roomReservations.map(reservationArrayItem =>
-            reservationArrayItem.filter(reservation => {
-              const userRedflags = parseCommaSeparatedValues(userRedflagReq)
-              const reservationRedflags = reservation.Users_Req?.filter_redflag
-                ? parseCommaSeparatedValues(reservation.Users_Req.filter_redflag)
-                : []
-
-              const reservationBedId = reservation.Reservation_Info?.bed_id?.toString().trim()
-
-              matchingRedflags = userRedflags.filter(redflag => reservationRedflags.includes(redflag))
-              const match = matchingRedflags.length > 0
-              console.log(`Bed ID: ${reservationBedId} , Matching Redflags: ${matchingRedflags.join(', ')} `)
-
-              if (match) {
-                matchRedflagCount++ // Increment counter if match is true
-              }
+          if (userRedflagReq) {
+            const userRedflags = parseCommaSeparatedValues(userRedflagReq)
+            const reservationRedflags = reservation.Users_Req?.filter_redflag
+              ? parseCommaSeparatedValues(reservation.Users_Req.filter_redflag)
+              : []
+            const currentMatchingRedflags = userRedflags.filter(redflag => reservationRedflags.includes(redflag))
+            if (currentMatchingRedflags.length > 0) {
+              matchRedflagCount += currentMatchingRedflags.length
+              currentMatchingRedflags.forEach(redflag => matchingRedflags.add(redflag))
               console.log(
-                `Room ID: ${roomId}, Bed ID : ${reservationBedId}, ผู้ใช้: ${userRedflagReq}, Match: ${match}`
+                `สิ่งที่ไม่ชอบผู้ใช้: ${userRedflags}, สิ่งที่ไม่ชอบผู้ใช้ที่จองแล้ว: ${reservationRedflags}, Matching Redflags: ${currentMatchingRedflags}`
               )
+            }
+          }
 
               return match
             })
@@ -464,6 +444,21 @@ const ReservationRoomTest = () => {
       let matchActivityEachRoom = `${matchingActivities.join(', ')}`
       let matchRedflagEachRoom = `${matchingRedflags.join(', ')}`
 
+          if (userSleepReq) {
+            const match = reservation.Users_Req?.sleep === userSleepReq
+            if (match) matchSleepCount++
+            console.log(
+              `การนอนผู้ใช้: ${userSleepReq}, การนอนผู้ใช้ที่จองแล้ว: ${reservation.Users_Req?.sleep}, Match: ${match}`
+            )
+          }
+        })
+      )
+      console.log('matchCount:', matchCount)
+      console.log('matchMajorCount:', matchMajorCount)
+      console.log('matchReligionCount:', matchReligionCount)
+      console.log('matchActivityCount:', matchActivityCount)
+      console.log('matchRedflagCount:', matchRedflagCount)
+      console.log('matchSleepCount:', matchSleepCount)
 
       roomMatches.push({
         roomId,
@@ -476,25 +471,36 @@ const ReservationRoomTest = () => {
         userSchool,
         userMajor,
         userReligion,
-        scoreSchool,
-        scoreMajor,
-        scoreReligion,
-        scoreActivity,
-        scoreRedflag,
-        scoreSleep,
-        matchInfo,
-        matchReq,
-        totalMatches: scoreSchool + scoreMajor + scoreReligion + scoreActivity + scoreRedflag + scoreSleep,
-        matchActivityEachRoom,
-        matchRedflagEachRoom
+        scoreSchool: matchCount,
+        scoreMajor: matchMajorCount,
+        scoreReligion: matchReligionCount,
+        scoreActivity: matchActivityCount,
+        scoreRedflag: matchRedflagCount,
+        scoreSleep: matchSleepCount,
+        totalMatches: 0,
+        matchActivityEachRoom: Array.from(matchingActivities).join(' ,  '),
+        matchRedflagEachRoom: Array.from(matchingRedflags).join(' ,  ')
       })
 
-      return matchesSchool && matchesMajor && matchesReligion && matchesActivity && matchesRedflag && matchesSleep
+      return true
+    })
+
+    roomMatches = roomMatches.map(room => {
+      let totalMatches = 0
+      if (selectedOptions.includes('School')) totalMatches += room.scoreSchool
+      if (selectedOptions.includes('Major')) totalMatches += room.scoreMajor
+      if (selectedOptions.includes('Religion')) totalMatches += room.scoreReligion
+      if (selectedOptions.includes('Activity')) totalMatches += room.scoreActivity
+      if (selectedOptions.includes('Redflag')) totalMatches += room.scoreRedflag
+      if (selectedOptions.includes('Sleep')) totalMatches += room.scoreSleep
+
+      return { ...room, totalMatches }
     })
 
     roomMatches.sort((a, b) => b.totalMatches - a.totalMatches)
     const top3Rooms = roomMatches.slice(0, 3)
 
+    console.log('top3Rooms:', top3Rooms)
 
     const top3RoomIds = top3Rooms.map(room => ({
       roomId: room.roomId.toString(),
@@ -509,8 +515,6 @@ const ReservationRoomTest = () => {
       userSchool: room.userSchool,
       userMajor: room.userMajor,
       userReligion: room.userReligion,
-      matchInfo: room.matchInfo,
-      matchReq: room.matchReq,
       scoreSchool: room.scoreSchool,
       scoreMajor: room.scoreMajor,
       scoreReligion: room.scoreReligion,
@@ -542,13 +546,75 @@ const ReservationRoomTest = () => {
             scoreActivity: roomInTop3.scoreActivity,
             scoreRedflag: roomInTop3.scoreRedflag,
             scoreSleep: roomInTop3.scoreSleep,
-            totalMatches: roomInTop3.totalMatches
+            totalMatches: roomInTop3.totalMatches,
+            roomMatchesInfo: (reservationData.get(room.room_id) || []).map(reservation => {
+              const matches = {
+                school: false,
+                major: false,
+                matchActivityEachRoom: roomInTop3.matchActivityEachRoom,
+                matchRedflagEachRoom: roomInTop3.matchRedflagEachRoom,
+                redflag: false,
+                sleep: false
+              }
+
+              if (userSchoolReq) {
+                matches.school =
+                  userSchoolReq === 'find all school' ||
+                  (userSchoolReq === 'find roommates who attend the same school' &&
+                    reservation.Users_Info?.school === userSchool) ||
+                  (userSchoolReq === 'find roommates from any school' && reservation.Users_Info?.school !== userSchool)
+              }
+
+              if (userMajorReq) {
+                matches.major =
+                  userMajorReq === 'find all major' ||
+                  (userMajorReq === 'find roommates who study the same major' &&
+                    reservation.Users_Info?.major === userMajor) ||
+                  (userMajorReq === 'find roommates from any major' && reservation.Users_Info?.major !== userMajor)
+              }
+
+              if (userReligionReq) {
+                matches.religion =
+                  userReligionReq === 'find all religion' ||
+                  (userReligionReq === 'find roommates who have the same religion' &&
+                    reservation.Users_Info?.religion === userReligion) ||
+                  (userReligionReq === 'find roommates from any religion' &&
+                    reservation.Users_Info?.religion !== userReligion)
+              }
+
+              if (userActivityReq) {
+                const userActivities = parseCommaSeparatedValues(userActivityReq)
+                const reservationActivities = reservation.Users_Req?.activity
+                  ? parseCommaSeparatedValues(reservation.Users_Req.activity)
+                  : []
+                matches.activity = userActivities.some(activity => reservationActivities.includes(activity))
+              }
+
+              if (userRedflagReq) {
+                const userRedflags = parseCommaSeparatedValues(userRedflagReq)
+                const reservationRedflags = reservation.Users_Req?.filter_redflag
+                  ? parseCommaSeparatedValues(reservation.Users_Req.filter_redflag)
+                  : []
+                matches.redflag = userRedflags.some(redflag => reservationRedflags.includes(redflag))
+              }
+
+              if (userSleepReq) {
+                matches.sleep = reservation.Users_Req?.sleep === userSleepReq
+              }
+
+              return { reservation, matches }
+            })
           }
         }
-
         return null
       })
       .filter(room => room !== null)
+      .sort((a, b) => {
+        const aIndex = top3RoomIds.findIndex(topRoom => topRoom.roomId === a.room_id.toString())
+        const bIndex = top3RoomIds.findIndex(topRoom => topRoom.roomId === b.room_id.toString())
+
+        return aIndex - bIndex
+      })
 
 
 
@@ -563,11 +629,50 @@ const ReservationRoomTest = () => {
 
 
     setDormitoryRoom(finalFilteredRooms)
-
     setFinalFilteredRooms(finalFilteredRooms)
-    setOpenDialog(true)
+    console.log('finalFilteredRooms:', finalFilteredRooms)
+    setShowCard(true)
+    setShowRoomCard(true)
+    setKey(prevKey => prevKey + 1)
   }
 
+  // This useState and other related code should remain unchanged
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [selectedOptions, setSelectedOptions] = useState([
+    'School',
+    'Major',
+    'Religion',
+    'Activity',
+    'Redflag',
+    'Sleep'
+  ])
+
+  const handleClickMatchBy = event => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
+  const handleToggle = option => {
+    setSelectedOptions(prevSelectedOptions => {
+      const currentIndex = prevSelectedOptions.indexOf(option)
+      const newSelectedOptions = [...prevSelectedOptions]
+
+      if (currentIndex === -1) {
+        newSelectedOptions.push(option)
+      } else {
+        newSelectedOptions.splice(currentIndex, 1)
+      }
+
+      return newSelectedOptions
+    })
+  }
+
+  useEffect(() => {
+    handleDialogOpen() // เรียกใช้งานเมื่อคอมโพเนนต์โหลดเสร็จ
+  }, []) // ใส่เป็นอาร์เรย์ว่างเพื่อให้เรียกใช้เพียงครั้งเดียวหลังจากคอมโพเนนต์โหลดเสร็จ
 
   return (
     <>
@@ -584,7 +689,9 @@ const ReservationRoomTest = () => {
               }}
             ></Box>
             <div>
-              <Button onClick={handleDialogOpen}>Filter</Button>
+              <Button variant='contained' onClick={handleDialogOpen}>
+                Filter Room
+              </Button>
               <RoomFilterDialog
                 open={dialogOpen}
                 onClose={handleDialogClose}
@@ -597,27 +704,23 @@ const ReservationRoomTest = () => {
           </CardContent>
         </Card>
       </Grid>
-      <Box sx={{ display: 'flex', pb: 3 }}>
-        <React.Fragment>
-          <Button variant='contained' onClick={handleSmartReservation}>
-            MATCHING ROOM
-            <Box sx={{ display: 'flex', pr: 3 }}>
-              <SmartReservationDialog
-                open={openDialog}
-                onClose={() => setOpenDialog(false)}
-                roomData={finalFilteredRooms}
-              />
-            </Box>
-          </Button>
-        </React.Fragment>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', pl: 3 }}>
-          <Button variant='contained' onClick={handleRefresh}>
-            Refresh Real-Time
-          </Button>
+      {showRoomCard && (
+        <Box sx={{ height: '325px', width: '100%', overflow: 'hidden', marginBottom: '30px', marginTop: '30px' }}>
+          <Box style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-5px' }}>
+            <Button onClick={handleClickMatchBy}>Match By</Button>
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+              {['School', 'Major', 'Religion', 'Activity', 'Redflag', 'Sleep'].map(option => (
+                <MenuItem key={option} onClick={() => handleToggle(option)}>
+                  <Checkbox checked={selectedOptions.indexOf(option) !== -1} />
+                  <ListItemText primary={option} />
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
+          <RoomCard key={key} showCard={showCard} finalFilteredRooms={finalFilteredRooms} />
         </Box>
-      </Box>
-
+      )}
       <h1> {dormitoryBuilding?.name}</h1>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <TableContainer sx={{ maxHeight: auto }}>
@@ -650,7 +753,6 @@ const ReservationRoomTest = () => {
                             <PersonIcon color='primary' />
                           </Tooltip>
                         ))}
-
                         {Array.from({ length: room.bed_capacity - room.bed_available }, (_, index) => (
                           <Tooltip title='This bed is available' key={index}>
                             <PersonIcon />
@@ -690,61 +792,148 @@ const ReservationRoomTest = () => {
                     </TableRow>
                     <TableRow>
                       <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                        <Collapse in={open[room.room_id]} timeout='auto' unmountOnExit>
-                          {' '}
+                        <Collapse in={open[room.room_id]} unmountOnExit>
                           <CardContent sx={{ margin: -5 }}>
-                            {(reservationData.get(room.room_id) || []).map((reservation, index) => (
-                              <Card sx={{ margin: 3 }} key={index}>
-                                <CardContent sx={{ mt: -5, mb: -5 }}>
-                                  <Typography variant='body1' gutterBottom component='div'>
-                                    {`BED ${index + 1}:`}
-                                  </Typography>
-                                  <Grid container spacing={6}>
-                                    <Grid item xs={12}>
+                            {(reservationData.get(room.room_id) || []).map((reservation, index) => {
+                              const matchingRoom = finalFilteredRooms.find(r => r.room_id === room.room_id)
+                              const matchInfo = matchingRoom ? matchingRoom.roomMatchesInfo[index]?.matches : null
+
+                              const isMatch = field => matchInfo && matchInfo[field]
+
+                              return (
+                                <Card sx={{ margin: 3 }} key={index}>
+                                  <CardContent sx={{ mt: -5, mb: -5 }}>
+                                    <Typography variant='body1' gutterBottom component='div'>
+                                      <Typography variant='h6'>{`BED ${index + 1}`}</Typography>
+                                    </Typography>
+                                    <Grid container spacing={2}>
                                       <Grid item xs={12}>
                                         <Box display='inline-flex' alignItems='center'>
-                                          <SchoolIcon />
-                                          <Typography variant='body2'>: {reservation.Users_Info?.school}</Typography>
-                                        </Box>
-                                      </Grid>
-                                      <Grid item xs={12}>
-                                        {' '}
-                                        <Box display='inline-flex' alignItems='center'>
-                                          <SchoolIcon />
-                                          <Typography variant='body2'>: {reservation.Users_Info?.major}</Typography>
-                                        </Box>
-                                      </Grid>
-                                      <Grid item xs={12}>
-                                        <Box display='inline-flex' alignItems='center'>
-                                          <MosqueIcon />
-                                          <Typography variant='body2'>: {reservation.Users_Info?.religion}</Typography>
-                                        </Box>
-                                      </Grid>
-                                      <Grid item xs={12}>
-                                        <Box display='inline-flex' alignItems='center'>
-                                          <PoolIcon />
-                                          <Typography variant='body2'>: {reservation.Users_Req?.activity}</Typography>
-                                        </Box>
-                                      </Grid>
-                                      <Grid item xs={12}>
-                                        <Box display='inline-flex' alignItems='center'>
-                                          <DangerousIcon />
+                                          <img
+                                            src='https://img5.pic.in.th/file/secure-sv1/school_2602414.png'
+                                            alt='School Icon'
+                                            style={{ width: '24px', height: '24px' }}
+                                          />
                                           <Typography variant='body2'>
-                                            : {reservation.Users_Req?.filter_redflag}
+                                            :{' '}
+                                            {isMatch('school') ? (
+                                              <HighlightText>{reservation.Users_Info?.school || 'N/A'}</HighlightText>
+                                            ) : (
+                                              reservation.Users_Info?.school || 'N/A'
+                                            )}
                                           </Typography>
                                         </Box>
                                       </Grid>
                                       <Grid item xs={12}>
                                         <Box display='inline-flex' alignItems='center'>
-                                          <HotelIcon />
-                                          <Typography variant='body2'>: {reservation.Users_Req?.sleep}</Typography>
+                                          <img
+                                            src='https://img5.pic.in.th/file/secure-sv1/graduate_401672.png'
+                                            alt='Major Icon'
+                                            style={{ width: '24px', height: '24px' }}
+                                          />
+                                          <Typography variant='body2'>
+                                            :{' '}
+                                            {isMatch('major') ? (
+                                              <HighlightText>{reservation.Users_Info?.major || 'N/A'}</HighlightText>
+                                            ) : (
+                                              reservation.Users_Info?.major || 'N/A'
+                                            )}
+                                          </Typography>
+                                        </Box>
+                                      </Grid>
+                                      <Grid item xs={12}>
+                                        <Box display='inline-flex' alignItems='center'>
+                                          <img
+                                            src='https://img5.pic.in.th/file/secure-sv1/religion_9311967.png'
+                                            alt='Religion Icon'
+                                            style={{ width: '24px', height: '24px' }}
+                                          />
+                                          <Typography variant='body2'>
+                                            :{' '}
+                                            {isMatch('religion') ? (
+                                              <HighlightText>{reservation.Users_Info?.religion || 'N/A'}</HighlightText>
+                                            ) : (
+                                              reservation.Users_Info?.religion || 'N/A'
+                                            )}
+                                          </Typography>
+                                        </Box>
+                                      </Grid>
+                                      <Grid item xs={12}>
+                                        <Box display='inline-flex' alignItems='center'>
+                                          <img
+                                            src='https://img5.pic.in.th/file/secure-sv1/time-management_2027497.png'
+                                            alt='Activity Icon'
+                                            style={{ width: '24px', height: '24px' }}
+                                          />
+                                          <Typography variant='body2'>
+                                            :{' '}
+                                            {isMatch('activity')
+                                              ? reservation.Users_Req?.activity
+                                                  .split(',')
+                                                  .map((activity, index) =>
+                                                    matchInfo.matchActivityEachRoom.includes(activity.trim()) ? (
+                                                      <HighlightText key={index}>{activity}</HighlightText>
+                                                    ) : (
+                                                      activity
+                                                    )
+                                                  )
+                                                  .reduce(
+                                                    (prev, curr, index) => [prev, index > 0 ? ',' : '', ' ', curr],
+                                                    []
+                                                  )
+                                              : reservation.Users_Req?.activity || 'N/A'}
+                                          </Typography>
+                                        </Box>
+                                      </Grid>
+                                      <Grid item xs={12}>
+                                        <Box display='inline-flex' alignItems='center'>
+                                          <img
+                                            src='https://img5.pic.in.th/file/secure-sv1/flag_1452046.png'
+                                            alt='Redflag Icon'
+                                            style={{ width: '24px', height: '24px' }}
+                                          />
+                                          <Typography variant='body2'>
+                                            :{' '}
+                                            {isMatch('redflag')
+                                              ? reservation.Users_Req?.filter_redflag
+                                                  .split(',')
+                                                  .map((redflag, index) =>
+                                                    matchInfo.matchRedflagEachRoom.includes(redflag.trim()) ? (
+                                                      <HighlightText key={index}>{redflag}</HighlightText>
+                                                    ) : (
+                                                      redflag
+                                                    )
+                                                  )
+                                                  .reduce(
+                                                    (prev, curr, index) => [prev, index > 0 ? ',' : '', ' ', curr],
+                                                    []
+                                                  )
+                                              : reservation.Users_Req?.filter_redflag || 'N/A'}
+                                          </Typography>
+                                        </Box>
+                                      </Grid>
+                                      <Grid item xs={12}>
+                                        <Box display='inline-flex' alignItems='center'>
+                                          <img
+                                            src='https://img5.pic.in.th/file/secure-sv1/bed-time_12178656.png'
+                                            alt='Sleep Icon'
+                                            style={{ width: '24px', height: '24px' }}
+                                          />
+                                          <Typography variant='body2'>
+                                            :{' '}
+                                            {isMatch('sleep') ? (
+                                              <HighlightText>{reservation.Users_Req?.sleep || 'N/A'}</HighlightText>
+                                            ) : (
+                                              reservation.Users_Req?.sleep || 'N/A'
+                                            )}
+                                          </Typography>
                                         </Box>
                                       </Grid>
                                     </Grid>
-                                  </Grid>
-                                </CardContent>
-                              </Card>
-                            ))}
+                                  </CardContent>
+                                </Card>
+                              )
+                            })}
                           </CardContent>
                         </Collapse>
                       </TableCell>
