@@ -89,6 +89,10 @@ const ReservationBuildingDetails = () => {
     setDialogOpen(!dialogOpen)
   }
 
+  useEffect(() => {
+    handleDialogToggle() 
+  }, []) 
+
   return (
     <>
       <Grid pb={4}>
@@ -174,7 +178,7 @@ const ReservationBuildingDetails = () => {
                     <Typography variant='h6' sx={{ marginBottom: 2 }}>
                       {dorm.name}
                     </Typography>
-                 
+
                     <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
                       Gender :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
