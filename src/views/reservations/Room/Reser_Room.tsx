@@ -653,7 +653,19 @@ const ReservationRoomTest = () => {
           </CardContent>
         </Card>
       </Grid>
+      <Box sx={{ display: 'flex', pb: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', pl: 3 }}>
+          <Button variant='contained' onClick={handleSmartReservation}>
+            MATCHING ROOM
+          </Button>
+        </Box>
 
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', pl: 3 }}>
+          <Button variant='contained' onClick={handleRefresh}>
+            Refresh Real-Time
+          </Button>
+        </Box>
+      </Box>
       {showRoomCard && (
         <Box sx={{ height: '325px', width: '100%', overflow: 'hidden', marginBottom: '30px', marginTop: '30px' }}>
           <Box style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-5px' }}>
