@@ -29,6 +29,7 @@ import ShowerIcon from '@mui/icons-material/Shower'
 import HotelIcon from '@mui/icons-material/Hotel'
 import LocalAtmIcon from '@mui/icons-material/LocalAtm'
 import SuccessฺฺBarBuilding from './component'
+import FilterDrawer from './BuildingFilterDialog'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -138,10 +139,13 @@ const ReservationBuilding = () => {
     setDialogOpen(!dialogOpen)
   }
 
+  useEffect(() => {
+    handleDialogToggle() // เรียกใช้งานเมื่อคอมโพเนนต์โหลดเสร็จ
+  }, []) // ใส่เป็นอาร์เรย์ว่างเพื่อให้เรียกใช้เพียงครั้งเดียวหลังจากคอมโพเนนต์โหลดเสร็จ
+
   return (
     <>
       <SuccessฺฺBarBuilding />
-
       <Grid pb={4}>
         <Card>
           <CardContent>
@@ -149,163 +153,29 @@ const ReservationBuilding = () => {
               sx={{
                 width: '100%',
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
+                alignItems: 'center'
               }}
             >
-              <Button onClick={handleDialogToggle}>Filter</Button>
+              <Button variant='contained' onClick={handleDialogToggle}>
+                Filter Building
+              </Button>
             </Box>
-            <Dialog open={dialogOpen} onClose={handleDialogToggle}>
-              <DialogTitle>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography>Filter</Typography>
-                  <IconButton onClick={handleDialogToggle}>
-                    <CloseIcon />
-                  </IconButton>
-                </Box>
-              </DialogTitle>
-              <DialogContent>
-                <Box sx={{ display: 'flex' }}>
-                  <GroupIcon fontSize='small' sx={{ marginRight: 2 }} />
-                  <Typography sx={{ paddingRight: 2 }}>Roommate</Typography>
-                </Box>
-                <Grid container spacing={2} pb={5} pt={1}>
-                  <FormControlLabel
-                    control={<Checkbox checked={roommateFilter === ''} onChange={() => setRoommateFilter('')} />}
-                    label='All'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={roommateFilter === '2'} onChange={() => setRoommateFilter('2')} />}
-                    label='2'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={roommateFilter === '4'} onChange={() => setRoommateFilter('4')} />}
-                    label='4'
-                  />
-                </Grid>
-
-                <Box sx={{ display: 'flex' }}>
-                  <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
-                  <Typography sx={{ paddingRight: 2 }}>Room type</Typography>
-                </Box>
-                <Grid container spacing={2} pb={5} pt={1}>
-                  <FormControlLabel
-                    control={<Checkbox checked={buildingFilter === ''} onChange={() => setBuildingFilter('')} />}
-                    label='All'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={buildingFilter == 'Air conditioner'}
-                        onChange={() => setBuildingFilter('Air conditioner')}
-                      />
-                    }
-                    label='Air conditioner'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={buildingFilter == 'Ceiling fan'}
-                        onChange={() => setBuildingFilter('Ceiling fan')}
-                      />
-                    }
-                    label='Ceiling fan'
-                  />
-                </Grid>
-
-                <Box sx={{ display: 'flex' }}>
-                  <HotelIcon fontSize='small' sx={{ marginRight: 2 }} />
-                  <Typography sx={{ paddingRight: 2 }}>Bed Type</Typography>
-                </Box>
-                <Grid container spacing={2} pb={5} pt={1}>
-                  <FormControlLabel
-                    control={<Checkbox checked={bedFilter === ''} onChange={() => setBedFilter('')} />}
-                    label='All'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox checked={bedFilter == 'single bed'} onChange={() => setBedFilter('single bed')} />
-                    }
-                    label='Single Bed'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={bedFilter == 'bunk bed'} onChange={() => setBedFilter('bunk bed')} />}
-                    label='Bunk Bed'
-                  />
-                </Grid>
-
-                <Box sx={{ display: 'flex' }}>
-                  <ShowerIcon fontSize='small' sx={{ marginRight: 2 }} />
-                  <Typography sx={{ paddingRight: 2 }}>Bathroom Type</Typography>
-                </Box>
-                <Grid container spacing={2} pb={5} pt={1}>
-                  <FormControlLabel
-                    control={<Checkbox checked={bathroomFilter === ''} onChange={() => setBathroomFilter('')} />}
-                    label='All'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={bathroomFilter == 'shared bathroom'}
-                        onChange={() => setBathroomFilter('shared bathroom')}
-                      />
-                    }
-                    label='Shared Bathroom'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={bathroomFilter == 'en suite bathroom'}
-                        onChange={() => setBathroomFilter('en suite bathroom')}
-                      />
-                    }
-                    label='En-Suite Bathroom'
-                  />
-                </Grid>
-
-                <Box sx={{ display: 'flex' }}>
-                  <LocalAtmIcon fontSize='small' sx={{ marginRight: 2 }} />
-                  <Typography sx={{ paddingRight: 2 }}>Price</Typography>
-                </Box>
-                <Grid container spacing={2} pb={5} pt={1}>
-                  <FormControlLabel
-                    control={<Checkbox checked={priceFilter === ''} onChange={() => setPriceFilter('')} />}
-                    label='All'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={priceFilter === 5400} onChange={() => setPriceFilter(5400)} />}
-                    label='5400'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={priceFilter === 7200} onChange={() => setPriceFilter(7200)} />}
-                    label='7200'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={priceFilter === 9600} onChange={() => setPriceFilter(9600)} />}
-                    label='9600'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={priceFilter === 15000} onChange={() => setPriceFilter(15000)} />}
-                    label='15000'
-                  />
-                </Grid>
-
-                <Grid container spacing={2} pb={5}>
-                  <Button
-                    onClick={() => {
-                      setBuildingFilter('')
-                      setRoommateFilter('')
-                      setBathroomFilter('')
-                      setBedFilter('')
-                      setPriceFilter('')
-                    }}
-                  >
-                    Clear
-                  </Button>
-                  <Button onClick={handleDialogToggle}>Apply</Button>
-                </Grid>
-              </DialogContent>
-            </Dialog>
+            <FilterDrawer
+              open={dialogOpen}
+              onClose={handleDialogToggle}
+              filters={{
+                buildingFilter,
+                setBuildingFilter,
+                roommateFilter,
+                setRoommateFilter,
+                bathroomFilter,
+                setBathroomFilter,
+                bedFilter,
+                setBedFilter,
+                priceFilter,
+                setPriceFilter
+              }}
+            />
           </CardContent>
         </Card>
       </Grid>
