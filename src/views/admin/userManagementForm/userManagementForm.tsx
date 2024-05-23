@@ -14,10 +14,7 @@ import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import IconButton from '@mui/material/IconButton'
-import TuneIcon from '@mui/icons-material/Tune'
-import CheckBoxIcon from '@mui/icons-material/CheckBox'
+import Typography from '@mui/material/Typography'
 import EditUserForm from './editUserForm'
 
 interface Column {
@@ -43,7 +40,6 @@ const UserManagementForm = () => {
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
   const [rows, setRows] = useState<any[]>([])
   const [tabValue, setTabValue] = useState(0)
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,7 +69,6 @@ const UserManagementForm = () => {
   }
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    // Added
     setTabValue(newValue)
   }
 
@@ -82,6 +77,8 @@ const UserManagementForm = () => {
       return row.status === ''
     } else if (tabValue === 1) {
       return row.status === 'successfully'
+    } else if (tabValue === 2) {
+      return row.status === 'unsuccessfully'
     } else {
       return true
     }
@@ -90,27 +87,64 @@ const UserManagementForm = () => {
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <Tabs value={tabValue} onChange={handleTabChange}>
-        {' '}
         <Tab label='Request' />
         <Tab label='Successfully' />
+        <Tab label='Unsuccessfully' />
       </Tabs>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label='sticky table'>
           <TableHead>
             <TableRow>
-              {columns.map(column => (
-                <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
-                  {column.label}
-                </TableCell>
-              ))}
+              {columns.map(
+                column =>
+                  (tabValue === 0 || column.id !== 'edit') && (
+                    <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                      {column.label}
+                    </TableCell>
+                  )
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredRows &&
+            {filteredRows.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={columns.length}>
+                  <Paper
+                    style={{
+                      // filter: 'grayscale(100%)',
+                      padding: '20px',
+                      width: '1350px',
+                      height: '250px',
+                      backgroundColor: 'rgba(128, 128, 128, 0.05)'
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '100%'
+                      }}
+                    >
+                      <img
+                        src='https://img5.pic.in.th/file/secure-sv1/problem-solve_14781806.png'
+                        alt='No Data'
+                        width='100'
+                        height='100'
+                        style={{ marginBottom: '10px' }}
+                      />
+                      <Typography variant='body2'>No Request Received</Typography>
+                    </div>
+                  </Paper>
+                </TableCell>
+              </TableRow>
+            ) : (
               filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
                 return (
                   <TableRow hover role='checkbox' tabIndex={-1} key={row.student_id}>
                     {columns.map(column => {
+                      if (tabValue !== 0 && column.id === 'edit') return null
                       const value = row[column.id]
 
                       return (
@@ -160,15 +194,17 @@ const UserManagementForm = () => {
                             </>
                           ) : column.id === 'status' ? (
                             value === '' ? (
-                              <Chip label='รอการแก้ไข' style={{ backgroundColor: '#F1AB3D', color: '#FFFFFF' }} /> // Pantone 178 C />
+                              <Chip label='รอการแก้ไข' style={{ backgroundColor: '#F1AB3D', color: '#FFFFFF' }} /> // Pantone 178 C
                             ) : value === 'successfully' ? (
                               <Chip
                                 label='แก้ไขข้อมูลสำเร็จ'
                                 style={{ backgroundColor: '#4caf50', color: '#FFFFFF' }}
                               /> // Success color
+                            ) : value === 'unsuccessfully' ? (
+                              <Chip label='ข้อมูลไม่ถูกต้อง' style={{ backgroundColor: '#f44336', color: '#FFFFFF' }} /> // Error color
                             ) : null
                           ) : column.id === 'edit' ? (
-                            row.status === '' ? (
+                            tabValue === 0 && row.status === '' ? (
                               <EditUserForm id={row.id} student_id={row.StudentID} />
                             ) : null
                           ) : (
@@ -179,7 +215,8 @@ const UserManagementForm = () => {
                     })}
                   </TableRow>
                 )
-              })}
+              })
+            )}
           </TableBody>
         </Table>
       </TableContainer>

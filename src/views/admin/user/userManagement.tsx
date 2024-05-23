@@ -10,7 +10,7 @@ import Paper from '@mui/material/Paper'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { EnhancedTableHead } from './components/EnhancedTableHead'
 import { descendingComparator, getComparator, stableSort } from './helpers/helper'
 import { FaEdit } from 'react-icons/fa'
@@ -24,6 +24,14 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import { alpha } from '@mui/material/styles'
 import DeleteUser from './deleteUser'
+import Grid from '@mui/material/Grid'
+import TextField from '@mui/material/TextField'
+import InputAdornment from '@mui/material/InputAdornment'
+import { FormControl, InputLabel, Select, MenuItem } from '@mui/material'
+import AccountOutline from 'mdi-material-ui/AccountOutline'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import Menu from '@mui/material/Menu'
+import { Parser } from 'json2csv' // Import json2csv
 
 interface User {
   id: number
@@ -36,18 +44,17 @@ interface User {
   religion: string
   gender: string
   phone: string
+  Users?: { student_id: string }
 }
 
 interface EnhancedTableToolbarProps {
   numSelected: number
   selected: readonly number[]
-   resetSelected: () => void
+  resetSelected: () => void
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected, selected, resetSelected } = props
-  console.log('numSelected', numSelected)
-  console.log('selected', selected)
 
   return (
     <Toolbar
@@ -65,7 +72,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Typography>
       ) : (
         <Typography sx={{ flex: '1 1 100%' }} variant='h6' id='tableTitle' component='div'>
-          Nutrition
+          User Management
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -88,13 +95,50 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 
 const UserManagement = () => {
-  const [users, setUsers] = React.useState<User[]>([])
-  const [order, setOrder] = React.useState<'asc' | 'desc'>('asc')
-  const [orderBy, setOrderBy] = React.useState<keyof User>('name')
-  const [selected, setSelected] = React.useState<readonly number[]>([])
-  const [page, setPage] = React.useState(0)
-  const [dense, setDense] = React.useState(false)
-  const [rowsPerPage, setRowsPerPage] = React.useState(5)
+  const [users, setUsers] = useState<User[]>([])
+  const [order, setOrder] = useState<'asc' | 'desc'>('asc')
+  const [orderBy, setOrderBy] = useState<keyof User>('student_id')
+  const [selected, setSelected] = useState<readonly number[]>([])
+  const [page, setPage] = useState(0)
+  const [dense, setDense] = useState(false)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [schoolFilter, setSchoolFilter] = useState(-1)
+  const [yearFilter, setYearFilter] = useState(-1)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [anchorEl, setAnchorEl] = React.useState(null)
+
+  const handleClickCSV = event => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleCloseCSV = () => {
+    setAnchorEl(null)
+  }
+
+  const handleExportCSV = () => {
+    const dataToExport = filteredUsers.map(user => ({
+      student_id: user.Users?.student_id,
+      name: user.name,
+      lastname: user.lastname,
+      school: user.school,
+      department: user.department,
+      major: user.major,
+      gender: user.gender,
+      religion: user.religion,
+      phone: user.phone
+    }))
+    const parser = new Parser()
+    const csv = parser.parse(dataToExport)
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', 'WU_UserInformation.csv')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    handleCloseCSV()
+  }
 
   const resetSelected = () => {
     setSelected([])
@@ -114,11 +158,10 @@ const UserManagement = () => {
       }
     }
 
-    const intervalId = setInterval(fetchData, 5000) // Fetch data every 5 seconds
+    const intervalId = setInterval(fetchData, 3000)
 
-    return () => clearInterval(intervalId) // Clean up the interval on component unmount
+    return () => clearInterval(intervalId)
   }, [])
-  console.log(users)
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof User) => {
     const isAsc = orderBy === property && order === 'asc'
@@ -130,7 +173,6 @@ const UserManagement = () => {
     if (event.target.checked) {
       const newSelected = users.map(n => n.id)
       setSelected(newSelected)
-
       return
     }
     setSelected([])
@@ -149,7 +191,6 @@ const UserManagement = () => {
       newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1))
     }
     setSelected(newSelected)
-    console.log(id)
   }
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -170,20 +211,131 @@ const UserManagement = () => {
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - users.length) : 0
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value)
+  }
+
+  const handleSchoolFilterChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setSchoolFilter(event.target.value as number)
+  }
+
+  const handleYearFilterChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setYearFilter(event.target.value as number)
+  }
+
+  const filteredUsers = users.filter(user => {
+    const matchesSchool = schoolFilter === -1 || user.school === schoolFilter
+    const matchesYear = yearFilter === -1 || user.student_year === yearFilter
+    const matchesSearchTerm =
+      searchTerm.length === 0 ||
+      (searchTerm.match(/^\d+$/)
+        ? user.Users?.student_id.includes(searchTerm)
+        : `${user.name} ${user.lastname}`.toLowerCase().includes(searchTerm.toLowerCase()))
+
+    return matchesSchool && matchesYear && matchesSearchTerm
+  })
+
   const visibleRows = React.useMemo(
-    () => stableSort(users, getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage, users]
+    () =>
+      stableSort(filteredUsers, getComparator(order, orderBy)).slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+      ),
+    [order, orderBy, page, rowsPerPage, filteredUsers]
   )
+
+  const uniqueSchools = Array.from(new Set(users.map(user => user.school)))
+  const uniqueYears = Array.from(new Set(users.map(user => user.student_year)))
 
   const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
-
   }
 
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} selected={selected} resetSelected={resetSelected} />
+
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', margin: 5 }}>
+          <Grid item xs={12} sm={2.5}>
+            <FormControl fullWidth sx={{ flexGrow: 1, ml: 3 }}>
+              <InputLabel id='form-layouts-separator-select-label'>School</InputLabel>
+              <Select
+                label='School'
+                value={schoolFilter}
+                onChange={handleSchoolFilterChange}
+                id='form-layouts-separator-select'
+                labelId='form-layouts-separator-select-label'
+              >
+                <MenuItem value={-1}>All Schools</MenuItem>
+                {uniqueSchools.map((school, index) => (
+                  <MenuItem key={index} value={school}>
+                    {school}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={2}>
+            <FormControl fullWidth sx={{ flexGrow: 1, ml: 5 }}>
+              <InputLabel id='form-layouts-separator-select-label'>Student Year</InputLabel>
+              <Select
+                label='Student Year'
+                value={yearFilter}
+                onChange={handleYearFilterChange}
+                id='form-layouts-separator-select'
+                labelId='form-layouts-separator-select-label'
+              >
+                <MenuItem value={-1}>All Years</MenuItem>
+                {uniqueYears.map((year, index) => (
+                  <MenuItem key={index} value={year}>
+                    {year}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={7}>
+            <TextField
+              fullWidth
+              label='Search User'
+              placeholder='Leonard Carter'
+              value={searchTerm}
+              onChange={handleSearchChange}
+              sx={{ flexGrow: 1, ml: 7 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position='start'>
+                    <AccountOutline />
+                  </InputAdornment>
+                )
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={0.5}>
+            <IconButton sx={{ flexGrow: 1, ml: 8, mt: 2 }} onClick={handleClickCSV}>
+              <MoreVertIcon />
+            </IconButton>
+            <Menu id='simple-menu' anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleCloseCSV}>
+              <MenuItem onClick={handleExportCSV}>
+                <img
+                  src='https://img5.pic.in.th/file/secure-sv1/csv-file-format-extension_28842.png'
+                  width='25'
+                  height='25'
+                  alt='CSV Icon'
+                  style={{ marginRight: '10px' }}
+                />
+                <div>
+                  <Typography variant='subtitle1'>Export</Typography>
+                  <Typography variant='body2' color='textSecondary'>
+                    Exporting CSV data.
+                  </Typography>
+                </div>
+              </MenuItem>
+            </Menu>
+          </Grid>
+        </Box>
+
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>
             <EnhancedTableHead
@@ -195,47 +347,100 @@ const UserManagement = () => {
               rowCount={users.length}
             />
             <TableBody>
-              {visibleRows.map((row, index) => {
-                const isItemSelected = isSelected(row.id)
-                const labelId = `enhanced-table-checkbox-${index}`
+              {visibleRows.length === 0 ? (
+                <TableRow style={{ height: 53 * rowsPerPage }}>
+                  <TableCell colSpan={11}>
+                    <Paper
+                      style={{
+                        // filter: 'grayscale(100%)',
+                        padding: '20px',
+                        width: '1350px',
+                        height: '350px',
+                        backgroundColor: 'rgba(128, 128, 128, 0.05)'
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: '100%'
+                        }}
+                      >
+                        <img
+                          src='https://img5.pic.in.th/file/secure-sv1/erase_1981540.png'
+                          alt='No Data'
+                          width='100'
+                          height='100'
+                          style={{ marginBottom: '10px' }}
+                          // style={{ filter: 'grayscale(100%)' }}
+                        />
+                        <Typography variant='body2'>Data Not Found</Typography>
+                      </div>
+                    </Paper>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                visibleRows.map((row, index) => {
+                  const isItemSelected = isSelected(row.id)
+                  const labelId = `enhanced-table-checkbox-${index}`
 
-                return (
-                  <TableRow
-                    hover
-                    onClick={event => handleClick(event, row.id)}
-                    role='checkbox'
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.id}
-                    selected={isItemSelected}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    <TableCell padding='checkbox'>
-                      <Checkbox color='primary' checked={isItemSelected} inputProps={{ 'aria-labelledby': labelId }} />
-                    </TableCell>
-                    <TableCell component='th' id={labelId} scope='row' padding='none'>
-                      {row.Users ? row.Users.student_id : ''}
-                    </TableCell>
-                    <TableCell>{row.name}</TableCell>
-                    <TableCell>{row.lastname}</TableCell>
-                    <TableCell>{row.school}</TableCell>
-                    <TableCell>{row.department}</TableCell>
-                    <TableCell>{row.major}</TableCell>
-                    <TableCell>{row.religion}</TableCell>
-                    <TableCell>{row.gender}</TableCell>
-                    <TableCell align='right'>
-                      <EditUser id={row.id}>
-                        <Button onClick={handleButtonClick}>
-                          <FaEdit />
-                        </Button>
-                      </EditUser>
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
+                  return (
+                    <TableRow
+                      hover
+                      onClick={event => handleClick(event, row.id)}
+                      role='checkbox'
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={row.id}
+                      selected={isItemSelected}
+                      sx={{ cursor: 'pointer' }}
+                    >
+                      <TableCell padding='checkbox'>
+                        <Checkbox
+                          color='primary'
+                          checked={isItemSelected}
+                          inputProps={{ 'aria-labelledby': labelId }}
+                        />
+                      </TableCell>
+                      <TableCell id={labelId}>
+                        <Typography variant='body2'>{row.Users ? row.Users.student_id : ''}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant='body2'>
+                          {row.name} {row.lastname}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant='body2'>{row.school}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant='body2'>{row.department}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant='body2'>{row.major}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant='body2'>{row.religion}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant='body2'>{row.gender}</Typography>
+                      </TableCell>
+                      <TableCell align='left'>
+                        <EditUser id={row.id}>
+                          <Button onClick={handleButtonClick} sx={{ minWidth: 0, padding: 0 }}>
+                            <FaEdit />
+                          </Button>
+                        </EditUser>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })
+              )}
               {emptyRows > 0 && (
                 <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-                  <TableCell colSpan={9} />
+                  <TableCell colSpan={11} />
                 </TableRow>
               )}
             </TableBody>
@@ -244,7 +449,7 @@ const UserManagement = () => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
-          count={users.length}
+          count={filteredUsers.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
