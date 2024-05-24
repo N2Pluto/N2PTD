@@ -44,17 +44,9 @@ import InputAdornment from '@mui/material/InputAdornment'
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import SearchIcon from '@mui/icons-material/Search'
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-
-=======
 import MoreVertIcon from '@mui/icons-material/MoreVert'
->>>>>>> cb9a484 (fix : Admin reservationApprove)
-=======
 
-
->>>>>>> 9ca4a2d (feat:12)
 
 interface User {
   id: number
@@ -91,13 +83,9 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           {numSelected} selected
         </Typography>
       ) : (
-<<<<<<< HEAD
         <Typography sx={{ flex: '1 1 100%' ,pl:5}} variant='h6' id='tableTitle' component='div'>
           Reservation Control
         </Typography>
-=======
-        <Typography sx={{ flex: '1 1 100%' }} variant='h6' id='tableTitle' component='div'></Typography>
->>>>>>> cb9a484 (fix : Admin reservationApprove)
       )}
       {numSelected > 0 ? (
         <Tooltip title='Delete'>

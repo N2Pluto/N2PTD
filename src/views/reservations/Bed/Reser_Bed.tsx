@@ -94,28 +94,27 @@ const ReservationBedviwe = () => {
       await fetchDataBedByRoomID() // Fetch the updated data
     }
     fetchDataAndUpdateStatus()
-    
+
     // const intervalId = setInterval(fetchDataAndUpdateStatus, 50000)
 
     // return () => clearInterval(intervalId)
   }, [router.query.id])
 
-   useEffect(() => {
-     const fetchRoundProfile = async () => {
-       try {
-         const response = await fetch('/api/reservation/fetchRoundProfile', {
-           method: 'GET'
-         })
-         const data = await response.json()
-         setRoundData(data)
-         console.log('Round Info', data)
-       } catch (error) {
-         console.error('Error fetching round profile:', error)
-       }
-     }
-     fetchRoundProfile()
-   }, [])
-
+  useEffect(() => {
+    const fetchRoundProfile = async () => {
+      try {
+        const response = await fetch('/api/reservation/fetchRoundProfile', {
+          method: 'GET'
+        })
+        const data = await response.json()
+        setRoundData(data)
+        console.log('Round Info', data)
+      } catch (error) {
+        console.error('Error fetching round profile:', error)
+      }
+    }
+    fetchRoundProfile()
+  }, [])
 
   const handleReservation = async (bed_id: string) => {
     console.log('Reservation Bed ID:', bed_id)
@@ -214,34 +213,96 @@ const ReservationBedviwe = () => {
                           <CardContent>
                             <Grid container spacing={6}>
                               <Grid item xs={12}>
-                                <Box display='flex' alignItems='center'>
-                                  <SchoolIcon sx={{ pr: 2 }} />
+                                <Box display='flex' alignItems='center' mb={2}>
+                                  <img
+                                    src='https://img2.pic.in.th/pic/profile_3135768.png'
+                                    alt='School Icon'
+                                    style={{ width: '24px', height: '24px' }}
+                                  />
+                                  <Typography variant='body1'>
+                                    {' '}
+                                    : {reservation.Users?.Users_Info[0]?.name.slice(0, -3) + '***'}{' '}
+                                    {reservation.Users?.Users_Info[0]?.lastname.replace(/./g, '*')}
+                                  </Typography>
+                                </Box>
+                                <Box display='flex' alignItems='center' mb={2}>
+                                  <img
+                                    src='https://img5.pic.in.th/file/secure-sv1/card_9199345.png'
+                                    alt='School Icon'
+                                    style={{ width: '24px', height: '24px' }}
+                                  />
+                                  <Typography variant='body1'>
+                                    {' '}
+                                    : {reservation.Users?.student_id.replace(/(?<=..)....../, '******')}
+                                  </Typography>
+                                </Box>
+                                <Box display='flex' alignItems='center' mb={2}>
+                                  <img
+                                    src='https://img5.pic.in.th/file/secure-sv1/school_2602414.png'
+                                    alt='School Icon'
+                                    style={{ width: '24px', height: '24px' }}
+                                  />
                                   <Typography variant='body1'> : {reservation.Users?.Users_Info[0]?.school}</Typography>
                                 </Box>
-                                <Box display='flex' alignItems='center'>
-                                  <SchoolIcon sx={{ pr: 2 }} />
+                                <Box display='flex' alignItems='center' mb={2}>
+                                  <img
+                                    src='https://img5.pic.in.th/file/secure-sv1/book_2232470.png'
+                                    alt='Major Icon'
+                                    style={{ width: '24px', height: '24px' }}
+                                  />
+                                  <Typography variant='body1'>
+                                    {' '}
+                                    : {reservation.Users?.Users_Info[0]?.department}
+                                  </Typography>
+                                </Box>
+                                <Box display='flex' alignItems='center' mb={2}>
+                                  <img
+                                    src='https://img5.pic.in.th/file/secure-sv1/graduate_401672.png'
+                                    alt='Major Icon'
+                                    style={{ width: '24px', height: '24px' }}
+                                  />
                                   <Typography variant='body1'> : {reservation.Users?.Users_Info[0]?.major}</Typography>
                                 </Box>
-                                <Box display='flex' alignItems='center'>
-                                  <MosqueIcon sx={{ pr: 2 }} />
+
+                                <Box display='flex' alignItems='center' mb={2}>
+                                  <img
+                                    src='https://img5.pic.in.th/file/secure-sv1/religion_9311967.png'
+                                    alt='Religion Icon'
+                                    style={{ width: '24px', height: '24px' }}
+                                  />
                                   <Typography variant='body1'>
                                     {' '}
                                     : {reservation.Users?.Users_Info[0]?.religion}
                                   </Typography>
                                 </Box>
-                                <Box display='flex' alignItems='center'>
-                                  <PoolIcon sx={{ pr: 2 }} />
+                                <Box display='flex' alignItems='center' mb={2}>
+                                  <img
+                                    src='https://img5.pic.in.th/file/secure-sv1/time-management_2027497.png'
+                                    alt='Activity Icon'
+                                    style={{ width: '24px', height: '24px' }}
+                                  />
                                   <Typography variant='body1'>
                                     {' '}
                                     : {reservation.Users?.Users_Req[0]?.activity}
                                   </Typography>
                                 </Box>
-                                <Box display='flex' alignItems='center'>
-                                  <DangerousIcon sx={{ pr: 2 }} />
-                                  <Typography variant='body1'> : {reservation.Users?.Users_Req[0].filter_redflag}</Typography>
+                                <Box display='flex' alignItems='center' mb={2}>
+                                  <img
+                                    src='https://img5.pic.in.th/file/secure-sv1/flag_1452046.png'
+                                    alt='Redflag Icon'
+                                    style={{ width: '24px', height: '24px' }}
+                                  />
+                                  <Typography variant='body1'>
+                                    {' '}
+                                    : {reservation.Users?.Users_Req[0].filter_redflag}
+                                  </Typography>
                                 </Box>
-                                <Box display='flex' alignItems='center'>
-                                  <HotelIcon sx={{ pr: 2 }} />
+                                <Box display='flex' alignItems='center' mb={2}>
+                                  <img
+                                    src='https://img5.pic.in.th/file/secure-sv1/bed-time_12178656.png'
+                                    alt='Sleep Icon'
+                                    style={{ width: '24px', height: '24px' }}
+                                  />
                                   <Typography variant='body1'> : {reservation.Users?.Users_Req[0].sleep}</Typography>
                                 </Box>
                               </Grid>
@@ -249,20 +310,6 @@ const ReservationBedviwe = () => {
                           </CardContent>
                         </Card>
                       </CardContent>
-
-                      // <Typography key={index} variant='body2' sx={{ marginBottom: 2 }}>
-                      //   <Box>
-                      //     <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                      //       Student_Year: {reservation.Users?.student_year}
-                      //     </Typography>
-                      //     <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                      //       Course: {reservation.Users?.course}
-                      //     </Typography>
-                      //     <Typography variant='body2' sx={{ marginBottom: 2 }}>
-                      //       Religion: {reservation.Users?.religion}
-                      //     </Typography>
-                      //   </Box>
-                      // </Typography>
                     ))}
 
                   <Box

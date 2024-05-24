@@ -33,14 +33,14 @@ interface EnhancedTableProps {
 }
 
 const headCells: readonly { id: keyof User; numeric: boolean; disablePadding: boolean; label: string }[] = [
-  { id: 'student_id', numeric: false, disablePadding: true, label: 'Student ID' },
-  { id: 'name', numeric: false, disablePadding: true, label: 'Firstname' },
-  { id: 'lastname', numeric: false, disablePadding: false, label: 'Lastname' },
+  { id: 'student_id', numeric: false, disablePadding: false, label: 'Student ID' },
+  { id: 'name', numeric: false, disablePadding: false, label: 'Username' },
   { id: 'school', numeric: false, disablePadding: false, label: 'School' },
   { id: 'department', numeric: false, disablePadding: false, label: 'Department' },
   { id: 'major', numeric: false, disablePadding: false, label: 'Major' },
   { id: 'religion', numeric: false, disablePadding: false, label: 'Religion' },
   { id: 'gender', numeric: false, disablePadding: false, label: 'Gender' },
+  { id: 'edit', numeric: false, disablePadding: false, label: 'Edit' }
 ]
 
 export const EnhancedTableHead = (props: EnhancedTableProps) => {
