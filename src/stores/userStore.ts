@@ -26,6 +26,7 @@ export interface IUser {
   filter_religion: string
   filter_redflag: string
   image : string
+  
 }
 
 type StoreType = {
