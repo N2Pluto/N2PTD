@@ -18,9 +18,10 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Grid, { GridProps } from '@mui/material/Grid'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import HomeIcon from '@mui/icons-material/Home'
-import Link from 'next/link'
+
 import SuccessฺฺBar from './component'
 import { sendDiscordMessage } from 'src/pages/api/discord/user'
+import Link from 'next/link'
 
 const ReservationHomePage = () => {
   const { user } = userStore()
@@ -113,6 +114,7 @@ const ReservationHomePage = () => {
     handleNavigate()
   }, [profileData])
 
+
   return (
     <>
       <Dialog
@@ -128,9 +130,12 @@ const ReservationHomePage = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowDialog(false)} autoFocus>
-            ปิด
-          </Button>
+        <Link href="/dashboard">
+  <Button onClick={() => setShowDialog(false)} autoFocus>
+    ปิด
+  </Button>
+</Link>
+
         </DialogActions>
       </Dialog>
     </>
