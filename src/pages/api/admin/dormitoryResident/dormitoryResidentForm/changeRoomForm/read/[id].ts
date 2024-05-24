@@ -3,7 +3,7 @@ import { google } from 'googleapis'
 
 const handler = async (req: any, res: any) => {
   const id = Number(req.query.id)
-  console.log('id', id)
+
   try {
     const auth = new google.auth.GoogleAuth({
       credentials: {
@@ -19,7 +19,7 @@ const handler = async (req: any, res: any) => {
 
     const sheets = google.sheets({ version: 'v4', auth })
     const rowNumber = id + 2
-    console.log('rowNumber', rowNumber)
+
 
     const keysRange = `response 1!A1:F1`
     const keysResponse = await sheets.spreadsheets.values.get({
@@ -53,7 +53,6 @@ const handler = async (req: any, res: any) => {
 
     const data = keys.reduce((obj, key, i) => ({ ...obj, [key]: values[i] || defaultData[key] }), {})
 
-    console.log(data)
 
     res.status(200).json({ data })
   } catch (error) {

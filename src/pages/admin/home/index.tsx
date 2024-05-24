@@ -12,6 +12,8 @@ const Home = () => {
   return (
     <LayoutAuth>
       <ApexChartWrapper>
+        
+
         <HeroSection />
       </ApexChartWrapper>
     </LayoutAuth>

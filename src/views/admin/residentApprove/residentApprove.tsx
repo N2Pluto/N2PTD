@@ -78,8 +78,8 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography sx={{ flex: '1 1 100%' }} variant='h6' id='tableTitle' component='div'>
-          Nutrition
+        <Typography sx={{ flex: '1 1 100%',pl:5}} variant='h6' id='tableTitle' component='div'>
+          User Management
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -589,10 +589,20 @@ const ResidentApprove = () => {
         />
       </Tabs>
 
-      <Button variant='contained' component='label'>
-        Import CSV
-        <input type='file' hidden onChange={handleFileUpload} />
-      </Button>
+      <Box sx={{ pt: 3, pl: 5 ,display: 'flex', alignItems: 'center' }} >
+        <Button variant='contained' component='label' onClick={() => exportToCSV(selectedRound)}>
+          Export CSV
+        </Button>
+        <Typography sx={{ pl: 3 }}>นำไฟล์ออก ให้การเงินตรวจ สอบการจ่ายเงินของผู้จองหอพัก</Typography>
+      </Box>
+
+      <Box sx={{ pt: 2, pl: 5, display: 'flex', alignItems: 'center' }}>
+        <Button variant='contained' component='label'>
+          Import CSV
+          <input type='file' hidden onChange={handleFileUpload} />
+        </Button>
+        <Typography sx={{ pl: 3 }}>นำไฟล์เข้า เพื่อตรวจสอบกับระบบ ของผู้จองหอพัก </Typography>
+      </Box>
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', margin: 5 }}>
         <Grid item xs={12} sm={3}>
@@ -624,9 +634,6 @@ const ResidentApprove = () => {
                 </MenuItem>
               ))}
             </Select>
-            <Button variant='contained' component='label' onClick={() => exportToCSV(selectedRound)}>
-              Export CSV
-            </Button>
           </FormControl>
         </Grid>
         <Grid item xs={12}>
@@ -743,7 +750,7 @@ const ResidentApprove = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label='Dense' />
+      {/* <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label='Dense' /> */}
     </Box>
   )
 }

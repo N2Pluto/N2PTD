@@ -16,7 +16,6 @@ async function updateUserInfo(user_id: string, role: string) {
 
 const handler = async (req: any, res: any) => {
   const { user_id, role } = req.body
-  console.log('user_id', user_id)
 
   if (!user_id) {
     return res.status(400).json({ error: 'user_id is required' })

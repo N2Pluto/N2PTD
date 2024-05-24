@@ -32,10 +32,9 @@ const useNavigation = (): VerticalNavItemsType => {
 
 
         if (data.userData.role === 'admin') {
-          console.log('admin')
+
           setRoleFilter('admin')
         } else if (data.userData.role === 'user') {
-          console.log('user')
           setRoleFilter('user')
         }
       } catch (error) {
@@ -61,10 +60,42 @@ const useNavigation = (): VerticalNavItemsType => {
         icon: HomeOutline,
         path: '/admin/dashboard'
       },
+
+
+
+      {
+        sectionTitle: 'ควบคุม'
+      },
+      {
+        title: 'Building Control ',
+        icon: HomeOutline,
+        path: '/admin/buildingControl'
+      },
+      {
+        title: 'Building',
+        icon: HomeOutline,
+        path: '/admin/building'
+      },
+      {
+        title: 'รอบการจอง',
+        icon: HomeOutline,
+        path: '/admin/reservationSystem'
+      },
       {
         title: 'ข้อมูลผู้อยู่อาศัย',
         icon: HomeOutline,
         path: '/admin/dormitoryResident'
+      },
+      {
+        title: 'เปลี่ยน Role',
+        icon: HomeOutline,
+        path: '/admin/userControl'
+      },
+
+
+
+      {
+        sectionTitle: 'การอนุมัติ'
       },
       {
         title: 'อนุมัติผู้อยู่อาศัย',
@@ -77,43 +108,22 @@ const useNavigation = (): VerticalNavItemsType => {
         path: '/admin/reservationApprove'
       },
       {
-        title: 'รอบการจอง',
-        icon: HomeOutline,
-        path: '/admin/reservationSystem'
-      },
-
-      {
         title: 'ข้อมูลผู้ใช้',
         icon: HomeOutline,
         path: '/admin/userManagement'
       },
-      {
-        title: 'เปลี่ยน Role',
-        icon: HomeOutline,
-        path: '/admin/userControl'
-      },
-      {
-        title: 'Building Control ',
-        icon: HomeOutline,
-        path: '/admin/buildingControl'
-      },
-      {
-        title: 'Building',
-        icon: HomeOutline,
-        path: '/admin/building'
-      },
+
+
+
 
       {
-        icon: CubeOutline,
-        title: 'Post NEWS',
-        path: '/admin/facebookPost'
+        sectionTitle: 'แบบฟอร์ม'
       },
       {
         title: 'แบบฟอร์มคำร้องผู้ใช้',
         icon: HomeOutline,
         path: '/admin/userManagementForm'
       },
-      ,
       {
         title: 'แบบฟอร์มย้ายห้อง',
         icon: HomeOutline,
@@ -123,11 +133,6 @@ const useNavigation = (): VerticalNavItemsType => {
         title: 'แบบฟอร์มสลับห้อง',
         icon: HomeOutline,
         path: '/admin/dormitoryResident/transferRoomForm'
-      },
-      {
-        title: 'discord',
-        icon: HomeOutline,
-        path: '/admin/discord'
       },
       {
         sectionTitle: 'User Interface'
@@ -192,70 +197,6 @@ const useNavigation = (): VerticalNavItemsType => {
         path: '/profile'
       }
 
-
-
-      // {
-      //   sectionTitle: 'Pages'
-      // },
-
-      // {
-      //   title: 'Dashboard',
-      //   icon: HomeOutline,
-      //   path: '/dashboard'
-      // },
-
-      // {
-      //   title: 'Login',
-      //   icon: Login,
-      //   path: '/pages/login',
-      //   // openInNewTab: true
-      // },
-      // {
-      //   title: 'Account Settings',
-      //   icon: AccountCogOutline,
-      //   path: '/account-settings'
-      // },
-
-      // {
-      //   title: 'Register',
-      //   icon: AccountPlusOutline,
-      //   path: '/pages/register',
-      //   // openInNewTab: true
-      // },
-      // {
-      //   title: 'Error',
-      //   icon: AlertCircleOutline,
-      //   path: '/pages/error',
-      //   openInNewTab: true
-      // },
-      // {
-      //   sectionTitle: 'User Interface'
-      // },
-      // {
-      //   title: 'Typography',
-      //   icon: FormatLetterCase,
-      //   path: '/typography'
-      // },
-      // {
-      //   title: 'Icons',
-      //   path: '/icons',
-      //   icon: GoogleCirclesExtended
-      // },
-      // {
-      //   title: 'Cards',
-      //   icon: CreditCardOutline,
-      //   path: '/cards'
-      // },
-      // {
-      //   title: 'Tables',
-      //   icon: Table,
-      //   path: '/tables'
-      // },
-      // {
-      //   icon: CubeOutline,
-      //   title: 'Form Layouts',
-      //   path: '/form-layouts'
-      // }
     ]
   }
 }

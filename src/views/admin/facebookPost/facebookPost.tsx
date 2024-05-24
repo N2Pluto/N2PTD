@@ -1,4 +1,4 @@
-import { ChangeEvent, useState, useCallback } from 'react'
+import { ChangeEvent, useState, useCallback, ElementType } from 'react'
 import { useDropzone } from 'react-dropzone'
 
 // ** MUI Imports
@@ -54,13 +54,16 @@ const FormLayoutsFacebookPost = () => {
         })
       })
 
+      console.log('response',response)
+
       if (response.ok) {
-        alert('Data has been successfully submitted!')
-        router.reload()
-      } else {
-        alert('There was a problem with the submission.')
-        router.reload()
+        alert ('สร้างโพสต์สำเร็จ')
+        router.push('/admin/home')
+      }else{
+        alert ('สร้างโพสต์ไม่สำเร็จ')
       }
+
+
     } catch (error) {
       alert('An error occurred: ' + error.message)
     }

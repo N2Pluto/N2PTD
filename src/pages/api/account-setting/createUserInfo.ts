@@ -19,7 +19,7 @@ const handler = async (req: any, res: any) => {
     // Fetch student data
     const { data: studentData } = await supabase.from('Student').select('*').eq('student_id', user.student_id)
     const student = studentData[0]
-    console.log('Student Data:', student)
+
 
     // Fetch school_name
     const { data: schoolData } = await supabase
@@ -27,7 +27,7 @@ const handler = async (req: any, res: any) => {
       .select('school_name')
       .eq('school_id', student.school_id)
     const school_name = schoolData[0]?.school_name
-    console.log('School Name:', school_name)
+
 
     // Fetch department_name
     const { data: departmentData } = await supabase
@@ -35,12 +35,12 @@ const handler = async (req: any, res: any) => {
       .select('department_name')
       .eq('department_id', student.department_id)
     const department_name = departmentData[0]?.department_name
-    console.log('Department Name:', department_name)
+
 
     // Fetch major_name
     const { data: majorData } = await supabase.from('Info_Major').select('major_name').eq('major_id', student.major_id)
     const major_name = majorData[0]?.major_name
-    console.log('Major Name:', major_name)
+
 
     // Insert into Users_Info
     const { data, error } = await supabase.from('Users_Info').insert({
@@ -62,7 +62,7 @@ const handler = async (req: any, res: any) => {
       return res.status(500).json({ error: error.message })
     }
 
-    console.log('Inserted Data:', data)
+
     res.status(200).json({ data })
   })
 }

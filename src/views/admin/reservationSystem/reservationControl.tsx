@@ -22,17 +22,14 @@ const ReservationControl = () => {
   return (
     <>
       <Card>
-        <CardMedia
-          sx={{ height: '20.375rem' }}
-          image='https://cdn.pixabay.com/photo/2022/06/26/16/07/shop-7285838_1280.png'
-        />
+        
         <CardContent sx={{ padding: theme => `${theme.spacing(3, 5.25, 4)} !important` }}>
           <Typography variant='h6' sx={{ marginBottom: 2 }}>
             เปิดรอบการจองหอพัก
           </Typography>
           <Typography variant='body2'>Click to add a dormitory. for building a new dormitory</Typography>
         </CardContent>
-        
+
         <ReservationForm>
           <Button
             onClick={handleClick}

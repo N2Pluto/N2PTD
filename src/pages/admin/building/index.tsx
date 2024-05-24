@@ -8,22 +8,25 @@ import CardHeader from '@mui/material/CardHeader'
 import AdminLayout from 'src/layouts/AdminLayout'
 import Building from 'src/views/admin/building/building'
 import Addbuilding from 'src/views/admin/building/building'
+import CardShowBuilding from 'src/views/admin/building/showBuilding'
 
 const MUITable = () => {
   return (
     <AdminLayout>
       <Grid container spacing={6}>
         <Grid item xs={12}>
-          <Typography variant='h5' sx={{pl:4}}>Building Control </Typography>
-          
+          <Typography variant='h5' sx={{ pl: 4 }}>
+            Building Control{' '}
+          </Typography>
         </Grid>
         <Grid item xs={12} md={12} lg={12}>
-          <Card>
-            <CardHeader title='Adding a building ' titleTypographyProps={{ variant: 'h6' }} />
+
             <Addbuilding />
-          </Card>
         </Grid>
 
+        <Grid item xs={12} sm={6} md={4}>
+          {/* <CardShowBuilding /> */}
+        </Grid>
       </Grid>
     </AdminLayout>
   )

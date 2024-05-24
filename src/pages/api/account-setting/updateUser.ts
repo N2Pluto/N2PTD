@@ -89,7 +89,6 @@ const handler = async (req: any, res: any) => {
       filter_religion,
       filter_redflag
     } = req.body
-    console.log('user_id', user_id)
 
     if (!user_id) {
       return res.status(400).json({ error: 'user_id is required' })

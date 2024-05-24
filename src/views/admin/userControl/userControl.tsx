@@ -146,9 +146,6 @@ const UserControl = () => {
               <TableRow>
                 <StyledTableCell>email</StyledTableCell>
                 <StyledTableCell align='right'>Student ID</StyledTableCell>
-                <StyledTableCell align='right'>name</StyledTableCell>
-                <StyledTableCell>Last name</StyledTableCell>
-                <StyledTableCell align='right'>phone</StyledTableCell>
                 <StyledTableCell align='right'>Role</StyledTableCell>
               </TableRow>
             </TableHead>
@@ -159,9 +156,7 @@ const UserControl = () => {
                     {row.email}
                   </StyledTableCell>
                   <StyledTableCell align='right'>{row.STUDENT}</StyledTableCell>
-                  <StyledTableCell align='right'>{row.name}</StyledTableCell>
-                  <StyledTableCell>{row.lastname}</StyledTableCell>
-                  <StyledTableCell align='right'>{row.phone}</StyledTableCell>
+
                   <StyledTableCell align='right'>
                     <Button
                       id='demo-customized-button'

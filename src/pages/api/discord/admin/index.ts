@@ -21,6 +21,5 @@ export const sendDiscordMessage = async (messageID: string,messageEmail: string,
       body: JSON.stringify(webhookBody)
     })
   } catch (err: any) {
-    console.log(err.message)
   }
 }
