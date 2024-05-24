@@ -127,8 +127,8 @@ export default function EditUser({ id }: { id: number }) {
 
   return (
     <React.Fragment>
-      <Button  onClick={handleClickOpen}>
-        <FaEdit size={'20px'} />
+      <Button variant='outlined' onClick={handleClickOpen}>
+        <FaEdit />
       </Button>
       <Dialog fullWidth={fullWidth} maxWidth={maxWidth} open={open} onClose={handleClose}>
         {/* <DialogContent sx={{ py: 5 }}>User Data Management</DialogContent> */}

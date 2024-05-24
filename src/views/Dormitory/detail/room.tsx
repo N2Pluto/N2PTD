@@ -191,14 +191,14 @@ const ReservationRoomDetails = () => {
       </Grid>
 
       <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
-        <Card sx={{ pb: 5 }}>
+        <Card sx={{pb:5}}>
           <CardMedia sx={{ height: '14.5625rem' }} image={dormitoryBuilding?.images_url} />
           <CardContent>
             <Typography variant='h4' sx={{ marginBottom: 2 }}>
               {dormitoryBuilding?.name}
             </Typography>
 
-            <Grid container spacing={6} sx={{ pt: 5 }}>
+            <Grid container spacing={6} sx={{pt:5}}>
               <Grid item xs={12} sm={12}>
                 <Box sx={{ display: 'flex', alignItems: 'center', pl: 3 }}>
                   <Typography variant='body2' sx={{ pr: 2 }}>
@@ -225,7 +225,7 @@ const ReservationRoomDetails = () => {
                       {' '}
                       Price{' '}
                     </Typography>
-                    <Typography variant='body1'>| {dormitoryBuilding?.price} baht / term</Typography>
+                    <Typography variant='body1'>| {dormitoryBuilding?.price}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', height: 10, pb: 5 }}>
                     <Typography variant='body1' sx={{ width: 150 }}>
@@ -239,7 +239,7 @@ const ReservationRoomDetails = () => {
                       {' '}
                       Roommate{' '}
                     </Typography>
-                    <Typography variant='body1'>| {dormitoryBuilding?.type_roommate} Person</Typography>
+                    <Typography variant='body1'>| {dormitoryBuilding?.type_roommate}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', height: 10, pb: 5 }}>
                     <Typography variant='body1' sx={{ width: 150 }}>
@@ -253,7 +253,7 @@ const ReservationRoomDetails = () => {
                       {' '}
                       Bed capacity{' '}
                     </Typography>
-                    <Typography variant='body1'>| {dormitoryBuilding?.type_bedcapacity} bed</Typography>
+                    <Typography variant='body1'>| {dormitoryBuilding?.type_bedcapacity}</Typography>
                   </Box>
                 </Box>
                 <Divider />
@@ -266,24 +266,18 @@ const ReservationRoomDetails = () => {
                   <Typography variant='h5'>Facilities</Typography>
                 </Box>
                 <Box sx={{ pl: 3, pt: 4 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center'}}>
                     <Typography variant='body1' sx={{ width: 150 }}>
                       Furniture{' '}
                     </Typography>
-                    <Typography variant='body1'>
-                      {' '}
-                      | {JSON.parse(dormitoryBuilding?.type_furniture || '[]').join(', ')}
-                    </Typography>
+                    <Typography variant='body1'> | {dormitoryBuilding?.type_furniture}</Typography>
                   </Box>
 
-                  <Box sx={{ display: 'flex', alignItems: 'center', pb: 10 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' ,pb:10}}>
                     <Typography variant='body1' sx={{ width: 150 }}>
-                      Facilities{' '}
+                    Facilities{' '}
                     </Typography>
-                    <Typography variant='body1'>
-                      {' '}
-                      | {JSON.parse(dormitoryBuilding?.type_facilities || '[]').join(', ')}
-                    </Typography>
+                    <Typography variant='body1'> | {dormitoryBuilding?.type_facilities}</Typography>
                   </Box>
                 </Box>
                 <Divider />
@@ -358,52 +352,28 @@ const ReservationRoomDetails = () => {
                                 <Grid container spacing={6}>
                                   <Grid item xs={12}>
                                     <Box display='flex' alignItems='center'>
-                                      <img
-                                        src='https://img5.pic.in.th/file/secure-sv1/school_2602414.png'
-                                        alt='School Icon'
-                                        style={{ width: '24px', height: '24px' }}
-                                      />
-                                      <Typography variant='body1'>: {reservation.Users_Info?.school}</Typography>
+                                      <SchoolIcon />
+                                      <Typography variant='body1'>: {reservation.Users?.school}</Typography>
                                     </Box>
                                     <Box display='flex' alignItems='center'>
-                                      <img
-                                        src='https://img5.pic.in.th/file/secure-sv1/graduate_401672.png'
-                                        alt='Major Icon'
-                                        style={{ width: '24px', height: '24px' }}
-                                      />
-                                      <Typography variant='body1'>: {reservation.Users_Info?.major}</Typography>
+                                      <SchoolIcon />
+                                      <Typography variant='body1'>: {reservation.Users?.major}</Typography>
                                     </Box>
                                     <Box display='flex' alignItems='center'>
-                                      <img
-                                        src='https://img5.pic.in.th/file/secure-sv1/religion_9311967.png'
-                                        alt='Religion Icon'
-                                        style={{ width: '24px', height: '24px' }}
-                                      />
-                                      <Typography variant='body1'>: {reservation.Users_Info?.religion}</Typography>
+                                      <MosqueIcon />
+                                      <Typography variant='body1'>: {reservation.Users?.religion}</Typography>
                                     </Box>
                                     <Box display='flex' alignItems='center'>
-                                      <img
-                                        src='https://img5.pic.in.th/file/secure-sv1/time-management_2027497.png'
-                                        alt='Activity Icon'
-                                        style={{ width: '24px', height: '24px' }}
-                                      />
-                                      <Typography variant='body1'>: {reservation.Users_Req?.activity}</Typography>
+                                      <PoolIcon />
+                                      <Typography variant='body1'>: {reservation.Users?.activity}</Typography>
                                     </Box>
                                     <Box display='flex' alignItems='center'>
-                                      <img
-                                        src='https://img5.pic.in.th/file/secure-sv1/flag_1452046.png'
-                                        alt='Redflag Icon'
-                                        style={{ width: '24px', height: '24px' }}
-                                      />
-                                      <Typography variant='body1'>: {reservation.Users_Req?.filter_redflag}</Typography>
+                                      <DangerousIcon />
+                                      <Typography variant='body1'>: {reservation.Users?.filter_redflag}</Typography>
                                     </Box>
                                     <Box display='flex' alignItems='center'>
-                                      <img
-                                        src='https://img5.pic.in.th/file/secure-sv1/bed-time_12178656.png'
-                                        alt='Sleep Icon'
-                                        style={{ width: '24px', height: '24px' }}
-                                      />
-                                      <Typography variant='body1'>: {reservation.Users_Req?.sleep}</Typography>
+                                      <HotelIcon />
+                                      <Typography variant='body1'>: {reservation.Users?.sleep}</Typography>
                                     </Box>
                                   </Grid>
                                 </Grid>
