@@ -36,7 +36,6 @@ import FormControl from '@mui/material/FormControl'
 import InputAdornment from '@mui/material/InputAdornment'
 import { Parser } from 'json2csv' // Import json2csv
 
-// ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import SearchIcon from '@mui/icons-material/Search'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
