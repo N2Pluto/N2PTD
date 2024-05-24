@@ -13,7 +13,6 @@ import Switch from '@mui/material/Switch'
 import { useEffect } from 'react'
 import { EnhancedTableHead } from './components/EnhancedTableHead'
 import { descendingComparator, getComparator, stableSort } from './helpers/helper'
-import { FaEdit } from 'react-icons/fa'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
@@ -24,13 +23,8 @@ import { alpha, useTheme } from '@mui/material/styles'
 import Button from '@mui/material/Button'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import Fade from '@mui/material/Fade'
-import { CiMenuKebab } from 'react-icons/ci'
-import CheckBoxIcon from '@mui/icons-material/CheckBox'
-import { MdCancel } from 'react-icons/md'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import Chip from '@mui/material/Chip'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
@@ -40,6 +34,7 @@ import InputLabel from '@mui/material/InputLabel'
 import Grid from '@mui/material/Grid'
 import FormControl from '@mui/material/FormControl'
 import InputAdornment from '@mui/material/InputAdornment'
+import { Parser } from 'json2csv' // Import json2csv
 
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
@@ -83,6 +78,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           {numSelected} selected
         </Typography>
       ) : (
+
         <Typography sx={{ flex: '1 1 100%' ,pl:5}} variant='h6' id='tableTitle' component='div'>
           Reservation Control
         </Typography>
@@ -95,9 +91,9 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Tooltip>
       ) : (
         <Tooltip title='Filter list'>
-          <IconButton>
+          {/* <IconButton>
             <FilterListIcon />
-          </IconButton>
+          </IconButton> */}
         </Tooltip>
       )}
     </Toolbar>
@@ -113,37 +109,42 @@ const ReservationApprove = () => {
   const [dense, setDense] = React.useState(false)
   const [rowsPerPage, setRowsPerPage] = React.useState(5)
   const [tab, setTab] = React.useState('pending')
-  const [selectValue, setSelectValue] = React.useState('')
   const [searchValue, setSearchValue] = React.useState('')
-  const [roundNames, setRoundNames] = React.useState<string[]>([])
+  const [roundNames, setRoundNames] = React.useState<{ round_name: string; round_id: number }[]>([])
+  const [dormNames, setDormNames] = React.useState<{ dorm_name: string; dorm_id: number }[]>([])
+  const [selectRoundValue, setSelectRoundValue] = React.useState('-1')
+  const [selectDormValue, setSelectDormValue] = React.useState('-1')
   const [filteredUsers, setFilteredUsers] = React.useState<User[]>([])
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
 
-  const handleSelectChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleSelectRoundChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     const selectedRoundId = event.target.value as number
     console.log('selectedRoundId', selectedRoundId)
-    if (selectedRoundId === -1) {
-      // If "All" is selected, fetch all users
-      setFilteredUsers(users)
-    } else {
-      // If a specific round is selected, filter users
-      const filtered = users.filter(user => user.round_id === selectedRoundId)
-      setFilteredUsers(filtered)
-    }
-    setSelectValue(event.target.value as string)
+    setSelectRoundValue(event.target.value as string)
+  }
+
+  const handleSelectDormChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const selectedDormId = event.target.value as number
+    console.log('selectedDormId', selectedDormId)
+    setSelectDormValue(event.target.value as string)
   }
 
   useEffect(() => {
-    if (selectValue === '-1') {
-      setFilteredUsers(users)
-    } else {
-      const selectedRoundId = Number(selectValue)
-      const filtered = users.filter(user => user.round_id === selectedRoundId)
-      setFilteredUsers(filtered)
+    let filtered = users
+
+    if (selectRoundValue !== '-1') {
+      filtered = filtered.filter(user => user.round_id === Number(selectRoundValue))
     }
-  }, [users, selectValue])
+
+    if (selectDormValue !== '-1') {
+      filtered = filtered.filter(user => user.dorm_id === Number(selectDormValue))
+    }
+
+    setFilteredUsers(filtered)
+  }, [users, selectRoundValue, selectDormValue])
 
   useEffect(() => {
-    handleSelectChange({ target: { value: '-1' } } as React.ChangeEvent<{ value: unknown }>)
+    fetchData()
   }, [])
 
   const fetchData = async () => {
@@ -163,6 +164,14 @@ const ReservationApprove = () => {
           return { round_name: user.Reservation_System.round_name, round_id: user.round_id }
         })
         setRoundNames(uniqueRoundNames)
+
+        const uniqueDormIds = Array.from(new Set(data.map((user: User) => user.dorm_id)))
+        const uniqueDormNames = uniqueDormIds.map(id => {
+          const user = data.find((user: User) => user.dorm_id === id)
+
+          return { dorm_name: user.Dormitory_Building.name, dorm_id: user.dorm_id }
+        })
+        setDormNames(uniqueDormNames)
       } else {
         console.error('No data returned from API')
       }
@@ -182,15 +191,6 @@ const ReservationApprove = () => {
 
   const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
     setTab(newValue)
-  }
-
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
-  const handleClickOption = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-  const handleClose = () => {
-    setAnchorEl(null)
   }
 
   const resetSelected = () => {
@@ -244,6 +244,35 @@ const ReservationApprove = () => {
 
   const isSelected = (id: number) => selected.indexOf(id) !== -1
 
+  const handleExportCSV = () => {
+    const fields = [
+      { label: 'student_id', value: 'Users.student_id' },
+      { label: 'name', value: 'Users_Info.name' },
+      { label: 'lastname', value: 'Users_Info.lastname' },
+      { label: 'dorm_name', value: 'Dormitory_Building.name' },
+      { label: 'room_number', value: 'Dormitory_Room.room_number' },
+      { label: 'bed_number', value: 'Dormitory_Bed.bed_number' },
+      { label: 'room_name', value: 'Reservation_System.round_name' }
+    ]
+    const parser = new Parser({ fields })
+    const csv = parser.parse(filteredUsers)
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.setAttribute('download', 'user_data.csv')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleMenuClose = () => {
+    setAnchorEl(null)
+  }
+
   // Use filteredUsers instead of users
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredUsers.length) : 0
 
@@ -263,9 +292,13 @@ const ReservationApprove = () => {
   const visibleRows = React.useMemo(() => {
     const lowerCaseSearchValue = searchValue.toLowerCase()
 
-    const filteredUsersBySearch = filteredUsersByTab.filter(user =>
-      `${user.Users_Info?.name} ${user.Users_Info?.lastname}`.toLowerCase().includes(lowerCaseSearchValue)
-    )
+    const filteredUsersBySearch = filteredUsersByTab.filter(user => {
+      if (!isNaN(Number(searchValue))) {
+        return user.Users?.student_id.includes(lowerCaseSearchValue)
+      } else {
+        return `${user.Users_Info?.name} ${user.Users_Info?.lastname}`.toLowerCase().includes(lowerCaseSearchValue)
+      }
+    })
 
     return stableSort(filteredUsersBySearch, getComparator(order, orderBy)).slice(
       page * rowsPerPage,
@@ -273,12 +306,9 @@ const ReservationApprove = () => {
     )
   }, [order, orderBy, page, rowsPerPage, filteredUsersByTab, searchValue])
 
-  const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation()
-  }
-
   const formatDate = (dateString: string) => {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
+
     return new Date(dateString).toLocaleDateString(undefined, options)
   }
 
@@ -462,10 +492,8 @@ const ReservationApprove = () => {
     }
   }
 
-  const allCount = filteredUsers.length
   const pendingCount = filteredUsers.filter(user => user.status === 'Pending').length
   const approveCount = filteredUsers.filter(user => user.status === 'Approve').length
-  const rejectCount = filteredUsers.filter(user => user.status === 'Reject').length
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -512,14 +540,35 @@ const ReservationApprove = () => {
             <InputLabel id='form-layouts-separator-select-label'>Round</InputLabel>
             <Select
               label='Round'
-              defaultValue='-1'
+              value={selectRoundValue}
+              onChange={handleSelectRoundChange}
               id='form-layouts-separator-select'
               labelId='form-layouts-separator-select-label'
-              onChange={handleSelectChange}
             >
-              <MenuItem value='-1'>รอบจองหอพักทั้งหมด</MenuItem>
+              <MenuItem value='-1'>All Rounds</MenuItem>
               {roundNames.map(round => (
-                <MenuItem value={round.round_id}>{round.round_name}</MenuItem>
+                <MenuItem key={round.round_id} value={round.round_id}>
+                  {round.round_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={3}>
+          <FormControl fullWidth sx={{ flexGrow: 1, ml: 4 }}>
+            <InputLabel id='form-layouts-separator-select-label'>Dormitory</InputLabel>
+            <Select
+              label='Dormitory'
+              value={selectDormValue}
+              onChange={handleSelectDormChange}
+              id='form-layouts-separator-select'
+              labelId='form-layouts-separator-select-label'
+            >
+              <MenuItem value='-1'>All Dormitories</MenuItem>
+              {dormNames.map(dorm => (
+                <MenuItem key={dorm.dorm_id} value={dorm.dorm_id}>
+                  {dorm.dorm_name}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -531,7 +580,7 @@ const ReservationApprove = () => {
             placeholder='Leonard Carter'
             value={searchValue}
             onChange={handleSearchChange}
-            sx={{ flexGrow: 1, marginLeft: 2 }}
+            sx={{ flexGrow: 1, ml: 8 }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position='start'>
@@ -540,6 +589,28 @@ const ReservationApprove = () => {
               )
             }}
           />
+        </Grid>
+        <Grid item xs={12} sm={0.5}>
+          <IconButton onClick={handleMenuOpen} sx={{ flexGrow: 1, ml: 8, mt: 2 }}>
+            <MoreVertIcon />
+          </IconButton>
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+            <MenuItem onClick={handleExportCSV}>
+              <img
+                src='https://img5.pic.in.th/file/secure-sv1/csv-file-format-extension_28842.png'
+                width='25'
+                height='25'
+                alt='CSV Icon'
+                style={{ marginRight: '10px' }}
+              />
+              <div>
+                <Typography variant='subtitle1'>Export</Typography>
+                <Typography variant='body2' color='textSecondary'>
+                  Exporting CSV data.
+                </Typography>
+              </div>
+            </MenuItem>
+          </Menu>
         </Grid>
       </Box>
       <Paper sx={{ width: '100%', mb: 2 }}>
@@ -625,6 +696,39 @@ const ReservationApprove = () => {
               {emptyRows > 0 && (
                 <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
                   <TableCell colSpan={9} />
+                </TableRow>
+              )}
+              {visibleRows.length === 0 && (
+                <TableRow style={{ height: 100 }}>
+                  <TableCell colSpan={11}>
+                    <Paper
+                      style={{
+                        padding: '20px',
+                        width: '1350px',
+                        height: '350px',
+                        backgroundColor: 'rgba(128, 128, 128, 0.05)'
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: '100%'
+                        }}
+                      >
+                        <img
+                          src='https://img5.pic.in.th/file/secure-sv1/erase_1981540.png'
+                          alt='No Data'
+                          width='100'
+                          height='100'
+                          style={{ marginBottom: '10px' }}
+                        />
+                        <Typography variant='body2'>Data Not Found</Typography>
+                      </div>
+                    </Paper>
+                  </TableCell>
                 </TableRow>
               )}
             </TableBody>

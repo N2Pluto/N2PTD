@@ -18,6 +18,7 @@ import BedroomParentIcon from '@mui/icons-material/BedroomParent'
 import GroupIcon from '@mui/icons-material/Group'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import TransgenderIcon from '@mui/icons-material/Transgender'
+import FilterDrawer from '../components/BuildingFilterDialog'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -36,6 +37,9 @@ const ReservationBuildingDetails = () => {
   const [genderFilter, setGenderFilter] = useState<string>('')
   const [buildingFilter, setBuildingFilter] = useState<string>('')
   const [roommateFilter, setRoommateFilter] = useState<string>('')
+  const [bathroomFilter, setBathroomFilter] = useState<string>('')
+  const [bedFilter, setBedFilter] = useState<string>('')
+  const [priceFilter, setPriceFilter] = useState<number | ''>('')
 
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [roomCounts, setRoomCounts] = useState<{ [key: string]: number }>({})
@@ -73,22 +77,25 @@ const ReservationBuildingDetails = () => {
     fetchData()
   }, [])
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
+  // const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  //   setAnchorEl(event.currentTarget)
+  // }
 
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
+  // const handleClose = () => {
+  //   setAnchorEl(null)
+  // }
 
   const handleDialogToggle = () => {
     setDialogOpen(!dialogOpen)
   }
 
+  useEffect(() => {
+    handleDialogToggle() 
+  }, []) 
+
   return (
     <>
       <Grid pb={4}>
-
         <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
           <Card>
             <CardContent>
@@ -106,110 +113,38 @@ const ReservationBuildingDetails = () => {
             </CardContent>
           </Card>
         </Grid>
+      </Grid>
 
+      <Grid pb={4}>
         <Card>
           <CardContent>
             <Box
               sx={{
                 width: '100%',
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
+                alignItems: 'center'
               }}
             >
-              <Button onClick={handleDialogToggle}>Filter</Button>
+              <Button variant='contained' onClick={handleDialogToggle}>
+                Filter Building
+              </Button>
             </Box>
-
-            <Dialog open={dialogOpen} onClose={handleDialogToggle}>
-              <DialogTitle>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography>Filter</Typography>
-                  <IconButton onClick={handleDialogToggle}>
-                    <CloseIcon />
-                  </IconButton>
-                </Box>
-              </DialogTitle>
-              <DialogContent>
-                <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ paddingRight: 2 }}>Gender Filter</Typography>
-                  <TransgenderIcon fontSize='small' sx={{ marginRight: 2 }} />
-                </Box>
-                <Grid container spacing={2} pb={5} pt={1}>
-                  <FormControlLabel
-                    control={<Checkbox checked={genderFilter === ''} onChange={() => setGenderFilter('')} />}
-                    label='All'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={genderFilter == 'male'} onChange={() => setGenderFilter('male')} />}
-                    label='male'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={genderFilter == 'female'} onChange={() => setGenderFilter('female')} />}
-                    label='female'
-                  />
-                </Grid>
-
-                <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ paddingRight: 2 }}>Room type</Typography>
-                  <BedroomParentIcon fontSize='small' sx={{ marginRight: 2 }} />
-                </Box>
-                <Grid container spacing={2} pb={5} pt={1}>
-                  <FormControlLabel
-                    control={<Checkbox checked={buildingFilter === ''} onChange={() => setBuildingFilter('')} />}
-                    label='All'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={buildingFilter == 'Air conditioner'}
-                        onChange={() => setBuildingFilter('Air conditioner')}
-                      />
-                    }
-                    label='Air conditioner'
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={buildingFilter == 'Ceiling fan'}
-                        onChange={() => setBuildingFilter('Ceiling fan')}
-                      />
-                    }
-                    label='Ceiling fan'
-                  />
-                </Grid>
-                <Box sx={{ display: 'flex' }}>
-                  <Typography sx={{ paddingRight: 2 }}>Roommate</Typography>
-                  <GroupIcon fontSize='small' sx={{ marginRight: 2 }} />
-                </Box>
-                <Grid container spacing={2} pb={5} pt={1}>
-                  <FormControlLabel
-                    control={<Checkbox checked={roommateFilter === ''} onChange={() => setRoommateFilter('')} />}
-                    label='All'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={roommateFilter === '2'} onChange={() => setRoommateFilter('2')} />}
-                    label='2'
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={roommateFilter === '4'} onChange={() => setRoommateFilter('4')} />}
-                    label='4'
-                  />
-                </Grid>
-
-                <Grid container spacing={2} pb={5}>
-                  <Button
-                    onClick={() => {
-                      setGenderFilter('')
-                      setBuildingFilter('')
-                      setRoommateFilter('')
-                    }}
-                  >
-                    Clear
-                  </Button>
-                  <Button onClick={handleDialogToggle}>Apply</Button>
-                </Grid>
-              </DialogContent>
-            </Dialog>
+            <FilterDrawer
+              open={dialogOpen}
+              onClose={handleDialogToggle}
+              filters={{
+                buildingFilter,
+                setBuildingFilter,
+                roommateFilter,
+                setRoommateFilter,
+                bathroomFilter,
+                setBathroomFilter,
+                bedFilter,
+                setBedFilter,
+                priceFilter,
+                setPriceFilter
+              }}
+            />
           </CardContent>
         </Card>
       </Grid>
@@ -218,6 +153,9 @@ const ReservationBuildingDetails = () => {
         .filter(dorm => genderFilter === '' || dorm.type_gender === genderFilter)
         .filter(dorm => buildingFilter === '' || dorm.type_building === buildingFilter)
         .filter(dorm => roommateFilter === '' || dorm.type_roommate === roommateFilter)
+        .filter(dorm => bathroomFilter === '' || dorm.type_bathroom === bathroomFilter)
+        .filter(dorm => bedFilter === '' || dorm.type_bedtype === bedFilter)
+        .filter(dorm => priceFilter === '' || dorm.price === priceFilter)
         .map(dorm => (
           <Grid key={dorm.dorm_id} pb={5}>
             <Card>
@@ -240,9 +178,7 @@ const ReservationBuildingDetails = () => {
                     <Typography variant='h6' sx={{ marginBottom: 2 }}>
                       {dorm.name}
                     </Typography>
-                    <Typography variant='body2' sx={{ marginBottom: 3.5 }}>
-                      - Dormitory fee: 10,000 baht per person per semester. <br /> - Monthly electricity bill payment.
-                    </Typography>
+
                     <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
                       Gender :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
@@ -261,6 +197,13 @@ const ReservationBuildingDetails = () => {
                         {dorm.type_bathroom}
                       </Box>
                     </Typography>
+
+                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                      Bed Type :{' '}
+                      <Box component='span' sx={{ fontWeight: 'bold' }}>
+                        {dorm.type_bedtype}
+                      </Box>
+                    </Typography>
                     <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
                       Roommate :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
@@ -271,6 +214,12 @@ const ReservationBuildingDetails = () => {
                       Room Total :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.room_total}
+                      </Box>
+                    </Typography>
+                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                      Price :{' '}
+                      <Box component='span' sx={{ fontWeight: 'bold' }}>
+                        {dorm.price} / Person / Term.
                       </Box>
                     </Typography>
                   </CardContent>
