@@ -9,7 +9,6 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import Switch from '@mui/material/Switch'
 import { useEffect } from 'react'
 import { EnhancedTableHead } from './components/EnhancedTableHead'
 import { descendingComparator, getComparator, stableSort } from './helpers/helper'
@@ -34,14 +33,17 @@ import InputLabel from '@mui/material/InputLabel'
 import Grid from '@mui/material/Grid'
 import FormControl from '@mui/material/FormControl'
 import InputAdornment from '@mui/material/InputAdornment'
-import CSVReader from 'react-csv-reader'
 import Papa from 'papaparse'
+import { Menu } from '@mui/material'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import Drawer from '@mui/material/Drawer'
+import { useState } from 'react'
+import { useDropzone } from 'react-dropzone'
+import Divider from '@mui/material/Divider'
 
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import SearchIcon from '@mui/icons-material/Search'
-import FadeMenu from './components/FadeMenu'
-import DialogReject from './reservation-reject'
 
 interface User {
   id: number
@@ -78,7 +80,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography sx={{ flex: '1 1 100%',pl:5}} variant='h6' id='tableTitle' component='div'>
+        <Typography sx={{ flex: '1 1 100%', pl: 5 }} variant='h6' id='tableTitle' component='div'>
           User Management
         </Typography>
       )}
@@ -113,36 +115,53 @@ const ResidentApprove = () => {
   const [roundNames, setRoundNames] = React.useState<string[]>([])
   const [filteredUsers, setFilteredUsers] = React.useState<User[]>([])
   const [selectedRound, setSelectedRound] = React.useState(null)
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [parsedData, setParsedData] = useState([])
+  const [file, setFile] = React.useState(null)
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files[0]
-    if (file) {
-      Papa.parse(file, {
-        header: true,
-        complete: function (results) {
-          handleImportCSV(results.data)
-        }
-      })
-    } else {
-      console.log('No file selected')
-    }
+  const handleFileUpload = acceptedFiles => {
+    const uploadedFile = acceptedFiles[0]
+    setFile(uploadedFile)
+
+    Papa.parse(uploadedFile, {
+      header: true,
+      complete: results => {
+        setParsedData(results.data)
+        console.log('Parsed data:', results.data)
+      }
+    })
   }
 
-  const handleImportCSV = async (data: any[]) => {
-    // Assuming each row in the CSV is in the format [user_id, status]
-    console.log('Imported CSV data:', data)
+  const handleRemoveFile = () => {
+    setFile(null)
+    setParsedData([])
+  }
 
+  const handleImportCSV = async (parsedData: any[]) => {
+    console.log('Imported CSV data:', parsedData)
     const updatedUsers = [...users]
-    data.forEach(({ user_id, status }) => {
-      const userIndex = updatedUsers.findIndex(user => user.user_id === user_id)
+    const parsedStudentIds = parsedData.map(({ student_id }) => student_id)
+
+    updatedUsers.forEach(user => {
+      if (!parsedStudentIds.includes(user.Users?.student_id)) {
+        user.status = 'FALSE'
+      }
+    })
+
+    parsedData.forEach(({ student_id, status }) => {
+      const userIndex = updatedUsers.findIndex(user => user.Users?.student_id === student_id)
+      console.log('userIndex', userIndex)
+
       if (userIndex !== -1) {
         updatedUsers[userIndex].status = status
       }
     })
+
     setUsers(updatedUsers)
     console.log('updatedUsers', updatedUsers)
 
-    // Make a POST request to the API endpoint with the updated users data
     const response = await fetch('/api/admin/residentApprove/update/updateResidentApprove', {
       method: 'POST',
       headers: {
@@ -150,7 +169,7 @@ const ResidentApprove = () => {
       },
       body: JSON.stringify({ updatedUsers })
     })
-
+    handleDrawerClose()
     if (!response.ok) {
       console.error('Failed to update users:', await response.text())
     }
@@ -223,15 +242,6 @@ const ResidentApprove = () => {
     setTab(newValue)
   }
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
-  const handleClickOption = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
-
   const resetSelected = () => {
     setSelected([])
   }
@@ -289,7 +299,7 @@ const ResidentApprove = () => {
   const filteredUsersByTab = filteredUsers.filter(user => {
     switch (tab) {
       case 'Waiting':
-        return user.status === 'Waiting'
+        return user.status === null || user.status === ''
       case 'TRUE':
         return user.status === 'TRUE'
       case 'FALSE':
@@ -489,7 +499,8 @@ const ResidentApprove = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Waiting':
+      case null:
+      case '':
         return 'warning'
       case 'TRUE':
         return 'success'
@@ -502,21 +513,60 @@ const ResidentApprove = () => {
     }
   }
 
-  const waitingCount = filteredUsers.filter(user => user.status === 'Waiting').length
+  const waitingCount = filteredUsers.filter(user => user.status === null || user.status === '').length
   const trueCount = filteredUsers.filter(user => user.status === 'TRUE').length
   const falseCount = filteredUsers.filter(user => user.status === 'FALSE').length
   const successCount = filteredUsers.filter(user => user.status === 'SUCCESS').length
 
   const exportToCSV = (roundId: number | null) => {
+    // Filter users based on the selected round ID
     const filteredUsers = users.filter(user => roundId === null || user.round_id === roundId)
-    const csv = Papa.unparse(filteredUsers)
-    const csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const csvURL = window.URL.createObjectURL(csvData)
+
+    // Format the data for CSV export
+    const csvData = filteredUsers.map(user => ({
+      student_id: user.Users?.student_id,
+      name: user.Users_Info?.name,
+      lastname: user.Users_Info?.lastname,
+      building_name: user.Dormitory_Building.name,
+      room_number: user.Dormitory_Room.room_number,
+      bed_number: user.Dormitory_Bed.bed_number,
+      round_name: user.Reservation_System.round_name,
+      status: user.status
+    }))
+    const csv = Papa.unparse(csvData)
+    const csvBlob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const csvURL = window.URL.createObjectURL(csvBlob)
     let tempLink = document.createElement('a')
     tempLink.href = csvURL
     tempLink.setAttribute('download', `data_${roundId || 'all'}.csv`)
     tempLink.click()
   }
+
+  const handleMenuOpen = event => {
+    console.log('handleMenuOpen called')
+    setAnchorEl(event.currentTarget)
+    setMenuOpen(true)
+    console.log('Menu opened')
+  }
+
+  const handleMenuClose = () => {
+    setAnchorEl(null)
+    setMenuOpen(false)
+    console.log('Menu closed')
+  }
+
+  const handleDrawerOpen = () => {
+    setDrawerOpen(true)
+  }
+
+  const handleDrawerClose = () => {
+    setDrawerOpen(false)
+  }
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: handleFileUpload,
+    accept: '.csv'
+  })
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -588,22 +638,6 @@ const ResidentApprove = () => {
           value='SUCCESS'
         />
       </Tabs>
-
-      <Box sx={{ pt: 3, pl: 5 ,display: 'flex', alignItems: 'center' }} >
-        <Button variant='contained' component='label' onClick={() => exportToCSV(selectedRound)}>
-          Export CSV
-        </Button>
-        <Typography sx={{ pl: 3 }}>นำไฟล์ออก ให้การเงินตรวจ สอบการจ่ายเงินของผู้จองหอพัก</Typography>
-      </Box>
-
-      <Box sx={{ pt: 2, pl: 5, display: 'flex', alignItems: 'center' }}>
-        <Button variant='contained' component='label'>
-          Import CSV
-          <input type='file' hidden onChange={handleFileUpload} />
-        </Button>
-        <Typography sx={{ pl: 3 }}>นำไฟล์เข้า เพื่อตรวจสอบกับระบบ ของผู้จองหอพัก </Typography>
-      </Box>
-
       <Box sx={{ display: 'flex', justifyContent: 'space-between', margin: 5 }}>
         <Grid item xs={12} sm={3}>
           <FormControl fullWidth>
@@ -643,7 +677,7 @@ const ResidentApprove = () => {
             placeholder='Leonard Carter'
             value={searchValue}
             onChange={handleSearchChange}
-            sx={{ flexGrow: 1, marginLeft: 2 }}
+            sx={{ flexGrow: 1, ml: 5 }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position='start'>
@@ -652,6 +686,211 @@ const ResidentApprove = () => {
               )
             }}
           />
+        </Grid>
+        <Grid item xs={12} sm={0.5}>
+          <IconButton onClick={handleMenuOpen} sx={{ flexGrow: 1, ml: 8, mt: 2 }}>
+            <MoreVertIcon />
+          </IconButton>
+
+          <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>
+            <MenuItem
+              onClick={() => {
+                handleMenuClose()
+                handleDrawerOpen()
+              }}
+            >
+              <label style={{ display: 'flex', alignItems: 'center' }}>
+                <img
+                  src='https://img5.pic.in.th/file/secure-sv1/csv-file-format-extension_28842.png'
+                  width='25'
+                  height='25'
+                  alt='CSV Icon'
+                />
+                <div style={{ marginLeft: '10px' }}>
+                  <Typography variant='subtitle1'>Import</Typography>
+                  <Typography variant='body2' color='textSecondary'>
+                    Import CSV data.
+                  </Typography>
+                </div>
+              </label>
+            </MenuItem>
+
+            <MenuItem
+              onClick={() => {
+                exportToCSV(selectedRound)
+                handleMenuClose() // Ensure the menu closes after clicking "Export"
+              }}
+            >
+              <img
+                src='https://img5.pic.in.th/file/secure-sv1/csv-file-format-extension_28842.png'
+                width='25'
+                height='25'
+                alt='CSV Icon'
+                style={{ marginRight: '10px' }}
+              />
+              <div>
+                <Typography variant='subtitle1'>Export</Typography>
+                <Typography variant='body2' color='textSecondary'>
+                  Exporting CSV data.
+                </Typography>
+              </div>
+            </MenuItem>
+          </Menu>
+
+          <Drawer anchor='right' open={drawerOpen} onClose={handleDrawerClose}>
+            <Box sx={{ width: '40vw', padding: 2, margin: 3 }}>
+              <Typography variant='h5' sx={{ mb: 2, mt: 2 }}>
+                Import CSV
+              </Typography>
+            </Box>
+
+            <Divider sx={{ borderWidth: 'px' }} />
+
+            <Box
+              sx={{ width: '40vw', padding: 2, margin: 3 }}
+              role='presentation'
+              onClick={event => event.stopPropagation()}
+              onKeyDown={handleDrawerClose}
+            >
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                Upload a CSV or TSV file. The first row should be the headers of the table, and your headers should not
+                include any special characters other than hyphens ( - ) or underscores ( _ ).
+                <br />
+                Tip: Datetime columns should be formatted as YYYY-MM-DD HH:mm:ss
+              </Typography>
+
+              {!file ? (
+                <Grid
+                  sx={{
+                    height: '600px'
+                  }}
+                >
+                  <Box
+                    {...getRootProps()}
+                    sx={{
+                      border: '2px dashed #ccc',
+                      borderRadius: 1,
+                      padding: 4,
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      mb: 2,
+                      height: '150px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <input {...getInputProps()} />
+                    <Typography variant='body1'>
+                      Drag and drop, or <span style={{ color: '#3f51b5', cursor: 'pointer' }}>browse</span> your files
+                    </Typography>
+                  </Box>
+                </Grid>
+              ) : (
+                <Box
+                  sx={{
+                    border: '2px dashed #ccc',
+                    borderRadius: 1,
+                    padding: 4,
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    mb: 2,
+                    height: '150px',
+                    display: 'flex',
+                    flexDirection: 'column', // Add this line
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <Typography variant='body1'>{file.name}</Typography>
+                  <Button variant='contained' color='secondary' onClick={handleRemoveFile} sx={{ mt: 2 }}>
+                    Remove File
+                  </Button>
+                </Box>
+              )}
+
+              {parsedData.filter(row => row.student_id !== '').length > 0 && (
+                <Box sx={{ mt: 4, height: 'px', overflow: 'auto' }}>
+                  <Typography variant='h6' sx={{ mb: 2 }}>
+                    Preview data to be imported
+                  </Typography>
+                  <Box
+                    sx={{
+                      height: '400px',
+                      overflow: 'auto',
+                      border: '1px solid #ccc', // Increased border thickness
+                      padding: 2,
+                      borderRadius: 1,
+                      boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', // Added shadow
+                      backgroundColor: '#fff' // White background for the table
+                    }}
+                  >
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr>
+                          {Object.keys(parsedData[0]).map(key => (
+                            <th
+                              key={key}
+                              style={{
+                                padding: '12px 8px',
+                                borderBottom: '1px solid #ccc', // Increased border thickness
+                                borderRight: '1px solid #ccc', // Increased border thickness
+                                backgroundColor: '#f5f5f5',
+                                fontWeight: 'bold',
+                                textAlign: 'left'
+                              }}
+                            >
+                              {key}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {parsedData
+                          .filter(row => row.student_id !== '')
+                          .map((row, index) => (
+                            <tr
+                              key={index}
+                              style={{
+                                transition: 'background-color 0.3s ease',
+                                cursor: 'pointer'
+                              }}
+                              onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
+                              onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#fff')}
+                            >
+                              {Object.values(row).map((value, idx) => (
+                                <td
+                                  key={idx}
+                                  style={{
+                                    padding: '8px 8px',
+                                    borderBottom: '1px solid #eee', // Increased border thickness
+                                    borderRight: '1px solid #eee', // Increased border thickness
+                                    textAlign: 'left'
+                                  }}
+                                >
+                                  {value}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </Box>
+                </Box>
+              )}
+            </Box>
+
+            <Divider sx={{ borderWidth: '1px' }} />
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, mr: 2 }}>
+              <Button variant='contained' color='primary' onClick={handleDrawerClose} sx={{ mr: 2 }}>
+                Cancel
+              </Button>
+              <Button variant='contained' color='primary' onClick={() => handleImportCSV(parsedData)} sx={{ mr: 2 }}>
+                Import data
+              </Button>
+            </Box>
+          </Drawer>
         </Grid>
       </Box>
       <Paper sx={{ width: '100%', mb: 2 }}>
@@ -697,7 +936,10 @@ const ResidentApprove = () => {
                     <TableCell>{row.Dormitory_Bed.bed_number}</TableCell>
                     <TableCell>{row.Reservation_System.round_name}</TableCell>
                     <TableCell>
-                      <Chip label={row.status} color={getStatusColor(row.status)} />
+                      <Chip
+                        label={row.status === null || row.status === '' ? 'Waiting' : row.status}
+                        color={getStatusColor(row.status)}
+                      />
                     </TableCell>
                     <TableCell align='left'>
                       {tab === 'TRUE' ? (
@@ -734,6 +976,39 @@ const ResidentApprove = () => {
               {emptyRows > 0 && (
                 <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
                   <TableCell colSpan={9} />
+                </TableRow>
+              )}
+              {visibleRows.length === 0 && (
+                <TableRow style={{ height: 100 }}>
+                  <TableCell colSpan={11}>
+                    <Paper
+                      style={{
+                        padding: '20px',
+                        width: '1350px',
+                        height: '350px',
+                        backgroundColor: 'rgba(128, 128, 128, 0.05)'
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: '100%'
+                        }}
+                      >
+                        <img
+                          src='https://img5.pic.in.th/file/secure-sv1/erase_1981540.png'
+                          alt='No Data'
+                          width='100'
+                          height='100'
+                          style={{ marginBottom: '10px' }}
+                        />
+                        <Typography variant='body2'>Data Not Found</Typography>
+                      </div>
+                    </Paper>
+                  </TableCell>
                 </TableRow>
               )}
             </TableBody>
