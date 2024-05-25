@@ -42,7 +42,6 @@ import SearchIcon from '@mui/icons-material/Search'
 
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 
-
 interface User {
   id: number
   dorm_id: number
@@ -54,14 +53,17 @@ interface User {
   created_at: string
 }
 
-interface EnhancedTableToolbarProps {
+type EnhancedTableToolbarProps = {
   numSelected: number
-  selected: readonly number[]
+  selected: SelectedUserType[]
   resetSelected: () => void
+  handleApprove: (ids: number[]) => Promise<void>
+  handleReject: (ids: number[]) => Promise<void>
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected, selected, resetSelected } = props
+  const { numSelected, selected, resetSelected, handleApprove, handleReject } = props
+  console.log(selected)
 
   return (
     <Toolbar
@@ -78,17 +80,19 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           {numSelected} selected
         </Typography>
       ) : (
-
-        <Typography sx={{ flex: '1 1 100%' ,pl:5}} variant='h6' id='tableTitle' component='div'>
+        <Typography sx={{ flex: '1 1 100%', pl: 5 }} variant='h6' id='tableTitle' component='div'>
           Reservation Control
         </Typography>
       )}
       {numSelected > 0 ? (
-        <Tooltip title='Delete'>
-          <IconButton>
-            <DeleteIcon />
+        <>
+          <IconButton onClick={() => handleApprove(selected)}>
+            <CheckIcon />
           </IconButton>
-        </Tooltip>
+          <IconButton onClick={() => handleReject(selected)}>
+            <CloseIcon />
+          </IconButton>
+        </>
       ) : (
         <Tooltip title='Filter list'>
           {/* <IconButton>
@@ -204,13 +208,16 @@ const ReservationApprove = () => {
   }
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      const newSelected = filteredUsers.map(n => n.id)
-      setSelected(newSelected)
+    const currentTabUsers = filteredUsers.filter(user => user.status.toLowerCase() === tab)
+    const currentTabUserIds = currentTabUsers.map(n => n.id)
 
-      return
+    if (currentTabUserIds.every(id => selected.includes(id))) {
+      // If all users in the current tab are already selected, deselect them
+      setSelected(prevSelected => prevSelected.filter(id => !currentTabUserIds.includes(id)))
+    } else {
+      // Otherwise, select all users in the current tab
+      setSelected(prevSelected => Array.from(new Set([...prevSelected, ...currentTabUserIds])))
     }
-    setSelected([])
   }
 
   const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
@@ -312,31 +319,33 @@ const ReservationApprove = () => {
     return new Date(dateString).toLocaleDateString(undefined, options)
   }
 
-  const handleApprove = async (id: number) => {
-    const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ id, status: 'Approve' })
-    })
-
-    if (!response.ok) {
-      console.error('Failed to update reservation status')
-    } else {
-      // Find the user
-      const user = users.find(user => user.id === id)
-      if (user) {
-        // Send email to the user
-        await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+  const handleApprove = async (ids: number[]) => {
+    await Promise.all(
+      ids.map(async id => {
+        const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({
-            to: user.Users.email,
-            subject: 'Reservation Approved',
-            html: `
+          body: JSON.stringify({ id, status: 'Approve' })
+        })
+
+        if (!response.ok) {
+          console.error(`Failed to update reservation status for id ${id}`)
+        } else {
+          // Find the user
+          const user = users.find(user => user.id === id)
+          if (user) {
+            // Send email to the user
+            await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                to: user.Users.email,
+                subject: 'Reservation Approved',
+                html: `
             <!DOCTYPE html>
             <html>
               <head>
@@ -388,37 +397,44 @@ const ReservationApprove = () => {
                 </div>
               </body>
             </html>
-          `
-          })
-        })
-      }
-    }
-  }
-  const handleReject = async (id: number) => {
-    const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ id, status: 'Reject' })
-    })
+            `
+              })
+            })
+          }
+        }
+      })
+    )
 
-    if (!response.ok) {
-      console.error('Failed to update reservation status')
-    } else {
-      // Find the user
-      const user = users.find(user => user.id === id)
-      if (user) {
-        // Send email to the user
-        await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+    resetSelected()
+  }
+
+  const handleReject = async (ids: number[]) => {
+    await Promise.all(
+      ids.map(async id => {
+        const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({
-            to: user.Users.email,
-            subject: 'Reservation Rejected',
-            html: `
+          body: JSON.stringify({ id, status: 'Reject' })
+        })
+
+        if (!response.ok) {
+          console.error(`Failed to update reservation status for id ${id}`)
+        } else {
+          // Find the user
+          const user = users.find(user => user.id === id)
+          if (user) {
+            // Send email to the user
+            await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                to: user.Users.email,
+                subject: 'Reservation Rejected',
+                html: `
             <!DOCTYPE html>
             <html>
               <head>
@@ -454,7 +470,6 @@ const ReservationApprove = () => {
                     margin-bottom: 10px;
                     color: #777777;
                   }
-
                 </style>
               </head>
               <body>
@@ -472,11 +487,15 @@ const ReservationApprove = () => {
                 </div>
               </body>
             </html>
-          `
-          })
-        })
-      }
-    }
+            `
+              })
+            })
+          }
+        }
+      })
+    )
+
+    resetSelected()
   }
 
   const getStatusColor = (status: string) => {
@@ -614,7 +633,13 @@ const ReservationApprove = () => {
         </Grid>
       </Box>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} selected={selected} resetSelected={resetSelected} />
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          selected={selected}
+          resetSelected={resetSelected}
+          handleApprove={handleApprove}
+          handleReject={handleReject}
+        />
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>
             <EnhancedTableHead
@@ -668,8 +693,7 @@ const ReservationApprove = () => {
                             size='small'
                             sx={{ minWidth: '30px', marginRight: '10px' }}
                             onClick={event => {
-                              event.stopPropagation()
-                              handleReject(row.id)
+                              handleReject(selected)
                             }}
                           >
                             <CloseIcon color='error' />
@@ -681,8 +705,7 @@ const ReservationApprove = () => {
                             size='small'
                             sx={{ minWidth: '30px' }}
                             onClick={event => {
-                              event.stopPropagation()
-                              handleApprove(row.id)
+                              handleApprove(selected)
                             }}
                           >
                             <CheckIcon color='success' />

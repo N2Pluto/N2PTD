@@ -58,12 +58,15 @@ interface User {
 
 interface EnhancedTableToolbarProps {
   numSelected: number
-  selected: readonly number[]
+  selected: SelectedUserType[]
   resetSelected: () => void
+  id: string // add this line
+  handleApprove: (ids: number[]) => Promise<void>
+  handleReject: (ids: number[]) => Promise<void>
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected, selected, resetSelected } = props
+  const { numSelected, selected, resetSelected, handleApprove, handleReject } = props
 
   return (
     <Toolbar
@@ -85,11 +88,14 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Typography>
       )}
       {numSelected > 0 ? (
-        <Tooltip title='Delete'>
-          <IconButton>
-            <DeleteIcon />
+        <>
+          <IconButton onClick={() => handleApprove(selected)}>
+            <CheckIcon />
           </IconButton>
-        </Tooltip>
+          <IconButton onClick={() => handleReject(selected)}>
+            <CloseIcon />
+          </IconButton>
+        </>
       ) : (
         <Tooltip title='Filter list'>
           <IconButton>
@@ -253,29 +259,16 @@ const ResidentApprove = () => {
   }
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      const newSelected = filteredUsers.map(n => n.id)
-      setSelected(newSelected)
+    const currentTabUsers = filteredUsers.filter(user => user.status === tab)
+    const currentTabUserIds = currentTabUsers.map(n => n.id)
 
-      return
+    if (currentTabUserIds.every(id => selected.includes(id))) {
+      // If all users in the current tab are already selected, deselect them
+      setSelected(prevSelected => prevSelected.filter(id => !currentTabUserIds.includes(id)))
+    } else {
+      // Otherwise, select all users in the current tab
+      setSelected(prevSelected => Array.from(new Set([...prevSelected, ...currentTabUserIds])))
     }
-    setSelected([])
-  }
-
-  const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
-    const selectedIndex = selected.indexOf(id)
-    let newSelected: readonly number[] = []
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id)
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1))
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1))
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1))
-    }
-    setSelected(newSelected)
-    console.log(id)
   }
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -290,8 +283,6 @@ const ResidentApprove = () => {
   const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDense(event.target.checked)
   }
-
-  const isSelected = (id: number) => selected.indexOf(id) !== -1
 
   // Use filteredUsers instead of users
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredUsers.length) : 0
@@ -324,36 +315,57 @@ const ResidentApprove = () => {
     )
   }, [order, orderBy, page, rowsPerPage, filteredUsersByTab, searchValue])
 
-  const handleApprove = async (id: number) => {
-    console.log(`Button clicked with id: ${id}`)
-    event.stopPropagation()
+  const isSelected = (id: number) => selected.indexOf(id) !== -1
 
-    // Call the API endpoint
-    const response = await fetch('/api/admin/residentApprove/update/updateResident', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ id })
-    })
+  const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
+    const selectedIndex = selected.indexOf(id)
+    let newSelected: readonly number[] = []
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id)
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1))
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1))
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1))
+    }
+    setSelected(newSelected)
+    console.log(id)
+    console.log('newSelected', newSelected)
+  }
 
-    if (!response.ok) {
-      console.error('Failed to update reservation status')
-      return
-    } else {
-      // Find the user
-      const user = users.find(user => user.id === id)
-      if (user) {
-        // Send email to the user
-        await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            to: user.Users.email,
-            subject: 'คุณได้รับอนุมัติในการยืนยันตัวเข้าสู่หอพัก Walailak University',
-            html: `
+  const handleApprove = async (ids: number[]) => {
+    ids.forEach(async id => {
+      console.log(`Button clicked with id: ${id}`)
+      event.stopPropagation()
+
+      // Call the API endpoint
+      const response = await fetch('/api/admin/residentApprove/update/updateResident', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id })
+      })
+      resetSelected()
+
+      if (!response.ok) {
+        console.error('Failed to update reservation status')
+        return
+      } else {
+        // Find the user
+        const user = users.find(user => user.id === id)
+        if (user) {
+          // Send email to the user
+          await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              to: user.Users.email,
+              subject: 'คุณได้รับอนุมัติในการยืนยันตัวเข้าสู่หอพัก Walailak University',
+              html: `
   <!DOCTYPE html>
 <html>
   <head>
@@ -409,45 +421,46 @@ const ResidentApprove = () => {
   </body>
 </html>
 `
+            })
           })
-        })
+        }
       }
-    }
 
-    const result = await response.json()
-    console.log(result.message)
+      const result = await response.json()
+      console.log(result.message)
+    })
   }
 
-  const handleReject = async (id: number) => {
-    event.stopPropagation()
+  const handleReject = async (ids: number[]) => {
+    ids.forEach(async id => {
+      event.stopPropagation()
 
-    // Call the API endpoint
-    const response = await fetch('/api/admin/residentApprove/delete/deleteResident', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ id })
-    })
-
-    if (!response.ok) {
-      console.error('Failed to delete reservation')
-
-      return
-    } else {
-      // Find the user
-      const user = users.find(user => user.id === id)
-      if (user) {
-        // Send email to the user
-        await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            to: user.Users.email,
-            subject: 'Reservation Denied',
-            html: `
+      // Call the API endpoint
+      const response = await fetch('/api/admin/residentApprove/delete/deleteResident', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id })
+      })
+      resetSelected()
+      if (!response.ok) {
+        console.error('Failed to delete reservation')
+        return
+      } else {
+        // Find the user
+        const user = users.find(user => user.id === id)
+        if (user) {
+          // Send email to the user
+          await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              to: user.Users.email,
+              subject: 'Reservation Denied',
+              html: `
   <!DOCTYPE html>
   <html>
     <head>
@@ -488,13 +501,14 @@ const ResidentApprove = () => {
     </body>
   </html>
 `
+            })
           })
-        })
+        }
       }
-    }
 
-    const result = await response.json()
-    console.log(result.message)
+      const result = await response.json()
+      console.log(result.message)
+    })
   }
 
   const getStatusColor = (status: string) => {
@@ -894,7 +908,13 @@ const ResidentApprove = () => {
         </Grid>
       </Box>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} selected={selected} resetSelected={resetSelected} />
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          selected={selected}
+          resetSelected={resetSelected}
+          handleApprove={handleApprove}
+          handleReject={handleReject}
+        />
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>
             <EnhancedTableHead
@@ -949,8 +969,7 @@ const ResidentApprove = () => {
                           size='small'
                           sx={{ minWidth: '30px' }}
                           onClick={event => {
-                            event.stopPropagation()
-                            handleApprove(row.id)
+                            handleApprove(selected)
                           }}
                         >
                           <CheckIcon color='success' />
@@ -962,8 +981,7 @@ const ResidentApprove = () => {
                           size='small'
                           sx={{ minWidth: '30px', marginRight: '10px' }}
                           onClick={event => {
-                            event.stopPropagation()
-                            handleReject(row.id)
+                            handleReject(selected)
                           }}
                         >
                           <CloseIcon color='error' />
