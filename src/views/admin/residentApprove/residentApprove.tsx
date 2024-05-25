@@ -739,12 +739,12 @@ const ResidentApprove = () => {
 
           <Drawer anchor='right' open={drawerOpen} onClose={handleDrawerClose}>
             <Box sx={{ width: '40vw', padding: 2, margin: 3 }}>
-              <Typography variant='h5' sx={{ mb: 2 , mt:2}}>
+              <Typography variant='h5' sx={{ mb: 2, mt: 2 }}>
                 Import CSV
               </Typography>
             </Box>
 
-            <Divider sx={{ borderWidth: 'px' ,}} />
+            <Divider sx={{ borderWidth: 'px' }} />
 
             <Box
               sx={{ width: '40vw', padding: 2, margin: 3 }}
@@ -762,7 +762,7 @@ const ResidentApprove = () => {
               {!file ? (
                 <Grid
                   sx={{
-                    height: '600px',
+                    height: '600px'
                   }}
                 >
                   <Box
@@ -976,6 +976,39 @@ const ResidentApprove = () => {
               {emptyRows > 0 && (
                 <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
                   <TableCell colSpan={9} />
+                </TableRow>
+              )}
+              {visibleRows.length === 0 && (
+                <TableRow style={{ height: 100 }}>
+                  <TableCell colSpan={11}>
+                    <Paper
+                      style={{
+                        padding: '20px',
+                        width: '1350px',
+                        height: '350px',
+                        backgroundColor: 'rgba(128, 128, 128, 0.05)'
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: '100%'
+                        }}
+                      >
+                        <img
+                          src='https://img5.pic.in.th/file/secure-sv1/erase_1981540.png'
+                          alt='No Data'
+                          width='100'
+                          height='100'
+                          style={{ marginBottom: '10px' }}
+                        />
+                        <Typography variant='body2'>Data Not Found</Typography>
+                      </div>
+                    </Paper>
+                  </TableCell>
                 </TableRow>
               )}
             </TableBody>
