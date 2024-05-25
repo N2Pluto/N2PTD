@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, SyntheticEvent, Fragment, ReactNode } from 'react'
+import { useState, SyntheticEvent, Fragment, ReactNode, useEffect } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -15,9 +15,11 @@ import Typography, { TypographyProps } from '@mui/material/Typography'
 
 // ** Icons Imports
 import BellOutline from 'mdi-material-ui/BellOutline'
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 
 // ** Third Party Components
 import PerfectScrollbarComponent from 'react-perfect-scrollbar'
+import { userStore } from 'src/stores/userStore'
 
 // ** Styled Menu component
 const Menu = styled(MuiMenu)<MenuProps>(({ theme }) => ({
@@ -80,8 +82,11 @@ const MenuItemSubtitle = styled(Typography)<TypographyProps>({
 })
 
 const NotificationDropdown = () => {
+
   // ** States
   const [anchorEl, setAnchorEl] = useState<(EventTarget & Element) | null>(null)
+  const [roleFilter, setRoleFilter] = useState<string>('')
+  const { user } = userStore()
 
   // ** Hook
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))
@@ -103,6 +108,33 @@ const NotificationDropdown = () => {
       )
     }
   }
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch('/api/profile/fetchUserProfile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_id: user.user_id })
+        })
+        const data = await response.json()
+
+        if (data.userData.role === 'admin') {
+          setRoleFilter('admin')
+        } else if (data.userData.role === 'user') {
+          setRoleFilter('user')
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error)
+      }
+    }
+
+    if (user?.user_id) {
+      fetchUserProfile()
+    }
+  }, [user])
 
   return (
     <Fragment>

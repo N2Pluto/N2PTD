@@ -18,6 +18,9 @@ import ModeToggler from 'src/@core/layouts/components/shared-components/ModeTogg
 import UserDropdown from 'src/@core/layouts/components/shared-components/UserDropdown'
 import NotificationDropdown from 'src/@core/layouts/components/shared-components/NotificationDropdown'
 import ModeColor from 'src/@core/layouts/components/shared-components/colorToggler'
+import { userStore } from 'src/stores/userStore'
+import { useEffect, useState } from 'react'
+import NotificationAdminDropdown from 'src/@core/layouts/components/shared-components/NotificationDropdowadmin'
 
 interface Props {
   hidden: boolean
@@ -27,13 +30,43 @@ interface Props {
 }
 
 const AppBarContent = (props: Props) => {
+  const { user } = userStore()
+  const [roleFilter, setRoleFilter] = useState<string>('')
+
   // ** Props
   const { hidden, settings, saveSettings, toggleNavVisibility } = props
 
   // ** Hook
   const hiddenSm = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
 
-  return (
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch('/api/profile/fetchUserProfile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_id: user.user_id })
+        })
+        const data = await response.json()
+
+        if (data.userData.role === 'admin') {
+          setRoleFilter('admin')
+        } else if (data.userData.role === 'user') {
+          setRoleFilter('user')
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error)
+      }
+    }
+
+    if (user?.user_id) {
+      fetchUserProfile()
+    }
+  }, [user])
+
+  return roleFilter === 'admin' ? (
     <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
       <Box className='actions-left' sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
         {hidden ? (
@@ -58,7 +91,38 @@ const AppBarContent = (props: Props) => {
         />
       </Box>
       <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
-        <ModeColor />
+        {/* <ModeColor /> */}
+        <ModeToggler settings={settings} saveSettings={saveSettings} />
+        <NotificationAdminDropdown />
+        <UserDropdown />
+      </Box>
+    </Box>
+  ) : (
+    <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Box className='actions-left' sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
+        {hidden ? (
+          <IconButton
+            color='inherit'
+            onClick={toggleNavVisibility}
+            sx={{ ml: -2.75, ...(hiddenSm ? {} : { mr: 3.5 }) }}
+          >
+            <Menu />
+          </IconButton>
+        ) : null}
+        <TextField
+          size='small'
+          sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4 } }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position='start'>
+                <Magnify fontSize='small' />
+              </InputAdornment>
+            )
+          }}
+        />
+      </Box>
+      <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
+        {/* <ModeColor /> */}
         <ModeToggler settings={settings} saveSettings={saveSettings} />
         <NotificationDropdown />
         <UserDropdown />

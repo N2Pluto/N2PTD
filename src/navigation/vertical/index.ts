@@ -8,6 +8,17 @@ import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
 import AccountPlusOutline from 'mdi-material-ui/AccountPlusOutline'
 import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
 import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
+import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
+import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
+import WifiProtectedSetupIcon from '@mui/icons-material/WifiProtectedSetup';
+import DomainAddOutlinedIcon from '@mui/icons-material/DomainAddOutlined';
+import CorporateFareOutlinedIcon from '@mui/icons-material/CorporateFareOutlined';
+import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
+import DoneAllOutlinedIcon from '@mui/icons-material/DoneAllOutlined';
+import DnsOutlinedIcon from '@mui/icons-material/DnsOutlined';
+import FeedOutlinedIcon from '@mui/icons-material/FeedOutlined';
 
 // ** Type import
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -62,12 +73,12 @@ const useNavigation = (): VerticalNavItemsType => {
       },
       {
         title: 'ข้อมูลผู้อยู่อาศัย',
-        icon: HomeOutline,
+        icon: FeedOutlinedIcon,
         path: '/admin/dormitoryResident'
       },
       {
         title: 'ข้อมูลผู้ใช้',
-        icon: HomeOutline,
+        icon: DnsOutlinedIcon,
         path: '/admin/userManagement'
       },
       {
@@ -75,12 +86,12 @@ const useNavigation = (): VerticalNavItemsType => {
       },
       {
         title: 'อนุมัติผู้อยู่อาศัย',
-        icon: HomeOutline,
+        icon: DoneAllOutlinedIcon,
         path: '/admin/residentApprove'
       },
       {
         title: 'อนุมัติการจอง ',
-        icon: HomeOutline,
+        icon: CheckBoxOutlinedIcon,
         path: '/admin/reservationApprove'
       },
       {
@@ -88,23 +99,23 @@ const useNavigation = (): VerticalNavItemsType => {
       },
       {
         title: 'การควบคุมตึก',
-        icon: HomeOutline,
+        icon: CorporateFareOutlinedIcon,
         path: '/admin/buildingControl'
       },
       {
         title: 'สร้างตึก',
-        icon: HomeOutline,
+        icon: DomainAddOutlinedIcon,
         path: '/admin/building'
       },
       {
         title: 'รอบการจอง',
-        icon: HomeOutline,
+        icon: WifiProtectedSetupIcon,
         path: '/admin/reservationSystem'
       },
 
       {
         title: 'เปลี่ยน Role',
-        icon: HomeOutline,
+        icon: PublishedWithChangesIcon,
         path: '/admin/userControl'
       },
 
@@ -113,17 +124,17 @@ const useNavigation = (): VerticalNavItemsType => {
       },
       {
         title: 'แบบฟอร์มคำร้องผู้ใช้',
-        icon: HomeOutline,
+        icon: ManageAccountsIcon,
         path: '/admin/userManagementForm'
       },
       {
         title: 'แบบฟอร์มย้ายห้อง',
-        icon: HomeOutline,
+        icon: ChangeCircleIcon,
         path: '/admin/dormitoryResident/changeRoomForm'
       },
       {
         title: 'แบบฟอร์มสลับห้อง',
-        icon: HomeOutline,
+        icon: DisplaySettingsIcon,
         path: '/admin/dormitoryResident/transferRoomForm'
       },
       {
