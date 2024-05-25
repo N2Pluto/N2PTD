@@ -14,7 +14,7 @@ const MUITable = () => {
   return (
     <AdminLayout>
       <Grid container spacing={6}>
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Typography variant='h5' sx={{ pl: 4 }}>
             Dormitory Resident Control{' '}
           </Typography>
@@ -30,7 +30,7 @@ const MUITable = () => {
             <CardHeader title='ระบบเปิดรอบการจองหอพัก' titleTypographyProps={{ variant: 'h6' }} />
             <ChangeRoomForm />
           </Card>
-        </Grid>
+        </Grid> */}
         <Grid item xs={12} md={12} lg={12}>
           <Card>
             <CardHeader title='ระบบเปิดรอบการจองหอพัก' titleTypographyProps={{ variant: 'h6' }} />

@@ -3,8 +3,9 @@ import supabase from 'src/libs/supabase'
 
 const handler = async (req: any, res: any) => {
   const { updatedUsers } = req.body
-
+  const TRUE = "TRUE"
   // Check if updatedUsers is an array
+
   if (!Array.isArray(updatedUsers)) {
     return res.status(400).json({ error: 'updatedUsers must be an array' })
   }
@@ -13,7 +14,7 @@ const handler = async (req: any, res: any) => {
   for (const user of updatedUsers) {
     const { data, error } = await supabase
       .from('Dormitory_Approve')
-      .update({ status: user.status })
+      .update({ status: user.status === null || user.status === '' ? TRUE : user.status })
       .eq('user_id', user.user_id)
 
     if (error) {

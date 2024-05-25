@@ -30,9 +30,7 @@ const useNavigation = (): VerticalNavItemsType => {
         })
         const data = await response.json()
 
-
         if (data.userData.role === 'admin') {
-
           setRoleFilter('admin')
         } else if (data.userData.role === 'user') {
           setRoleFilter('user')
@@ -47,7 +45,6 @@ const useNavigation = (): VerticalNavItemsType => {
     }
   }, [user])
 
-
   if (roleFilter === 'admin') {
     return [
       {
@@ -60,26 +57,8 @@ const useNavigation = (): VerticalNavItemsType => {
         icon: HomeOutline,
         path: '/admin/dashboard'
       },
-
-
-
       {
-        sectionTitle: 'ควบคุม'
-      },
-      {
-        title: 'Building Control ',
-        icon: HomeOutline,
-        path: '/admin/buildingControl'
-      },
-      {
-        title: 'Building',
-        icon: HomeOutline,
-        path: '/admin/building'
-      },
-      {
-        title: 'รอบการจอง',
-        icon: HomeOutline,
-        path: '/admin/reservationSystem'
+        sectionTitle: 'ศูนย์รวมข้อมูล'
       },
       {
         title: 'ข้อมูลผู้อยู่อาศัย',
@@ -87,13 +66,10 @@ const useNavigation = (): VerticalNavItemsType => {
         path: '/admin/dormitoryResident'
       },
       {
-        title: 'เปลี่ยน Role',
+        title: 'ข้อมูลผู้ใช้',
         icon: HomeOutline,
-        path: '/admin/userControl'
+        path: '/admin/userManagement'
       },
-
-
-
       {
         sectionTitle: 'การอนุมัติ'
       },
@@ -108,13 +84,29 @@ const useNavigation = (): VerticalNavItemsType => {
         path: '/admin/reservationApprove'
       },
       {
-        title: 'ข้อมูลผู้ใช้',
+        sectionTitle: 'ควบคุม'
+      },
+      {
+        title: 'การควบคุมตึก',
         icon: HomeOutline,
-        path: '/admin/userManagement'
+        path: '/admin/buildingControl'
+      },
+      {
+        title: 'สร้างตึก',
+        icon: HomeOutline,
+        path: '/admin/building'
+      },
+      {
+        title: 'รอบการจอง',
+        icon: HomeOutline,
+        path: '/admin/reservationSystem'
       },
 
-
-
+      {
+        title: 'เปลี่ยน Role',
+        icon: HomeOutline,
+        path: '/admin/userControl'
+      },
 
       {
         sectionTitle: 'แบบฟอร์ม'
@@ -167,9 +159,6 @@ const useNavigation = (): VerticalNavItemsType => {
         title: 'Form Layouts',
         path: '/form-layouts'
       }
-
-
-
     ]
   } else if (roleFilter === 'user') {
     return [
@@ -196,7 +185,6 @@ const useNavigation = (): VerticalNavItemsType => {
         icon: HomeOutline,
         path: '/profile'
       }
-
     ]
   }
 }

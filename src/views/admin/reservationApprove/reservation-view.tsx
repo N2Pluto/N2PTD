@@ -259,7 +259,7 @@ const ReservationApprove = () => {
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
     link.href = URL.createObjectURL(blob)
-    link.setAttribute('download', 'user_data.csv')
+    link.setAttribute('download', 'WU_User_Reservation.csv')
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
