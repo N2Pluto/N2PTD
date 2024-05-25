@@ -108,7 +108,7 @@ const UserDropdown = () => {
           alt='John Doe'
           onClick={handleDropdownOpen}
           sx={{ width: 40, height: 40 }}
-          src={profileData?.userInfoData.image}
+          src={profileData?.userInfoData?.image}
         />
       </Badge>
       <Menu
