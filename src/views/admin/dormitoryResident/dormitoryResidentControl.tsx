@@ -30,6 +30,8 @@ import Select from '@mui/material/Select'
 import InputLabel from '@mui/material/InputLabel'
 import FormControl from '@mui/material/FormControl'
 import InputAdornment from '@mui/material/InputAdornment'
+import Menu from '@mui/material/Menu'
+import { useState } from 'react'
 
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
@@ -91,7 +93,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       const errorData = await response.json()
       alert(`Error swapping residents: ${errorData.error}`)
     }
-     resetSelected()
+    resetSelected()
   }
 
   return (
@@ -109,9 +111,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography sx={{ flex: '1 1 100%' }} variant='h6' id='tableTitle' component='div'>
-          Dormitory Resident
-        </Typography>
+        <Typography sx={{ flex: '1 1 100%' }} variant='h6' id='tableTitle' component='div'></Typography>
       )}
       <Tooltip title='สลับห้อง'>
         <IconButton
@@ -157,7 +157,15 @@ const DormitoryResidentControl = () => {
   const [searchTerm, setSearchTerm] = React.useState('')
   const [selectedFloor, setSelectedFloor] = React.useState<string | null>(null)
   const [selectedDormitoryForDownload, setSelectedDormitoryForDownload] = React.useState<number | null>(null)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleMenuClose = () => {
+    setAnchorEl(null)
+  }
 
   const deleteResident = async (id: number) => {
     try {
@@ -181,16 +189,34 @@ const DormitoryResidentControl = () => {
   }
 
   const exportToCSV = (dormitoryId: number | null) => {
-    const filteredUsers = users.filter(user => dormitoryId === null || user.dorm_id === dormitoryId)
-    const csv = Papa.unparse(filteredUsers)
+    const filteredUsers = users
+      .filter(user => dormitoryId === null || user.dorm_id === dormitoryId)
+      .sort((a, b) => {
+        if (a.Dormitory_Room.room_number !== b.Dormitory_Room.room_number) {
+          return a.Dormitory_Room.room_number - b.Dormitory_Room.room_number
+        }
+        return a.Dormitory_Bed.bed_number - b.Dormitory_Bed.bed_number
+      })
+
+    const dataToExport = filteredUsers.map(user => ({
+      student_id: user.Users.student_id,
+      name: user.Users.Users_Info[0].name,
+      lastname: user.Users.Users_Info[0].lastname,
+      dormitory_name: user.Dormitory_Building.name,
+      room_number: user.Dormitory_Room.room_number,
+      bed_number: user.Dormitory_Bed.bed_number,
+      round_name: user.Reservation_System.round_name
+    }))
+
+    const dormitoryName = dormitoryId === null ? 'WU_allDormitory' : filteredUsers[0]?.Dormitory_Building.name || 'all'
+    const csv = Papa.unparse(dataToExport)
     const csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const csvURL = window.URL.createObjectURL(csvData)
     let tempLink = document.createElement('a')
     tempLink.href = csvURL
-    tempLink.setAttribute('download', `data_${dormitoryId || 'all'}.csv`)
+    tempLink.setAttribute('download', `${dormitoryName}.csv`)
     tempLink.click()
   }
-
   // Add a function to handle changes to the search field
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value)
@@ -380,9 +406,24 @@ const DormitoryResidentControl = () => {
             }}
           />
         </Grid>
+        <Grid item xs={12} sm={0.5}>
+          <IconButton onClick={handleMenuOpen} sx={{ flexGrow: 1, ml: 9, mt: 2 }}>
+            <MoreVertIcon />
+          </IconButton>
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+            <MenuItem
+              onClick={() => {
+                handleMenuClose()
+                exportToCSV(selectedDormitoryForDownload)
+              }}
+            >
+              Export to CSV
+            </MenuItem>
+            {/* Add more menu items if needed */}
+          </Menu>
+        </Grid>
       </Box>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <Button onClick={() => exportToCSV(selectedDormitoryForDownload)}>Export to CSV</Button>
         <EnhancedTableToolbar
           numSelected={selected.length}
           selected={selected}
