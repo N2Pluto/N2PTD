@@ -32,6 +32,17 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import Menu from '@mui/material/Menu'
 import { Parser } from 'json2csv' // Import json2csv
+import Snackbar from '@mui/material/Snackbar'
+import CloseIcon from '@mui/icons-material/Close'
+import { makeStyles } from '@mui/styles'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+
+
+const useStyles = makeStyles({
+  success: {
+    backgroundColor: 'green'
+  }
+})
 
 interface User {
   id: number
@@ -95,6 +106,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 
 const UserManagement = () => {
+  const classes = useStyles()
   const [users, setUsers] = useState<User[]>([])
   const [order, setOrder] = useState<'asc' | 'desc'>('asc')
   const [orderBy, setOrderBy] = useState<keyof User>('student_id')
@@ -106,6 +118,19 @@ const UserManagement = () => {
   const [yearFilter, setYearFilter] = useState(-1)
   const [searchTerm, setSearchTerm] = useState('')
   const [anchorEl, setAnchorEl] = React.useState(null)
+  const [open, setOpen] = useState(false)
+
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setOpen(false)
+  }
+
+  const handleUpdateSuccess = () => {
+    setOpen(true)
+  }
 
   const handleClickCSV = event => {
     setAnchorEl(event.currentTarget)
@@ -387,54 +412,77 @@ const UserManagement = () => {
                   const labelId = `enhanced-table-checkbox-${index}`
 
                   return (
-                    <TableRow
-                      hover
-                      onClick={event => handleClick(event, row.id)}
-                      role='checkbox'
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.id}
-                      selected={isItemSelected}
-                      sx={{ cursor: 'pointer' }}
-                    >
-                      <TableCell padding='checkbox'>
-                        <Checkbox
-                          color='primary'
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        />
-                      </TableCell>
-                      <TableCell id={labelId}>
-                        <Typography variant='body2'>{row.Users ? row.Users.student_id : ''}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant='body2'>
-                          {row.name} {row.lastname}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant='body2'>{row.school}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant='body2'>{row.department}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant='body2'>{row.major}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant='body2'>{row.religion}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant='body2'>{row.gender}</Typography>
-                      </TableCell>
-                      <TableCell align='left'>
-                        <EditUser id={row.id}>
-                          <Button onClick={handleButtonClick} sx={{ minWidth: 0, padding: 0 }}>
-                            <FaEdit />
-                          </Button>
-                        </EditUser>
-                      </TableCell>
-                    </TableRow>
+                    <>
+                      <TableRow
+                        hover
+                        onClick={event => handleClick(event, row.id)}
+                        role='checkbox'
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={row.id}
+                        selected={isItemSelected}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <TableCell padding='checkbox'>
+                          <Checkbox
+                            color='primary'
+                            checked={isItemSelected}
+                            inputProps={{ 'aria-labelledby': labelId }}
+                          />
+                        </TableCell>
+                        <TableCell id={labelId}>
+                          <Typography variant='body2'>{row.Users ? row.Users.student_id : ''}</Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant='body2'>
+                            {row.name} {row.lastname}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant='body2'>{row.school}</Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant='body2'>{row.department}</Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant='body2'>{row.major}</Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant='body2'>{row.religion}</Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant='body2'>{row.gender}</Typography>
+                        </TableCell>
+                        <TableCell align='left'>
+                          <EditUser id={row.id} onUpdateSuccess={handleUpdateSuccess}>
+                            <Button onClick={handleButtonClick} sx={{ minWidth: 0, padding: 0 }}>
+                              <FaEdit />
+                            </Button>
+                          </EditUser>
+                          <Snackbar
+                            open={open}
+                            autoHideDuration={5000}
+                            onClose={handleSnackbarClose}
+                            message={
+                              <span>
+                                <CheckCircleIcon
+                                  fontSize='small'
+                                  style={{ verticalAlign: 'middle', marginRight: '8px' }}
+                                />
+                                {'Update successful'}
+                              </span>
+                            }
+                            action={
+                              <IconButton size='small' aria-label='close' color='inherit' onClick={handleSnackbarClose}>
+                                <CloseIcon fontSize='small' />
+                              </IconButton>
+                            }
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                            ContentProps={{ className: classes.success }}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    </>
                   )
                 })
               )}

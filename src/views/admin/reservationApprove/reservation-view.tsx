@@ -35,12 +35,29 @@ import Grid from '@mui/material/Grid'
 import FormControl from '@mui/material/FormControl'
 import InputAdornment from '@mui/material/InputAdornment'
 import { Parser } from 'json2csv' // Import json2csv
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import { makeStyles } from '@mui/styles'
+import Backdrop from '@mui/material/Backdrop'
+import CircularProgress from '@mui/material/CircularProgress'
 
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import SearchIcon from '@mui/icons-material/Search'
-
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+
+const useStyles = makeStyles({
+  success: {
+    backgroundColor: '#4caf50'
+  },
+  reject: {
+    backgroundColor: '#f44336'
+  },
+  backdrop: {
+    color: '#fff'
+  }
+})
 
 interface User {
   id: number
@@ -86,10 +103,10 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       )}
       {numSelected > 0 ? (
         <>
-          <IconButton onClick={() => handleApprove(selected)}>
+          <IconButton onClick={() => handleApprove(selected.map(item => item.id))}>
             <CheckIcon />
           </IconButton>
-          <IconButton onClick={() => handleReject(selected)}>
+          <IconButton onClick={() => handleReject(selected.map(item => item.id))}>
             <CloseIcon />
           </IconButton>
         </>
@@ -105,6 +122,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 
 const ReservationApprove = () => {
+  const classes = useStyles()
   const [users, setUsers] = React.useState<User[]>([])
   const [order, setOrder] = React.useState<'asc' | 'desc'>('asc')
   const [orderBy, setOrderBy] = React.useState<keyof User>('id')
@@ -120,6 +138,18 @@ const ReservationApprove = () => {
   const [selectDormValue, setSelectDormValue] = React.useState('-1')
   const [filteredUsers, setFilteredUsers] = React.useState<User[]>([])
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const [openApprove, setOpenApprove] = React.useState(false)
+  const [openReject, setOpenReject] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+
+    setOpenApprove(false)
+    setOpenReject(false)
+  }
 
   const handleSelectRoundChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     const selectedRoundId = event.target.value as number
@@ -320,6 +350,7 @@ const ReservationApprove = () => {
   }
 
   const handleApprove = async (ids: number[]) => {
+    setLoading(true)
     await Promise.all(
       ids.map(async id => {
         const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
@@ -404,11 +435,13 @@ const ReservationApprove = () => {
         }
       })
     )
-
+    setOpenApprove(true)
     resetSelected()
+    setLoading(false)
   }
 
   const handleReject = async (ids: number[]) => {
+    setLoading(true)
     await Promise.all(
       ids.map(async id => {
         const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
@@ -494,8 +527,9 @@ const ReservationApprove = () => {
         }
       })
     )
-
+    setOpenReject(true)
     resetSelected()
+    setLoading(false)
   }
 
   const getStatusColor = (status: string) => {
@@ -515,261 +549,316 @@ const ReservationApprove = () => {
   const approveCount = filteredUsers.filter(user => user.status === 'Approve').length
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Tabs value={tab} onChange={handleTabChange} aria-label='reservation status tabs'>
-        <Tab
-          label={
-            <span
-              style={{
-                color: tab === 'pending' ? 'black' : undefined,
-                fontWeight: tab === 'pending' ? 'bold' : undefined
-              }}
-            >
-              REQ LIST{' '}
-              <span style={{ backgroundColor: '#ffffba', padding: '4px 8px', borderRadius: '5px' }}>
-                {' '}
-                {pendingCount}{' '}
+    <>
+      <Box sx={{ width: '100%' }}>
+        <Tabs value={tab} onChange={handleTabChange} aria-label='reservation status tabs'>
+          <Tab
+            label={
+              <span
+                style={{
+                  color: tab === 'pending' ? 'black' : undefined,
+                  fontWeight: tab === 'pending' ? 'bold' : undefined
+                }}
+              >
+                REQ LIST{' '}
+                <span style={{ backgroundColor: '#ffffba', padding: '4px 8px', borderRadius: '5px' }}>
+                  {' '}
+                  {pendingCount}{' '}
+                </span>
               </span>
-            </span>
-          }
-          value='pending'
-        />
+            }
+            value='pending'
+          />
 
-        <Tab
-          label={
-            <span
-              style={{
-                color: tab === 'approve' ? 'black' : undefined,
-                fontWeight: tab === 'approve' ? 'bold' : undefined
-              }}
-            >
-              Approve{' '}
-              <span style={{ backgroundColor: '#b8ffb8', padding: '4px 8px', borderRadius: '5px' }}>
-                {' '}
-                {approveCount}{' '}
+          <Tab
+            label={
+              <span
+                style={{
+                  color: tab === 'approve' ? 'black' : undefined,
+                  fontWeight: tab === 'approve' ? 'bold' : undefined
+                }}
+              >
+                Approve{' '}
+                <span style={{ backgroundColor: '#b8ffb8', padding: '4px 8px', borderRadius: '5px' }}>
+                  {' '}
+                  {approveCount}{' '}
+                </span>
               </span>
-            </span>
-          }
-          value='approve'
-        />
-      </Tabs>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', margin: 5 }}>
-        <Grid item xs={12} sm={3}>
-          <FormControl fullWidth>
-            <InputLabel id='form-layouts-separator-select-label'>Round</InputLabel>
-            <Select
-              label='Round'
-              value={selectRoundValue}
-              onChange={handleSelectRoundChange}
-              id='form-layouts-separator-select'
-              labelId='form-layouts-separator-select-label'
-            >
-              <MenuItem value='-1'>All Rounds</MenuItem>
-              {roundNames.map(round => (
-                <MenuItem key={round.round_id} value={round.round_id}>
-                  {round.round_name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <FormControl fullWidth sx={{ flexGrow: 1, ml: 4 }}>
-            <InputLabel id='form-layouts-separator-select-label'>Dormitory</InputLabel>
-            <Select
-              label='Dormitory'
-              value={selectDormValue}
-              onChange={handleSelectDormChange}
-              id='form-layouts-separator-select'
-              labelId='form-layouts-separator-select-label'
-            >
-              <MenuItem value='-1'>All Dormitories</MenuItem>
-              {dormNames.map(dorm => (
-                <MenuItem key={dorm.dorm_id} value={dorm.dorm_id}>
-                  {dorm.dorm_name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            label='Search'
-            placeholder='Leonard Carter'
-            value={searchValue}
-            onChange={handleSearchChange}
-            sx={{ flexGrow: 1, ml: 8 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position='start'>
-                  <SearchIcon />
-                </InputAdornment>
-              )
+            }
+            value='approve'
+          />
+        </Tabs>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', margin: 5 }}>
+          <Grid item xs={12} sm={3}>
+            <FormControl fullWidth>
+              <InputLabel id='form-layouts-separator-select-label'>Round</InputLabel>
+              <Select
+                label='Round'
+                value={selectRoundValue}
+                onChange={handleSelectRoundChange}
+                id='form-layouts-separator-select'
+                labelId='form-layouts-separator-select-label'
+              >
+                <MenuItem value='-1'>All Rounds</MenuItem>
+                {roundNames.map(round => (
+                  <MenuItem key={round.round_id} value={round.round_id}>
+                    {round.round_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <FormControl fullWidth sx={{ flexGrow: 1, ml: 4 }}>
+              <InputLabel id='form-layouts-separator-select-label'>Dormitory</InputLabel>
+              <Select
+                label='Dormitory'
+                value={selectDormValue}
+                onChange={handleSelectDormChange}
+                id='form-layouts-separator-select'
+                labelId='form-layouts-separator-select-label'
+              >
+                <MenuItem value='-1'>All Dormitories</MenuItem>
+                {dormNames.map(dorm => (
+                  <MenuItem key={dorm.dorm_id} value={dorm.dorm_id}>
+                    {dorm.dorm_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label='Search'
+              placeholder='Leonard Carter'
+              value={searchValue}
+              onChange={handleSearchChange}
+              sx={{ flexGrow: 1, ml: 8 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position='start'>
+                    <SearchIcon />
+                  </InputAdornment>
+                )
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={0.5}>
+            <IconButton onClick={handleMenuOpen} sx={{ flexGrow: 1, ml: 8, mt: 2 }}>
+              <MoreVertIcon />
+            </IconButton>
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+              <MenuItem onClick={handleExportCSV}>
+                <img
+                  src='https://img5.pic.in.th/file/secure-sv1/csv-file-format-extension_28842.png'
+                  width='25'
+                  height='25'
+                  alt='CSV Icon'
+                  style={{ marginRight: '10px' }}
+                />
+                <div>
+                  <Typography variant='subtitle1'>Export</Typography>
+                  <Typography variant='body2' color='textSecondary'>
+                    Exporting CSV data.
+                  </Typography>
+                </div>
+              </MenuItem>
+            </Menu>
+          </Grid>
+        </Box>
+        <Paper sx={{ width: '100%', mb: 2 }}>
+          <EnhancedTableToolbar
+            numSelected={selected.length}
+            selected={selected.map(id => filteredUsers.find(user => user.id === id) || ({} as SelectedUserType))}
+            resetSelected={resetSelected}
+            handleApprove={async ids => {
+              await handleApprove(ids)
+              resetSelected()
+              setOpenApprove(true)
+            }}
+            handleReject={async ids => {
+              await handleReject(ids)
+              resetSelected()
+              setOpenReject(true)
             }}
           />
-        </Grid>
-        <Grid item xs={12} sm={0.5}>
-          <IconButton onClick={handleMenuOpen} sx={{ flexGrow: 1, ml: 8, mt: 2 }}>
-            <MoreVertIcon />
-          </IconButton>
-          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-            <MenuItem onClick={handleExportCSV}>
-              <img
-                src='https://img5.pic.in.th/file/secure-sv1/csv-file-format-extension_28842.png'
-                width='25'
-                height='25'
-                alt='CSV Icon'
-                style={{ marginRight: '10px' }}
+          <TableContainer>
+            <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>
+              <EnhancedTableHead
+                numSelected={selected.length}
+                order={order}
+                orderBy={orderBy}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={filteredUsers.length}
               />
-              <div>
-                <Typography variant='subtitle1'>Export</Typography>
-                <Typography variant='body2' color='textSecondary'>
-                  Exporting CSV data.
-                </Typography>
-              </div>
-            </MenuItem>
-          </Menu>
-        </Grid>
-      </Box>
-      <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar
-          numSelected={selected.length}
-          selected={selected}
-          resetSelected={resetSelected}
-          handleApprove={handleApprove}
-          handleReject={handleReject}
-        />
-        <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={filteredUsers.length}
-            />
-            <TableBody>
-              {visibleRows.map((row, index) => {
-                const isItemSelected = isSelected(row.id)
-                const labelId = `enhanced-table-checkbox-${index}`
+              <TableBody>
+                {visibleRows.map((row, index) => {
+                  const isItemSelected = isSelected(row.id)
+                  const labelId = `enhanced-table-checkbox-${index}`
 
-                return (
-                  <TableRow
-                    hover
-                    onClick={event => handleClick(event, row.id)}
-                    role='checkbox'
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.id}
-                    a
-                    selected={isItemSelected}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    <TableCell padding='checkbox'>
-                      <Checkbox color='primary' checked={isItemSelected} inputProps={{ 'aria-labelledby': labelId }} />
-                    </TableCell>
-                    <TableCell component='th' id={labelId} scope='row' padding='none'>
-                      {row.Users?.student_id}
-                    </TableCell>
-                    <TableCell>
-                      {row.Users_Info?.name} {row.Users_Info?.lastname}
-                    </TableCell>
-                    <TableCell>{row.Dormitory_Building.name}</TableCell>
-                    <TableCell>{row.Dormitory_Room.room_number}</TableCell>
-                    <TableCell>{row.Dormitory_Bed.bed_number}</TableCell>
-                    <TableCell>{row.Reservation_System.round_name}</TableCell>
-                    <TableCell>
-                      <Chip label={row.status} color={getStatusColor(row.status)} />
-                    </TableCell>
-                    <TableCell>{formatDate(row.created_at)}</TableCell>
-                    <TableCell align='left'>
-                      {tab === 'pending' && (
-                        <>
-                          <Button
-                            variant='outlined'
-                            color='error'
-                            size='small'
-                            sx={{ minWidth: '30px', marginRight: '10px' }}
-                            onClick={event => {
-                              handleReject(selected)
-                            }}
-                          >
-                            <CloseIcon color='error' />
-                          </Button>
-
-                          <Button
-                            variant='outlined'
-                            color='success'
-                            size='small'
-                            sx={{ minWidth: '30px' }}
-                            onClick={event => {
-                              handleApprove(selected)
-                            }}
-                          >
-                            <CheckIcon color='success' />
-                          </Button>
-                        </>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-              {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-                  <TableCell colSpan={9} />
-                </TableRow>
-              )}
-              {visibleRows.length === 0 && (
-                <TableRow style={{ height: 100 }}>
-                  <TableCell colSpan={11}>
-                    <Paper
-                      style={{
-                        padding: '20px',
-                        width: '1350px',
-                        height: '350px',
-                        backgroundColor: 'rgba(128, 128, 128, 0.05)'
-                      }}
+                  return (
+                    <TableRow
+                      hover
+                      onClick={event => handleClick(event, row.id)}
+                      role='checkbox'
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={row.id}
+                      a
+                      selected={isItemSelected}
+                      sx={{ cursor: 'pointer' }}
                     >
-                      <div
+                      <TableCell padding='checkbox'>
+                        <Checkbox
+                          color='primary'
+                          checked={isItemSelected}
+                          inputProps={{ 'aria-labelledby': labelId }}
+                        />
+                      </TableCell>
+                      <TableCell component='th' id={labelId} scope='row' padding='none'>
+                        {row.Users?.student_id}
+                      </TableCell>
+                      <TableCell>
+                        {row.Users_Info?.name} {row.Users_Info?.lastname}
+                      </TableCell>
+                      <TableCell>{row.Dormitory_Building.name}</TableCell>
+                      <TableCell>{row.Dormitory_Room.room_number}</TableCell>
+                      <TableCell>{row.Dormitory_Bed.bed_number}</TableCell>
+                      <TableCell>{row.Reservation_System.round_name}</TableCell>
+                      <TableCell>
+                        <Chip label={row.status} color={getStatusColor(row.status)} />
+                      </TableCell>
+                      <TableCell>{formatDate(row.created_at)}</TableCell>
+                      <TableCell align='left'>
+                        {tab === 'pending' && (
+                          <>
+                            <IconButton
+                              onClick={async event => {
+                                event.stopPropagation()
+                                setSelected([row.id])
+                                await handleReject([row.id])
+                                resetSelected()
+                                setOpenReject(true)
+                              }}
+                            >
+                              <CloseIcon />
+                            </IconButton>
+
+                            <IconButton
+                              onClick={async event => {
+                                event.stopPropagation()
+                                setSelected([row.id])
+                                await handleApprove([row.id])
+                                resetSelected()
+                                setOpenApprove(true)
+                              }}
+                            >
+                              <CheckIcon />
+                            </IconButton>
+                          </>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+                {emptyRows > 0 && (
+                  <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                    <TableCell colSpan={9} />
+                  </TableRow>
+                )}
+                {visibleRows.length === 0 && (
+                  <TableRow style={{ height: 100 }}>
+                    <TableCell colSpan={11}>
+                      <Paper
                         style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          height: '100%'
+                          padding: '20px',
+                          width: '1350px',
+                          height: '350px',
+                          backgroundColor: 'rgba(128, 128, 128, 0.05)'
                         }}
                       >
-                        <img
-                          src='https://img5.pic.in.th/file/secure-sv1/erase_1981540.png'
-                          alt='No Data'
-                          width='100'
-                          height='100'
-                          style={{ marginBottom: '10px' }}
-                        />
-                        <Typography variant='body2'>Data Not Found</Typography>
-                      </div>
-                    </Paper>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '100%'
+                          }}
+                        >
+                          <img
+                            src='https://img5.pic.in.th/file/secure-sv1/erase_1981540.png'
+                            alt='No Data'
+                            width='100'
+                            height='100'
+                            style={{ marginBottom: '10px' }}
+                          />
+                          <Typography variant='body2'>Data Not Found</Typography>
+                        </div>
+                      </Paper>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
 
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component='div'
-          count={filteredUsers.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
-      {/* <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label='Dense' /> */}
-    </Box>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component='div'
+            count={filteredUsers.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>
+        {/* <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label='Dense' /> */}
+      </Box>
+
+      <Backdrop open={loading} style={{ color: '#fff', zIndex: 1500 }}>
+        <CircularProgress color='inherit' />
+      </Backdrop>
+
+      <Snackbar
+        open={openApprove}
+        autoHideDuration={5000}
+        onClose={handleClose}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {'Reservation Approved Successfully!'}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleClose}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.success }}
+      />
+      <Snackbar
+        open={openReject}
+        autoHideDuration={5000}
+        onClose={handleClose}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {' Reservation rejected successfully!'}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleClose}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.reject }}
+      />
+    </>
   )
 }
 

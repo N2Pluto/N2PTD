@@ -37,6 +37,20 @@ const handler = async (req: any, res: any) => {
         console.error('Error deleting from Reservation:', error)
       }
 
+      // Delete from Dormitory_Approve
+      try {
+        await supabase.from('Dormitory_Approve').delete().match({ user_id: user_id })
+      } catch (error) {
+        console.error('Error deleting from Dormitory_Approve:', error)
+      }
+
+      // Delete from Dormitory_Resident
+      try {
+        await supabase.from('Dormitory_Resident').delete().match({ user_id: user_id })
+      } catch (error) {
+        console.error('Error deleting from Dormitory_Resident:', error)
+      }
+
       // Delete from Users
       try {
         await supabase.from('Users').delete().match({ user_id: user_id })

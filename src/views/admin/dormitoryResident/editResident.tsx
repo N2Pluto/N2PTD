@@ -3,15 +3,7 @@ import { styled, alpha } from '@mui/material/styles'
 import Button from '@mui/material/Button'
 import Menu, { MenuProps } from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import EditIcon from '@mui/icons-material/Edit'
-import Divider from '@mui/material/Divider'
-import ArchiveIcon from '@mui/icons-material/Archive'
-import FileCopyIcon from '@mui/icons-material/FileCopy'
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import DeleteIcon from '@mui/icons-material/Delete'
-import { Transfer } from 'mdi-material-ui'
 import TransferRoom from './dormitoryTransferRoom'
 import ChangeRoom from './dormitoryChangeRoom'
 
@@ -54,15 +46,17 @@ const StyledMenu = styled((props: MenuProps) => (
 
 interface EditResidentProps {
   id: string
+  resetSelected: () => void
+  onOpenSnackbar: () => void
 }
 
-export default function EditResident({ id }: EditResidentProps) {
+export default function EditResident({ id, resetSelected, onOpenSnackbar }: EditResidentProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [openTransferRoom, setOpenTransferRoom] = React.useState(false)
   const [openChangeRoom, setOpenChangeRoom] = React.useState(false)
   const open = Boolean(anchorEl)
 
-  console.log('edit room id ' , id)
+  console.log('edit room id ', id)
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -118,7 +112,13 @@ export default function EditResident({ id }: EditResidentProps) {
         </MenuItem>
       </StyledMenu>
       <TransferRoom open={openTransferRoom} onClose={handleCloseTransferRoom} id={id} />
-      <ChangeRoom open={openChangeRoom} onClose={handleCloseChangeRoom} id={id} />
+      <ChangeRoom
+        open={openChangeRoom}
+        onClose={handleCloseChangeRoom}
+        id={id}
+        resetSelected={resetSelected}
+        onOpenSnackbar={onOpenSnackbar}
+      />
     </div>
   )
 }
