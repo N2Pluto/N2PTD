@@ -8,28 +8,46 @@ const handler = async (req: any, res: any) => {
     .select('name,dorm_id')
     .order('dorm_id', { ascending: true })
 
-  const dorm_id = newBuilding[0].dorm_id
+  let result = []
 
-  const { data: newRoom, error: roomError } = await supabase
-    .from('Dormitory_Room')
-    .select('room_number,room_id,status')
-    .eq('dorm_id', dorm_id)
-    .eq('status', true)
-    .order('room_id', { ascending: true })
+  for (const building of newBuilding) {
+    const dorm_id = building.dorm_id
 
-  const room_id = newRoom[0].room_id
+    const { data: newRoom, error: roomError } = await supabase
+      .from('Dormitory_Room')
+      .select('room_number,room_id,status')
+      .eq('dorm_id', dorm_id)
+      .eq('status', true)
+      .order('room_id', { ascending: true })
 
-  const { data: newBed, error: bedError } = await supabase
-    .from('Dormitory_Bed')
-    .select('bed_number,bed_id,bed_status')
-    .eq('room_id', room_id)
-    .order('bed_id', { ascending: true })
+    let rooms = []
 
-  if (buildingError || roomError || bedError) {
-    return res.status(500).json({ error: buildingError || roomError || bedError })
+    for (const room of newRoom) {
+      const room_id = room.room_id
+
+      const { data: newBed, error: bedError } = await supabase
+        .from('Dormitory_Bed')
+        .select('bed_number,bed_id,bed_status')
+        .eq('room_id', room_id)
+        .order('bed_id', { ascending: true })
+
+      rooms.push({
+        ...room,
+        beds: newBed
+      })
+    }
+
+    result.push({
+      ...building,
+      rooms: rooms
+    })
   }
 
-  return res.status(200).json({ newBuilding, newRoom, newBed })
+  if (buildingError) {
+    return res.status(500).json({ error: buildingError })
+  }
+
+  return res.status(200).json({ result })
 }
 
 export default handler

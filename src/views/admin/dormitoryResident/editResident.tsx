@@ -54,15 +54,17 @@ const StyledMenu = styled((props: MenuProps) => (
 
 interface EditResidentProps {
   id: string
+  resetSelected: () => void
+  onOpenSnackbar: () => void
 }
 
-export default function EditResident({ id }: EditResidentProps) {
+export default function EditResident({ id, resetSelected, onOpenSnackbar }: EditResidentProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [openTransferRoom, setOpenTransferRoom] = React.useState(false)
   const [openChangeRoom, setOpenChangeRoom] = React.useState(false)
   const open = Boolean(anchorEl)
 
-  console.log('edit room id ' , id)
+  console.log('edit room id ', id)
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -118,7 +120,13 @@ export default function EditResident({ id }: EditResidentProps) {
         </MenuItem>
       </StyledMenu>
       <TransferRoom open={openTransferRoom} onClose={handleCloseTransferRoom} id={id} />
-      <ChangeRoom open={openChangeRoom} onClose={handleCloseChangeRoom} id={id} />
+      <ChangeRoom
+        open={openChangeRoom}
+        onClose={handleCloseChangeRoom}
+        id={id}
+        resetSelected={resetSelected}
+        onOpenSnackbar={onOpenSnackbar}
+      />
     </div>
   )
 }

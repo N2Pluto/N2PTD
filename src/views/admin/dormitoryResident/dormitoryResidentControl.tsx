@@ -32,6 +32,10 @@ import FormControl from '@mui/material/FormControl'
 import InputAdornment from '@mui/material/InputAdornment'
 import Menu from '@mui/material/Menu'
 import { useState } from 'react'
+import Snackbar from '@mui/material/Snackbar'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import CloseIcon from '@mui/icons-material/Close'
+import { makeStyles } from '@mui/styles'
 
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
@@ -41,6 +45,12 @@ import EditResident from './editResident'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import Papa from 'papaparse'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
+
+const useStyles = makeStyles({
+  success: {
+    backgroundColor: '#4caf50'
+  }
+})
 
 interface User {
   id: number
@@ -64,8 +74,15 @@ interface EnhancedTableToolbarProps {
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected, selected, resetSelected, deleteResident } = props
+  const [swapSnackbarOpen, setSwapSnackbarOpen] = useState(false)
+  const classes = useStyles()
+
   console.log('numSelected', numSelected)
   console.log('selected', selected)
+
+  const handleCloseExportSnackbar = () => {
+    setSwapSnackbarOpen(false)
+  }
 
   const handleSwap = async (selectedIds: string[]) => {
     // Check if exactly two IDs are selected
@@ -88,7 +105,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 
     // Check if the request was successful
     if (response.ok) {
-      alert('Successfully swapped residents')
+      setSwapSnackbarOpen(true)
     } else {
       const errorData = await response.json()
       alert(`Error swapping residents: ${errorData.error}`)
@@ -97,55 +114,76 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   }
 
   return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
-        ...(numSelected > 0 && {
-          bgcolor: theme => alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity)
-        })
-      }}
-    >
-      {numSelected > 0 ? (
-        <Typography sx={{ flex: '1 1 100%' }} color='inherit' variant='subtitle1' component='div'>
-          {numSelected} selected
-        </Typography>
-      ) : (
-        <Typography sx={{ flex: '1 1 100%' }} variant='h6' id='tableTitle' component='div'></Typography>
-      )}
-      <Tooltip title='สลับห้อง'>
-        <IconButton
-          onClick={() => {
-            // Call a function with the selected IDs
-            handleSwap(selected)
-          }}
-        >
-          <SwapHorizIcon />
-        </IconButton>
-      </Tooltip>
-      {numSelected > 0 ? (
-        <Tooltip title='Delete'>
+    <>
+      <Toolbar
+        sx={{
+          pl: { sm: 2 },
+          pr: { xs: 1, sm: 1 },
+          ...(numSelected > 0 && {
+            bgcolor: theme => alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity)
+          })
+        }}
+      >
+        {numSelected > 0 ? (
+          <Typography sx={{ flex: '1 1 100%' }} color='inherit' variant='subtitle1' component='div'>
+            {numSelected} selected
+          </Typography>
+        ) : (
+          <Typography sx={{ flex: '1 1 100%' }} variant='h6' id='tableTitle' component='div'></Typography>
+        )}
+        <Tooltip title='สลับห้อง'>
           <IconButton
             onClick={() => {
-              selected.forEach(id => deleteResident(id))
-              resetSelected()
+              // Call a function with the selected IDs
+              handleSwap(selected)
             }}
           >
-            <DeleteIcon />
+            <SwapHorizIcon />
           </IconButton>
         </Tooltip>
-      ) : (
-        <Tooltip title='Filter list'>
-          <IconButton>
-            <FilterListIcon />
+        {numSelected > 0 ? (
+          <Tooltip title='Delete'>
+            <IconButton
+              onClick={() => {
+                selected.forEach(id => deleteResident(id))
+                resetSelected()
+              }}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Tooltip title='Filter list'>
+            <IconButton>
+              <FilterListIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+      </Toolbar>
+      <Snackbar
+        open={swapSnackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleCloseExportSnackbar}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {'Swap User Successfully!'}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleCloseExportSnackbar}>
+            <CloseIcon fontSize='small' />
           </IconButton>
-        </Tooltip>
-      )}
-    </Toolbar>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.success }}
+      />
+    </>
   )
 }
 
 const DormitoryResidentControl = () => {
+  const classes = useStyles()
   const [users, setUsers] = React.useState<User[]>([])
   const [order, setOrder] = React.useState<'asc' | 'desc'>('asc')
   const [orderBy, setOrderBy] = React.useState<keyof User>('name')
@@ -158,6 +196,24 @@ const DormitoryResidentControl = () => {
   const [selectedFloor, setSelectedFloor] = React.useState<string | null>(null)
   const [selectedDormitoryForDownload, setSelectedDormitoryForDownload] = React.useState<number | null>(null)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [exportSnackbarOpen, setExportSnackbarOpen] = useState(false)
+  const [openSnackbar, setOpenSnackbar] = useState(false)
+
+  const handleOpenSnackbar = () => {
+    setOpenSnackbar(true)
+  }
+
+  const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setOpenSnackbar(false)
+  }
+
+  const handleCloseExportSnackbar = () => {
+    setExportSnackbarOpen(false)
+    console.log('handleCloseExportSnackbar')
+  }
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -195,6 +251,7 @@ const DormitoryResidentControl = () => {
         if (a.Dormitory_Room.room_number !== b.Dormitory_Room.room_number) {
           return a.Dormitory_Room.room_number - b.Dormitory_Room.room_number
         }
+
         return a.Dormitory_Bed.bed_number - b.Dormitory_Bed.bed_number
       })
 
@@ -216,8 +273,8 @@ const DormitoryResidentControl = () => {
     tempLink.href = csvURL
     tempLink.setAttribute('download', `${dormitoryName}.csv`)
     tempLink.click()
+    setExportSnackbarOpen(true)
   }
-  // Add a function to handle changes to the search field
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value)
   }
@@ -324,211 +381,260 @@ const DormitoryResidentControl = () => {
   const uniqueDormitories = [...new Set(users.map(user => user.dorm_id))]
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Box sx={{ display: 'flex', margin: 5 }}>
-        <Grid item xs={12} sm={3}>
-          <FormControl fullWidth>
-            <InputLabel id='form-layouts-separator-select-label'>Round</InputLabel>
-            <Select
-              label='Round'
-              defaultValue='-1'
-              id='form-layouts-separator-select'
-              labelId='form-layouts-separator-select-label'
-            >
-              <MenuItem
-                value='-1'
-                onClick={() => {
-                  setSelectedDormitory(null)
-                  setSelectedDormitoryForDownload(null)
-                }}
+    <>
+      <Box sx={{ width: '100%' }}>
+        <Box sx={{ display: 'flex', margin: 5 }}>
+          <Grid item xs={12} sm={3}>
+            <FormControl fullWidth>
+              <InputLabel id='form-layouts-separator-select-label'>Round</InputLabel>
+              <Select
+                label='Round'
+                defaultValue='-1'
+                id='form-layouts-separator-select'
+                labelId='form-layouts-separator-select-label'
               >
-                รายชื่อนักศึกษาทุกหอพัก
-              </MenuItem>
-              {uniqueDormitories.map(dorm_id => {
-                const dormitoryName = users.find(user => user.dorm_id === dorm_id)?.Dormitory_Building.name
-                return (
-                  <MenuItem
-                    value={dorm_id}
-                    onClick={() => {
-                      setSelectedDormitory(dorm_id)
-                      setSelectedDormitoryForDownload(dorm_id)
-                    }}
-                  >
-                    {dormitoryName}
-                  </MenuItem>
-                )
-              })}
-            </Select>
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={12} sm={2}>
-          <FormControl fullWidth sx={{ flexGrow: 1, marginLeft: 5, marginRight: 6 }}>
-            <InputLabel id='form-layouts-separator-select-label'>Round</InputLabel>
-            <Select
-              label='Round'
-              defaultValue='-1'
-              id='form-layouts-separator-select'
-              labelId='form-layouts-separator-select-label'
-            >
-              <MenuItem value='-1' onClick={() => setSelectedFloor(null)}>
-                ทุกชั้น
-              </MenuItem>
-              <MenuItem value='1' onClick={() => setSelectedFloor('1')}>
-                ชั้น 1
-              </MenuItem>
-              <MenuItem value='2' onClick={() => setSelectedFloor('2')}>
-                ชั้น 2
-              </MenuItem>
-              <MenuItem value='3' onClick={() => setSelectedFloor('3')}>
-                ชั้น 3
-              </MenuItem>
-              <MenuItem value='4' onClick={() => setSelectedFloor('4')}>
-                ชั้น 4
-              </MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} sm={6.5}>
-          <TextField
-            fullWidth
-            label='Search'
-            placeholder='Leonard Carter'
-            value={searchTerm}
-            onChange={handleSearchChange}
-            sx={{ flexGrow: 1, marginLeft: 10, marginRight: 1 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position='start'>
-                  <SearchIcon />
-                </InputAdornment>
-              )
-            }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={0.5}>
-          <IconButton onClick={handleMenuOpen} sx={{ flexGrow: 1, ml: 9, mt: 2 }}>
-            <MoreVertIcon />
-          </IconButton>
-          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-            <MenuItem
-              onClick={() => {
-                handleMenuClose()
-                exportToCSV(selectedDormitoryForDownload)
-              }}
-            >
-              Export to CSV
-            </MenuItem>
-            {/* Add more menu items if needed */}
-          </Menu>
-        </Grid>
-      </Box>
-      <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar
-          numSelected={selected.length}
-          selected={selected}
-          resetSelected={resetSelected}
-          deleteResident={deleteResident}
-        />
-        <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={users.length}
-            />
-            <TableBody>
-              {visibleRows.map((row, index) => {
-                const isItemSelected = isSelected(row.id)
-                const labelId = `enhanced-table-checkbox-${index}`
-
-                return (
-                  <TableRow
-                    hover
-                    onClick={event => handleClick(event, row.id)}
-                    role='checkbox'
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.id}
-                    selected={isItemSelected}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    <TableCell padding='checkbox'>
-                      <Checkbox color='primary' checked={isItemSelected} inputProps={{ 'aria-labelledby': labelId }} />
-                    </TableCell>
-                    <TableCell component='th' id={labelId} scope='row' padding='none'>
-                      {row.Users ? row.Users.student_id : ''}
-                    </TableCell>
-                    <TableCell>
-                      {' '}
-                      {row.Users?.Users_Info[0]?.name} {row.Users?.Users_Info[0]?.lastname}
-                    </TableCell>
-                    <TableCell>{row.Dormitory_Building.name}</TableCell>
-                    <TableCell>{row.Dormitory_Room.room_number}</TableCell>
-                    <TableCell>{row.Dormitory_Bed.bed_number}</TableCell>
-                    <TableCell>{row.Reservation_System.round_name}</TableCell>
-                    <TableCell>
-                      <EditResident id={row.id} />
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-              {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-                  <TableCell colSpan={9} />
-                </TableRow>
-              )}
-              {visibleRows.length === 0 && (
-                <TableRow style={{ height: 100 }}>
-                  <TableCell colSpan={11}>
-                    <Paper
-                      style={{
-                        padding: '20px',
-                        width: '1350px',
-                        height: '350px',
-                        backgroundColor: 'rgba(128, 128, 128, 0.05)'
+                <MenuItem
+                  value='-1'
+                  onClick={() => {
+                    setSelectedDormitory(null)
+                    setSelectedDormitoryForDownload(null)
+                  }}
+                >
+                  รายชื่อนักศึกษาทุกหอพัก
+                </MenuItem>
+                {uniqueDormitories.map(dorm_id => {
+                  const dormitoryName = users.find(user => user.dorm_id === dorm_id)?.Dormitory_Building.name
+                  return (
+                    <MenuItem
+                      value={dorm_id}
+                      onClick={() => {
+                        setSelectedDormitory(dorm_id)
+                        setSelectedDormitoryForDownload(dorm_id)
                       }}
                     >
-                      <div
+                      {dormitoryName}
+                    </MenuItem>
+                  )
+                })}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} sm={2}>
+            <FormControl fullWidth sx={{ flexGrow: 1, marginLeft: 5, marginRight: 6 }}>
+              <InputLabel id='form-layouts-separator-select-label'>Round</InputLabel>
+              <Select
+                label='Round'
+                defaultValue='-1'
+                id='form-layouts-separator-select'
+                labelId='form-layouts-separator-select-label'
+              >
+                <MenuItem value='-1' onClick={() => setSelectedFloor(null)}>
+                  ทุกชั้น
+                </MenuItem>
+                <MenuItem value='1' onClick={() => setSelectedFloor('1')}>
+                  ชั้น 1
+                </MenuItem>
+                <MenuItem value='2' onClick={() => setSelectedFloor('2')}>
+                  ชั้น 2
+                </MenuItem>
+                <MenuItem value='3' onClick={() => setSelectedFloor('3')}>
+                  ชั้น 3
+                </MenuItem>
+                <MenuItem value='4' onClick={() => setSelectedFloor('4')}>
+                  ชั้น 4
+                </MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6.5}>
+            <TextField
+              fullWidth
+              label='Search'
+              placeholder='Leonard Carter'
+              value={searchTerm}
+              onChange={handleSearchChange}
+              sx={{ flexGrow: 1, marginLeft: 10, marginRight: 1 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position='start'>
+                    <SearchIcon />
+                  </InputAdornment>
+                )
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={0.5}>
+            <IconButton onClick={handleMenuOpen} sx={{ flexGrow: 1, ml: 9, mt: 2 }}>
+              <MoreVertIcon />
+            </IconButton>
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+              <MenuItem
+                onClick={() => {
+                  handleMenuClose()
+                  exportToCSV(selectedDormitoryForDownload)
+                }}
+              >
+                <img
+                  src='https://img5.pic.in.th/file/secure-sv1/csv-file-format-extension_28842.png'
+                  width='25'
+                  height='25'
+                  alt='CSV Icon'
+                  style={{ marginRight: '10px' }}
+                />
+                Export to CSV
+              </MenuItem>
+              {/* Add more menu items if needed */}
+            </Menu>
+          </Grid>
+        </Box>
+        <Paper sx={{ width: '100%', mb: 2 }}>
+          <EnhancedTableToolbar
+            numSelected={selected.length}
+            selected={selected}
+            resetSelected={resetSelected}
+            deleteResident={deleteResident}
+          />
+          <TableContainer>
+            <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>
+              <EnhancedTableHead
+                numSelected={selected.length}
+                order={order}
+                orderBy={orderBy}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={users.length}
+              />
+              <TableBody>
+                {visibleRows.map((row, index) => {
+                  const isItemSelected = isSelected(row.id)
+                  const labelId = `enhanced-table-checkbox-${index}`
+
+                  return (
+                    <TableRow
+                      hover
+                      onClick={event => handleClick(event, row.id)}
+                      role='checkbox'
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={row.id}
+                      selected={isItemSelected}
+                      sx={{ cursor: 'pointer' }}
+                    >
+                      <TableCell padding='checkbox'>
+                        <Checkbox
+                          color='primary'
+                          checked={isItemSelected}
+                          inputProps={{ 'aria-labelledby': labelId }}
+                        />
+                      </TableCell>
+                      <TableCell component='th' id={labelId} scope='row' padding='none'>
+                        {row.Users ? row.Users.student_id : ''}
+                      </TableCell>
+                      <TableCell>
+                        {' '}
+                        {row.Users?.Users_Info[0]?.name} {row.Users?.Users_Info[0]?.lastname}
+                      </TableCell>
+                      <TableCell>{row.Dormitory_Building.name}</TableCell>
+                      <TableCell>{row.Dormitory_Room.room_number}</TableCell>
+                      <TableCell>{row.Dormitory_Bed.bed_number}</TableCell>
+                      <TableCell>{row.Reservation_System.round_name}</TableCell>
+                      <TableCell>
+                        <EditResident id={row.id} resetSelected={resetSelected} onOpenSnackbar={handleOpenSnackbar} />
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+                {emptyRows > 0 && (
+                  <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                    <TableCell colSpan={9} />
+                  </TableRow>
+                )}
+                {visibleRows.length === 0 && (
+                  <TableRow style={{ height: 100 }}>
+                    <TableCell colSpan={11}>
+                      <Paper
                         style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          height: '100%'
+                          padding: '20px',
+                          width: '1350px',
+                          height: '350px',
+                          backgroundColor: 'rgba(128, 128, 128, 0.05)'
                         }}
                       >
-                        <img
-                          src='https://img5.pic.in.th/file/secure-sv1/erase_1981540.png'
-                          alt='No Data'
-                          width='100'
-                          height='100'
-                          style={{ marginBottom: '10px' }}
-                        />
-                        <Typography variant='body2'>Data Not Found</Typography>
-                      </div>
-                    </Paper>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component='div'
-          count={users.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
-      {/* <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label='Dense padding' /> */}
-    </Box>
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '100%'
+                          }}
+                        >
+                          <img
+                            src='https://img5.pic.in.th/file/secure-sv1/erase_1981540.png'
+                            alt='No Data'
+                            width='100'
+                            height='100'
+                            style={{ marginBottom: '10px' }}
+                          />
+                          <Typography variant='body2'>Data Not Found</Typography>
+                        </div>
+                      </Paper>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component='div'
+            count={users.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>
+        {/* <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label='Dense padding' /> */}
+      </Box>
+      <Snackbar
+        open={exportSnackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleCloseExportSnackbar}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {'Exporting CSV Successfully!'}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleCloseExportSnackbar}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.success }}
+      />
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackbar}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {'Change Room Successfully!'}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleCloseSnackbar}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.success }}
+      />
+    </>
   )
 }
 

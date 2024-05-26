@@ -26,9 +26,11 @@ interface ChangeRoomProps {
   open: boolean
   onClose: () => void
   id: string
+  resetSelected: () => void
+  onOpenSnackbar: () => void
 }
 
-export default function ChangeRoom({ open, onClose, id }: ChangeRoomProps) {
+export default function ChangeRoom({ open, onClose, id, resetSelected, onOpenSnackbar }: ChangeRoomProps) {
   const [data, setData] = useState(null)
   const [newData, setNewData] = useState(null)
   const [building, setBuilding] = useState(null)
@@ -49,19 +51,23 @@ export default function ChangeRoom({ open, onClose, id }: ChangeRoomProps) {
         setBed(data.bed_id)
       }
     }
-
     fetchData()
+    const intervalId = setInterval(fetchData, 5000)
+
+    return () => clearInterval(intervalId)
   }, [id])
 
   useEffect(() => {
     const fetchDormitoryData = async () => {
       const res = await fetch(`/api/admin/dormitoryResident/read/fetchDormitoryData`)
       const data = await res.json()
-      setNewData(data)
+      setNewData(data.result)
     }
 
     fetchDormitoryData()
   }, [])
+
+  console.log('newData:', newData)
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -75,81 +81,30 @@ export default function ChangeRoom({ open, onClose, id }: ChangeRoomProps) {
     })
 
     if (res.ok) {
+      resetSelected()
       handleClose()
+      onOpenSnackbar()
     } else {
       console.error('Error:', res.status, res.statusText)
     }
   }
 
-  const handleBuildingChange = (event: SelectChangeEvent) => {
-    setBuilding(event.target.value as string)
-  }
-
-  const handleRoomChange = (event: SelectChangeEvent) => {
-    setRoom(event.target.value as string)
-  }
-
-  const handleBedChange = (event: SelectChangeEvent) => {
-    setBed(event.target.value as string)
-  }
-
-  const handleNewBuildingChange = async (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleNewBuildingChange = (event: SelectChangeEvent) => {
     const dorm_id = event.target.value as number
     setNewBuilding(dorm_id)
-    console.log('setNewBuilding', dorm_id)
-
-    const res = await fetch(`/api/admin/dormitoryResident/read/fetchDormitoryData`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ dorm_id })
-    })
-
-    // handle the response
-    if (res.ok) {
-      const data = await res.json()
-    } else {
-      console.error('Error:', res.status, res.statusText)
-    }
+    setNewRoom(null) // Reset room and bed when building changes
+    setNewBed(null)
   }
 
-  const handleNewRoomChange = async (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleNewRoomChange = (event: SelectChangeEvent) => {
     const room_id = event.target.value as number
     setNewRoom(room_id)
-
-    const res = await fetch(`/api/admin/dormitoryResident/read/fetchDormitoryData`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ room_id })
-    })
-
-    if (res.ok) {
-      const data = await res.json()
-    } else {
-      console.error('Error:', res.status, res.statusText)
-    }
+    setNewBed(null) // Reset bed when room changes
   }
 
-  const handleNewBedChange = async (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleNewBedChange = (event: SelectChangeEvent) => {
     const bed_id = event.target.value as number
     setNewBed(bed_id)
-
-    const res = await fetch(`/api/admin/dormitoryResident/read/fetchDormitoryData`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ bed_id })
-    })
-
-    if (res.ok) {
-      const data = await res.json()
-    } else {
-      console.error('Error:', res.status, res.statusText)
-    }
   }
 
   const handleClose = () => {
@@ -171,11 +126,7 @@ export default function ChangeRoom({ open, onClose, id }: ChangeRoomProps) {
           onSubmit: handleSubmit
         }}
       >
-        {/* <DialogTitle>Subscribe</DialogTitle> */}
         <DialogContent>
-          {/* <DialogContentText>
-            To subscribe to this website, please enter your email address here. We will send updates occasionally.
-          </DialogContentText> */}
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth style={{ marginBottom: '10px' }}>
@@ -183,7 +134,7 @@ export default function ChangeRoom({ open, onClose, id }: ChangeRoomProps) {
                 <Select
                   label='Building'
                   value={building || ''}
-                  onChange={handleBuildingChange}
+                  onChange={handleNewBuildingChange}
                   id='building-select'
                   labelId='building-select-label'
                   disabled
@@ -196,7 +147,7 @@ export default function ChangeRoom({ open, onClose, id }: ChangeRoomProps) {
                 <Select
                   label='Room Number'
                   value={room || ''}
-                  onChange={handleRoomChange}
+                  onChange={handleNewRoomChange}
                   id='room-number-select'
                   labelId='room-number-select-label'
                   disabled
@@ -209,7 +160,7 @@ export default function ChangeRoom({ open, onClose, id }: ChangeRoomProps) {
                 <Select
                   label='Bed'
                   value={bed || ''}
-                  onChange={handleBedChange}
+                  onChange={handleNewBedChange}
                   id='bed-select'
                   labelId='bed-select-label'
                   disabled
@@ -219,18 +170,17 @@ export default function ChangeRoom({ open, onClose, id }: ChangeRoomProps) {
               </FormControl>
             </Grid>
 
-            {/* //right cell */}
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth style={{ marginBottom: '10px' }}>
-                <InputLabel id='building-select-label'>Building</InputLabel>
+                <InputLabel id='new-building-select-label'>Building</InputLabel>
                 <Select
                   label='Building'
                   value={newBuilding || ''}
                   onChange={handleNewBuildingChange}
-                  id='building-select'
-                  labelId='building-select-label'
+                  id='new-building-select'
+                  labelId='new-building-select-label'
                 >
-                  {newData?.newBuilding?.map((building: any) => (
+                  {newData?.map((building: any) => (
                     <MenuItem key={building.dorm_id} value={building.dorm_id}>
                       {building.name}
                     </MenuItem>
@@ -238,16 +188,18 @@ export default function ChangeRoom({ open, onClose, id }: ChangeRoomProps) {
                 </Select>
               </FormControl>
               <FormControl fullWidth style={{ marginBottom: '10px' }}>
-                <InputLabel id='room-number-select-label'>Room Number</InputLabel>
+                <InputLabel id='new-room-number-select-label'>Room Number</InputLabel>
                 <Select
                   label='Room Number'
                   value={newRoom || ''}
                   onChange={handleNewRoomChange}
-                  id='room-number-select'
-                  labelId='room-number-select-label'
+                  id='new-room-number-select'
+                  labelId='new-room-number-select-label'
+                  disabled={!newBuilding}
                 >
-                  {newData?.newRoom
-                    ?.filter((room: any) => room.dorm_id === building.dorm_id)
+                  {newData
+                    ?.filter((building: any) => building.dorm_id === newBuilding)
+                    .flatMap((building: any) => building.rooms)
                     .map((room: any) => (
                       <MenuItem key={room.room_id} value={room.room_id}>
                         {room.room_number}
@@ -256,16 +208,20 @@ export default function ChangeRoom({ open, onClose, id }: ChangeRoomProps) {
                 </Select>
               </FormControl>
               <FormControl fullWidth style={{ marginBottom: '10px' }}>
-                <InputLabel id='bed-select-label'>Bed</InputLabel>
+                <InputLabel id='new-bed-select-label'>Bed</InputLabel>
                 <Select
                   label='Bed'
                   value={newBed || ''}
                   onChange={handleNewBedChange}
-                  id='bed-select'
-                  labelId='bed-select-label'
+                  id='new-bed-select'
+                  labelId='new-bed-select-label'
+                  disabled={!newRoom}
                 >
-                  {newData?.newBed
-                    ?.filter((room: any) => bed.room_id === room.room_id)
+                  {newData
+                    ?.filter((building: any) => building.dorm_id === newBuilding)
+                    .flatMap((building: any) => building.rooms)
+                    .filter((room: any) => room.room_id === newRoom)
+                    .flatMap((room: any) => room.beds)
                     .map((bed: any) => (
                       <MenuItem key={bed.bed_id} value={bed.bed_id}>
                         {bed.bed_number}

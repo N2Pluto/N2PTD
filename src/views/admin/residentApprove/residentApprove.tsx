@@ -40,10 +40,27 @@ import Drawer from '@mui/material/Drawer'
 import { useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Divider from '@mui/material/Divider'
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
+import { makeStyles } from '@mui/styles'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import Backdrop from '@mui/material/Backdrop'
+import CircularProgress from '@mui/material/CircularProgress'
 
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import SearchIcon from '@mui/icons-material/Search'
+
+// ** Styles
+
+const useStyles = makeStyles(theme => ({
+  success: {
+    backgroundColor: theme.palette.success.main
+  },
+  error: {
+    backgroundColor: theme.palette.error.main
+  }
+}))
 
 interface User {
   id: number
@@ -89,10 +106,10 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       )}
       {numSelected > 0 ? (
         <>
-          <IconButton onClick={() => handleApprove(selected)}>
+          <IconButton onClick={() => handleApprove(selected.map(item => item.id))}>
             <CheckIcon />
           </IconButton>
-          <IconButton onClick={() => handleReject(selected)}>
+          <IconButton onClick={() => handleReject(selected.map(item => item.id))}>
             <CloseIcon />
           </IconButton>
         </>
@@ -108,6 +125,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 
 const ResidentApprove = () => {
+  const classes = useStyles()
   const [users, setUsers] = React.useState<User[]>([])
   const [order, setOrder] = React.useState<'asc' | 'desc'>('asc')
   const [orderBy, setOrderBy] = React.useState<keyof User>('id')
@@ -126,6 +144,28 @@ const ResidentApprove = () => {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [parsedData, setParsedData] = useState([])
   const [file, setFile] = React.useState(null)
+  const [exportSnackbarOpen, setExportSnackbarOpen] = useState(false)
+  const [importSnackbarOpen, setImportSnackbarOpen] = useState(false)
+  const [approvedSnackbarOpen, setApprovedSnackbarOpen] = useState(false)
+  const [rejectedSnackbarOpen, setRejectedSnackbarOpen] = useState(false)
+  const [loading, setLoading] = React.useState(false)
+
+  const handleCloseApprovedSnackbar = () => {
+    setApprovedSnackbarOpen(false)
+  }
+
+  const handleCloseRejectedSnackbar = () => {
+    setRejectedSnackbarOpen(false)
+  }
+
+  const handleCloseExportSnackbar = () => {
+    setExportSnackbarOpen(false)
+    console.log('handleCloseExportSnackbar')
+  }
+
+  const handleCloseImportSnackbar = () => {
+    setImportSnackbarOpen(false)
+  }
 
   const handleFileUpload = acceptedFiles => {
     const uploadedFile = acceptedFiles[0]
@@ -143,42 +183,6 @@ const ResidentApprove = () => {
   const handleRemoveFile = () => {
     setFile(null)
     setParsedData([])
-  }
-
-  const handleImportCSV = async (parsedData: any[]) => {
-    console.log('Imported CSV data:', parsedData)
-    const updatedUsers = [...users]
-    const parsedStudentIds = parsedData.map(({ student_id }) => student_id)
-
-    updatedUsers.forEach(user => {
-      if (!parsedStudentIds.includes(user.Users?.student_id)) {
-        user.status = 'FALSE'
-      }
-    })
-
-    parsedData.forEach(({ student_id, status }) => {
-      const userIndex = updatedUsers.findIndex(user => user.Users?.student_id === student_id)
-      console.log('userIndex', userIndex)
-
-      if (userIndex !== -1) {
-        updatedUsers[userIndex].status = status
-      }
-    })
-
-    setUsers(updatedUsers)
-    console.log('updatedUsers', updatedUsers)
-
-    const response = await fetch('/api/admin/residentApprove/update/updateResidentApprove', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ updatedUsers })
-    })
-    handleDrawerClose()
-    if (!response.ok) {
-      console.error('Failed to update users:', await response.text())
-    }
   }
 
   const handleSelectChange = (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -335,6 +339,7 @@ const ResidentApprove = () => {
   }
 
   const handleApprove = async (ids: number[]) => {
+    setLoading(true)
     ids.forEach(async id => {
       console.log(`Button clicked with id: ${id}`)
       event.stopPropagation()
@@ -347,7 +352,9 @@ const ResidentApprove = () => {
         },
         body: JSON.stringify({ id })
       })
+
       resetSelected()
+      setApprovedSnackbarOpen(true)
 
       if (!response.ok) {
         console.error('Failed to update reservation status')
@@ -425,13 +432,12 @@ const ResidentApprove = () => {
           })
         }
       }
-
-      const result = await response.json()
-      console.log(result.message)
+      setLoading(false)
     })
   }
 
   const handleReject = async (ids: number[]) => {
+    setLoading(true)
     ids.forEach(async id => {
       event.stopPropagation()
 
@@ -444,6 +450,9 @@ const ResidentApprove = () => {
         body: JSON.stringify({ id })
       })
       resetSelected()
+      setRejectedSnackbarOpen(true)
+      setLoading(false)
+
       if (!response.ok) {
         console.error('Failed to delete reservation')
         return
@@ -505,9 +514,6 @@ const ResidentApprove = () => {
           })
         }
       }
-
-      const result = await response.json()
-      console.log(result.message)
     })
   }
 
@@ -532,28 +538,78 @@ const ResidentApprove = () => {
   const falseCount = filteredUsers.filter(user => user.status === 'FALSE').length
   const successCount = filteredUsers.filter(user => user.status === 'SUCCESS').length
 
-  const exportToCSV = (roundId: number | null) => {
-    // Filter users based on the selected round ID
-    const filteredUsers = users.filter(user => roundId === null || user.round_id === roundId)
+  const handleImportCSV = async (parsedData: any[]) => {
+    console.log('Imported CSV data:', parsedData)
+    const updatedUsers = [...users]
+    const parsedStudentIds = parsedData.map(({ student_id }) => student_id)
 
-    // Format the data for CSV export
-    const csvData = filteredUsers.map(user => ({
-      student_id: user.Users?.student_id,
-      name: user.Users_Info?.name,
-      lastname: user.Users_Info?.lastname,
-      building_name: user.Dormitory_Building.name,
-      room_number: user.Dormitory_Room.room_number,
-      bed_number: user.Dormitory_Bed.bed_number,
-      round_name: user.Reservation_System.round_name,
-      status: user.status
-    }))
-    const csv = Papa.unparse(csvData)
-    const csvBlob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const csvURL = window.URL.createObjectURL(csvBlob)
-    let tempLink = document.createElement('a')
-    tempLink.href = csvURL
-    tempLink.setAttribute('download', `data_${roundId || 'all'}.csv`)
-    tempLink.click()
+    updatedUsers.forEach(user => {
+      if (!parsedStudentIds.includes(user.Users?.student_id)) {
+        user.status = 'FALSE'
+      }
+    })
+
+    parsedData.forEach(({ student_id, status }) => {
+      const userIndex = updatedUsers.findIndex(user => user.Users?.student_id === student_id)
+      console.log('userIndex', userIndex)
+
+      if (userIndex !== -1) {
+        updatedUsers[userIndex].status = status
+      }
+    })
+
+    setUsers(updatedUsers)
+    console.log('updatedUsers', updatedUsers)
+
+    const response = await fetch('/api/admin/residentApprove/update/updateResidentApprove', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ updatedUsers })
+    })
+    handleDrawerClose()
+    if (!response.ok) {
+      console.error('Failed to update users:', await response.text())
+    } else {
+      setImportSnackbarOpen(true)
+    }
+  }
+
+  const exportToCSV = (roundId: number | null) => {
+    console.log('exportToCSV called')
+    try {
+      // Filter users based on the selected round ID
+      const filteredUsers = users.filter(user => roundId === null || user.round_id === roundId)
+
+      // Format the data for CSV export
+      const csvData = filteredUsers.map(user => ({
+        student_id: user.Users?.student_id,
+        name: user.Users_Info?.name,
+        lastname: user.Users_Info?.lastname,
+        building_name: user.Dormitory_Building.name,
+        room_number: user.Dormitory_Room.room_number,
+        bed_number: user.Dormitory_Bed.bed_number,
+        round_name: user.Reservation_System.round_name,
+        status: user.status
+      }))
+      const csv = Papa.unparse(csvData)
+      const csvBlob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+      const csvURL = window.URL.createObjectURL(csvBlob)
+      let tempLink = document.createElement('a')
+      tempLink.href = csvURL
+      tempLink.setAttribute('download', `data_${roundId || 'all'}.csv`)
+      tempLink.click()
+
+      // If no errors occurred during the export operation, open the Snackbar
+      console.log('selectedRound:', roundId)
+      console.log('filteredUsers:', filteredUsers)
+      setExportSnackbarOpen(true)
+      console.log('Snackbar is set to open')
+    } catch (error) {
+      // Handle the error here
+      console.error('Error exporting to CSV:', error)
+    }
   }
 
   const handleMenuOpen = event => {
@@ -583,204 +639,229 @@ const ResidentApprove = () => {
   })
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Tabs value={tab} onChange={handleTabChange} aria-label='reservation status tabs'>
-        <Tab
-          label={
-            <span
-              style={{
-                color: tab === 'Waiting' ? 'black' : undefined,
-                fontWeight: tab === 'Waiting' ? 'bold' : undefined
-              }}
-            >
-              WAITING LIST{' '}
-              <span style={{ backgroundColor: '#ffffba', padding: '4px 8px', borderRadius: '5px' }}>
-                {' '}
-                {waitingCount}{' '}
-              </span>
-            </span>
-          }
-          value='Waiting'
-        />
-
-        <Tab
-          label={
-            <span
-              style={{
-                color: tab === 'TRUE' ? 'black' : undefined,
-                fontWeight: tab === 'TRUE' ? 'bold' : undefined
-              }}
-            >
-              PAID{' '}
-              <span style={{ backgroundColor: '#b8ffb8', padding: '4px 8px', borderRadius: '5px' }}> {trueCount} </span>
-            </span>
-          }
-          value='TRUE'
-        />
-        <Tab
-          label={
-            <span
-              style={{
-                color: tab === 'FALSE' ? 'black' : undefined,
-                fontWeight: tab === 'FALSE' ? 'bold' : undefined
-              }}
-            >
-              NOT PAID{' '}
-              <span style={{ backgroundColor: '#ffb8b8', padding: '4px 8px', borderRadius: '5px' }}>
-                {' '}
-                {falseCount}{' '}
-              </span>
-            </span>
-          }
-          value='FALSE'
-        />
-        <Tab
-          label={
-            <span
-              style={{
-                color: tab === 'SUCCESS' ? 'black' : undefined,
-                fontWeight: tab === 'SUCCESS' ? 'bold' : undefined
-              }}
-            >
-              SUCCESS{' '}
-              <span style={{ backgroundColor: '#b8b8ff', padding: '4px 8px', borderRadius: '5px' }}>
-                {' '}
-                {successCount}{' '}
-              </span>
-            </span>
-          }
-          value='SUCCESS'
-        />
-      </Tabs>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', margin: 5 }}>
-        <Grid item xs={12} sm={3}>
-          <FormControl fullWidth>
-            <InputLabel id='form-layouts-separator-select-label'>Round</InputLabel>
-            <Select
-              label='Round'
-              defaultValue='-1'
-              id='form-layouts-separator-select'
-              labelId='form-layouts-separator-select-label'
-              onChange={handleSelectChange}
-            >
-              <MenuItem
-                value='-1'
-                onClick={() => {
-                  setSelectedRound(null)
+    <>
+      <Box sx={{ width: '100%' }}>
+        <Tabs value={tab} onChange={handleTabChange} aria-label='reservation status tabs'>
+          <Tab
+            label={
+              <span
+                style={{
+                  color: tab === 'Waiting' ? 'black' : undefined,
+                  fontWeight: tab === 'Waiting' ? 'bold' : undefined
                 }}
               >
-                รอบจองหอพักทั้งหมด
-              </MenuItem>
-              {roundNames.map(round => (
+                WAITING LIST{' '}
+                <span style={{ backgroundColor: '#ffffba', padding: '4px 8px', borderRadius: '5px' }}>
+                  {' '}
+                  {waitingCount}{' '}
+                </span>
+              </span>
+            }
+            value='Waiting'
+          />
+
+          <Tab
+            label={
+              <span
+                style={{
+                  color: tab === 'TRUE' ? 'black' : undefined,
+                  fontWeight: tab === 'TRUE' ? 'bold' : undefined
+                }}
+              >
+                PAID{' '}
+                <span style={{ backgroundColor: '#b8ffb8', padding: '4px 8px', borderRadius: '5px' }}>
+                  {' '}
+                  {trueCount}{' '}
+                </span>
+              </span>
+            }
+            value='TRUE'
+          />
+          <Tab
+            label={
+              <span
+                style={{
+                  color: tab === 'FALSE' ? 'black' : undefined,
+                  fontWeight: tab === 'FALSE' ? 'bold' : undefined
+                }}
+              >
+                NOT PAID{' '}
+                <span style={{ backgroundColor: '#ffb8b8', padding: '4px 8px', borderRadius: '5px' }}>
+                  {' '}
+                  {falseCount}{' '}
+                </span>
+              </span>
+            }
+            value='FALSE'
+          />
+          <Tab
+            label={
+              <span
+                style={{
+                  color: tab === 'SUCCESS' ? 'black' : undefined,
+                  fontWeight: tab === 'SUCCESS' ? 'bold' : undefined
+                }}
+              >
+                SUCCESS{' '}
+                <span style={{ backgroundColor: '#b8b8ff', padding: '4px 8px', borderRadius: '5px' }}>
+                  {' '}
+                  {successCount}{' '}
+                </span>
+              </span>
+            }
+            value='SUCCESS'
+          />
+        </Tabs>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', margin: 5 }}>
+          <Grid item xs={12} sm={3}>
+            <FormControl fullWidth>
+              <InputLabel id='form-layouts-separator-select-label'>Round</InputLabel>
+              <Select
+                label='Round'
+                defaultValue='-1'
+                id='form-layouts-separator-select'
+                labelId='form-layouts-separator-select-label'
+                onChange={handleSelectChange}
+              >
                 <MenuItem
-                  value={round.round_id}
+                  value='-1'
                   onClick={() => {
-                    setSelectedRound(round.round_id)
+                    setSelectedRound(null)
                   }}
                 >
-                  {round.round_name}
+                  รอบจองหอพักทั้งหมด
                 </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            label='Search'
-            placeholder='Leonard Carter'
-            value={searchValue}
-            onChange={handleSearchChange}
-            sx={{ flexGrow: 1, ml: 5 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position='start'>
-                  <SearchIcon />
-                </InputAdornment>
-              )
-            }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={0.5}>
-          <IconButton onClick={handleMenuOpen} sx={{ flexGrow: 1, ml: 8, mt: 2 }}>
-            <MoreVertIcon />
-          </IconButton>
-
-          <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>
-            <MenuItem
-              onClick={() => {
-                handleMenuClose()
-                handleDrawerOpen()
+                {roundNames.map(round => (
+                  <MenuItem
+                    value={round.round_id}
+                    onClick={() => {
+                      setSelectedRound(round.round_id)
+                    }}
+                  >
+                    {round.round_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label='Search'
+              placeholder='Leonard Carter'
+              value={searchValue}
+              onChange={handleSearchChange}
+              sx={{ flexGrow: 1, ml: 5 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position='start'>
+                    <SearchIcon />
+                  </InputAdornment>
+                )
               }}
-            >
-              <label style={{ display: 'flex', alignItems: 'center' }}>
+            />
+          </Grid>
+          <Grid item xs={12} sm={0.5}>
+            <IconButton onClick={handleMenuOpen} sx={{ flexGrow: 1, ml: 8, mt: 2 }}>
+              <MoreVertIcon />
+            </IconButton>
+
+            <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>
+              <MenuItem
+                onClick={() => {
+                  handleMenuClose()
+                  handleDrawerOpen()
+                }}
+              >
+                <label style={{ display: 'flex', alignItems: 'center' }}>
+                  <img
+                    src='https://img5.pic.in.th/file/secure-sv1/csv-file-format-extension_28842.png'
+                    width='25'
+                    height='25'
+                    alt='CSV Icon'
+                  />
+                  <div style={{ marginLeft: '10px' }}>
+                    <Typography variant='subtitle1'>Import</Typography>
+                    <Typography variant='body2' color='textSecondary'>
+                      Import CSV data.
+                    </Typography>
+                  </div>
+                </label>
+              </MenuItem>
+
+              <MenuItem
+                onClick={() => {
+                  exportToCSV(selectedRound)
+                  handleMenuClose() // Ensure the menu closes after clicking "Export"
+                }}
+              >
                 <img
                   src='https://img5.pic.in.th/file/secure-sv1/csv-file-format-extension_28842.png'
                   width='25'
                   height='25'
                   alt='CSV Icon'
+                  style={{ marginRight: '10px' }}
                 />
-                <div style={{ marginLeft: '10px' }}>
-                  <Typography variant='subtitle1'>Import</Typography>
+                <div>
+                  <Typography variant='subtitle1'>Export</Typography>
                   <Typography variant='body2' color='textSecondary'>
-                    Import CSV data.
+                    Exporting CSV data.
                   </Typography>
                 </div>
-              </label>
-            </MenuItem>
+              </MenuItem>
+            </Menu>
 
-            <MenuItem
-              onClick={() => {
-                exportToCSV(selectedRound)
-                handleMenuClose() // Ensure the menu closes after clicking "Export"
-              }}
-            >
-              <img
-                src='https://img5.pic.in.th/file/secure-sv1/csv-file-format-extension_28842.png'
-                width='25'
-                height='25'
-                alt='CSV Icon'
-                style={{ marginRight: '10px' }}
-              />
-              <div>
-                <Typography variant='subtitle1'>Export</Typography>
-                <Typography variant='body2' color='textSecondary'>
-                  Exporting CSV data.
+            <Drawer anchor='right' open={drawerOpen} onClose={handleDrawerClose}>
+              <Box sx={{ width: '40vw', padding: 2, margin: 3 }}>
+                <Typography variant='h5' sx={{ mb: 2, mt: 2 }}>
+                  Import CSV
                 </Typography>
-              </div>
-            </MenuItem>
-          </Menu>
+              </Box>
 
-          <Drawer anchor='right' open={drawerOpen} onClose={handleDrawerClose}>
-            <Box sx={{ width: '40vw', padding: 2, margin: 3 }}>
-              <Typography variant='h5' sx={{ mb: 2, mt: 2 }}>
-                Import CSV
-              </Typography>
-            </Box>
+              <Divider sx={{ borderWidth: 'px' }} />
 
-            <Divider sx={{ borderWidth: 'px' }} />
+              <Box
+                sx={{ width: '40vw', padding: 2, margin: 3 }}
+                role='presentation'
+                onClick={event => event.stopPropagation()}
+                onKeyDown={handleDrawerClose}
+              >
+                <Typography variant='body2' sx={{ mb: 2 }}>
+                  Upload a CSV or TSV file. The first row should be the headers of the table, and your headers should
+                  not include any special characters other than hyphens ( - ) or underscores ( _ ).
+                  <br />
+                  Tip: Datetime columns should be formatted as YYYY-MM-DD HH:mm:ss
+                </Typography>
 
-            <Box
-              sx={{ width: '40vw', padding: 2, margin: 3 }}
-              role='presentation'
-              onClick={event => event.stopPropagation()}
-              onKeyDown={handleDrawerClose}
-            >
-              <Typography variant='body2' sx={{ mb: 2 }}>
-                Upload a CSV or TSV file. The first row should be the headers of the table, and your headers should not
-                include any special characters other than hyphens ( - ) or underscores ( _ ).
-                <br />
-                Tip: Datetime columns should be formatted as YYYY-MM-DD HH:mm:ss
-              </Typography>
-
-              {!file ? (
-                <Grid
-                  sx={{
-                    height: '600px'
-                  }}
-                >
+                {!file ? (
+                  <Grid
+                    sx={{
+                      height: '600px'
+                    }}
+                  >
+                    <Box
+                      {...getRootProps()}
+                      sx={{
+                        border: '2px dashed #ccc',
+                        borderRadius: 1,
+                        padding: 4,
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        mb: 2,
+                        height: '150px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <input {...getInputProps()} />
+                      <Typography variant='body1'>
+                        Drag and drop, or <span style={{ color: '#3f51b5', cursor: 'pointer' }}>browse</span> your files
+                      </Typography>
+                    </Box>
+                  </Grid>
+                ) : (
                   <Box
-                    {...getRootProps()}
                     sx={{
                       border: '2px dashed #ccc',
                       borderRadius: 1,
@@ -790,261 +871,333 @@ const ResidentApprove = () => {
                       mb: 2,
                       height: '150px',
                       display: 'flex',
+                      flexDirection: 'column', // Add this line
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}
                   >
-                    <input {...getInputProps()} />
-                    <Typography variant='body1'>
-                      Drag and drop, or <span style={{ color: '#3f51b5', cursor: 'pointer' }}>browse</span> your files
+                    <Typography variant='body1'>{file.name}</Typography>
+                    <Button variant='contained' color='secondary' onClick={handleRemoveFile} sx={{ mt: 2 }}>
+                      Remove File
+                    </Button>
+                  </Box>
+                )}
+
+                {parsedData.filter(row => row.student_id !== '').length > 0 && (
+                  <Box sx={{ mt: 4, height: 'px', overflow: 'auto' }}>
+                    <Typography variant='h6' sx={{ mb: 2 }}>
+                      Preview data to be imported
                     </Typography>
-                  </Box>
-                </Grid>
-              ) : (
-                <Box
-                  sx={{
-                    border: '2px dashed #ccc',
-                    borderRadius: 1,
-                    padding: 4,
-                    textAlign: 'center',
-                    cursor: 'pointer',
-                    mb: 2,
-                    height: '150px',
-                    display: 'flex',
-                    flexDirection: 'column', // Add this line
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <Typography variant='body1'>{file.name}</Typography>
-                  <Button variant='contained' color='secondary' onClick={handleRemoveFile} sx={{ mt: 2 }}>
-                    Remove File
-                  </Button>
-                </Box>
-              )}
-
-              {parsedData.filter(row => row.student_id !== '').length > 0 && (
-                <Box sx={{ mt: 4, height: 'px', overflow: 'auto' }}>
-                  <Typography variant='h6' sx={{ mb: 2 }}>
-                    Preview data to be imported
-                  </Typography>
-                  <Box
-                    sx={{
-                      height: '400px',
-                      overflow: 'auto',
-                      border: '1px solid #ccc', // Increased border thickness
-                      padding: 2,
-                      borderRadius: 1,
-                      boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', // Added shadow
-                      backgroundColor: '#fff' // White background for the table
-                    }}
-                  >
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                      <thead>
-                        <tr>
-                          {Object.keys(parsedData[0]).map(key => (
-                            <th
-                              key={key}
-                              style={{
-                                padding: '12px 8px',
-                                borderBottom: '1px solid #ccc', // Increased border thickness
-                                borderRight: '1px solid #ccc', // Increased border thickness
-                                backgroundColor: '#f5f5f5',
-                                fontWeight: 'bold',
-                                textAlign: 'left'
-                              }}
-                            >
-                              {key}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {parsedData
-                          .filter(row => row.student_id !== '')
-                          .map((row, index) => (
-                            <tr
-                              key={index}
-                              style={{
-                                transition: 'background-color 0.3s ease',
-                                cursor: 'pointer'
-                              }}
-                              onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
-                              onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#fff')}
-                            >
-                              {Object.values(row).map((value, idx) => (
-                                <td
-                                  key={idx}
-                                  style={{
-                                    padding: '8px 8px',
-                                    borderBottom: '1px solid #eee', // Increased border thickness
-                                    borderRight: '1px solid #eee', // Increased border thickness
-                                    textAlign: 'left'
-                                  }}
-                                >
-                                  {value}
-                                </td>
-                              ))}
-                            </tr>
-                          ))}
-                      </tbody>
-                    </table>
-                  </Box>
-                </Box>
-              )}
-            </Box>
-
-            <Divider sx={{ borderWidth: '1px' }} />
-
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, mr: 2 }}>
-              <Button variant='contained' color='primary' onClick={handleDrawerClose} sx={{ mr: 2 }}>
-                Cancel
-              </Button>
-              <Button variant='contained' color='primary' onClick={() => handleImportCSV(parsedData)} sx={{ mr: 2 }}>
-                Import data
-              </Button>
-            </Box>
-          </Drawer>
-        </Grid>
-      </Box>
-      <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar
-          numSelected={selected.length}
-          selected={selected}
-          resetSelected={resetSelected}
-          handleApprove={handleApprove}
-          handleReject={handleReject}
-        />
-        <TableContainer>
-          <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={filteredUsers.length}
-            />
-            <TableBody>
-              {visibleRows.map((row, index) => {
-                const isItemSelected = isSelected(row.id)
-                const labelId = `enhanced-table-checkbox-${index}`
-
-                return (
-                  <TableRow
-                    hover
-                    onClick={event => handleClick(event, row.id)}
-                    role='checkbox'
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.id}
-                    a
-                    selected={isItemSelected}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    <TableCell padding='checkbox'>
-                      <Checkbox color='primary' checked={isItemSelected} inputProps={{ 'aria-labelledby': labelId }} />
-                    </TableCell>
-                    <TableCell component='th' id={labelId} scope='row' padding='none'>
-                      {row.Users?.student_id}
-                    </TableCell>
-                    <TableCell>
-                      {row.Users_Info?.name} {row.Users_Info?.lastname}
-                    </TableCell>
-                    <TableCell>{row.Dormitory_Building.name}</TableCell>
-                    <TableCell>{row.Dormitory_Room.room_number}</TableCell>
-                    <TableCell>{row.Dormitory_Bed.bed_number}</TableCell>
-                    <TableCell>{row.Reservation_System.round_name}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={row.status === null || row.status === '' ? 'Waiting' : row.status}
-                        color={getStatusColor(row.status)}
-                      />
-                    </TableCell>
-                    <TableCell align='left'>
-                      {tab === 'TRUE' ? (
-                        <Button
-                          variant='outlined'
-                          color='success'
-                          size='small'
-                          sx={{ minWidth: '30px' }}
-                          onClick={event => {
-                            handleApprove(selected)
-                          }}
-                        >
-                          <CheckIcon color='success' />
-                        </Button>
-                      ) : tab === 'FALSE' ? (
-                        <Button
-                          variant='outlined'
-                          color='error'
-                          size='small'
-                          sx={{ minWidth: '30px', marginRight: '10px' }}
-                          onClick={event => {
-                            handleReject(selected)
-                          }}
-                        >
-                          <CloseIcon color='error' />
-                        </Button>
-                      ) : null}
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-              {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-                  <TableCell colSpan={9} />
-                </TableRow>
-              )}
-              {visibleRows.length === 0 && (
-                <TableRow style={{ height: 100 }}>
-                  <TableCell colSpan={11}>
-                    <Paper
-                      style={{
-                        padding: '20px',
-                        width: '1350px',
-                        height: '350px',
-                        backgroundColor: 'rgba(128, 128, 128, 0.05)'
+                    <Box
+                      sx={{
+                        height: '400px',
+                        overflow: 'auto',
+                        border: '1px solid #ccc', // Increased border thickness
+                        padding: 2,
+                        borderRadius: 1,
+                        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', // Added shadow
+                        backgroundColor: '#fff' // White background for the table
                       }}
                     >
-                      <div
+                      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <thead>
+                          <tr>
+                            {Object.keys(parsedData[0]).map(key => (
+                              <th
+                                key={key}
+                                style={{
+                                  padding: '12px 8px',
+                                  borderBottom: '1px solid #ccc', // Increased border thickness
+                                  borderRight: '1px solid #ccc', // Increased border thickness
+                                  backgroundColor: '#f5f5f5',
+                                  fontWeight: 'bold',
+                                  textAlign: 'left'
+                                }}
+                              >
+                                {key}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {parsedData
+                            .filter(row => row.student_id !== '')
+                            .map((row, index) => (
+                              <tr
+                                key={index}
+                                style={{
+                                  transition: 'background-color 0.3s ease',
+                                  cursor: 'pointer'
+                                }}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#fff')}
+                              >
+                                {Object.values(row).map((value, idx) => (
+                                  <td
+                                    key={idx}
+                                    style={{
+                                      padding: '8px 8px',
+                                      borderBottom: '1px solid #eee', // Increased border thickness
+                                      borderRight: '1px solid #eee', // Increased border thickness
+                                      textAlign: 'left'
+                                    }}
+                                  >
+                                    {value}
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </Box>
+                  </Box>
+                )}
+              </Box>
+
+              <Divider sx={{ borderWidth: '1px' }} />
+
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, mr: 2 }}>
+                <Button variant='contained' color='primary' onClick={handleDrawerClose} sx={{ mr: 2 }}>
+                  Cancel
+                </Button>
+                <Button variant='contained' color='primary' onClick={() => handleImportCSV(parsedData)} sx={{ mr: 2 }}>
+                  Import data
+                </Button>
+              </Box>
+            </Drawer>
+          </Grid>
+        </Box>
+        <Paper sx={{ width: '100%', mb: 2 }}>
+          <EnhancedTableToolbar
+            numSelected={selected.length}
+            selected={selected.map(id => filteredUsers.find(user => user.id === id) || ({} as SelectedUserType))}
+            resetSelected={resetSelected}
+            handleApprove={async ids => {
+              await handleApprove(ids)
+              resetSelected()
+              setApprovedSnackbarOpen(true)
+            }}
+            handleReject={async ids => {
+              await handleReject(ids)
+              resetSelected()
+              setRejectedSnackbarOpen(true)
+            }}
+          />
+          <TableContainer>
+            <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>
+              <EnhancedTableHead
+                numSelected={selected.length}
+                order={order}
+                orderBy={orderBy}
+                onSelectAllClick={handleSelectAllClick}
+                onRequestSort={handleRequestSort}
+                rowCount={filteredUsers.length}
+              />
+              <TableBody>
+                {visibleRows.map((row, index) => {
+                  const isItemSelected = isSelected(row.id)
+                  const labelId = `enhanced-table-checkbox-${index}`
+
+                  return (
+                    <TableRow
+                      hover
+                      onClick={event => handleClick(event, row.id)}
+                      role='checkbox'
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={row.id}
+                      a
+                      selected={isItemSelected}
+                      sx={{ cursor: 'pointer' }}
+                    >
+                      <TableCell padding='checkbox'>
+                        <Checkbox
+                          color='primary'
+                          checked={isItemSelected}
+                          inputProps={{ 'aria-labelledby': labelId }}
+                        />
+                      </TableCell>
+                      <TableCell component='th' id={labelId} scope='row' padding='none'>
+                        {row.Users?.student_id}
+                      </TableCell>
+                      <TableCell>
+                        {row.Users_Info?.name} {row.Users_Info?.lastname}
+                      </TableCell>
+                      <TableCell>{row.Dormitory_Building.name}</TableCell>
+                      <TableCell>{row.Dormitory_Room.room_number}</TableCell>
+                      <TableCell>{row.Dormitory_Bed.bed_number}</TableCell>
+                      <TableCell>{row.Reservation_System.round_name}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={row.status === null || row.status === '' ? 'Waiting' : row.status}
+                          color={getStatusColor(row.status)}
+                        />
+                      </TableCell>
+                      <TableCell align='left'>
+                        {tab === 'TRUE' ? (
+                          <>
+                            <IconButton
+                              onClick={async event => {
+                                event.stopPropagation()
+                                setSelected([row.id])
+                                await handleApprove([row.id])
+                                resetSelected()
+                                setApprovedSnackbarOpen(true)
+                              }}
+                            >
+                              <CheckIcon />
+                            </IconButton>
+                          </>
+                        ) : null}
+
+                        {tab === 'FALSE' ? (
+                          <IconButton
+                            onClick={async event => {
+                              event.stopPropagation()
+                              setSelected([row.id])
+                              await handleReject([row.id])
+                              resetSelected()
+                              setRejectedSnackbarOpen(true)
+                            }}
+                          >
+                            <CloseIcon />
+                          </IconButton>
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+                {emptyRows > 0 && (
+                  <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                    <TableCell colSpan={9} />
+                  </TableRow>
+                )}
+                {visibleRows.length === 0 && (
+                  <TableRow style={{ height: 100 }}>
+                    <TableCell colSpan={11}>
+                      <Paper
                         style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          height: '100%'
+                          padding: '20px',
+                          width: '1350px',
+                          height: '350px',
+                          backgroundColor: 'rgba(128, 128, 128, 0.05)'
                         }}
                       >
-                        <img
-                          src='https://img5.pic.in.th/file/secure-sv1/erase_1981540.png'
-                          alt='No Data'
-                          width='100'
-                          height='100'
-                          style={{ marginBottom: '10px' }}
-                        />
-                        <Typography variant='body2'>Data Not Found</Typography>
-                      </div>
-                    </Paper>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '100%'
+                          }}
+                        >
+                          <img
+                            src='https://img5.pic.in.th/file/secure-sv1/erase_1981540.png'
+                            alt='No Data'
+                            width='100'
+                            height='100'
+                            style={{ marginBottom: '10px' }}
+                          />
+                          <Typography variant='body2'>Data Not Found</Typography>
+                        </div>
+                      </Paper>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
 
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component='div'
-          count={filteredUsers.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
-      {/* <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label='Dense' /> */}
-    </Box>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component='div'
+            count={filteredUsers.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>
+        {/* <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label='Dense' /> */}
+      </Box>
+      <Backdrop open={loading} style={{ color: '#fff', zIndex: 1500 }}>
+        <CircularProgress color='inherit' />
+      </Backdrop>
+
+      <Snackbar
+        open={exportSnackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleCloseExportSnackbar}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {'Exporting CSV Successfully!'}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleCloseExportSnackbar}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.success }}
+      />
+      <Snackbar
+        open={importSnackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleCloseImportSnackbar}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {'Importing CSV Successfully!'}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleCloseImportSnackbar}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.success }}
+      />
+      <Snackbar
+        open={approvedSnackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleCloseApprovedSnackbar}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {'Approved Successfully!'}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleCloseApprovedSnackbar}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.success }}
+      />
+      <Snackbar
+        open={rejectedSnackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleCloseRejectedSnackbar}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {'Rejected Successfully!'}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleCloseRejectedSnackbar}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.error }}
+      />
+    </>
   )
 }
 

@@ -26,6 +26,8 @@ import ListItemText from '@mui/material/ListItemText'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import PersonIcon from '@mui/icons-material/Person'
 import Grid from '@mui/material/Grid'
+import Backdrop from '@mui/material/Backdrop'
+import CircularProgress from '@mui/material/CircularProgress'
 
 interface User {
   id: number
@@ -50,12 +52,21 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction='up' ref={ref} {...props} />
 })
 
-export default function EditUserForm({ id, student_id }: { id: number; student_id: string }) {
+export default function EditUserForm({
+  id,
+  student_id,
+  onUpdateSuccess
+}: {
+  id: number
+  student_id: string
+  onUpdateSuccess: () => void
+}) {
   const [users, setUsers] = React.useState([])
   const [open, setOpen] = React.useState(false)
   const [newUsers, setNewUsers] = React.useState([])
   const [updateUsers, setUpdateUsers] = React.useState([])
   const [filteredNewUsers, setFilteredNewUsers] = React.useState(null)
+  const [loading, setLoading] = React.useState(false)
 
   console.log('id', id)
   console.log('student_id', student_id)
@@ -112,6 +123,7 @@ export default function EditUserForm({ id, student_id }: { id: number; student_i
       return filteredUser
     })
     setFilteredNewUsers(filteredUsers)
+    setLoading(true)
 
     try {
       const response = await fetch('/api/admin/user/userForm/update/updateUserForm', {
@@ -141,8 +153,9 @@ export default function EditUserForm({ id, student_id }: { id: number; student_i
       } else {
         console.error('Response was not successful')
       }
-
+      onUpdateSuccess()
       handleClose()
+      setTimeout(() => setLoading(false), 1000)
 
       // Send email after successful update
       const emailResponse = await fetch(`/api/admin/user/userForm/nodemailer/nodemailer`, {
@@ -382,87 +395,92 @@ export default function EditUserForm({ id, student_id }: { id: number; student_i
   }
 
   return (
-    <div>
-      <Tooltip title='Edit User'>
-        <IconButton onClick={handleClickOpen}>
-          <TuneIcon />
-        </IconButton>
-      </Tooltip>
-      <Dialog
-        open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        aria-describedby='alert-dialog-slide-description'
-      >
-        <DialogTitle>Edit User Information</DialogTitle>
-        <DialogContent>
-          {/* <DialogContentText id='alert-dialog-slide-description'>Modify the user information below:</DialogContentText> */}
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={12}>
-              <Card>
-                <CardContent>
-                  <Typography variant='h6'>Current User Info</Typography>
-                  <List>
-                    {users.length > 0 ? (
-                      users.map((user, index) => (
+    <>
+      <div>
+        <Tooltip title='Edit User'>
+          <IconButton onClick={handleClickOpen}>
+            <TuneIcon />
+          </IconButton>
+        </Tooltip>
+        <Dialog
+          open={open}
+          TransitionComponent={Transition}
+          keepMounted
+          onClose={handleClose}
+          aria-describedby='alert-dialog-slide-description'
+        >
+          <DialogTitle>Edit User Information</DialogTitle>
+          <DialogContent>
+            {/* <DialogContentText id='alert-dialog-slide-description'>Modify the user information below:</DialogContentText> */}
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={12}>
+                <Card>
+                  <CardContent>
+                    <Typography variant='h6'>Current User Info</Typography>
+                    <List>
+                      {users.length > 0 ? (
+                        users.map((user, index) => (
+                          <ListItem key={index}>
+                            <ListItemIcon>
+                              <PersonIcon />
+                            </ListItemIcon>
+                            <ListItemText
+                              primary={`${user.name} ${user.lastname} (${user.Users.student_id})`}
+                              secondary={Object.entries(filterUserData(user, newUsers[0])).map(([key, value]) => (
+                                <Typography key={key} variant='body2'>{`Current ${key}: ${value}`}</Typography>
+                              ))}
+                            />
+                          </ListItem>
+                        ))
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <img
+                            src='https://img5.pic.in.th/file/secure-sv1/cancel_190406.png'
+                            alt='Cancel Icon'
+                            style={{ marginRight: '10px', width: '100px', height: '100px' }}
+                          />
+                          <Typography variant='h6'>Student ID does not exist in the system</Typography>
+                        </div>
+                      )}
+                    </List>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <Card>
+                  <CardContent>
+                    <Typography variant='h6'>New User Info</Typography>
+                    <List>
+                      {newUsers.map((user, index) => (
                         <ListItem key={index}>
                           <ListItemIcon>
                             <PersonIcon />
                           </ListItemIcon>
                           <ListItemText
-                            primary={`${user.name} ${user.lastname} (${user.Users.student_id})`}
-                            secondary={Object.entries(filterUserData(user, newUsers[0])).map(([key, value]) => (
-                              <Typography key={key} variant='body2'>{`Current ${key}: ${value}`}</Typography>
-                            ))}
+                            secondary={Object.entries(user)
+                              .filter(([key]) => !['Timestamp', 'email', 'username', 'StudentID'].includes(key))
+                              .map(([key, value]) => (
+                                <Typography key={key} variant='body2'>{`New ${key}: ${value}`}</Typography>
+                              ))}
                           />
                         </ListItem>
-                      ))
-                    ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <img
-                          src='https://img5.pic.in.th/file/secure-sv1/cancel_190406.png'
-                          alt='Cancel Icon'
-                          style={{ marginRight: '10px', width: '100px', height: '100px' }}
-                        />
-                        <Typography variant='h6'>Student ID does not exist in the system</Typography>
-                      </div>
-                    )}
-                  </List>
-                </CardContent>
-              </Card>
+                      ))}
+                    </List>
+                  </CardContent>
+                </Card>
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={12}>
-              <Card>
-                <CardContent>
-                  <Typography variant='h6'>New User Info</Typography>
-                  <List>
-                    {newUsers.map((user, index) => (
-                      <ListItem key={index}>
-                        <ListItemIcon>
-                          <PersonIcon />
-                        </ListItemIcon>
-                        <ListItemText
-                          secondary={Object.entries(user)
-                            .filter(([key]) => !['Timestamp', 'email', 'username', 'StudentID'].includes(key))
-                            .map(([key, value]) => (
-                              <Typography key={key} variant='body2'>{`New ${key}: ${value}`}</Typography>
-                            ))}
-                        />
-                      </ListItem>
-                    ))}
-                  </List>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDelete}>Delete</Button>
-          <Button onClick={handleUpdate}>Update</Button>
-          <Button onClick={handleClose}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleDelete}>Delete</Button>
+            <Button onClick={handleUpdate}>Update</Button>
+            <Button onClick={handleClose}>Cancel</Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+      <Backdrop open={loading} style={{ color: '#fff', zIndex: 1500 }}>
+        <CircularProgress color='inherit' />
+      </Backdrop>
+    </>
   )
 }
