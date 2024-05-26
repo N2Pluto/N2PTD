@@ -29,6 +29,7 @@ const handler = async (req: any, res: any) => {
         .from('Dormitory_Bed')
         .select('bed_number,bed_id,bed_status')
         .eq('room_id', room_id)
+        .eq('bed_status', true)
         .order('bed_id', { ascending: true })
 
       rooms.push({
