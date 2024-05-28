@@ -6,6 +6,7 @@ import Grid from '@mui/material/Grid'
 import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
 
 import LayoutAuth from 'src/layouts/LayoutAuth'
+import RenewalChooseForm from 'src/views/admin/renewalDormitory/renewalChooseForm'
 import CardImgTop from 'src/views/cards/CardImgTop'
 import CardInfluencer from 'src/views/cards/CardInfluencer'
 import FacebookPost from 'src/views/dashboardhome/component/facebook'
@@ -19,8 +20,11 @@ const Dashboard = () => {
   return (
     <LayoutAuth>
       <Grid container spacing={6}>
+        <Grid item xs={12} sm={12} md={12}>
+          <RenewalChooseForm />
+        </Grid>
         <Grid item xs={12} sx={{ paddingBottom: 4 }}>
-          <Typography variant='h5'>Home</Typography>
+          <Typography variant='h5'>Home </Typography>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <CardUserStatistics />

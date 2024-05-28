@@ -1,6 +1,6 @@
 import supabase from 'src/libs/supabase'
 
-async function handler(req, res) {
+async function handler(req : any, res : any) {
   const { user_id } = req.body
 
   const { data: residentData, error: residentError } = await supabase
@@ -10,7 +10,7 @@ async function handler(req, res) {
 
   if (residentError || !residentData || residentData.length === 0) {
     res.status(404).json({ error: 'User not found in Dormitory_Resident' })
-    // console.error(residentError || 'User not found')
+
     return
   }
 
@@ -22,7 +22,7 @@ async function handler(req, res) {
 
   if (error || !data || data.length === 0) {
     res.status(500).json({ error: 'No data found or error occurred' })
-    // console.error(error || 'No data found')
+
     return
   }
 

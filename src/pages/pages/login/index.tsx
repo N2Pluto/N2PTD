@@ -134,7 +134,7 @@ const LoginPage = () => {
 
         //check role
         if (data?.user.role === 'admin') {
-          router.push('/admin/userControl')
+          router.push('/admin/home')
         } else if (data?.user.role === 'user') {
           if (!userInfoData?.name) {
             router.push('/pages/newlogin/personality')

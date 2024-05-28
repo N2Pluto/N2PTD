@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
+import React, { useState, useEffect, Fragment } from 'react'
 import Card from '@mui/material/Card'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -16,9 +15,14 @@ import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import { userStore } from 'src/stores/userStore'
+import { Avatar, Badge } from '@mui/material'
+
+import PriorityHighIcon from '@mui/icons-material/PriorityHigh'
+import BellOutline from 'mdi-material-ui/BellOutline'
+import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
+import ErrorIcon from '@mui/icons-material/Error'
 
 const RenewalChooseForm = () => {
-  const router = useRouter()
   const [userRenewal, setUserRenewal] = useState('')
   const [formData, setFormData] = useState(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -128,19 +132,45 @@ const RenewalChooseForm = () => {
   const renderButton = () => {
     if (formData && formData.data && formData.data.length > 0) {
       return (
-        <Box textAlign='center' sx={{ margin: 2 }}>
-          <Button variant='contained' color='primary' onClick={toggleDrawer(true)}>
-            Open Form
-          </Button>
-        </Box>
+        <Card>
+          <CardContent
+            sx={{
+              display: 'flex',
+              textAlign: 'center',
+              alignItems: 'center',
+              flexDirection: 'column',
+              padding: theme => `${theme.spacing(9.75, 5, 9.25)} !important`
+            }}
+          >
+            <Avatar
+              sx={{ width: 50, height: 50, marginBottom: 2.25, color: 'common.white', backgroundColor: 'primary.main' }}
+            >
+              <PriorityHighIcon sx={{ fontSize: '2rem' }} />
+            </Avatar>
+            <Typography variant='h6' sx={{ marginBottom: 2.75 }}>
+              Very important
+            </Typography>
+            <Typography variant='body2' sx={{ marginBottom: 6 }}>
+              every semester A stay-on questionnaire will be filled out for ease of use. Please respond within 15 days.
+            </Typography>
+            <Button
+              variant='contained'
+              sx={{ padding: theme => theme.spacing(1.75, 5.5) }}
+              onClick={toggleDrawer(true)}
+            >
+              OPEN FORM
+            </Button>
+          </CardContent>
+        </Card>
       )
     }
+
     return null
   }
 
   return (
     <>
-      {!userExistsInRenewalDormitory && <Card>{renderButton()}</Card>}
+      {!userExistsInRenewalDormitory && <>{renderButton()}</>}
 
       <Drawer
         anchor='bottom'

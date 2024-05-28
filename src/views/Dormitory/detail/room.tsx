@@ -37,7 +37,6 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-  { id: 'DETAILS', label: 'DETAILS', minWidth: 30 },
   { id: 'room', label: 'room', minWidth: 30, align: 'center' },
   { id: 'code', label: 'bed capacity', minWidth: 150, align: 'center' },
   {
@@ -45,13 +44,6 @@ const columns: readonly Column[] = [
     label: 'bed status',
     minWidth: 170,
     align: 'center'
-  },
-  {
-    id: 'Viewdetails',
-    label: 'View details',
-    minWidth: 170,
-    align: 'center',
-    format: (value: number) => value.toFixed(2)
   }
 ]
 
@@ -152,7 +144,7 @@ const ReservationRoomDetails = () => {
     // const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 10000)
 
     // return () => clearInterval(intervalId)
-    
+
   }, [])
 
   console.log('sdasdad:', dormitoryRoom)
@@ -310,11 +302,6 @@ const ReservationRoomDetails = () => {
               {dormitoryRoom.map(room => (
                 <React.Fragment key={room.room_id}>
                   <TableRow hover role='checkbox' tabIndex={-1}>
-                    <TableCell>
-                      <IconButton aria-label='expand row' size='small' onClick={() => handleClick(room.room_id)}>
-                        {open[room.room_id] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                      </IconButton>
-                    </TableCell>
                     <TableCell align='center'>{room.room_number}</TableCell>
                     <TableCell align='center'>
                       {Array.from({ length: room.bed_available }, (_, index) => (
@@ -330,89 +317,10 @@ const ReservationRoomDetails = () => {
                       ))}
                     </TableCell>
                     <TableCell align='center'>{room.status ? <CheckIcon /> : <CloseIcon color='primary' />}</TableCell>
-                    <TableCell align='center'>
-                      <Box>
-                        {room.status ? (
-                          <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
-                            Details
-                          </Button>
-                        ) : (
-                          <Button onClick={() => handleReservation(room.room_id)} variant='contained' color='error'>
-                            Details
-                          </Button>
-                        )}
-                      </Box>
-                    </TableCell>
+
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                      <Collapse in={open[room.room_id]} timeout='auto' unmountOnExit>
-                        {' '}
-                        <CardContent sx={{ margin: 0 }}>
-                          {(reservationData.get(room.room_id) || []).map((reservation, index) => (
-                            <Card sx={{ margin: 5 }} key={index}>
-                              <CardContent>
-                                <Typography variant='h6' gutterBottom component='div'>
-                                  {`BED ${index + 1}:`}
-                                </Typography>
-                                <Grid container spacing={6}>
-                                  <Grid item xs={12}>
-                                    <Box display='flex' alignItems='center'>
-                                      <img
-                                        src='https://img5.pic.in.th/file/secure-sv1/school_2602414.png'
-                                        alt='School Icon'
-                                        style={{ width: '24px', height: '24px' }}
-                                      />
-                                      <Typography variant='body1'>: {reservation.Users_Info?.school}</Typography>
-                                    </Box>
-                                    <Box display='flex' alignItems='center'>
-                                      <img
-                                        src='https://img5.pic.in.th/file/secure-sv1/graduate_401672.png'
-                                        alt='Major Icon'
-                                        style={{ width: '24px', height: '24px' }}
-                                      />
-                                      <Typography variant='body1'>: {reservation.Users_Info?.major}</Typography>
-                                    </Box>
-                                    <Box display='flex' alignItems='center'>
-                                      <img
-                                        src='https://img5.pic.in.th/file/secure-sv1/religion_9311967.png'
-                                        alt='Religion Icon'
-                                        style={{ width: '24px', height: '24px' }}
-                                      />
-                                      <Typography variant='body1'>: {reservation.Users_Info?.religion}</Typography>
-                                    </Box>
-                                    <Box display='flex' alignItems='center'>
-                                      <img
-                                        src='https://img5.pic.in.th/file/secure-sv1/time-management_2027497.png'
-                                        alt='Activity Icon'
-                                        style={{ width: '24px', height: '24px' }}
-                                      />
-                                      <Typography variant='body1'>: {reservation.Users_Req?.activity}</Typography>
-                                    </Box>
-                                    <Box display='flex' alignItems='center'>
-                                      <img
-                                        src='https://img5.pic.in.th/file/secure-sv1/flag_1452046.png'
-                                        alt='Redflag Icon'
-                                        style={{ width: '24px', height: '24px' }}
-                                      />
-                                      <Typography variant='body1'>: {reservation.Users_Req?.filter_redflag}</Typography>
-                                    </Box>
-                                    <Box display='flex' alignItems='center'>
-                                      <img
-                                        src='https://img5.pic.in.th/file/secure-sv1/bed-time_12178656.png'
-                                        alt='Sleep Icon'
-                                        style={{ width: '24px', height: '24px' }}
-                                      />
-                                      <Typography variant='body1'>: {reservation.Users_Req?.sleep}</Typography>
-                                    </Box>
-                                  </Grid>
-                                </Grid>
-                              </CardContent>
-                            </Card>
-                          ))}
-                        </CardContent>
-                      </Collapse>
-                    </TableCell>
+
                   </TableRow>
                 </React.Fragment>
               ))}

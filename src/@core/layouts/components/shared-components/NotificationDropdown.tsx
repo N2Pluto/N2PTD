@@ -12,14 +12,19 @@ import MuiMenu, { MenuProps } from '@mui/material/Menu'
 import MuiAvatar, { AvatarProps } from '@mui/material/Avatar'
 import MuiMenuItem, { MenuItemProps } from '@mui/material/MenuItem'
 import Typography, { TypographyProps } from '@mui/material/Typography'
+import Badge from '@mui/material/Badge'
 
 // ** Icons Imports
 import BellOutline from 'mdi-material-ui/BellOutline'
-import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
+import ChangeCircleIcon from '@mui/icons-material/ChangeCircle'
+import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings'
 
 // ** Third Party Components
 import PerfectScrollbarComponent from 'react-perfect-scrollbar'
-import { userStore } from 'src/stores/userStore'
+
+import router from 'next/router'
+import RenewalChooseForm from 'src/views/admin/renewalDormitory/renewalChooseForm'
 
 // ** Styled Menu component
 const Menu = styled(MuiMenu)<MenuProps>(({ theme }) => ({
@@ -82,11 +87,11 @@ const MenuItemSubtitle = styled(Typography)<TypographyProps>({
 })
 
 const NotificationDropdown = () => {
-
   // ** States
   const [anchorEl, setAnchorEl] = useState<(EventTarget & Element) | null>(null)
-  const [roleFilter, setRoleFilter] = useState<string>('')
-  const { user } = userStore()
+  const [userManagement, setUserManagement] = useState<any[]>([])
+  const [changeRoom, setChangeRoom] = useState<any[]>([])
+  const [transferRoom, setTransferRoom] = useState<any[]>([])
 
   // ** Hook
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))
@@ -97,6 +102,10 @@ const NotificationDropdown = () => {
 
   const handleDropdownClose = () => {
     setAnchorEl(null)
+  }
+
+  const handleRouter1 = () => {
+    RenewalChooseForm()
   }
 
   const ScrollWrapper = ({ children }: { children: ReactNode }) => {
@@ -110,36 +119,68 @@ const NotificationDropdown = () => {
   }
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/profile/fetchUserProfile', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ user_id: user.user_id })
-        })
-        const data = await response.json()
-
-        if (data.userData.role === 'admin') {
-          setRoleFilter('admin')
-        } else if (data.userData.role === 'user') {
-          setRoleFilter('user')
+        const { data } = await fetch(`/api/admin/user/userForm/read/fetch_form`).then(res => res.json())
+        if (data) {
+          setUserManagement(data) // Corrected line
+        } else {
+          console.error('No data returned from API')
         }
       } catch (error) {
-        console.error('Error fetching user profile:', error)
+        console.error('Error fetching user data:', error)
       }
     }
 
-    if (user?.user_id) {
-      fetchUserProfile()
+    fetchData()
+  }, [])
+  console.log('test', userManagement)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch(
+        '/api/admin/dormitoryResident/dormitoryResidentForm/changeRoomForm/read/fetch_changeRoom'
+      )
+      const result = await response.json()
+      const mappedData = result.data.map((item: any) => ({
+        id: item.id,
+        status: item.status
+      }))
+      setChangeRoom(mappedData)
     }
-  }, [user])
+
+    fetchData()
+  }, [])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch(
+        '/api/admin/dormitoryResident/dormitoryResidentForm/transferForm/read/fetch_transferRoom'
+      )
+      const result = await response.json()
+      const mappedData = result.data.map((item: any) => ({
+        id: item.id,
+        status: item.status
+      }))
+      setTransferRoom(mappedData) // Set the rows to the mapped data
+    }
+
+    fetchData()
+  }, [])
+
+  const userManagementForm = userManagement.filter(r => r.status === '').length
+  const changeRoomForm = changeRoom.filter(r => r.status === '').length
+  const transferRoomForm = transferRoom.filter(r => r.status === '').length
+  const all = userManagementForm + changeRoomForm + transferRoomForm
+  console.log('userManagementForm', userManagementForm)
+  console.log('changeRoomForm', changeRoomForm)
 
   return (
     <Fragment>
       <IconButton color='inherit' aria-haspopup='true' onClick={handleDropdownOpen} aria-controls='customized-menu'>
-        <BellOutline />
+        <Badge badgeContent={all > 0 ? all : 0} color='primary'>
+          <BellOutline />
+        </Badge>
       </IconButton>
       <Menu
         anchorEl={anchorEl}
@@ -151,37 +192,48 @@ const NotificationDropdown = () => {
         <MenuItem disableRipple>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
             <Typography sx={{ fontWeight: 600 }}>Notifications</Typography>
-            <Chip
-              size='small'
-              label='1 New'
-              color='primary'
-              sx={{ height: 20, fontSize: '0.75rem', fontWeight: 500, borderRadius: '10px' }}
-            />
+            {all > 0 ? (
+              <Chip
+                size='small'
+                label={all + ' New'}
+                color='primary'
+                sx={{ height: 20, fontSize: '0.75rem', fontWeight: 500, borderRadius: '10px' }}
+              />
+            ) : (
+              ''
+            )}
           </Box>
         </MenuItem>
         <ScrollWrapper>
-          <MenuItem onClick={handleDropdownClose}>
-            <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-              <Avatar alt='Flora' src='/images/avatars/4.png' />
-              <Box sx={{ mx: 4, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
-                <MenuItemTitle>Congratulation Flora! 🎉</MenuItemTitle>
-                <MenuItemSubtitle variant='body2'>........</MenuItemSubtitle>
+
+          {changeRoomForm > 0 ? (
+            <MenuItem onClick={handleRouter1}>
+              <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
+                <ChangeCircleIcon />
+                <Box sx={{ mx: 4, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
+                  <MenuItemTitle>แบบฟอร์มย้ายห้อง</MenuItemTitle>
+                </Box>
+                {changeRoomForm > 0 ? (
+                  <Chip
+                    size='small'
+                    label={changeRoomForm}
+                    color='primary'
+                    sx={{ height: 20, fontSize: '0.75rem', fontWeight: 500, borderRadius: '10px' }}
+                  />
+                ) : (
+                  <Typography variant='caption' sx={{ color: 'red' }}></Typography>
+                )}
               </Box>
-              <Typography variant='caption' sx={{ color: 'text.disabled' }}>
-                Today
-              </Typography>
-            </Box>
-          </MenuItem>
+            </MenuItem>
+          ) : (
+            ''
+          )}
 
         </ScrollWrapper>
         <MenuItem
           disableRipple
           sx={{ py: 3.5, borderBottom: 0, borderTop: theme => `1px solid ${theme.palette.divider}` }}
-        >
-          <Button fullWidth variant='contained' onClick={handleDropdownClose}>
-            Read All Notifications
-          </Button>
-        </MenuItem>
+        ></MenuItem>
       </Menu>
     </Fragment>
   )
