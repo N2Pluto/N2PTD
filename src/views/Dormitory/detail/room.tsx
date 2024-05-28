@@ -184,7 +184,7 @@ const ReservationRoomDetails = () => {
 
       <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
         <Card sx={{ pb: 5 }}>
-          <CardMedia sx={{ height: '14.5625rem' }} image={dormitoryBuilding?.images_url} />
+          {/* <CardMedia sx={{ height: '14.5625rem' }} image={dormitoryBuilding?.images_url} /> */}
           <CardContent>
             <Typography variant='h4' sx={{ marginBottom: 2 }}>
               {dormitoryBuilding?.name}
