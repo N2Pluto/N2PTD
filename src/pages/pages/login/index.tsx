@@ -139,8 +139,7 @@ const LoginPage = () => {
           if (!userInfoData?.name) {
             router.push('/pages/newlogin/personality')
           } else {
-            console.log('data:', data)
-            router.push('/profile')
+            router.push('/dashboard')
           }
         }
       } else {
@@ -162,7 +161,7 @@ const LoginPage = () => {
         setUser(response.data)
 
         if (response.data.accessToken === null) {
-          router.push('/profile')
+          router.push('/dashboard')
         } else {
           router.push('/dashboard')
         }
