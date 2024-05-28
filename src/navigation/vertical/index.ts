@@ -19,6 +19,8 @@ import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 import DoneAllOutlinedIcon from '@mui/icons-material/DoneAllOutlined';
 import DnsOutlinedIcon from '@mui/icons-material/DnsOutlined';
 import FeedOutlinedIcon from '@mui/icons-material/FeedOutlined';
+import AutorenewIcon from '@mui/icons-material/Autorenew'
+import ChecklistIcon from '@mui/icons-material/Checklist'
 
 // ** Type import
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -85,18 +87,38 @@ const useNavigation = (): VerticalNavItemsType => {
         sectionTitle: 'การอนุมัติ'
       },
       {
-        title: 'อนุมัติผู้อยู่อาศัย',
-        icon: DoneAllOutlinedIcon,
-        path: '/admin/residentApprove'
-      },
-      {
         title: 'อนุมัติการจอง ',
         icon: CheckBoxOutlinedIcon,
         path: '/admin/reservationApprove'
       },
       {
+        title: 'อนุมัติผู้อยู่อาศัย',
+        icon: DoneAllOutlinedIcon,
+        path: '/admin/residentApprove'
+      },
+      {
+        title: 'อนุมัติผู้อยู่ต่อ',
+        icon: ChecklistIcon,
+        path: '/admin/renewalSystem'
+      },
+
+      {
+        sectionTitle: 'การสร้าง'
+      },
+      {
+        title: 'สร้างรอบการจอง',
+        icon: WifiProtectedSetupIcon,
+        path: '/admin/reservationSystem'
+      },
+      {
+        title: 'สร้างฟอร์มการอยู่ต่อ',
+        icon: AutorenewIcon,
+        path: '/admin/renewalDormitory'
+      },
+      {
         sectionTitle: 'ควบคุม'
       },
+
       {
         title: 'การควบคุมตึก',
         icon: CorporateFareOutlinedIcon,
@@ -107,17 +129,12 @@ const useNavigation = (): VerticalNavItemsType => {
         icon: DomainAddOutlinedIcon,
         path: '/admin/building'
       },
-      {
-        title: 'รอบการจอง',
-        icon: WifiProtectedSetupIcon,
-        path: '/admin/reservationSystem'
-      },
 
-      {
-        title: 'เปลี่ยน Role',
-        icon: PublishedWithChangesIcon,
-        path: '/admin/userControl'
-      },
+      // {
+      //   title: 'เปลี่ยน Role',
+      //   icon: PublishedWithChangesIcon,
+      //   path: '/admin/userControl'
+      // },
 
       {
         sectionTitle: 'แบบฟอร์ม'
