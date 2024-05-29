@@ -109,6 +109,23 @@ const RenewalFormEdit = ({ id }) => {
     }
   }
 
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`/api/admin/renewalDormitory/deleteByID/${id}`, {
+        method: 'DELETE'
+      })
+      const result = await response.json()
+      if (response.ok) {
+        console.log('Delete successful:', result)
+        onClose()
+      } else {
+        console.error('Failed to delete data:', result.error)
+      }
+    } catch (error) {
+      console.error('Error deleting data:', error)
+    }
+  }
+
   return (
     <>
       <Button
@@ -230,6 +247,11 @@ const RenewalFormEdit = ({ id }) => {
         <Divider />
         <Box sx={{ padding: 3 }}>
           <Grid container spacing={4} alignItems='center' justifyContent='flex-end'>
+            <Grid item xs={3}>
+              <Button variant='contained' color='error' fullWidth onClick={handleDelete} sx={{ ml: -35 }}>
+                Delete
+              </Button>
+            </Grid>
             <Grid item xs={3}>
               <Button variant='contained' color='primary' fullWidth onClick={onClose} sx={{ ml: -1 }}>
                 Cancel

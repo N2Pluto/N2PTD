@@ -738,24 +738,23 @@ const ReservationApprove = () => {
                               onClick={async event => {
                                 event.stopPropagation()
                                 setSelected([row.id])
-                                await handleReject([row.id])
-                                resetSelected()
-                                setOpenReject(true)
-                              }}
-                            >
-                              <CloseIcon />
-                            </IconButton>
-
-                            <IconButton
-                              onClick={async event => {
-                                event.stopPropagation()
-                                setSelected([row.id])
                                 await handleApprove([row.id])
                                 resetSelected()
                                 setOpenApprove(true)
                               }}
                             >
                               <CheckIcon />
+                            </IconButton>
+                            <IconButton
+                              onClick={async event => {
+                                event.stopPropagation()
+                                setSelected([row.id])
+                                await handleReject([row.id])
+                                resetSelected()
+                                setOpenReject(true)
+                              }}
+                            >
+                              <CloseIcon />
                             </IconButton>
                           </>
                         )}

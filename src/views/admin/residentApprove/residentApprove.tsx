@@ -992,6 +992,7 @@ const ResidentApprove = () => {
                 onSelectAllClick={handleSelectAllClick}
                 onRequestSort={handleRequestSort}
                 rowCount={filteredUsers.length}
+                tab={tab}
               />
               <TableBody>
                 {visibleRows.map((row, index) => {

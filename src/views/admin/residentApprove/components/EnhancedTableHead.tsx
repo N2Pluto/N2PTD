@@ -27,21 +27,26 @@ interface EnhancedTableProps {
   order: 'asc' | 'desc'
   orderBy: string
   rowCount: number
+  tab: string // Add this line
 }
 
-const headCells: readonly { id: keyof User; numeric: boolean; disablePadding: boolean; label: string }[] = [
-  { id: 'id', numeric: false, disablePadding: true, label: 'Student ID' },
-  { id: 'user_id', numeric: false, disablePadding: false, label: 'User Name' },
-  { id: 'dorm_id', numeric: false, disablePadding: false, label: 'Dormitory' },
-  { id: 'room_id', numeric: false, disablePadding: true, label: 'Room No. ' },
-  { id: 'bed_id', numeric: false, disablePadding: true, label: 'Bed No.' },
-  { id: 'round_id', numeric: false, disablePadding: false, label: 'Round Name' },
-  { id: 'status', numeric: false, disablePadding: false, label: 'Status' },
-  { numeric: false, disablePadding: false, label: 'APPROVEX' }
-]
-
 export const EnhancedTableHead = (props: EnhancedTableProps) => {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props
+  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, tab } = props
+
+  let headCells: { id: keyof User; numeric: boolean; disablePadding: boolean; label: string }[] = [
+    { id: 'id', numeric: false, disablePadding: true, label: 'Student ID' },
+    { id: 'user_id', numeric: false, disablePadding: false, label: 'User Name' },
+    { id: 'dorm_id', numeric: false, disablePadding: false, label: 'Dormitory' },
+    { id: 'room_id', numeric: false, disablePadding: true, label: 'Room No. ' },
+    { id: 'bed_id', numeric: false, disablePadding: true, label: 'Bed No.' },
+    { id: 'round_id', numeric: false, disablePadding: false, label: 'Round Name' },
+    { id: 'status', numeric: false, disablePadding: false, label: 'Status' }
+  ]
+
+  if (tab !== 'Waiting' && tab !== 'SUCCESS') {
+    headCells.push({ id: 'approve', numeric: false, disablePadding: false, label: 'APPROVE' })
+  }
+
   const createSortHandler = (property: keyof User) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property)
   }
