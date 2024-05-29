@@ -1,26 +1,18 @@
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import TextField from '@mui/material/TextField'
-import Dialog from '@mui/material/Dialog'
+import Drawer from '@mui/material/Drawer'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
-import DialogTitle from '@mui/material/DialogTitle'
 import Button from '@mui/material/Button'
-import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
-import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
-import CardHeader from '@mui/material/CardHeader'
 import InputLabel from '@mui/material/InputLabel'
-import IconButton from '@mui/material/IconButton'
-import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
-import CardActions from '@mui/material/CardActions'
 import FormControl from '@mui/material/FormControl'
-import OutlinedInput from '@mui/material/OutlinedInput'
-import InputAdornment from '@mui/material/InputAdornment'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
+import CircularProgress from '@mui/material/CircularProgress'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
 
 interface ChangeRoomProps {
   open: boolean
@@ -32,13 +24,14 @@ interface ChangeRoomProps {
 
 export default function ChangeRoom({ open, onClose, id, resetSelected, onOpenSnackbar }: ChangeRoomProps) {
   const [data, setData] = useState(null)
-  const [newData, setNewData] = useState(null)
+  const [newData, setNewData] = useState<any[]>([])
   const [building, setBuilding] = useState(null)
   const [room, setRoom] = useState(null)
   const [bed, setBed] = useState(null)
   const [newBuilding, setNewBuilding] = useState(null)
   const [newRoom, setNewRoom] = useState(null)
   const [newBed, setNewBed] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,16 +51,24 @@ export default function ChangeRoom({ open, onClose, id, resetSelected, onOpenSna
   }, [id])
 
   useEffect(() => {
+    let isCancelled = false
     const fetchDormitoryData = async () => {
+      setLoading(true)
       const res = await fetch(`/api/admin/dormitoryResident/read/fetchDormitoryData`)
       const data = await res.json()
-      setNewData(data.result)
+
+      if (!isCancelled) {
+        setNewData(data.result)
+        setLoading(false)
+      }
     }
 
     fetchDormitoryData()
-  }, [])
 
-  console.log('newData:', newData)
+    return () => {
+      isCancelled = true
+    }
+  }, [])
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -116,62 +117,75 @@ export default function ChangeRoom({ open, onClose, id, resetSelected, onOpenSna
 
   return (
     <React.Fragment>
-      <Dialog
+      <Drawer
+        anchor='bottom'
         open={open}
         onClose={handleClose}
-        fullWidth={true}
-        maxWidth='lg'
         PaperProps={{
           component: 'form',
-          onSubmit: handleSubmit
+          onSubmit: handleSubmit,
+          sx: { padding: 3, height: '55%' } // Adjust the height as needed
         }}
       >
+        <Box mb={2}>
+          <Typography variant='h6'>Change Room Assignment</Typography>
+        </Box>
         <DialogContent>
-          <Grid container spacing={2}>
+          <Grid container spacing={4}>
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth style={{ marginBottom: '10px' }}>
+              <Box mb={2}>
+                <Typography variant='subtitle1' gutterBottom>
+                  Current Dormitory Information
+                </Typography>
+              </Box>
+              <FormControl fullWidth style={{ marginBottom: '20px' }}>
                 <InputLabel id='building-select-label'>Building</InputLabel>
                 <Select
                   label='Building'
                   value={building || ''}
-                  onChange={handleNewBuildingChange}
                   id='building-select'
                   labelId='building-select-label'
                   disabled
                 >
                   <MenuItem value={data?.dorm_id}>{data?.Dormitory_Building?.name}</MenuItem>
                 </Select>
+                <Typography variant='body2' color='textSecondary'>
+                  This field displays the current building where the resident is assigned.
+                </Typography>
               </FormControl>
-              <FormControl fullWidth style={{ marginBottom: '10px' }}>
+              <FormControl fullWidth style={{ marginBottom: '20px' }}>
                 <InputLabel id='room-number-select-label'>Room Number</InputLabel>
                 <Select
                   label='Room Number'
                   value={room || ''}
-                  onChange={handleNewRoomChange}
                   id='room-number-select'
                   labelId='room-number-select-label'
                   disabled
                 >
                   <MenuItem value={data?.room_id}>{data?.Dormitory_Room?.room_number}</MenuItem>
                 </Select>
+                <Typography variant='body2' color='textSecondary'>
+                  This field displays the current room number where the resident is assigned.
+                </Typography>
               </FormControl>
-              <FormControl fullWidth style={{ marginBottom: '10px' }}>
+              <FormControl fullWidth style={{ marginBottom: '20px' }}>
                 <InputLabel id='bed-select-label'>Bed</InputLabel>
-                <Select
-                  label='Bed'
-                  value={bed || ''}
-                  onChange={handleNewBedChange}
-                  id='bed-select'
-                  labelId='bed-select-label'
-                  disabled
-                >
+                <Select label='Bed' value={bed || ''} id='bed-select' labelId='bed-select-label' disabled>
                   <MenuItem value={data?.bed_id}>{data?.Dormitory_Bed?.bed_number}</MenuItem>
                 </Select>
+                <Typography variant='body2' color='textSecondary'>
+                  This field displays the current bed where the resident is assigned.
+                </Typography>
               </FormControl>
             </Grid>
 
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth style={{ marginBottom: '10px' }}>
+              <Box mb={2}>
+                <Typography variant='subtitle1' gutterBottom>
+                  New Dormitory Assignment
+                </Typography>
+              </Box>
+              <FormControl fullWidth style={{ marginBottom: '20px' }}>
                 <InputLabel id='new-building-select-label'>Building</InputLabel>
                 <Select
                   label='Building'
@@ -180,14 +194,23 @@ export default function ChangeRoom({ open, onClose, id, resetSelected, onOpenSna
                   id='new-building-select'
                   labelId='new-building-select-label'
                 >
-                  {newData?.map((building: any) => (
-                    <MenuItem key={building.dorm_id} value={building.dorm_id}>
-                      {building.name}
+                  {loading ? (
+                    <MenuItem disabled>
+                      <CircularProgress size={24} />
                     </MenuItem>
-                  ))}
+                  ) : (
+                    newData?.map((building: any) => (
+                      <MenuItem key={building.dorm_id} value={building.dorm_id}>
+                        {building.name}
+                      </MenuItem>
+                    ))
+                  )}
                 </Select>
+                <Typography variant='body2' color='textSecondary'>
+                  Select the new building to which you want to assign the resident.
+                </Typography>
               </FormControl>
-              <FormControl fullWidth style={{ marginBottom: '10px' }}>
+              <FormControl fullWidth style={{ marginBottom: '20px' }}>
                 <InputLabel id='new-room-number-select-label'>Room Number</InputLabel>
                 <Select
                   label='Room Number'
@@ -195,7 +218,7 @@ export default function ChangeRoom({ open, onClose, id, resetSelected, onOpenSna
                   onChange={handleNewRoomChange}
                   id='new-room-number-select'
                   labelId='new-room-number-select-label'
-                  disabled={!newBuilding}
+                  disabled={!newBuilding || loading}
                 >
                   {newData
                     ?.filter((building: any) => building.dorm_id === newBuilding)
@@ -206,8 +229,11 @@ export default function ChangeRoom({ open, onClose, id, resetSelected, onOpenSna
                       </MenuItem>
                     ))}
                 </Select>
+                <Typography variant='body2' color='textSecondary'>
+                  Select the new room number within the selected building.
+                </Typography>
               </FormControl>
-              <FormControl fullWidth style={{ marginBottom: '10px' }}>
+              <FormControl fullWidth style={{ marginBottom: '20px' }}>
                 <InputLabel id='new-bed-select-label'>Bed</InputLabel>
                 <Select
                   label='Bed'
@@ -215,7 +241,7 @@ export default function ChangeRoom({ open, onClose, id, resetSelected, onOpenSna
                   onChange={handleNewBedChange}
                   id='new-bed-select'
                   labelId='new-bed-select-label'
-                  disabled={!newRoom}
+                  disabled={!newRoom || loading}
                 >
                   {newData
                     ?.filter((building: any) => building.dorm_id === newBuilding)
@@ -228,6 +254,9 @@ export default function ChangeRoom({ open, onClose, id, resetSelected, onOpenSna
                       </MenuItem>
                     ))}
                 </Select>
+                <Typography variant='body2' color='textSecondary'>
+                  Select the new bed within the selected room.
+                </Typography>
               </FormControl>
             </Grid>
           </Grid>
@@ -236,7 +265,7 @@ export default function ChangeRoom({ open, onClose, id, resetSelected, onOpenSna
           <Button onClick={handleClose}>Cancel</Button>
           <Button type='submit'>Update</Button>
         </DialogActions>
-      </Dialog>
+      </Drawer>
     </React.Fragment>
   )
 }

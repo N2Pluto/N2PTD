@@ -186,7 +186,7 @@ const DormitoryResidentControl = () => {
   const classes = useStyles()
   const [users, setUsers] = React.useState<User[]>([])
   const [order, setOrder] = React.useState<'asc' | 'desc'>('asc')
-  const [orderBy, setOrderBy] = React.useState<keyof User>('name')
+  const [orderBy, setOrderBy] = React.useState<keyof User>('room_id')
   const [selected, setSelected] = React.useState<readonly number[]>([])
   const [page, setPage] = React.useState(0)
   const [dense, setDense] = React.useState(false)
@@ -198,6 +198,19 @@ const DormitoryResidentControl = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [exportSnackbarOpen, setExportSnackbarOpen] = useState(false)
   const [openSnackbar, setOpenSnackbar] = useState(false)
+
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await fetch('/api/reservation/bed/checkBed')
+        const data = await response.json()
+      } catch (error) {
+        console.error('Failed to fetch data:', error)
+      }
+    }, 2000)
+
+    return () => clearInterval(intervalId)
+  }, [])
 
   const handleOpenSnackbar = () => {
     setOpenSnackbar(true)
@@ -298,11 +311,10 @@ const DormitoryResidentControl = () => {
       }
     }
 
-    const intervalId = setInterval(fetchData, 5000) // Fetch data every 5 seconds
+    const intervalId = setInterval(fetchData, 3000) // Fetch data every 5 seconds
 
     return () => clearInterval(intervalId) // Clean up the interval on component unmount
   }, [])
-  console.log(users)
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof User) => {
     const isAsc = orderBy === property && order === 'asc'

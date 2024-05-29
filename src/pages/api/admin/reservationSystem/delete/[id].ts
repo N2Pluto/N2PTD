@@ -9,14 +9,20 @@ const handler = async (req: any, res: any) => {
       // 1. Delete reservations associated with the round
       await supabase.from('Reservation').delete().eq('round_id', id)
 
+      const { error: renewalError } = await supabase.from('Renewal_Dormitory').delete().eq('round_id', id)
+
       // 2. Delete the round
-      const { error } = await supabase.from('Reservation_System').delete().eq('id', id)
+      const { error: roundError } = await supabase.from('Reservation_System').delete().eq('id', id)
+
+      const error = roundError || renewalError
 
       if (error) {
         console.error(error)
         res.status(500).json({ error: 'An error occurred while deleting the round.' })
       } else {
-        res.status(200).json({ message: 'Round and associated reservations deleted successfully.' })
+        res
+          .status(200)
+          .json({ message: 'Round and associated reservations and renewal dormitory records deleted successfully.' })
       }
     } catch (error) {
       console.error(error)
@@ -28,4 +34,3 @@ const handler = async (req: any, res: any) => {
 }
 
 export default handler
-

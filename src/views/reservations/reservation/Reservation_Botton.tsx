@@ -30,6 +30,20 @@ const ReservationBotton = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('')
   const [profileData, setProfileData] = useState(null)
 
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await fetch('/api/reservation/room/checkRoom')
+        const data = await response.json()
+      } catch (error) {
+        console.error('Failed to fetch data:', error)
+      }
+    }, 3000) // Fetch every 3 seconds
+
+    // Clean up function
+    return () => clearInterval(intervalId)
+  }, [])
+
   const discordHandle = async (id: string, email: string) => {
     await sendDiscordMessage(id, email, 'Cancel reservation')
   }
@@ -103,7 +117,6 @@ const ReservationBotton = () => {
         setReservation(null)
         discordHandle(user.student_id, user.email)
         router.reload() // Reload the page
-
       }
     } catch (error) {
       console.error('Error deleting reservation:', error)

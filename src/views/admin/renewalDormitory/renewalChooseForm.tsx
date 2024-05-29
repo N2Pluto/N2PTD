@@ -108,13 +108,13 @@ const RenewalChooseForm = () => {
           })
         })
         if (response.ok) {
-          console.log('Data updated successfully') // change the message to reflect the update operation
+          console.log('Data updated successfully') 
           setDrawerOpen(false)
         } else {
-          console.error('Failed to update data') // change the message to reflect the update operation
+          console.error('Failed to update data') 
         }
       } catch (error) {
-        console.error('Error updating data:', error) // change the message to reflect the update operation
+        console.error('Error updating data:', error) 
       }
     }
   }
