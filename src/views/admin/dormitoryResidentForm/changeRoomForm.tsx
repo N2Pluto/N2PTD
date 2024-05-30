@@ -15,6 +15,7 @@ import Tab from '@mui/material/Tab'
 import Chip from '@mui/material/Chip'
 import Button from '@mui/material/Button'
 import EditChangeRoom from './editChangeRoomForm'
+import Box from '@mui/material/Box'
 
 interface Column {
   id: 'ประทับเวลา' | 'StudentID' | 'Username' | 'Building' | 'Room' | 'Bed' | 'topic' | 'status'
@@ -51,26 +52,26 @@ const ChangeRoomForm = () => {
   const [rows, setRows] = useState<Data[]>([])
   const [tabValue, setTabValue] = useState(0)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch(
-        '/api/admin/dormitoryResident/dormitoryResidentForm/changeRoomForm/read/fetch_changeRoom'
-      )
-      const result = await response.json()
-      const mappedData = result.data.map((item: any) => ({
-        id: item.id,
-        ประทับเวลา: item.Timestamp,
-        StudentID: item.StudentID,
-        Username: item.Username,
-        Building: item.Building,
-        Room: item.Room,
-        Bed: item.Bed,
-        status: item.status,
-        topic: `ต้องการย้ายไปยัง ${item.Building} / ${item.Room} / ${item.Bed}`
-      }))
-      setRows(mappedData)
-    }
+  const fetchData = async () => {
+    const response = await fetch(
+      '/api/admin/dormitoryResident/dormitoryResidentForm/changeRoomForm/read/fetch_changeRoom'
+    )
+    const result = await response.json()
+    const mappedData = result.data.map((item: any) => ({
+      id: item.id,
+      ประทับเวลา: item.Timestamp,
+      StudentID: item.StudentID,
+      Username: item.Username,
+      Building: item.Building,
+      Room: item.Room,
+      Bed: item.Bed,
+      status: item.status,
+      topic: `ต้องการย้ายไปยัง ตึก : ${item.Building} ห้อง : ${item.Room} เตียง : ${item.Bed}`
+    }))
+    setRows(mappedData)
+  }
 
+  useEffect(() => {
     fetchData()
   }, [])
 
@@ -101,11 +102,15 @@ const ChangeRoomForm = () => {
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <Tabs value={tabValue} onChange={handleChangeTab}>
-        <Tab label='Request' />
-        <Tab label='Success' />
-        <Tab label='Reject' />
-      </Tabs>
+      <Box display='flex' justifyContent='space-between' alignItems='center'>
+        <Tabs value={tabValue} onChange={handleChangeTab}>
+          <Tab label='Request' />
+          <Tab label='Success' />
+          <Tab label='Reject' />
+        </Tabs>
+        <Button onClick={fetchData}>Refresh</Button>
+      </Box>
+
       {tabValue === 0 && (
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label='sticky table'>
@@ -221,22 +226,22 @@ const ChangeRoomForm = () => {
                       const value = row[column.id]
 
                       return (
-                         column.id !== 'option' && (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.id === 'status' && value === 'reject' ? (
-                            <Chip label='ปฏิเสธการย้ายห้อง' color='error' />
-                          ) : column.id === 'topic' ? (
-                            <Chip label={value} color='primary' />
-                          ) : column.id === 'option' ? (
-                            <EditChangeRoom id={row.id} /> // Assuming StudentID is the id you want to pass
-                          ) : column.format && typeof value === 'number' ? (
-                            column.format(value)
-                          ) : (
-                            value
-                          )}
-                        </TableCell>
+                        column.id !== 'option' && (
+                          <TableCell key={column.id} align={column.align}>
+                            {column.id === 'status' && value === 'reject' ? (
+                              <Chip label='ปฏิเสธการย้ายห้อง' color='error' />
+                            ) : column.id === 'topic' ? (
+                              <Chip label={value} color='primary' />
+                            ) : column.id === 'option' ? (
+                              <EditChangeRoom id={row.id} /> // Assuming StudentID is the id you want to pass
+                            ) : column.format && typeof value === 'number' ? (
+                              column.format(value)
+                            ) : (
+                              value
+                            )}
+                          </TableCell>
+                        )
                       )
-                    )
                     })}
                   </TableRow>
                 )

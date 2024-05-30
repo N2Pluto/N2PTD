@@ -19,7 +19,7 @@ const handler = async (req: any, res: any) => {
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'transferRoomForm!A1:K50'
+      range: 'Form_TransferRoom!A1:K50'
     })
 
     const [header, ...rows] = response.data.values

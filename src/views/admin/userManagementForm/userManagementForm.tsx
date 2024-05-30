@@ -21,6 +21,7 @@ import IconButton from '@mui/material/IconButton'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CloseIcon from '@mui/icons-material/Close'
 import { makeStyles } from '@mui/styles'
+import Button from '@mui/material/Button'
 
 const useStyles = makeStyles({
   success: {
@@ -65,23 +66,24 @@ const UserManagementForm = () => {
     setOpen(true)
   }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data } = await fetch(`/api/admin/user/userForm/read/fetch_form`).then(res => res.json())
-        if (data) {
-          setRows(data) // Corrected line
-          console.log('rows', data) // Moved console.log inside fetchData
-        } else {
-          console.error('No data returned from API')
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error)
+  const fetchData = async () => {
+    try {
+      const { data } = await fetch(`/api/admin/user/userForm/read/fetch_form`).then(res => res.json())
+      if (data) {
+        setRows(data) // Corrected line
+        console.log('rows', data) // Moved console.log inside fetchData
+      } else {
+        console.error('No data returned from API')
       }
+    } catch (error) {
+      console.error('Error fetching user data:', error)
     }
+  }
 
+  useEffect(() => {
     fetchData()
   }, [])
+
   console.log('rows', rows)
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -111,11 +113,15 @@ const UserManagementForm = () => {
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <Tabs value={tabValue} onChange={handleTabChange}>
-        <Tab label='Request' />
-        <Tab label='Successfully' />
-        <Tab label='Unsuccessfully' />
-      </Tabs>
+      <Box display='flex' justifyContent='space-between' alignItems='center'>
+        <Tabs value={tabValue} onChange={handleTabChange}>
+          <Tab label='Request' />
+          <Tab label='Successfully' />
+          <Tab label='Unsuccessfully' />
+        </Tabs>
+        <Button onClick={fetchData}>Refresh</Button>
+      </Box>
+
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label='sticky table'>
           <TableHead>

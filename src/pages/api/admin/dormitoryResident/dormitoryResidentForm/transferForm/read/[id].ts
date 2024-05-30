@@ -21,14 +21,14 @@ const handler = async (req: any, res: any) => {
     const rowNumber = id + 2
     console.log('rowNumber', rowNumber)
 
-    const keysRange = `transferRoomForm!A1:J50`
+    const keysRange = `Form_TransferRoom!A1:J50`
     const keysResponse = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
       range: keysRange
     })
     const keys = keysResponse.data.values[0]
 
-    const valuesRange = `transferRoomForm!A${rowNumber}:N${rowNumber}`
+    const valuesRange = `Form_TransferRoom!A${rowNumber}:N${rowNumber}`
     const valuesResponse = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
       range: valuesRange

@@ -25,7 +25,7 @@ const handler = async (req: any, res: any) => {
 
     const updateResponse = await sheets.spreadsheets.values.update({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: `transferRoomForm!K${rowNumber}`,
+      range: `Form_TransferRoom!K${rowNumber}`,
       valueInputOption: 'USER_ENTERED',
       resource: {
         values: [[status]]
