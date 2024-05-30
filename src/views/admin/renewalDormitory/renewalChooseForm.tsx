@@ -47,7 +47,7 @@ const RenewalChooseForm = () => {
     }
 
     fetchResidentData()
-    const intervalId = setInterval(fetchResidentData, 2000)
+    const intervalId = setInterval(fetchResidentData, 60000)
 
     return () => clearInterval(intervalId)
   }, [])
@@ -77,7 +77,7 @@ const RenewalChooseForm = () => {
     }
 
     fetchData()
-    const intervalId = setInterval(fetchData, 2000)
+    const intervalId = setInterval(fetchData, 60000)
 
     return () => clearInterval(intervalId)
   }, [])
@@ -108,13 +108,13 @@ const RenewalChooseForm = () => {
           })
         })
         if (response.ok) {
-          console.log('Data updated successfully') 
+          console.log('Data updated successfully')
           setDrawerOpen(false)
         } else {
-          console.error('Failed to update data') 
+          console.error('Failed to update data')
         }
       } catch (error) {
-        console.error('Error updating data:', error) 
+        console.error('Error updating data:', error)
       }
     }
   }

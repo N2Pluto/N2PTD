@@ -14,7 +14,7 @@ const profile = () => {
       <ApexChartWrapper>
         <Grid container spacing={6}>
           <Grid item xs={12} md={12} lg={12}>
-            <RenewalChooseForm />
+            {/* <RenewalChooseForm /> */}
           </Grid>
           <Grid item xs={12} md={12} lg={12}>
             <Profile />
