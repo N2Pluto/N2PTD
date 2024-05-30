@@ -59,7 +59,7 @@ const Dashboard = () => {
 
         </Grid>
       </ApexChartWrapper>
-    </AdminLayouT>
+    </AdminLayout>
   )
 }
 

@@ -35,7 +35,6 @@ const RoomControl = () => {
     // const intervalId = setInterval(fetchData, 50000)
 
     // Clear interval on component unmount
-    return () => clearInterval(intervalId)
   }, [])
 
   useEffect(() => {
@@ -117,7 +116,6 @@ const RoomControl = () => {
             <TableCell align='center'>bed capacity</TableCell>
             <TableCell align='center'>bed available </TableCell>
             <TableCell align='center'>status </TableCell>
-            <TableCell align='center'>detail </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
