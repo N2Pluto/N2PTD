@@ -159,7 +159,7 @@ const FormLayoutsFacebookPost = () => {
                   justifyContent: 'space-between'
                 }}
               >
-                <Box>xxx</Box>
+                <Box></Box>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <Button type='submit' variant='contained' size='large'>
                     Get Post!

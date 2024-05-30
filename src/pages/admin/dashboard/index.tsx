@@ -4,6 +4,7 @@
 
 import { Grid } from '@mui/material'
 import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
+import AdminLayout from 'src/layouts/AdminLayout'
 
 import LayoutAuth from 'src/layouts/LayoutAuth'
 import AppNewsUpdate from 'src/views/admin/dashboard/component/AppNewsUpdate'
@@ -14,7 +15,7 @@ import AppWidgetSummary from 'src/views/admin/dashboard/component/one'
 
 const Dashboard = () => {
   return (
-    <LayoutAuth>
+    <AdminLayout>
       <ApexChartWrapper>
         <Grid container spacing={6}>
           <Grid item xs={12} md={6} lg={4}>
@@ -58,7 +59,7 @@ const Dashboard = () => {
 
         </Grid>
       </ApexChartWrapper>
-    </LayoutAuth>
+    </AdminLayouT>
   )
 }
 
