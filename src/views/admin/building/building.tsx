@@ -19,13 +19,15 @@ import AddCircleIcon from '@mui/icons-material/AddCircle'
 import { styled } from '@mui/material/styles'
 import DeleteBuilding from './deleteBuilding'
 
-const handleClick = async () => {
-  router.push('/admin/building/formbuilding')
-}
 
 const Building = ({ dorm_id }) => {
   const [dormitoryBuilding, setDormitoryBuilding] = useState([])
   const router = useRouter()
+
+  const handleClick = async () => {
+    router.push('/admin/building/formbuilding')
+  }
+
 
   const handleEdit = (id: string) => {
     router.push(`/admin/building/editBuilding/${id}`)
@@ -128,7 +130,7 @@ const Building = ({ dorm_id }) => {
 
           ))}
       </Grid>
-      
+
     </>
   )
 }
