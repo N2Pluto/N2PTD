@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import * as React from 'react'
 import Button from '@mui/material/Button'
@@ -41,7 +40,7 @@ export default function EditTransferRoom({ id }: EditTransferRoomProps) {
         const result = await response.json()
         setData(result.data) // Ensure the data is set to the 'data' property of the response
       } catch (error) {
-        setError(error)
+        console.error('Error:', error)
       }
     }
 

@@ -354,7 +354,7 @@ export default function EditUserForm({
         </div>
         <p>Thank you for your attention to this matter.</p>
         <p>Best regards,</p>
-        <p>Your University Administration Team</p>
+        <p>Walailak University Administration Team</p>
       </div>
       <div class="footer">
         <p>&copy; 2024 University Administration. All rights reserved.</p>

@@ -76,7 +76,7 @@ const TransferRoomForm = () => {
     fetchData()
   }, [])
 
-  console.log('row', rows)
+  console.log('mappedData', rows)
 
   const handleChangeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
     setTabValue(newValue)
@@ -133,11 +133,11 @@ const TransferRoomForm = () => {
                         <TableCell key={column.id} align={column.align}>
                           {column.id === 'edit' ? (
                             <EditTransferRoom id={row.id} /> // Assuming StudentID is the unique identifier
-                          ) : column.id === 'status' && value === ''  ? (
+                          ) : column.id === 'status' && value === '' ? (
                             <Chip label='กำลังรอการแก้ไข' color='warning' />
                           ) : column.id === 'topic' ? (
                             <Chip
-                              label={`ต้องการย้ายจากห้อง ${row.Room}/${row.Bed} ไปยังห้อง ${row.newRoom}/${row.newBed}`}
+                              label={`ต้องการสลับห้องจากห้อง ${row.Room}/${row.Bed} ไปยังห้อง ${row.newRoom}/${row.newBed}`}
                               sx={{ bgcolor: '#0084FF', color: '#FFFFFF' }}
                             />
                           ) : column.format && typeof value === 'number' ? (
