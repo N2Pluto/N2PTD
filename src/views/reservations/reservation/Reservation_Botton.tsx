@@ -38,7 +38,7 @@ const ReservationBotton = () => {
       } catch (error) {
         console.error('Failed to fetch data:', error)
       }
-    }, 3000) // Fetch every 3 seconds
+    }, 3000)
 
     // Clean up function
     return () => clearInterval(intervalId)
