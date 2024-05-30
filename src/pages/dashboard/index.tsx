@@ -6,6 +6,7 @@ import Grid from '@mui/material/Grid'
 import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
 
 import LayoutAuth from 'src/layouts/LayoutAuth'
+import CardGuid from 'src/views/admin/dashboard/component/guid'
 import RenewalChooseForm from 'src/views/admin/renewalDormitory/renewalChooseForm'
 import CardImgTop from 'src/views/cards/CardImgTop'
 import CardInfluencer from 'src/views/cards/CardInfluencer'
@@ -46,7 +47,7 @@ const Dashboard = () => {
             <Round />
           </Grid>
           <Grid item xs={12} sm={12} sx={{ pb: 6 }}>
-            {/* <CardImgTop /> */}
+            <CardGuid />
           </Grid>
         </Grid>
 

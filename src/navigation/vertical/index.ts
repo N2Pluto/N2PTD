@@ -154,40 +154,40 @@ const useNavigation = (): VerticalNavItemsType => {
         icon: DisplaySettingsIcon,
         path: '/admin/dormitoryResident/transferRoomForm'
       },
-      
-      // {
-      //   sectionTitle: 'User Interface'
-      // },
-      // {
-      //   title: 'Home',
-      //   icon: HomeOutline,
-      //   path: '/dashboard'
-      // },
-      // {
-      //   title: 'Typography',
-      //   icon: FormatLetterCase,
-      //   path: '/typography'
-      // },
-      // {
-      //   title: 'Icons',
-      //   path: '/icons',
-      //   icon: GoogleCirclesExtended
-      // },
-      // {
-      //   title: 'Cards',
-      //   icon: CreditCardOutline,
-      //   path: '/cards'
-      // },
-      // {
-      //   title: 'Tables',
-      //   icon: Table,
-      //   path: '/tables'
-      // },
-      // {
-      //   icon: CubeOutline,
-      //   title: 'Form Layouts',
-      //   path: '/form-layouts'
-      // }
+
+      {
+        sectionTitle: 'User Interface'
+      },
+      {
+        title: 'Home',
+        icon: HomeOutline,
+        path: '/dashboard'
+      },
+      {
+        title: 'Typography',
+        icon: FormatLetterCase,
+        path: '/typography'
+      },
+      {
+        title: 'Icons',
+        path: '/icons',
+        icon: GoogleCirclesExtended
+      },
+      {
+        title: 'Cards',
+        icon: CreditCardOutline,
+        path: '/cards'
+      },
+      {
+        title: 'Tables',
+        icon: Table,
+        path: '/tables'
+      },
+      {
+        icon: CubeOutline,
+        title: 'Form Layouts',
+        path: '/form-layouts'
+      }
     ]
   } else if (roleFilter === 'user') {
     return [
