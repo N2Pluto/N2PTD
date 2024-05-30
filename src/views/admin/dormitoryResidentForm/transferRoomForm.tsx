@@ -16,6 +16,7 @@ import Chip from '@mui/material/Chip'
 import EditTransferRoom from './editTransferForm'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 
 interface Column {
   id: 'ประทับเวลา' | 'StudentID' | 'Username' | 'Building' | 'Room' | 'Bed' | 'newBuilding' | 'newRoom' | 'newBed'
@@ -133,34 +134,68 @@ const TransferRoomForm = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                return (
-                  <TableRow hover role='checkbox' tabIndex={-1} key={row.StudentID}>
-                    {columns.map(column => {
-                      const value = row[column.id]
+              {filteredRows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length}>
+                    <Paper
+                      style={{
+                        padding: '20px',
+                        width: '1350px',
+                        height: '250px',
+                        backgroundColor: 'rgba(128, 128, 128, 0.05)'
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: '100%'
+                        }}
+                      >
+                        <img
+                          src='https://img5.pic.in.th/file/secure-sv1/problem-solve_14781806.png'
+                          alt='No Data'
+                          width='100'
+                          height='100'
+                          style={{ marginBottom: '10px' }}
+                        />
+                        <Typography variant='body2'>No Request Received</Typography>
+                      </div>
+                    </Paper>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+                  return (
+                    <TableRow hover role='checkbox' tabIndex={-1} key={row.StudentID}>
+                      {columns.map(column => {
+                        const value = row[column.id]
 
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.id === 'edit' ? (
-                            <EditTransferRoom id={row.id} /> // Assuming StudentID is the unique identifier
-                          ) : column.id === 'status' && value === '' ? (
-                            <Chip label='กำลังรอการแก้ไข' color='warning' />
-                          ) : column.id === 'topic' ? (
-                            <Chip
-                              label={`ต้องการสลับห้องจากห้อง ${row.Room}/${row.Bed} ไปยังห้อง ${row.newRoom}/${row.newBed}`}
-                              sx={{ bgcolor: '#0084FF', color: '#FFFFFF' }}
-                            />
-                          ) : column.format && typeof value === 'number' ? (
-                            column.format(value)
-                          ) : (
-                            value
-                          )}
-                        </TableCell>
-                      )
-                    })}
-                  </TableRow>
-                )
-              })}
+                        return (
+                          <TableCell key={column.id} align={column.align}>
+                            {column.id === 'edit' ? (
+                              <EditTransferRoom id={row.id} /> // Assuming StudentID is the unique identifier
+                            ) : column.id === 'status' && value === '' ? (
+                              <Chip label='กำลังรอการแก้ไข' color='warning' />
+                            ) : column.id === 'topic' ? (
+                              <Chip
+                                label={`ต้องการสลับห้องจากห้อง ${row.Room}/${row.Bed} ไปยังห้อง ${row.newRoom}/${row.newBed}`}
+                                sx={{ bgcolor: '#0084FF', color: '#FFFFFF' }}
+                              />
+                            ) : column.format && typeof value === 'number' ? (
+                              column.format(value)
+                            ) : (
+                              value
+                            )}
+                          </TableCell>
+                        )
+                      })}
+                    </TableRow>
+                  )
+                })
+              )}
             </TableBody>
           </Table>
         </TableContainer>
@@ -183,34 +218,68 @@ const TransferRoomForm = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                return (
-                  <TableRow hover role='checkbox' tabIndex={-1} key={row.StudentID}>
-                    {columns.map(column => {
-                      const value = row[column.id]
+              {filteredRows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length}>
+                    <Paper
+                      style={{
+                        padding: '20px',
+                        width: '1350px',
+                        height: '250px',
+                        backgroundColor: 'rgba(128, 128, 128, 0.05)'
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: '100%'
+                        }}
+                      >
+                        <img
+                          src='https://img5.pic.in.th/file/secure-sv1/problem-solve_14781806.png'
+                          alt='No Data'
+                          width='100'
+                          height='100'
+                          style={{ marginBottom: '10px' }}
+                        />
+                        <Typography variant='body2'>No Request Received</Typography>
+                      </div>
+                    </Paper>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+                  return (
+                    <TableRow hover role='checkbox' tabIndex={-1} key={row.StudentID}>
+                      {columns.map(column => {
+                        const value = row[column.id]
 
-                      return (
-                        column.id !== 'edit' && (
-                          <TableCell key={column.id} align={column.align}>
-                            {column.id === 'status' && value === 'successfully' ? (
-                              <Chip label='สลับห้องสำเร็จ' color='success' />
-                            ) : column.id === 'topic' ? (
-                              <Chip
-                                label={`ต้องการย้ายจากห้อง ${row.Room}/${row.Bed} ไปยังห้อง ${row.newRoom}/${row.newBed}`}
-                                sx={{ bgcolor: '#0084FF', color: '#FFFFFF' }}
-                              />
-                            ) : column.format && typeof value === 'number' ? (
-                              column.format(value)
-                            ) : (
-                              value
-                            )}
-                          </TableCell>
+                        return (
+                          column.id !== 'edit' && (
+                            <TableCell key={column.id} align={column.align}>
+                              {column.id === 'status' && value === 'successfully' ? (
+                                <Chip label='สลับห้องสำเร็จ' color='success' />
+                              ) : column.id === 'topic' ? (
+                                <Chip
+                                  label={`ต้องการย้ายจากห้อง ${row.Room}/${row.Bed} ไปยังห้อง ${row.newRoom}/${row.newBed}`}
+                                  sx={{ bgcolor: '#0084FF', color: '#FFFFFF' }}
+                                />
+                              ) : column.format && typeof value === 'number' ? (
+                                column.format(value)
+                              ) : (
+                                value
+                              )}
+                            </TableCell>
+                          )
                         )
-                      )
-                    })}
-                  </TableRow>
-                )
-              })}
+                      })}
+                    </TableRow>
+                  )
+                })
+              )}
             </TableBody>
           </Table>
         </TableContainer>
@@ -232,34 +301,68 @@ const TransferRoomForm = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                return (
-                  <TableRow hover role='checkbox' tabIndex={-1} key={row.StudentID}>
-                    {columns.map(column => {
-                      const value = row[column.id]
+              {filteredRows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length}>
+                    <Paper
+                      style={{
+                        padding: '20px',
+                        width: '1350px',
+                        height: '250px',
+                        backgroundColor: 'rgba(128, 128, 128, 0.05)'
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: '100%'
+                        }}
+                      >
+                        <img
+                          src='https://img5.pic.in.th/file/secure-sv1/problem-solve_14781806.png'
+                          alt='No Data'
+                          width='100'
+                          height='100'
+                          style={{ marginBottom: '10px' }}
+                        />
+                        <Typography variant='body2'>No Request Received</Typography>
+                      </div>
+                    </Paper>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+                  return (
+                    <TableRow hover role='checkbox' tabIndex={-1} key={row.StudentID}>
+                      {columns.map(column => {
+                        const value = row[column.id]
 
-                      return (
-                        column.id !== 'edit' && (
-                          <TableCell key={column.id} align={column.align}>
-                            {column.id === 'status' && value === 'reject' ? (
-                              <Chip label='ปฏิเสธการสลับห้อง' color='error' />
-                            ) : column.id === 'topic' ? (
-                              <Chip
-                                label={`ต้องการย้ายจากห้อง ${row.Room}/${row.Bed} ไปยังห้อง ${row.newRoom}/${row.newBed}`}
-                                sx={{ bgcolor: '#0084FF', color: '#FFFFFF' }}
-                              />
-                            ) : column.format && typeof value === 'number' ? (
-                              column.format(value)
-                            ) : (
-                              value
-                            )}
-                          </TableCell>
+                        return (
+                          column.id !== 'edit' && (
+                            <TableCell key={column.id} align={column.align}>
+                              {column.id === 'status' && value === 'reject' ? (
+                                <Chip label='ปฏิเสธการสลับห้อง' color='error' />
+                              ) : column.id === 'topic' ? (
+                                <Chip
+                                  label={`ต้องการย้ายจากห้อง ${row.Room}/${row.Bed} ไปยังห้อง ${row.newRoom}/${row.newBed}`}
+                                  sx={{ bgcolor: '#0084FF', color: '#FFFFFF' }}
+                                />
+                              ) : column.format && typeof value === 'number' ? (
+                                column.format(value)
+                              ) : (
+                                value
+                              )}
+                            </TableCell>
+                          )
                         )
-                      )
-                    })}
-                  </TableRow>
-                )
-              })}
+                      })}
+                    </TableRow>
+                  )
+                })
+              )}
             </TableBody>
           </Table>
         </TableContainer>
