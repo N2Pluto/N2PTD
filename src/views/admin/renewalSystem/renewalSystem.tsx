@@ -35,6 +35,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Menu from '@mui/material/Menu'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import Typography from '@mui/material/Typography'
+import EventBusyIcon from '@mui/icons-material/EventBusy'
 
 const useStyles = makeStyles({
   success: {
@@ -238,6 +239,31 @@ const RenewalSystem = () => {
 
   const handleSelectRoundChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setSelectRoundValue(event.target.value as string)
+  }
+
+  const handleClearHistory = async (id: number) => {
+    setBackdropOpen(true)
+    try {
+      const response = await fetch(`/api/admin/renewalSystem/delete/clearHistory`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id })
+      })
+
+      if (response.ok) {
+        setSnackbarMessage('Clear History successfully')
+        setOpen(true)
+        setSelected([]) // Reset selected state
+        setSelectedCount(0) // Reset selected count
+        setBackdropOpen(false)
+      } else {
+        console.error('Failed to delete reservation')
+      }
+    } catch (error) {
+      console.error('Error deleting reservation:', error)
+    }
   }
 
   const handleApprove = async (row: User) => {
@@ -533,7 +559,7 @@ const RenewalSystem = () => {
               >
                 {selected.length} selected
               </div>
-              {(tab === 'stay' || tab === 'leave') && (
+              {(tab === 'stay' || tab === 'leave' || tab === 'success') && (
                 <IconButton
                   onClick={async () => {
                     setBackdropOpen(true)
@@ -546,6 +572,10 @@ const RenewalSystem = () => {
                       for (const id of selected) {
                         await handleDelete(id)
                       }
+                    } else if (tab === 'success') {
+                      for (const id of selected) {
+                        await handleClearHistory(id)
+                      }
                     }
                     setSelected([]) // reset selected state
                     setBackdropOpen(false)
@@ -553,13 +583,11 @@ const RenewalSystem = () => {
                 >
                   {tab === 'stay' && <CheckIcon />}
                   {tab === 'leave' && <CloseIcon />}
+                  {tab === 'success' && <EventBusyIcon />}
                 </IconButton>
               )}
             </>
           )}
-          <Backdrop sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }} open={backdropOpen}>
-            <CircularProgress color='inherit' />
-          </Backdrop>
         </Box>
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>
