@@ -19,6 +19,7 @@ import BellOutline from 'mdi-material-ui/BellOutline'
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle'
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings'
+import BookOnlineIcon from '@mui/icons-material/BookOnline';
 
 // ** Third Party Components
 import PerfectScrollbarComponent from 'react-perfect-scrollbar'
@@ -91,6 +92,9 @@ const NotificationAdminDropdown = () => {
   const [userManagement, setUserManagement] = useState<any[]>([])
   const [changeRoom, setChangeRoom] = useState<any[]>([])
   const [transferRoom, setTransferRoom] = useState<any[]>([])
+  const [reservation, setReservation] = useState<any[]>([])
+  const [approve, setApprove] = useState<any[]>([])
+  const [renewalSystem, setRenewalSystem] = useState<any[]>([])
 
   // ** Hook
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))
@@ -115,6 +119,18 @@ const NotificationAdminDropdown = () => {
     router.push('/admin/dormitoryResident/transferRoomForm')
   }
 
+  const handleRouter4 = () => {
+    router.push('/admin/reservationApprove/')
+  }
+
+  const handleRouter5 = () => {
+    router.push('/admin/residentApprove/')
+  }
+
+  const handleRouter6 = () => {
+    router.push('/admin/renewalSystem/')
+  }
+
   const ScrollWrapper = ({ children }: { children: ReactNode }) => {
     if (hidden) {
       return <Box sx={{ ...styles, overflowY: 'auto', overflowX: 'hidden' }}>{children}</Box>
@@ -124,6 +140,54 @@ const NotificationAdminDropdown = () => {
       )
     }
   }
+
+  useEffect(() => {
+    const fetchUserdata = async () => {
+      try {
+        const response = await fetch('/api/notification/Reservation', {
+          method: 'GET'
+        })
+        const data = await response.json()
+        setReservation(data)
+      } catch (error) {
+        console.error('Error fetching round profile:', error)
+      }
+    }
+    fetchUserdata()
+  }, [])
+  console.log('11111', reservation)
+
+  useEffect(() => {
+    const fetchUserdata = async () => {
+      try {
+        const response = await fetch('/api/notification/renewalSystem', {
+          method: 'GET'
+        })
+        const data = await response.json()
+        setApprove(data)
+      } catch (error) {
+        console.error('Error fetching round profile:', error)
+      }
+    }
+    fetchUserdata()
+  }, [])
+  console.log('22222', approve)
+
+  useEffect(() => {
+    const fetchUserdata = async () => {
+      try {
+        const response = await fetch('/api/notification/DormitoryApprove', {
+          method: 'GET'
+        })
+        const data = await response.json()
+        setRenewalSystem(data)
+      } catch (error) {
+        console.error('Error fetching round profile:', error)
+      }
+    }
+    fetchUserdata()
+  }, [])
+  console.log('33333', renewalSystem)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -177,10 +241,16 @@ const NotificationAdminDropdown = () => {
 
   const userManagementForm = userManagement.filter(r => r.status === '').length
   const changeRoomForm = changeRoom.filter(r => r.status === '').length
-  const transferRoomForm = transferRoom.filter(r => r.status === '').length
-  const all = userManagementForm + changeRoomForm + transferRoomForm
-  console.log('userManagementForm', userManagementForm)
-  console.log('changeRoomForm', changeRoomForm)
+  const transferRoomForm = transferRoom.filter(data => data.status === '').length
+
+
+
+  const reservationForm  = reservation.filter(data => data.status === 'Pending').length
+  const approveForm  = approve.filter(data => data.status =='').length
+  const renewalSystemForm  = renewalSystem.filter(data => data.status == '').length
+
+
+  const all = userManagementForm + changeRoomForm + transferRoomForm + reservationForm + approveForm + renewalSystemForm
 
   return (
     <Fragment>
@@ -258,7 +328,7 @@ const NotificationAdminDropdown = () => {
             ''
           )}
 
-          {changeRoomForm > 0 ? (
+          {transferRoomForm > 0 ? (
             <MenuItem onClick={handleRouter3}>
               <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
                 <DisplaySettingsIcon />
@@ -269,6 +339,75 @@ const NotificationAdminDropdown = () => {
                   <Chip
                     size='small'
                     label={transferRoomForm}
+                    color='primary'
+                    sx={{ height: 20, fontSize: '0.75rem', fontWeight: 500, borderRadius: '10px' }}
+                  />
+                ) : (
+                  <Typography variant='caption' sx={{ color: 'red' }}></Typography>
+                )}
+              </Box>
+            </MenuItem>
+          ) : (
+            ''
+          )}
+
+          {reservationForm > 0 ? (
+            <MenuItem onClick={handleRouter4}>
+              <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
+                <BookOnlineIcon />
+                <Box sx={{ mx: 4, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
+                  <MenuItemTitle>อนุมัติการจอง</MenuItemTitle>
+                </Box>
+                {changeRoomForm > 0 ? (
+                  <Chip
+                    size='small'
+                    label={reservationForm}
+                    color='primary'
+                    sx={{ height: 20, fontSize: '0.75rem', fontWeight: 500, borderRadius: '10px' }}
+                  />
+                ) : (
+                  <Typography variant='caption' sx={{ color: 'red' }}></Typography>
+                )}
+              </Box>
+            </MenuItem>
+          ) : (
+            ''
+          )}
+
+          {approveForm > 0 ? (
+            <MenuItem onClick={handleRouter6}>
+              <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
+                <DisplaySettingsIcon />
+                <Box sx={{ mx: 4, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
+                  <MenuItemTitle>อนุมัติผู้อยู่ต่อ</MenuItemTitle>
+                </Box>
+                {changeRoomForm > 0 ? (
+                  <Chip
+                    size='small'
+                    label={approveForm}
+                    color='primary'
+                    sx={{ height: 20, fontSize: '0.75rem', fontWeight: 500, borderRadius: '10px' }}
+                  />
+                ) : (
+                  <Typography variant='caption' sx={{ color: 'red' }}></Typography>
+                )}
+              </Box>
+            </MenuItem>
+          ) : (
+            ''
+          )}
+
+          {renewalSystemForm > 0 ? (
+            <MenuItem onClick={handleRouter5}>
+              <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
+                <DisplaySettingsIcon />
+                <Box sx={{ mx: 4, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
+                  <MenuItemTitle>อนุมัติผู้อยู่อาศํย </MenuItemTitle>
+                </Box>
+                {changeRoomForm > 0 ? (
+                  <Chip
+                    size='small'
+                    label={renewalSystemForm}
                     color='primary'
                     sx={{ height: 20, fontSize: '0.75rem', fontWeight: 500, borderRadius: '10px' }}
                   />
