@@ -1,4 +1,4 @@
-// this is /api/admin/dormitoryResident/dormitoryResidentForm/transferForm/read/[id].ts
+// this is /api/admin/dormitoryResident/dormitoryResidentForm/changeRoomForm/read/[id].ts
 import { google } from 'googleapis'
 
 const handler = async (req: any, res: any) => {
@@ -20,39 +20,23 @@ const handler = async (req: any, res: any) => {
     const sheets = google.sheets({ version: 'v4', auth })
     const rowNumber = id + 2
 
-
-    const keysRange = `response 1!A1:F1`
+    const keysRange = `Form_ChangeRoom!A1:H1`
     const keysResponse = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
       range: keysRange
     })
     const keys = keysResponse.data.values[0]
 
-    const valuesRange = `การตอบแบบฟอร์ม 1!A${rowNumber}:N${rowNumber}`
+    const valuesRange = `Form_ChangeRoom!A${rowNumber}:H${rowNumber}`
     const valuesResponse = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
       range: valuesRange
     })
     const values = valuesResponse.data.values[0]
 
-    const defaultData = {
-      status: undefined,
-      'Email Address': undefined,
-      username: undefined,
-      StudentID: undefined,
-      name: undefined,
-      lastname: undefined,
-      student_id: undefined,
-      school: undefined,
-      department: undefined,
-      major: undefined,
-      gender: undefined,
-      phone: undefined,
-      religion: undefined
-    }
+    const defaultData = {}
 
     const data = keys.reduce((obj, key, i) => ({ ...obj, [key]: values[i] || defaultData[key] }), {})
-
 
     res.status(200).json({ data })
   } catch (error) {
