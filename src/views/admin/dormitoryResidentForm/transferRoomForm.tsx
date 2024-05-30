@@ -14,6 +14,8 @@ import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import Chip from '@mui/material/Chip'
 import EditTransferRoom from './editTransferForm'
+import Button from '@mui/material/Button'
+import Box from '@mui/material/Box'
 
 interface Column {
   id: 'ประทับเวลา' | 'StudentID' | 'Username' | 'Building' | 'Room' | 'Bed' | 'newBuilding' | 'newRoom' | 'newBed'
@@ -51,28 +53,32 @@ const TransferRoomForm = () => {
   const [rows, setRows] = useState<Data[]>([])
   const [tabValue, setTabValue] = useState(0)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch(
-        '/api/admin/dormitoryResident/dormitoryResidentForm/transferForm/read/fetch_transferRoom'
-      )
-      const result = await response.json()
-      const mappedData = result.data.map((item: any) => ({
-        id: item.id,
-        ประทับเวลา: item.Timestamp,
-        StudentID: item.StudentID,
-        Username: item.Username,
-        Building: item.Building,
-        Room: item.Room,
-        Bed: item.Bed,
-        newBuilding: item.newBuilding,
-        newRoom: item.newRoom,
-        newBed: item.newBed,
-        status: item.status
-      }))
-      setRows(mappedData) // Set the rows to the mapped data
-    }
+  const fetchData = async () => {
+    const response = await fetch(
+      '/api/admin/dormitoryResident/dormitoryResidentForm/transferForm/read/fetch_transferRoom'
+    )
+    const result = await response.json()
+    const mappedData = result.data.map((item: any) => ({
+      id: item.id,
+      ประทับเวลา: item.Timestamp,
+      StudentID: item.StudentID,
+      Username: item.Username,
+      Building: item.Building,
+      Room: item.Room,
+      Bed: item.Bed,
+      newBuilding: item.newBuilding,
+      newRoom: item.newRoom,
+      newBed: item.newBed,
+      status: item.status
+    }))
 
+    // Filter out items where all properties are empty
+    const filteredData = mappedData.filter(item => Object.values(item).some(value => value !== null && value !== ''))
+
+    setRows(filteredData) // Set the rows to the filtered data
+  }
+
+  useEffect(() => {
     fetchData()
   }, [])
 
@@ -105,11 +111,15 @@ const TransferRoomForm = () => {
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <Tabs value={tabValue} onChange={handleChangeTab}>
-        <Tab label='Request' />
-        <Tab label='Success' />
-        <Tab label='Reject' />
-      </Tabs>
+      <Box display='flex' justifyContent='space-between' alignItems='center'>
+        <Tabs value={tabValue} onChange={handleChangeTab}>
+          <Tab label='Request' />
+          <Tab label='Success' />
+          <Tab label='Reject' />
+        </Tabs>
+        <Button onClick={fetchData}>Refresh</Button>
+      </Box>
+
       {tabValue === 0 && (
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label='sticky table'>

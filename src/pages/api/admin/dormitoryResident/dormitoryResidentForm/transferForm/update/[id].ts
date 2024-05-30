@@ -2,7 +2,7 @@
 import { google } from 'googleapis'
 
 const handler = async (req: any, res: any) => {
-  const { id , status } = req.body
+  const { id, status } = req.body
   console.log('Received id:', id)
   console.log('Received status:', status)
 
@@ -25,7 +25,7 @@ const handler = async (req: any, res: any) => {
 
     const updateResponse = await sheets.spreadsheets.values.update({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: `transferRoomForm!J${rowNumber}`,
+      range: `transferRoomForm!K${rowNumber}`,
       valueInputOption: 'USER_ENTERED',
       resource: {
         values: [[status]]

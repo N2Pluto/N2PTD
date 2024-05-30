@@ -24,7 +24,7 @@ const handler = async (req: any, res: any) => {
 
     const updateResponse = await sheets.spreadsheets.values.update({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: `การตอบแบบฟอร์ม 1!A${rowNumber}`,
+      range: `Form_EditProfile!A${rowNumber}`,
       valueInputOption: 'USER_ENTERED',
       resource: {
         values: [['successfully']]

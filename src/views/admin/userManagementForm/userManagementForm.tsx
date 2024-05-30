@@ -71,6 +71,7 @@ const UserManagementForm = () => {
         const { data } = await fetch(`/api/admin/user/userForm/read/fetch_form`).then(res => res.json())
         if (data) {
           setRows(data) // Corrected line
+          console.log('rows', data) // Moved console.log inside fetchData
         } else {
           console.error('No data returned from API')
         }
@@ -242,7 +243,7 @@ const UserManagementForm = () => {
                             ) : (
                               value
                             )}
-                          </TableCell >
+                          </TableCell>
                           <Snackbar
                             open={open}
                             autoHideDuration={5000}

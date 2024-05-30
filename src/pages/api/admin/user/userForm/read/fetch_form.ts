@@ -1,5 +1,6 @@
-// this is /api/admin/user/userForm/read/[id].ts
+// this is /api/admin/user/userForm/read/fetch_form.ts
 import { google } from 'googleapis'
+
 
 const handler = async (req: any, res: any) => {
   try {
@@ -20,7 +21,7 @@ const handler = async (req: any, res: any) => {
     // You need to replace 'spreadsheetId' and 'การตอบแบบฟอร์ม 1!A1:M100' with your actual values
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'การตอบแบบฟอร์ม 1!A1:N50'
+      range: 'Form_EditProfile!A1:O50'
     })
 
     const [header, ...rows] = response.data.values
@@ -29,7 +30,6 @@ const handler = async (req: any, res: any) => {
 
       return { id: index, ...obj }
     })
-
 
     res.status(200).json({ data })
   } catch (error) {
