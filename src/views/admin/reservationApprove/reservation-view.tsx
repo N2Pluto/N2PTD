@@ -213,6 +213,7 @@ const ReservationApprove = () => {
       console.error('Error fetching user data:', error)
     }
   }
+  
   useEffect(() => {
     const intervalId = setInterval(fetchData, 1000)
 

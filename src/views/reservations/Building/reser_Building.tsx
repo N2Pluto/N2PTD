@@ -69,16 +69,6 @@ const ReservationBuilding = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
-   useEffect(() => {
-    const intervalId = setInterval(async () => {
-      try {
-        const response = await fetch('/api/reservation/room/checkRoom')
-        const data = await response.json()
-      } catch (error) {
-        console.error('Failed to fetch data:', error)
-      }
-    }, 3000)
-
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {

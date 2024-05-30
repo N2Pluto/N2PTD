@@ -114,7 +114,6 @@ const ReservationHomePage = () => {
     handleNavigate()
   }, [profileData])
 
-
   return (
     <>
       <Dialog
@@ -130,12 +129,11 @@ const ReservationHomePage = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-        <Link href="/dashboard">
-  <Button onClick={() => setShowDialog(false)} autoFocus>
-    ปิด
-  </Button>
-</Link>
-
+          <Link href='/dashboard'>
+            <Button onClick={() => setShowDialog(false)} autoFocus>
+              ปิด
+            </Button>
+          </Link>
         </DialogActions>
       </Dialog>
     </>

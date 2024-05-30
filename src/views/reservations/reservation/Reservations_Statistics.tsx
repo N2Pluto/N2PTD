@@ -15,10 +15,10 @@ import Snackbar from '@mui/material/Snackbar' // เพิ่ม Snackbar
 import MuiAlert from '@mui/material/Alert' // เพิ่ม Alert
 import { ThemeColor } from 'src/@core/layouts/types'
 import { userStore } from 'src/stores/userStore'
-import PermIdentityIcon from '@mui/icons-material/PermIdentity';
-import CorporateFareIcon from '@mui/icons-material/CorporateFare';
-import DoorBackIcon from '@mui/icons-material/DoorBack';
-import BedIcon from '@mui/icons-material/Bed';
+import PermIdentityIcon from '@mui/icons-material/PermIdentity'
+import CorporateFareIcon from '@mui/icons-material/CorporateFare'
+import DoorBackIcon from '@mui/icons-material/DoorBack'
+import BedIcon from '@mui/icons-material/Bed'
 
 interface DataType {
   stats: string
