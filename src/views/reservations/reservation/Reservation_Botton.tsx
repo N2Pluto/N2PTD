@@ -35,14 +35,16 @@ const ReservationBotton = () => {
       try {
         const response = await fetch('/api/reservation/room/checkRoom')
         const data = await response.json()
+        console.log('Data:', data)
       } catch (error) {
         console.error('Failed to fetch data:', error)
       }
-    }, 3000)
+    }, 2000)
 
     // Clean up function
     return () => clearInterval(intervalId)
   }, [])
+  
 
   const discordHandle = async (id: string, email: string) => {
     await sendDiscordMessage(id, email, 'Cancel reservation')
