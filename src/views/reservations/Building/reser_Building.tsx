@@ -70,6 +70,20 @@ const ReservationBuilding = () => {
   const open = Boolean(anchorEl)
 
   useEffect(() => {
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await fetch('/api/reservation/room/checkRoom')
+        const data = await response.json()
+      } catch (error) {
+        console.error('Failed to fetch data:', error)
+      }
+    }, 3000)
+
+    // Clean up function
+    return () => clearInterval(intervalId)
+  }, [])
+
+  useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await fetch('/api/profile/fetchUserProfile', {
