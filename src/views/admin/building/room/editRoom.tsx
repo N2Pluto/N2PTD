@@ -57,16 +57,9 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   }
 }))
 
-function createData(
-  room_id: number,
-  dorm_id: number,
-  room_number: number,
-  bed_capacity: number
-) {
+function createData(room_id: number, dorm_id: number, room_number: number, bed_capacity: number) {
   return { room_id, dorm_id, room_number, bed_capacity }
 }
-
-
 
 const furnitureOptions = [
   { title: 'closet' },
@@ -95,20 +88,20 @@ const EditRoom = () => {
   const [dormitoryRoom, setDormitoryRoom] = useState([])
   const router = useRouter()
 
- useEffect(() => {
-   const fetchDataRoomByDormID = async () => {
-     console.log('router.query.id:', router.query.id)
-     const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
-     setDormitoryRoom(data)
-     console.log('data:', data)
-   }
+  useEffect(() => {
+    const fetchDataRoomByDormID = async () => {
+      console.log('router.query.id:', router.query.id)
+      const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
+      setDormitoryRoom(data)
+      console.log('data:', data)
+    }
 
-  //  const intervalId = setInterval(fetchDataRoomByDormID, 5000) // Fetch data every 5 seconds
+    const intervalId = setInterval(fetchDataRoomByDormID, 5000) // Fetch data every 5 seconds
 
-  //  return () => clearInterval() // Clean up the interval on component unmount
- }, [])
+    return () => clearInterval() // Clean up the interval on component unmount
+  }, [])
 
-   const rows = dormitoryRoom.map(room => createData(room.room_id, room.dorm_id, room.room_number, room.bed_capacity))
+  const rows = dormitoryRoom.map(room => createData(room.room_id, room.dorm_id, room.room_number, room.bed_capacity))
 
   useEffect(() => {
     const fetchData = async () => {
@@ -129,7 +122,6 @@ const EditRoom = () => {
 
     // return () => clearInterval(intervalId) // Clean up the interval on component unmount
   }, [])
-
 
   const handleRoomsChange = (index: number, value: string) => {
     const newRoomsPerFloor = [...roomsPerFloor]
@@ -212,7 +204,6 @@ const EditRoom = () => {
             </Table>
           </TableContainer>
           <Divider sx={{ margin: 0 }} />
-
         </form>
       </Card>
     </>
