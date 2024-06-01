@@ -8,19 +8,20 @@ import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
 import AccountPlusOutline from 'mdi-material-ui/AccountPlusOutline'
 import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
 import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
-import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
-import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
-import WifiProtectedSetupIcon from '@mui/icons-material/WifiProtectedSetup';
-import DomainAddOutlinedIcon from '@mui/icons-material/DomainAddOutlined';
-import CorporateFareOutlinedIcon from '@mui/icons-material/CorporateFareOutlined';
-import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
-import DoneAllOutlinedIcon from '@mui/icons-material/DoneAllOutlined';
-import DnsOutlinedIcon from '@mui/icons-material/DnsOutlined';
-import FeedOutlinedIcon from '@mui/icons-material/FeedOutlined';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
+import ChangeCircleIcon from '@mui/icons-material/ChangeCircle'
+import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings'
+import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges'
+import WifiProtectedSetupIcon from '@mui/icons-material/WifiProtectedSetup'
+import DomainAddOutlinedIcon from '@mui/icons-material/DomainAddOutlined'
+import CorporateFareOutlinedIcon from '@mui/icons-material/CorporateFareOutlined'
+import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined'
+import DoneAllOutlinedIcon from '@mui/icons-material/DoneAllOutlined'
+import DnsOutlinedIcon from '@mui/icons-material/DnsOutlined'
+import FeedOutlinedIcon from '@mui/icons-material/FeedOutlined'
 import AutorenewIcon from '@mui/icons-material/Autorenew'
 import ChecklistIcon from '@mui/icons-material/Checklist'
+import GoogleIcon from '@mui/icons-material/Google'
 
 // ** Type import
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -114,6 +115,11 @@ const useNavigation = (): VerticalNavItemsType => {
         title: 'สร้างฟอร์มการอยู่ต่อ',
         icon: AutorenewIcon,
         path: '/admin/renewalDormitory'
+      },
+      {
+        title: 'สร้างแบบฟอร์มประกาศ',
+        icon: GoogleIcon,
+        path: '/admin/googleForm'
       },
       {
         sectionTitle: 'ควบคุม'
@@ -213,6 +219,11 @@ const useNavigation = (): VerticalNavItemsType => {
         title: 'Profile',
         icon: HomeOutline,
         path: '/profile'
+      },
+      {
+        title: 'Request Form',
+        icon: HomeOutline,
+        path: '/userGoogleForm'
       }
     ]
   }
