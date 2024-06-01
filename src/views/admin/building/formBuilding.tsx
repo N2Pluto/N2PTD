@@ -43,25 +43,22 @@ const facilityOptions = [
   { title: '7-11 Automatic Food Cabinet' }
 ]
 
-
 const FormBuilding = () => {
   // ** States
-   const [name, setName] = useState('')
-   const [room_total, setRoomTotal] = useState('')
-   const [images_url, setImagesUrl] = useState('')
-   const [type_gender, setTypeGender] = useState('')
-   const [price, setPrice] = useState('')
-   const [type_building, setTypeBuilding] = useState('')
-   const [type_bathroom, setTypeBathroom] = useState('')
-   const [type_bedtype, setTypeBed] = useState('')
-   const [type_bedcapacity, setTypeBedCapacity] = useState('')
-   const [type_roommate, setTypeRoommate] = useState('')
-   const [type_furniture, setFurniture] = useState([])
-   const [type_facilities, setFacility] = useState([])
-   const [floor, setFloor] = useState('')
-   const [bedCapacity, setBedCapacity] = useState('')
-   const [roomsPerFloor, setRoomsPerFloor] = useState<string[]>([])
-   const router = useRouter()
+  const [name, setName] = useState('')
+  const [images_url, setImagesUrl] = useState('')
+  const [type_gender, setTypeGender] = useState('')
+  const [price, setPrice] = useState('')
+  const [type_building, setTypeBuilding] = useState('')
+  const [type_bathroom, setTypeBathroom] = useState('')
+  const [type_bedtype, setTypeBed] = useState('')
+  const [type_bedcapacity, setTypeBedCapacity] = useState('')
+  const [type_roommate, setTypeRoommate] = useState('')
+  const [type_furniture, setFurniture] = useState([])
+  const [type_facilities, setFacility] = useState([])
+  const [floor, setFloor] = useState('')
+  const [roomsPerFloor, setRoomsPerFloor] = useState<string[]>([])
+  const router = useRouter()
 
   const handleRoomsChange = (index: number, value: string) => {
     const newRoomsPerFloor = [...roomsPerFloor]
@@ -83,12 +80,18 @@ const FormBuilding = () => {
     return roomNumbers
   }
 
+  const calculateRoomTotal = () => {
+    return roomsPerFloor.reduce((total, rooms) => total + parseInt(rooms || '0', 10), 0)
+  }
+
   const handleFloorChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setFloor(event.target.value as string)
   }
 
   const handleFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
+
+    const room_total = calculateRoomTotal()
 
     const response = await fetch('/api/admin/create/createBuilding', {
       method: 'POST',
@@ -105,7 +108,7 @@ const FormBuilding = () => {
         type_bathroom,
         type_bedtype,
         type_bedcapacity,
-        type_roommate,
+        type_roommate: type_bedcapacity,
         type_furniture: type_furniture.map(furniture => furniture.title),
         type_facilities: type_facilities.map(facility => facility.title)
       })
@@ -113,6 +116,7 @@ const FormBuilding = () => {
 
     if (!response.ok) {
       console.error('Failed to create dormitory')
+      window.alert('Failed to create dormitory')
     } else {
       const data = await response.json()
       console.log('data', data)
@@ -131,12 +135,13 @@ const FormBuilding = () => {
           body: JSON.stringify({
             dorm_id: dormId,
             room_number: roomNumber,
-            bed_capacity: bedCapacity
+            bed_capacity: type_bedcapacity
           })
         })
 
         if (!roomResponse.ok) {
           console.error('Failed to create room')
+          window.alert('Failed to create room')
         } else {
           const roomData = await roomResponse.json()
           const roomId = roomData.data.room_id
@@ -148,20 +153,20 @@ const FormBuilding = () => {
             },
             body: JSON.stringify({
               room_id: roomId,
-              bed_capacity: bedCapacity
+              bed_capacity: type_bedcapacity
             })
           })
 
           if (!bedResponse.ok) {
             console.error('Failed to create beds')
+            window.alert('Failed to create beds')
           }
         }
       }
+      window.alert('Dormitory created successfully')
       router.push('/admin/building')
     }
   }
-
-
 
   return (
     <>
@@ -183,15 +188,7 @@ const FormBuilding = () => {
                   placeholder='WU Dormitory'
                   value={name}
                   onChange={event => setName(event.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} sm={12}>
-                <TextField
-                  fullWidth
-                  label='Room total'
-                  placeholder='Room total.'
-                  value={room_total}
-                  onChange={event => setRoomTotal(event.target.value)}
+                  required
                 />
               </Grid>
               <Grid item xs={12} sm={12}>
@@ -201,6 +198,7 @@ const FormBuilding = () => {
                   placeholder='Images Url'
                   value={images_url}
                   onChange={event => setImagesUrl(event.target.value)}
+                  required
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -292,22 +290,6 @@ const FormBuilding = () => {
                   >
                     <MenuItem value='2'>2</MenuItem>
                     <MenuItem value='4'>4</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel id='form-layouts-separator-select-label'>Roommate</InputLabel>
-                  <Select
-                    label='type_roommate'
-                    value={type_roommate}
-                    onChange={event => setTypeRoommate(event.target.value)}
-                    defaultValue=''
-                    id='form-layouts-separator-select'
-                    labelId='form-layouts-separator-select-label'
-                  >
-                    <MenuItem value='2'>2</MenuItem>
-                    <MenuItem value='4 '>4</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -404,22 +386,7 @@ const FormBuilding = () => {
                   Room Numbers: {generateRoomNumbers().join(', ')}
                 </Typography>
               </Grid>
-              <Grid item xs={12} sm={12}>
-                <FormControl fullWidth>
-                  <InputLabel id='form-layouts-separator-select-label'>Bed Capacity</InputLabel>
-                  <Select
-                    label='Bed Capacity'
-                    value={bedCapacity}
-                    onChange={event => setBedCapacity(event.target.value)}
-                    defaultValue=''
-                    id='form-layouts-separator-select'
-                    labelId='form-layouts-separator-select-label'
-                  >
-                    <MenuItem value='2'>2</MenuItem>
-                    <MenuItem value='4'>4</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
+
             </Grid>
           </CardContent>
           <Divider sx={{ margin: 0 }} />
@@ -433,7 +400,6 @@ const FormBuilding = () => {
           </CardActions>
         </form>
       </Card>
-
     </>
   )
 }

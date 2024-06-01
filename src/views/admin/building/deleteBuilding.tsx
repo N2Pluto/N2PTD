@@ -6,7 +6,11 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Slide from '@mui/material/Slide'
+import TextField from '@mui/material/TextField'
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
 import { TransitionProps } from '@mui/material/transitions'
+import { Typography } from '@mui/material'
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -17,8 +21,10 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction='up' ref={ref} {...props} />
 })
 
-export default function DeleteBuilding({ dorm_id, handleDeleteBuilding }) {
+export default function DeleteBuilding({ dorm_id, name, handleDeleteBuilding }) {
   const [open, setOpen] = React.useState(false)
+  const [confirmationName, setConfirmationName] = React.useState('')
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false)
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -26,12 +32,27 @@ export default function DeleteBuilding({ dorm_id, handleDeleteBuilding }) {
 
   const handleClose = () => {
     setOpen(false)
+    setConfirmationName('')
   }
 
   const handleDelete = () => {
     handleDeleteBuilding(dorm_id)
     handleClose()
+    setSnackbarOpen(true)
   }
+
+  const handleChange = event => {
+    setConfirmationName(event.target.value)
+  }
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setSnackbarOpen(false)
+  }
+
+  const isDeleteEnabled = confirmationName === `delete-${name}`
 
   return (
     <React.Fragment>
@@ -45,13 +66,36 @@ export default function DeleteBuilding({ dorm_id, handleDeleteBuilding }) {
       >
         <DialogTitle>{'Delete Dormitory?'}</DialogTitle>
         <DialogContent>
-          <DialogContentText id='alert-dialog-slide-description'>You Want to Delete this Dormitory?</DialogContentText>
+          <DialogContentText id='alert-dialog-slide-description'>
+            To confirm deletion please type :
+            <Typography component='span' style={{ fontWeight: 'bold' }} sx={{pl:2}}>
+               delete-{name}
+            </Typography>
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin='dense'
+            id='name'
+            label=''
+            type='text'
+            fullWidth
+            variant='standard'
+            value={confirmationName}
+            onChange={handleChange}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Disagree</Button>
-          <Button onClick={handleDelete}>Agree</Button>
+          <Button onClick={handleDelete} disabled={!isDeleteEnabled}>
+            Agree
+          </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+        <Alert onClose={handleSnackbarClose} severity='success' sx={{ width: '100%' }}>
+          Dormitory deleted successfully!
+        </Alert>
+      </Snackbar>
     </React.Fragment>
   )
 }

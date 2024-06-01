@@ -1,5 +1,3 @@
-// this is /api/admin/create/createBuilding.ts
-
 import supabase from 'src/libs/supabase'
 
 async function handler(req: any, res: any) {

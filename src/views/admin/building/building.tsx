@@ -50,6 +50,8 @@ const Building = ({ dorm_id }) => {
     fetchData()
   }, [])
 
+  console.log('dormitoryBuilding',dormitoryBuilding)
+
   const handleDeleteBuilding = async dorm_id => {
     try {
       const response = await fetch('/api/admin/delete/building/deleteBuildingByID', {
@@ -118,7 +120,7 @@ const Building = ({ dorm_id }) => {
                 <Button size='small' color='primary' onClick={() => handleEdit(dorm.dorm_id)}>
                   EDIT
                 </Button>
-                <DeleteBuilding dorm_id={dorm.dorm_id} handleDeleteBuilding={handleDeleteBuilding}>
+                <DeleteBuilding dorm_id={dorm.dorm_id} name={dorm.name} handleDeleteBuilding={handleDeleteBuilding}>
                   <Button size='small' color='primary'>
                     DELETE
                   </Button>
