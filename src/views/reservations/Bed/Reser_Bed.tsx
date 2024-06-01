@@ -5,9 +5,8 @@ import { useRouter } from 'next/router'
 import { SyntheticEvent, useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import { styled } from '@mui/material/styles'
 import { userStore } from 'src/stores/userStore'
-import Grid, { GridProps } from '@mui/material/Grid'
+import Grid from '@mui/material/Grid'
 import Tab from '@mui/material/Tab'
 import TabList from '@mui/lab/TabList'
 import TabPanel from '@mui/lab/TabPanel'
@@ -15,48 +14,28 @@ import TabContext from '@mui/lab/TabContext'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContentText from '@mui/material/DialogContentText'
-import BedroomParentIcon from '@mui/icons-material/BedroomParent'
-import CorporateFareIcon from '@mui/icons-material/CorporateFare'
-import BedIcon from '@mui/icons-material/Bed'
-import {
-  DialogActions,
-  DialogContent,
-  Stack,
-  Step,
-  StepConnector,
-  StepLabel,
-  Stepper,
-  stepConnectorClasses
-} from '@mui/material'
+import { DialogActions, DialogContent } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
-import SettingsIcon from '@mui/icons-material/Settings'
-import GroupAddIcon from '@mui/icons-material/GroupAdd'
-import VideoLabelIcon from '@mui/icons-material/VideoLabel'
-import SchoolIcon from '@mui/icons-material/School'
-import MosqueIcon from '@mui/icons-material/Mosque'
-import PoolIcon from '@mui/icons-material/Pool'
-import DangerousIcon from '@mui/icons-material/Dangerous'
-import HotelIcon from '@mui/icons-material/Hotel'
-import ConstructionIcon from '@mui/icons-material/Construction'
-import SuccessฺฺBarBed from './component'
+import SuccessBarBed from './component'
+import Allresult from '../result/result'
 
 const ReservationBedviwe = () => {
   const router = useRouter()
   const [dormitoryBed, setDormitoryBed] = useState(null)
   const [dormitoryRoom, setDormitoryRoom] = useState([])
   const [userReservations, setUserReservations] = useState<{ [key: string]: any }>({})
-
-  const userStoreInstance = userStore()
-  const { user, setUser } = userStoreInstance
   const [value, setValue] = useState<string>('1')
   const [open, setOpen] = useState(false)
+  const [openAllResult, setOpenAllResult] = useState(false)
   const steps = ['Reservation', 'Building', 'Room', 'Bed']
   const [roundData, setRoundData] = useState(null)
 
+  const userStoreInstance = userStore()
+  const { user } = userStoreInstance
+
   const handleChange = async (event: SyntheticEvent, newValue: string) => {
     setValue(newValue)
-
     if (!userReservations[newValue]) {
       const { data } = await fetch(`/api/reservation/checkUserReservBed?bed_id=${newValue}`).then(res => res.json())
       setUserReservations(prevReservations => ({ ...prevReservations, [newValue]: data }))
@@ -71,9 +50,15 @@ const ReservationBedviwe = () => {
     setOpen(false)
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleOpenAllResult = () => {
+    setOpenAllResult(true)
+  }
+
+  const handleCloseAllResult = () => {
+    setOpenAllResult(false)
+  }
+
   const fetchData = async () => {
-    console.log('router.query.id:', router.query.id)
     const { data } = await fetch(`/api/bed/${router.query.id}`).then(res => res.json())
     setDormitoryBed(data)
   }
@@ -82,22 +67,21 @@ const ReservationBedviwe = () => {
     if (router.query.id) {
       Promise.all([fetchData()])
     }
-  }, [fetchData, router.query.id])
+  }, [router.query.id])
 
   useEffect(() => {
     const fetchDataBedByRoomID = async () => {
-      console.log('router.query.id:', router.query.id)
       const { data } = await fetch(`/api/bed/room/${router.query.id}`).then(res => res.json())
       setDormitoryRoom(data)
     }
     const fetchDataAndUpdateStatus = async () => {
-      await fetchDataBedByRoomID() // Fetch the updated data
+      await fetchDataBedByRoomID()
     }
     fetchDataAndUpdateStatus()
 
-    // const intervalId = setInterval(fetchDataAndUpdateStatus, 50000)
+    const intervalId = setInterval(fetchDataAndUpdateStatus, 60000)
 
-    // return () => clearInterval(intervalId)
+    return () => clearInterval(intervalId)
   }, [router.query.id])
 
   useEffect(() => {
@@ -108,7 +92,6 @@ const ReservationBedviwe = () => {
         })
         const data = await response.json()
         setRoundData(data)
-        console.log('Round Info', data)
       } catch (error) {
         console.error('Error fetching round profile:', error)
       }
@@ -117,11 +100,9 @@ const ReservationBedviwe = () => {
   }, [])
 
   const handleReservation = async (bed_id: string) => {
-    console.log('Reservation Bed ID:', bed_id)
     try {
       if (!user) {
         console.error('User data is missing.')
-
         return
       }
 
@@ -130,20 +111,14 @@ const ReservationBedviwe = () => {
 
       if (hasReservation) {
         handleOpen()
-
         return
-      }
-
-      const handleClickOpen = () => {
-        setOpen(true)
       }
 
       const checkBedResponse = await fetch(`/api/reservation/checkRepeat?bed_id=${bed_id}`)
       const { isReserved } = await checkBedResponse.json()
 
       if (isReserved) {
-        handleClickOpen()
-
+        handleOpen()
         return
       }
 
@@ -165,18 +140,16 @@ const ReservationBedviwe = () => {
         console.error('Error inserting data into Reservation table:', error.message)
       } else {
         console.log('Data inserted successfully:', data)
-
-        router.push(`/reservation/result/${user.user_id}`)
+        setOpenAllResult(true)
       }
     } catch (error) {
       console.error('Error inserting data into Reservation table:', error.message)
     }
   }
-  console.log('dormitoryRoom:', dormitoryRoom)
 
   return (
     <>
-      <SuccessฺฺBarBed />
+      <SuccessBarBed />
 
       <Grid pb={4}>
         <Card>
@@ -340,12 +313,14 @@ const ReservationBedviwe = () => {
       >
         <DialogTitle id='alert-dialog-title'>{'Warn'}</DialogTitle>
         <DialogContent>
-          <DialogContentText id='alert-dialog-description'>THIS BED IS ALREADY RESERVE!</DialogContentText>
+          <DialogContentText id='alert-dialog-description'>THIS BED IS ALREADY RESERVED!</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>accept</Button>
+          <Button onClick={handleClose}>Accept</Button>
         </DialogActions>
       </Dialog>
+
+      <Allresult open={openAllResult} handleClose={handleCloseAllResult} />
     </>
   )
 }
