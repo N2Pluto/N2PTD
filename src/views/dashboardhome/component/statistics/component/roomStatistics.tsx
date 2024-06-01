@@ -8,9 +8,11 @@ import CardContent from '@mui/material/CardContent'
 // ** Icons Imports
 import BedroomParentIcon from '@mui/icons-material/BedroomParent';
 import { useEffect, useState } from 'react'
+import { useSpring, animated } from '@react-spring/web';
 
 const CardRoomStatistics = () => {
   const [room, setRoom] = useState([])
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
     const fetchUserdata = async () => {
@@ -20,6 +22,7 @@ const CardRoomStatistics = () => {
         })
         const data = await response.json()
         setRoom(data)
+        setIsLoaded(true)
       } catch (error) {
         console.error('Error fetching round profile:', error)
       }
@@ -27,58 +30,57 @@ const CardRoomStatistics = () => {
     fetchUserdata()
   }, [])
 
-  console.log('room',room)
-
-  const roomFree = room.filter((r: any) => r.status == true).length
-  const roomOccupied = room.filter((r: any) => r.status == false).length
+  const roomFree = room.filter((r: any) => r.status === true).length
+  const roomOccupied = room.filter((r: any) => r.status === false).length
   const roomTotal = room.length
 
-  console.log('Count of roomFree:', roomFree)
-  console.log('Count of roomOccupied:', roomOccupied)
-  console.log('Count of roomTotal:', roomTotal)
-
-
-
+  const fadeIn = useSpring({
+    opacity: isLoaded ? 1 : 0,
+    transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
+    from: { opacity: 0, transform: 'translateY(20px)' },
+  })
 
   return (
-    <Card
-      sx={{
-        border: 0,
-        boxShadow: 0,
-        color: 'common.white',
-        backgroundColor: 'pink',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}
-    >
-      <CardContent
+    <animated.div style={fadeIn}>
+      <Card
         sx={{
-          padding: theme => `${theme.spacing(3.25, 5, 4.5)} !important`,
+          border: 0,
+          boxShadow: 0,
+          color: 'common.white',
+          backgroundColor: 'pink',
           display: 'flex',
-          flexDirection: 'column',
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
         }}
       >
-        <Typography
-          variant='h5'
-          sx={{ display: 'flex', marginBottom: 2, alignItems: 'center', color: 'common.white' }}
+        <CardContent
+          sx={{
+            padding: theme => `${theme.spacing(3.25, 5, 4.5)} !important`,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
         >
-          <BedroomParentIcon sx={{ fontSize: '5.5rem' }} />
-        </Typography>
+          <Typography
+            variant='h5'
+            sx={{ display: 'flex', marginBottom: 2, alignItems: 'center', color: 'common.white' }}
+          >
+            <BedroomParentIcon sx={{ fontSize: '4.5rem' }} />
+          </Typography>
 
-        <Typography
-          variant='h6'
-          sx={{ display: 'flex', marginBottom: 2.75, alignItems: 'center', color: 'common.white' }}
-        >
-          ROOM
-        </Typography>
-        <Typography variant='body1' sx={{ marginBottom: 3, color: 'common.white' }}>
-        vacant : {roomFree}  | unavailable : {roomOccupied}
-        </Typography>
-      </CardContent>
-    </Card>
+          <Typography
+            variant='h6'
+            sx={{ display: 'flex', marginBottom: 2.75, alignItems: 'center', color: 'common.white' }}
+          >
+            ROOM
+          </Typography>
+          <Typography variant='body1' sx={{ marginBottom: 3, color: 'common.white' }}>
+            vacant: {roomFree} | unavailable: {roomOccupied}
+          </Typography>
+        </CardContent>
+      </Card>
+    </animated.div>
   )
 }
 

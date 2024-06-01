@@ -59,6 +59,7 @@
     "@mui/x-charts": "^7.5.0",
     "@mui/x-date-pickers": "^7.3.1",
     "@popperjs/core": "^2.11.2",
+    "@react-spring/web": "^9.7.3",
     "@supabase/supabase-js": "^2.39.3",
     "@types/dialogflow-fulfillment": "^0.6.1",
     "apexcharts-clevision": "3.28.5",

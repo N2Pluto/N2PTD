@@ -11,20 +11,23 @@ import Twitter from 'mdi-material-ui/Twitter'
 import ShareVariant from 'mdi-material-ui/ShareVariant'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import { useEffect, useState } from 'react'
+import { useSpring, animated } from '@react-spring/web'
 
 const CardUserStatistics = () => {
   const [user, setUser] = useState([])
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
     const fetchUserdata = async () => {
       try {
         const response = await fetch('/api/statistics/user', {
-          method: 'GET'
+          method: 'GET',
         })
         const data = await response.json()
         setUser(data)
+        setIsLoaded(true)
       } catch (error) {
-        console.error('Error fetching round profile:', error)
+        console.error('Error fetching user data:', error)
       }
     }
     fetchUserdata()
@@ -32,47 +35,53 @@ const CardUserStatistics = () => {
 
   const userCount = user.filter((u: any) => u.role === 'user').length
 
-  console.log('Count of users:', userCount)
+  const fadeIn = useSpring({
+    opacity: isLoaded ? 1 : 0,
+    transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
+    from: { opacity: 0, transform: 'translateY(20px)' },
+  })
 
   return (
-    <Card
-      sx={{
-        border: 0,
-        boxShadow: 0,
-        color: 'common.white',
-        backgroundColor: 'pink',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}
-    >
-      <CardContent
+    <animated.div style={fadeIn}>
+      <Card
         sx={{
-          padding: theme => `${theme.spacing(3.25, 5, 4.5)} !important`,
+          border: 0,
+          boxShadow: 0,
+          color: 'common.white',
+          backgroundColor: 'pink',
           display: 'flex',
-          flexDirection: 'column',
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
         }}
       >
-        <Typography
-          variant='h5'
-          sx={{ display: 'flex', marginBottom: 2, alignItems: 'center', color: 'common.white' }}
+        <CardContent
+          sx={{
+            padding: theme => `${theme.spacing(3.25, 5, 4.5)} !important`,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
         >
-          <AccountCircleIcon sx={{ fontSize: '5.5rem' }} />
-        </Typography>
+          <Typography
+            variant='h5'
+            sx={{ display: 'flex', marginBottom: 2, alignItems: 'center', color: 'common.white' }}
+          >
+            <AccountCircleIcon sx={{ fontSize: '4.5rem' }} />
+          </Typography>
 
-        <Typography
-          variant='h6'
-          sx={{ display: 'flex', marginBottom: 2.75, alignItems: 'center', color: 'common.white' }}
-        >
-          User
-        </Typography>
-        <Typography variant='body1' sx={{ marginBottom: 3, color: 'common.white' }}>
-        all users : {userCount}
-        </Typography>
-      </CardContent>
-    </Card>
+          <Typography
+            variant='h6'
+            sx={{ display: 'flex', marginBottom: 2.75, alignItems: 'center', color: 'common.white' }}
+          >
+            User
+          </Typography>
+          <Typography variant='body1' sx={{ marginBottom: 3, color: 'common.white' }}>
+            all users : {userCount}
+          </Typography>
+        </CardContent>
+      </Card>
+    </animated.div>
   )
 }
 

@@ -58,3 +58,8 @@ df-messenger {
 .bg-4 {
   background-color: #ce2525;
 }
+
+.smallImage {
+  width: 150px; /* adjust as needed */
+  height: 150px; /* adjust as needed */
+}
