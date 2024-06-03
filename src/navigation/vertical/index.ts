@@ -84,6 +84,14 @@ const useNavigation = (): VerticalNavItemsType => {
         icon: DnsOutlinedIcon,
         path: '/admin/userManagement'
       },
+       {
+        sectionTitle: 'Import Student'
+      },
+      {
+        title: 'Import Student',
+        icon: AccountPlusOutline,
+        path: '/admin/importStudent'
+      },
       {
         sectionTitle: 'การอนุมัติ'
       },

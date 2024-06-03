@@ -8,16 +8,13 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Divider from '@mui/material/Divider'
 import { useDropzone } from 'react-dropzone'
-import Snackbar from '@mui/material/Snackbar'
 import MuiAlert from '@mui/material/Alert'
-import Papa from 'papaparse'
 
 const Alert = props => {
   return <MuiAlert elevation={6} variant='filled' {...props} />
 }
 
-const ImportStudent = () => {
-  const [drawerOpen, setDrawerOpen] = useState(false)
+const ImportStudent = ({ drawerOpen, setDrawerOpen }) => {
   const [file, setFile] = useState(null)
   const [parsedData, setParsedData] = useState([])
   const [error, setError] = useState('')
@@ -51,6 +48,7 @@ const ImportStudent = () => {
 
       if (response.ok) {
         handleDrawerClose()
+        setSuccess(true)
       } else {
         throw new Error('Failed to import data.')
       }
@@ -63,20 +61,22 @@ const ImportStudent = () => {
     if (acceptedFiles.length) {
       const reader = new FileReader()
       reader.onload = () => {
-        Papa.parse(reader.result, {
-          header: true,
-          skipEmptyLines: true,
-          complete: results => {
-            const filteredData = results.data.filter(row => row.student_id && row.name && row.lastname)
-            setParsedData(filteredData)
-            setFile(acceptedFiles[0])
-          },
-          error: err => {
-            setError(`Failed to parse file: ${err.message}`)
-          }
+        const text = reader.result
+        const rows = text.split('\n').map(row => row.split(','))
+        const headers = rows[0]
+        const data = rows.slice(1).map(row => {
+          return headers.reduce((acc, header, index) => {
+            const value = row[index]
+            acc[header.trim()] = value ? value.trim() : ''
+            return acc
+          }, {})
         })
+
+        const filteredData = data.filter(row => row.student_id && row.name && row.lastname)
+        setParsedData(filteredData)
       }
       reader.readAsText(acceptedFiles[0])
+      setFile(acceptedFiles[0])
     }
   }
 
@@ -84,28 +84,22 @@ const ImportStudent = () => {
 
   return (
     <Card>
-      <CardContent>
-        <Typography variant='h5'>Import Students</Typography>
-        <Button variant='contained' color='primary' onClick={() => setDrawerOpen(true)}>
-          Import CSV
-        </Button>
-      </CardContent>
+        {/* <CardContent>
+          <Box display='flex' justifyContent='flex-end' mb={2}>
+            <Button variant='contained' color='primary' onClick={() => setDrawerOpen(true)}>
+              Import CSV
+            </Button>
+          </Box>
+        </CardContent> */}
 
       <Drawer anchor='right' open={drawerOpen} onClose={handleDrawerClose}>
-        <Box sx={{ width: '40vw', padding: 2, margin: 3 }}>
-          <Typography variant='h5' sx={{ mb: 2, mt: 2 }}>
+        <Box sx={{ width: '40vw', padding: 4 }}>
+          <Typography variant='h5' sx={{ mb: 2 }}>
             Import CSV
           </Typography>
-        </Box>
 
-        <Divider sx={{ borderWidth: '1px' }} />
+          <Divider sx={{ borderWidth: '1px', mb: 2 }} />
 
-        <Box
-          sx={{ width: '40vw', padding: 2, margin: 3 }}
-          role='presentation'
-          onClick={event => event.stopPropagation()}
-          onKeyDown={handleDrawerClose}
-        >
           <Typography variant='body2' sx={{ mb: 2 }}>
             Upload a CSV or TSV file. The first row should be the headers of the table, and your headers should not
             include any special characters other than hyphens ( - ) or underscores ( _ ).
@@ -116,29 +110,23 @@ const ImportStudent = () => {
           {!file ? (
             <Grid
               sx={{
-                height: '600px'
+                height: '150px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '2px dashed #ccc',
+                borderRadius: 1,
+                padding: 4,
+                textAlign: 'center',
+                cursor: 'pointer',
+                mb: 2
               }}
+              {...getRootProps()}
             >
-              <Box
-                {...getRootProps()}
-                sx={{
-                  border: '2px dashed #ccc',
-                  borderRadius: 1,
-                  padding: 4,
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  mb: 2,
-                  height: '150px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                <input {...getInputProps()} />
-                <Typography variant='body1'>
-                  Drag and drop, or <span style={{ color: '#3f51b5', cursor: 'pointer' }}>browse</span> your files
-                </Typography>
-              </Box>
+              <input {...getInputProps()} />
+              <Typography variant='body1'>
+                Drag and drop, or <span style={{ color: '#3f51b5', cursor: 'pointer' }}>browse</span> your files
+              </Typography>
             </Grid>
           ) : (
             <Box
@@ -236,30 +224,19 @@ const ImportStudent = () => {
               </Box>
             </Box>
           )}
-        </Box>
 
-        <Divider sx={{ borderWidth: '1px' }} />
+          <Divider sx={{ borderWidth: '1px', mt: 4 }} />
 
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, mr: 2 }}>
-          <Button variant='contained' color='primary' onClick={handleDrawerClose} sx={{ mr: 2 }}>
-            Cancel
-          </Button>
-          <Button variant='contained' color='primary' onClick={() => handleImportCSV(parsedData)} sx={{ mr: 2 }}>
-            Import data
-          </Button>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Button variant='contained' color='primary' onClick={handleDrawerClose} sx={{ mr: 2 }}>
+              Cancel
+            </Button>
+            <Button variant='contained' color='primary' onClick={() => handleImportCSV(parsedData)} sx={{ mr: 2 }}>
+              Import data
+            </Button>
+          </Box>
         </Box>
       </Drawer>
-
-      <Snackbar
-        open={success}
-        autoHideDuration={6000}
-        onClose={() => setSuccess(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      >
-        <Alert onClose={() => setSuccess(false)} severity='success'>
-          Data imported successfully!
-        </Alert>
-      </Snackbar>
     </Card>
   )
 }
