@@ -227,23 +227,26 @@ const CreatePersonalityUser = () => {
 
   const [formData, setFormData] = useState({})
 
-
   useEffect(() => {
-    if (user?.student_id.toString().startsWith('63')) {
-      // your code
-      setFormData(prevState => ({ ...prevState, student_year: '4' }))
+    const fetchYearSystem = async () => {
+      try {
+        const response = await fetch('/api/admin/yearSystem/read', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        const data = await response.json()
+        const yearSystem = data.find(item => item.student_id.startsWith(user?.student_id.toString().slice(0, 2)))
+        if (yearSystem) {
+          setFormData(prevState => ({ ...prevState, student_year: yearSystem.year }))
+        }
+      } catch (error) {
+        console.error('Error fetching year system:', error)
+      }
     }
-    if (user?.student_id.toString().startsWith('64')) {
-      // your code
-      setFormData(prevState => ({ ...prevState, student_year: '3' }))
-    }
-    if (user?.student_id.toString().startsWith('65')) {
-      // your code
-      setFormData(prevState => ({ ...prevState, student_year: '2' }))
-    }
-    if (user?.student_id.toString().startsWith('66')) {
-      // your code
-      setFormData(prevState => ({ ...prevState, student_year: '1' }))
+    if (user?.student_id) {
+      fetchYearSystem()
     }
   }, [user?.student_id])
 
@@ -265,7 +268,7 @@ const CreatePersonalityUser = () => {
           filter_school: formData.filter_school,
           filter_major: formData.filter_major,
           filter_religion: formData.filter_religion,
-          filter_redflag: formData.filter_redflag,
+          filter_redflag: formData.filter_redflag
         })
       })
 
@@ -275,7 +278,6 @@ const CreatePersonalityUser = () => {
         console.error('Error Update data into Users table:', error.message)
       } else {
         console.log('Data Update Success:', data)
-        alert('Data Update Success')
 
         // Call the createUserInfo API
         const responseUserInfo = await fetch('/api/account-setting/createUserInfo', {
@@ -283,7 +285,7 @@ const CreatePersonalityUser = () => {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ user_id: user.user_id, student_year: formData.student_year})
+          body: JSON.stringify({ user_id: user.user_id, student_year: formData.student_year })
         })
 
         const { data: userInfoData, error: userInfoError } = await responseUserInfo.json()
