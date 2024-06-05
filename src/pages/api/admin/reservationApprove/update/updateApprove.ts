@@ -38,17 +38,11 @@ const handler = async (req: any, res: any) => {
       return
     }
 
-    const { error: insertError } = await supabase.from('Dormitory_Approve').insert({
-      dorm_id: data[0].dorm_id,
-      room_id: data[0].room_id,
-      bed_id: data[0].bed_id,
-      user_id: data[0].user_id,
-      round_id: data[0].round_id
-    })
+    const { error: updateError } = await supabase.from('Reservation').update({ payment_status: 'Pending' }).eq('id', id)
 
-    if (insertError) {
-      console.error('Error inserting reservation data into Dormitory_Resident:', insertError)
-      res.status(500).json({ error: 'Failed to insert reservation data into Dormitory_Resident' })
+    if (updateError) {
+      console.error('Error updating payment status:', updateError)
+      res.status(500).json({ error: 'Failed to update payment status' })
       return
     }
   }

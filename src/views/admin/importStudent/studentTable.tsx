@@ -100,9 +100,9 @@ const StudentTable = () => {
           const formattedData = data.map(student => ({
             student_id: student.student_id,
             name: `${student.name} ${student.lastname}`,
-            school: student.Info_School?.school_name || '',
-            department: student.Info_Department?.department_name || '',
-            major: student.Info_Major?.major_name || '',
+            school: student.school || '',
+            department: student.department || '',
+            major: student.major || '',
             gender: student.gender,
             phone: student.phone,
             religion: student.religion,
@@ -329,6 +329,7 @@ const StudentTable = () => {
             <TableBody>
               {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
                 const isItemSelected = selected.indexOf(row.student_id) !== -1
+
                 return (
                   <StyledTableRow hover role='checkbox' tabIndex={-1} key={row.student_id}>
                     <TableCell padding='checkbox'>

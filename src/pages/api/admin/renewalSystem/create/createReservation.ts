@@ -3,7 +3,7 @@
 import supabase from 'src/libs/supabase'
 
 const handler = async (req: any, res: any) => {
-  const { user_id, id } = req.body
+  const { user_id } = req.body
   console.log(req.body)
 
   try {
@@ -14,17 +14,11 @@ const handler = async (req: any, res: any) => {
       throw deleteError
     }
 
-    // Update status in Dormitory_Approve
-    const { error: updateApproveError } = await supabase
-      .from('Dormitory_Approve')
-      .update({ status: '' })
+    // Update payment_status in Reservation
+    const { error: updateError } = await supabase
+      .from('Reservation')
+      .update({ payment_status: 'Pending' })
       .eq('user_id', user_id)
-
-    if (updateApproveError) {
-      throw updateApproveError
-    }
-
-    const { error: updateError } = await supabase.from('Renewal_Dormitory').update({ status: 'success' }).eq('id', id)
 
     if (updateError) {
       throw updateError

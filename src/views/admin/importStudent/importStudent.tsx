@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import Card from '@mui/material/Card'
 import Button from '@mui/material/Button'
@@ -10,6 +9,7 @@ import Grid from '@mui/material/Grid'
 import Divider from '@mui/material/Divider'
 import { useDropzone } from 'react-dropzone'
 import MuiAlert from '@mui/material/Alert'
+import Papa from 'papaparse'
 
 const Alert = props => {
   return <MuiAlert elevation={6} variant='filled' {...props} />
@@ -63,15 +63,8 @@ const ImportStudent = ({ drawerOpen, setDrawerOpen }) => {
       const reader = new FileReader()
       reader.onload = () => {
         const text = reader.result
-        const rows = text.split('\n').map(row => row.split(','))
-        const headers = rows[0]
-        const data = rows.slice(1).map(row => {
-          return headers.reduce((acc, header, index) => {
-            const value = row[index]
-            acc[header.trim()] = value ? value.trim() : ''
-            return acc
-          }, {})
-        })
+        const result = Papa.parse(text, { header: true, skipEmptyLines: true })
+        const data = result.data
 
         const filteredData = data.filter(row => row.student_id && row.name && row.lastname)
         setParsedData(filteredData)
@@ -85,7 +78,7 @@ const ImportStudent = ({ drawerOpen, setDrawerOpen }) => {
 
   return (
     <Card>
-        {/* <CardContent>
+      {/* <CardContent>
           <Box display='flex' justifyContent='flex-end' mb={2}>
             <Button variant='contained' color='primary' onClick={() => setDrawerOpen(true)}>
               Import CSV

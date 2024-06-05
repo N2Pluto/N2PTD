@@ -4,10 +4,11 @@ import supabase from 'src/libs/supabase'
 
 const handler = async (req: any, res: any) => {
   const { data: reservationData, error: reservationError } = await supabase
-    .from('Dormitory_Approve')
+    .from('Reservation')
     .select(
       '*,Users(email,student_id),Dormitory_Building(name),Dormitory_Room(room_number),Dormitory_Bed(bed_number),Reservation_System(round_name)'
     )
+    .eq('status', 'Approve')
 
   if (reservationError) return res.status(500).json({ error: reservationError.message })
 
@@ -17,7 +18,7 @@ const handler = async (req: any, res: any) => {
 
   const data = reservationData.map(reservation => {
     const userInfo = usersInfoData.find(user => user.user_id === reservation.user_id)
-    
+
     return { ...reservation, Users_Info: userInfo }
   })
 

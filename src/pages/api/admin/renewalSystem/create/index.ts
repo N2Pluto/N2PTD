@@ -13,7 +13,10 @@ async function handler(req: any, res: any) {
   console.log('user_id:', user_id)
 
   try {
-    const { data, error } = await supabase.from('Renewal_Dormitory').update({ status: userRenewal }).match({ user_id })
+    const { data, error } = await supabase
+      .from('Dormitory_Resident')
+      .update({ renew_status: userRenewal })
+      .match({ user_id })
 
     if (error) {
       throw error

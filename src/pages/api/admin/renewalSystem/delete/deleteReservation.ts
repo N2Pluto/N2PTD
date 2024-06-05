@@ -7,8 +7,8 @@ const handler = async (req: any, res: any) => {
   console.log(req.body)
 
   try {
-    // Select the user_id from Renewal_Dormitory table
-    const { data, error } = await supabase.from('Renewal_Dormitory').select('user_id').eq('id', id)
+    // Select the user_id from Dormitory_Resident table
+    const { data, error } = await supabase.from('Dormitory_Resident').select('user_id').eq('id', id)
 
     if (error) {
       throw error
@@ -18,17 +18,10 @@ const handler = async (req: any, res: any) => {
     console.log('user_id', userId)
 
     // Delete the corresponding record from Dormitory_Resident table
-    const { error: errorResident } = await supabase.from('Dormitory_Resident').delete().eq('user_id', userId)
+    const { error: errorResident } = await supabase.from('Dormitory_Resident').delete().eq('id', id)
 
     if (errorResident) {
       throw errorResident
-    }
-
-    // Delete the corresponding record from Dormitory_Approve table
-    const { error: errorApprove } = await supabase.from('Dormitory_Approve').delete().eq('user_id', userId)
-
-    if (errorApprove) {
-      throw errorApprove
     }
 
     // Delete the corresponding record from Reservation table
@@ -36,11 +29,6 @@ const handler = async (req: any, res: any) => {
 
     if (errorReservation) {
       throw errorReservation
-    }
-
-    const { error: deleteError } = await supabase.from('Renewal_Dormitory').delete().eq('id', id)
-    if (deleteError) {
-      throw deleteError
     }
 
     res.status(200).json({ message: 'Data deleted successfully' })

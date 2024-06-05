@@ -3,8 +3,23 @@
 import supabase from 'src/libs/supabase'
 
 async function handler(req: any, res: any) {
+  const { data: renewalSystemData, error: renewalSystemError } = await supabase
+    .from('Renewal_System')
+    .select('*')
+    .single()
+
+  if (renewalSystemError) return res.status(500).json({ error: renewalSystemError.message })
+
+  if (renewalSystemData.status === false) {
+    const { error: updateError } = await supabase
+      .from('Dormitory_Resident')
+      .update({ renew_status: 'leave' })
+      .match({ renew_status: 'Pending' })
+
+    if (updateError) return res.status(500).json({ error: updateError.message })
+  }
   const { data: renewalData, error: renewalError } = await supabase
-    .from('Renewal_Dormitory')
+    .from('Dormitory_Resident')
     .select(
       '*, Users(student_id,email),Dormitory_Building(name),Dormitory_Room(room_number),Dormitory_Bed(bed_number),Reservation_System(round_name)'
     )

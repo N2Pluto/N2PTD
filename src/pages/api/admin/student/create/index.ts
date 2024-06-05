@@ -1,9 +1,9 @@
-
 // /api/admin/student/create/index.ts
 import supabase from 'src/libs/supabase'
 
 const handler = async (req: any, res: any) => {
   const students = req.body
+  console.log(students)
 
   try {
     const { data, error } = await supabase.from('Student').insert(students)
@@ -15,6 +15,7 @@ const handler = async (req: any, res: any) => {
     res.status(200).json(data)
   } catch (error) {
     res.status(500).json({ error: error.message })
+    console.error(error)
   }
 }
 

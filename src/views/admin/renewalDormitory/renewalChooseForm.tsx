@@ -31,28 +31,6 @@ const RenewalChooseForm = () => {
   const [residentData, setResidentData] = useState(null)
 
   useEffect(() => {
-    const fetchResidentData = async () => {
-      try {
-        const response = await fetch('/api/admin/renewalDormitory/create/pullFormResident', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        const data = await response.json()
-        setResidentData(data)
-      } catch (error) {
-        console.error('Failed to fetch resident data:', error)
-      }
-    }
-
-    fetchResidentData()
-    const intervalId = setInterval(fetchResidentData, 60000)
-
-    return () => clearInterval(intervalId)
-  }, [])
-
-  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch('/api/admin/renewalDormitory/read/fetchFormByDate', {
@@ -77,7 +55,7 @@ const RenewalChooseForm = () => {
     }
 
     fetchData()
-    const intervalId = setInterval(fetchData, 60000)
+    const intervalId = setInterval(fetchData, 30000)
 
     return () => clearInterval(intervalId)
   }, [])
@@ -240,8 +218,8 @@ const RenewalChooseForm = () => {
                     labelId='user-renewal-select-label'
                     input={<OutlinedInput label='Stay Decision' />}
                   >
-                    <MenuItem value='stay'>อยู่ต่อ</MenuItem>
-                    <MenuItem value='leave'>ไม่อยู่ต่อ</MenuItem>
+                    <MenuItem value='stay'>Continue residing in this dormitory next semester</MenuItem>
+                    <MenuItem value='leave'>Do not continue residing in this dormitory next semester</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>

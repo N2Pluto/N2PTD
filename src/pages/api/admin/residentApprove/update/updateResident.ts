@@ -6,7 +6,7 @@ import supabase from 'src/libs/supabase'
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.body
 
-  const { data, error: fetchError } = await supabase.from('Dormitory_Approve').select('*').eq('id', id)
+  const { data, error: fetchError } = await supabase.from('Reservation').select('*').eq('id', id)
 
   if (fetchError || !data || data.length === 0) {
     console.error('Error fetching updated reservation data:', fetchError)
@@ -15,7 +15,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   // Update the status in Dormitory_Approve to "Success"
-  const { error: updateError } = await supabase.from('Dormitory_Approve').update({ status: 'SUCCESS' }).eq('id', id)
+  const { error: updateError } = await supabase.from('Reservation').update({ payment_status: 'SUCCESS' }).eq('id', id)
 
   if (updateError) {
     console.error('Error updating status in Dormitory_Approve:', updateError)
