@@ -34,6 +34,7 @@ const GoogleFormEdit: React.FC<GoogleFormEditProps> = ({ drawerOpen, setDrawerOp
         try {
           const response = await fetch(`/api/admin/googleForm/read/readByID/${id}`)
           const result = await response.json()
+          console.log('Result:', result)
           const { form_name, form_url, start_date, end_date } = result.data
           setFormName(form_name)
           setFormUrl(form_url)

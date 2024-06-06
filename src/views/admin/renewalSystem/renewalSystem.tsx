@@ -51,7 +51,7 @@ interface User {
   user_id: string
   round_id: number
   created_at: string
-  status: string
+  renew_status: string
   Users: {
     student_id: string
     email: string
@@ -111,19 +111,14 @@ const RenewalSystem = () => {
 
   const handleClickCSV = () => {
     const filteredUsersForExport = users.filter(user => {
-      const matchesTab = tab === 'all' || user.status === tab
+      const matchesTab = tab === 'all' || user.renew_status === tab
       const matchesRound = selectRoundValue === '-1' || user.round_id === Number(selectRoundValue)
+
       return matchesTab && matchesRound
     })
 
     const dataToExport = filteredUsersForExport.map(user => ({
-      dorm_id: user.dorm_id,
-      room_id: user.room_id,
-      bed_id: user.bed_id,
-      user_id: user.user_id,
-      round_id: user.round_id,
-      created_at: user.created_at,
-      status: user.status,
+      renew_status: user.renew_status,
       student_id: user.Users?.student_id,
       name: user.Users_Info?.name,
       lastname: user.Users_Info?.lastname,
@@ -175,6 +170,25 @@ const RenewalSystem = () => {
     return () => clearInterval(intervalId)
   }, [])
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch data
+        const response = await fetch('/api/admin/renewalDormitory/read/')
+        const result = await response.json()
+        setRows(result.data)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+
+    fetchData()
+
+    const intervalId = setInterval(fetchData, 3000)
+
+    return () => clearInterval(intervalId)
+  }, [])
+
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof User) => {
     const isAsc = orderBy === property && order === 'asc'
     setOrder(isAsc ? 'desc' : 'asc')
@@ -183,7 +197,7 @@ const RenewalSystem = () => {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     const tabFilteredUsers = users.filter(user => {
-      const matchesTab = tab === 'all' || user.status === tab
+      const matchesTab = tab === 'all' || user.renew_status === tab
       const matchesRound = selectRoundValue === '-1' || user.round_id === Number(selectRoundValue)
       return matchesTab && matchesRound
     })
@@ -241,31 +255,6 @@ const RenewalSystem = () => {
     setSelectRoundValue(event.target.value as string)
   }
 
-  const handleClearHistory = async (id: number) => {
-    setBackdropOpen(true)
-    try {
-      const response = await fetch(`/api/admin/renewalSystem/delete/clearHistory`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id })
-      })
-
-      if (response.ok) {
-        setSnackbarMessage('Clear History successfully')
-        setOpen(true)
-        setSelected([]) // Reset selected state
-        setSelectedCount(0) // Reset selected count
-        setBackdropOpen(false)
-      } else {
-        console.error('Failed to delete reservation')
-      }
-    } catch (error) {
-      console.error('Error deleting reservation:', error)
-    }
-  }
-
   const handleApprove = async (row: User) => {
     setBackdropOpen(true)
     try {
@@ -281,7 +270,6 @@ const RenewalSystem = () => {
       })
 
       if (response.ok) {
-        // Send email to the user
         await fetch('/api/admin/renewalSystem/nodemailer/nodemailer', {
           method: 'POST',
           headers: {
@@ -350,7 +338,6 @@ const RenewalSystem = () => {
   `
           })
         })
-
         setSnackbarMessage('Reservation approved successfully')
         setOpen(true)
         setSelected([]) // Reset selected state
@@ -458,7 +445,7 @@ const RenewalSystem = () => {
       (isNaN(Number(searchTerm))
         ? `${user.Users_Info?.name} ${user.Users_Info?.lastname}`.toLowerCase().includes(searchTerm.toLowerCase())
         : user.Users?.student_id.includes(searchTerm))
-    const matchesTab = tab === 'all' || user.status === tab
+    const matchesTab = tab === 'all' || user.renew_status === tab
     const matchesRound = selectRoundValue === '-1' || user.round_id === Number(selectRoundValue)
 
     return matchesSearch && matchesTab && matchesRound
@@ -468,16 +455,15 @@ const RenewalSystem = () => {
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredUsers.length) : 0
   const uniqueRounds = [...new Set(users.map(user => user.round_id))]
-  const countStatus = (status: string) => users.filter(user => user.status === status).length
+  const countStatus = (status: string) => users.filter(user => user.renew_status === status).length
 
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <Tabs value={tab} onChange={handleTabChange} aria-label='status tabs'>
-          <Tab label={`All (${users.length})`} value='all' />
+          <Tab label={`Pending (${countStatus('Pending')})`} value='Pending' />
           <Tab label={`Stay (${countStatus('stay')})`} value='stay' />
           <Tab label={`Leave (${countStatus('leave')})`} value='leave' />
-          <Tab label={`Success (${countStatus('success')})`} value='success' />
         </Tabs>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', margin: 5 }}>
           <Grid item xs={12} sm={3}>
@@ -559,7 +545,7 @@ const RenewalSystem = () => {
               >
                 {selected.length} selected
               </div>
-              {(tab === 'stay' || tab === 'leave' || tab === 'success') && (
+              {(tab === 'stay' || tab === 'leave') && (
                 <IconButton
                   onClick={async () => {
                     setBackdropOpen(true)
@@ -572,18 +558,12 @@ const RenewalSystem = () => {
                       for (const id of selected) {
                         await handleDelete(id)
                       }
-                    } else if (tab === 'success') {
-                      for (const id of selected) {
-                        await handleClearHistory(id)
-                      }
                     }
                     setSelected([]) // reset selected state
                     setBackdropOpen(false)
                   }}
                 >
-                  {tab === 'stay' && <CheckIcon />}
-                  {tab === 'leave' && <CloseIcon />}
-                  {tab === 'success' && <EventBusyIcon />}
+                  {tab !== 'Pending' && (tab === 'stay' ? <CheckIcon /> : <CloseIcon />)}
                 </IconButton>
               )}
             </>
@@ -640,17 +620,25 @@ const RenewalSystem = () => {
                       </TableCell>
                       <TableCell>
                         <Chip
-                          label={row.status}
-                          color={row.status === 'stay' ? 'success' : row.status === 'leave' ? 'error' : 'primary'}
+                          label={row.renew_status}
+                          color={
+                            row.renew_status === 'stay' ? 'success' : row.renew_status === 'leave' ? 'error' : 'primary'
+                          }
                         />
                       </TableCell>
-                      {tab !== 'all' && tab !== 'success' && (
+                      {tab !== 'Pending' && tab !== 'success' && (
                         <TableCell>
                           <IconButton
-                            color={row.status === 'stay' ? 'success' : row.status === 'leave' ? 'error' : 'primary'}
-                            onClick={() => (row.status === 'stay' ? handleApprove(row) : handleDelete(row.id))}
+                            color={
+                              row.renew_status === 'stay'
+                                ? 'success'
+                                : row.renew_status === 'leave'
+                                ? 'error'
+                                : 'primary'
+                            }
+                            onClick={() => (row.renew_status === 'stay' ? handleApprove(row) : handleDelete(row.id))}
                           >
-                            {row.status === 'stay' ? <CheckIcon /> : <CloseIcon />}
+                            {row.renew_status === 'stay' ? <CheckIcon /> : <CloseIcon />}
                           </IconButton>
                         </TableCell>
                       )}
@@ -682,15 +670,20 @@ const RenewalSystem = () => {
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
         message={snackbarMessage}
-        ContentProps={{ className: classes.success }}
         action={
-          <React.Fragment>
+          <>
+            <Button color='secondary' size='small' onClick={handleSnackbarClose}>
+              UNDO
+            </Button>
             <IconButton size='small' aria-label='close' color='inherit' onClick={handleSnackbarClose}>
               <CloseIcon fontSize='small' />
             </IconButton>
-          </React.Fragment>
+          </>
         }
       />
+      <Backdrop open={backdropOpen} style={{ zIndex: 1301, color: '#fff' }}>
+        <CircularProgress color='inherit' />
+      </Backdrop>
     </Box>
   )
 }

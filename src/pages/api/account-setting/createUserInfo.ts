@@ -20,36 +20,20 @@ const handler = async (req: any, res: any) => {
     const { data: studentData } = await supabase.from('Student').select('*').eq('student_id', user.student_id)
     const student = studentData[0]
 
+    if (!student) {
+      console.error('Student not found')
 
-    // Fetch school_name
-    const { data: schoolData } = await supabase
-      .from('Info_School')
-      .select('school_name')
-      .eq('school_id', student.school_id)
-    const school_name = schoolData[0]?.school_name
-
-
-    // Fetch department_name
-    const { data: departmentData } = await supabase
-      .from('Info_Department')
-      .select('department_name')
-      .eq('department_id', student.department_id)
-    const department_name = departmentData[0]?.department_name
-
-
-    // Fetch major_name
-    const { data: majorData } = await supabase.from('Info_Major').select('major_name').eq('major_id', student.major_id)
-    const major_name = majorData[0]?.major_name
-
+      return res.status(404).json({ error: 'Student not found' })
+    }
 
     // Insert into Users_Info
     const { data, error } = await supabase.from('Users_Info').insert({
       user_id,
       name: student.name,
       lastname: student.lastname,
-      school: school_name,
-      department: department_name,
-      major: major_name,
+      school: student.school,
+      department: student.department,
+      major: student.major,
       religion: student.religion,
       gender: student.gender,
       phone: student.phone,
@@ -61,7 +45,6 @@ const handler = async (req: any, res: any) => {
 
       return res.status(500).json({ error: error.message })
     }
-
 
     res.status(200).json({ data })
   })
