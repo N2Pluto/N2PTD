@@ -34,19 +34,47 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     .update({ user_id: resident1.user_id })
     .eq('id', id2)
 
-  // Update each record with the other's user_id in Reservation table
-  const { error: updateError3 } = await supabase
+  if (updateError1 || updateError2) {
+    return res.status(500).json({ error: updateError1 || updateError2 })
+  }
+
+  // Fetch all reservations of both residents
+  const { data: reservations1, error: reservationsError1 } = await supabase
     .from('Reservation')
-    .update({ user_id: resident2.user_id })
+    .select('*')
     .eq('user_id', resident1.user_id)
 
-  const { error: updateError4 } = await supabase
+  const { data: reservations2, error: reservationsError2 } = await supabase
     .from('Reservation')
-    .update({ user_id: resident1.user_id })
+    .select('*')
     .eq('user_id', resident2.user_id)
 
-  if (updateError1 || updateError2 || updateError3 || updateError4) {
-    return res.status(500).json({ error: updateError1 || updateError2 || updateError3 || updateError4 })
+  if (reservationsError1 || reservationsError2) {
+    return res.status(500).json({ error: reservationsError1 || reservationsError2 })
+  }
+
+  // Update each reservation of resident1 to resident2
+  for (let reservation of reservations1) {
+    const { error: updateError } = await supabase
+      .from('Reservation')
+      .update({ user_id: resident2.user_id })
+      .eq('id', reservation.id)
+
+    if (updateError) {
+      return res.status(500).json({ error: updateError })
+    }
+  }
+
+  // Update each reservation of resident2 to resident1
+  for (let reservation of reservations2) {
+    const { error: updateError } = await supabase
+      .from('Reservation')
+      .update({ user_id: resident1.user_id })
+      .eq('id', reservation.id)
+
+    if (updateError) {
+      return res.status(500).json({ error: updateError })
+    }
   }
 
   // Return a success response
