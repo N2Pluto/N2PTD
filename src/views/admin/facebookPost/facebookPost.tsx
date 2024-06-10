@@ -54,13 +54,13 @@ const FormLayoutsFacebookPost = () => {
         })
       })
 
-      console.log('response',response)
+      console.log('response', response)
 
       if (response.ok) {
-        alert ('สร้างโพสต์สำเร็จ')
+        alert('สร้างโพสต์สำเร็จ')
         router.push('/admin/home')
-      }else{
-        alert ('สร้างโพสต์ไม่สำเร็จ')
+      } else {
+        alert('สร้างโพสต์ไม่สำเร็จ')
       }
 
 
@@ -77,8 +77,13 @@ const FormLayoutsFacebookPost = () => {
       reader.onload = () => setImgSrc(reader.result as string)
       reader.readAsDataURL(file)
 
-      // Upload file to Supabase
-      const filePath = `public/${file.name}`
+      // Generate a new filename with the current timestamp
+      const timestamp = new Date().toISOString().replace(/[:.-]/g, '')
+      const extension = file.name.split('.').pop()
+      const newFileName = `${timestamp}.${extension}`
+
+      // Upload file to Supabase with the new filename
+      const filePath = `public/${newFileName}`
       const { error } = await supabase.storage.from('post').upload(filePath, file)
 
       if (error) {
@@ -111,12 +116,12 @@ const FormLayoutsFacebookPost = () => {
         <form onSubmit={handleFormSubmit}>
           {imgSrc && (
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-            <ImgStyled src={imgSrc} alt='Profile Pic' sx={{pb:4}}/>
+              <ImgStyled src={imgSrc} alt='Profile Pic' sx={{ pb: 4 }} />
 
-            <Button onClick={handleChange} variant='contained' size='large'>
-              Delete photo
-            </Button>
-          </Box>
+              <Button onClick={handleChange} variant='contained' size='large'>
+                Delete photo
+              </Button>
+            </Box>
 
           )}
           {!imgSrc && (
