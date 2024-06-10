@@ -30,6 +30,8 @@ interface FilterDrawerProps {
     setBedFilter: (value: string) => void
     priceFilter: number | ''
     setPriceFilter: (value: number | '') => void
+    genderFilter: string
+    setGenderFilter: (value: string) => void
   }
 }
 
@@ -46,7 +48,9 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
     bedFilter,
     setBedFilter,
     priceFilter,
-    setPriceFilter
+    setPriceFilter,
+    genderFilter,
+    setGenderFilter
   }
 }) => {
   return (
@@ -75,6 +79,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
               setBathroomFilter('')
               setBedFilter('')
               setPriceFilter('')
+              setGenderFilter('')
             }}
           >
             <RefreshIcon sx={{ pt: 2, pl: 6, fontSize: '50px' }} />
@@ -86,6 +91,35 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
         <Divider />
 
         <Box sx={{ marginTop: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant='h6' sx={{ paddingRight: 2, ml: 4, fontWeight: 'bold' }}>
+              Gender
+            </Typography>
+          </Box>
+          <Grid container spacing={0} pb={3} pt={1}>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Radio checked={genderFilter === ''} onChange={() => setGenderFilter('')} />}
+                label='All'
+                sx={{ ml: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Radio checked={genderFilter === 'male'} onChange={() => setGenderFilter('male')} />}
+                label='Male'
+                sx={{ ml: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Radio checked={genderFilter === 'female'} onChange={() => setGenderFilter('female')} />}
+                label='Female'
+                sx={{ ml: 2 }}
+              />
+            </Grid>
+          </Grid>
+
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Typography variant='h6' sx={{ paddingRight: 2, ml: 4, fontWeight: 'bold' }}>
               Roommate

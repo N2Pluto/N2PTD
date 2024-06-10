@@ -77,6 +77,8 @@ const ReservationBuildingDetails = () => {
     fetchData()
   }, [])
 
+  console.log('type_gender:', dormitoryBuilding.type_gender)
+
   // const handleClick = (event: React.MouseEvent<HTMLElement>) => {
   //   setAnchorEl(event.currentTarget)
   // }
@@ -90,8 +92,18 @@ const ReservationBuildingDetails = () => {
   }
 
   useEffect(() => {
-    handleDialogToggle() 
-  }, []) 
+    handleDialogToggle()
+  }, [])
+
+  const getBackgroundImage = () => {
+    if (dormitoryBuilding.type_gender === 'male') {
+      return 'url(https://img5.pic.in.th/file/secure-sv1/Walailak_DormitoryReservation.png)'
+    } else if (dormitoryBuilding.type_gender === 'female') {
+      return 'url(https://img2.pic.in.th/pic/Walailak_DormitoryReservation-1.png)'
+    }
+
+    return ''
+  }
 
   return (
     <>
@@ -142,7 +154,9 @@ const ReservationBuildingDetails = () => {
                 bedFilter,
                 setBedFilter,
                 priceFilter,
-                setPriceFilter
+                setPriceFilter,
+                genderFilter,
+                setGenderFilter
               }}
             />
           </CardContent>
@@ -174,7 +188,23 @@ const ReservationBuildingDetails = () => {
                     paddingLeft: ['1.5rem !important', '1.5rem !important', '0 !important']
                   }}
                 >
-                  <CardContent>
+                  <CardContent
+                    sx={{
+                      position: 'relative',
+                      '&::after': {
+                        content: '""',
+                        position: 'absolute',
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: '50%', // Adjust the width as needed
+                        backgroundImage: getBackgroundImage(),
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }
+                    }}
+                  >
                     <Typography variant='h6' sx={{ marginBottom: 2 }}>
                       {dorm.name}
                     </Typography>

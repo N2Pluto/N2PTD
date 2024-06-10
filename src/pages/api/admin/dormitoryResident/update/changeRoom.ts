@@ -35,30 +35,15 @@ const handler = async (req: any, res: any) => {
     return
   }
 
-  // Update Reservation_Approve
-  console.log(
-    `Updating Dormitory_Approve with dorm_id: ${newBuilding}, room_id: ${newRoom}, bed_id: ${newBed} for user_id: ${userId}`
-  )
-  const { error: approveError } = await supabase
-    .from('Dormitory_Approve')
+  const { error: reservationError } = await supabase
+    .from('Reservation')
     .update({ dorm_id: newBuilding, room_id: newRoom, bed_id: newBed })
     .eq('user_id', userId)
-
-  if (approveError) {
-    console.error(approveError)
-    res.status(500).json({ error: approveError.message })
-
-    return
-  }
 
   // Update Reservation
   console.log(
     `Updating Reservation with dorm_id: ${newBuilding}, room_id: ${newRoom}, bed_id: ${newBed} for user_id: ${userId}`
   )
-  const { error: reservationError } = await supabase
-    .from('Reservation')
-    .update({ dorm_id: newBuilding, room_id: newRoom, bed_id: newBed })
-    .eq('user_id', userId)
 
   if (reservationError) {
     console.error(reservationError)

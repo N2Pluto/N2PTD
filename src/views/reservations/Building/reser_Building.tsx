@@ -158,6 +158,16 @@ const ReservationBuilding = () => {
     handleDialogToggle() // เรียกใช้งานเมื่อคอมโพเนนต์โหลดเสร็จ
   }, []) // ใส่เป็นอาร์เรย์ว่างเพื่อให้เรียกใช้เพียงครั้งเดียวหลังจากคอมโพเนนต์โหลดเสร็จ
 
+  const getBackgroundImage = () => {
+    if (genderFilter === 'male') {
+      return 'url(https://img5.pic.in.th/file/secure-sv1/Walailak_DormitoryReservation.png)'
+    } else if (genderFilter === 'female') {
+      return 'url(https://img2.pic.in.th/pic/Walailak_DormitoryReservation-1.png)'
+    }
+
+    return ''
+  }
+
   return (
     <>
       <SuccessฺฺBarBuilding />
@@ -207,9 +217,9 @@ const ReservationBuilding = () => {
           <Grid key={dorm.dorm_id} pb={5}>
             <Card>
               <Grid container spacing={6}>
-                <StyledGrid item md={5} xs={12}>
+                <StyledGrid item md={4} xs={12}>
                   <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <img width={300} height={300} alt='dom img' src={dorm.images_url} />
+                    <img width={400} height={350} alt='dom img' src={dorm.images_url} />
                   </CardContent>
                 </StyledGrid>
                 <Grid
@@ -221,13 +231,27 @@ const ReservationBuilding = () => {
                     paddingLeft: ['1.5rem !important', '1.5rem !important', '0 !important']
                   }}
                 >
-                  <CardContent>
+                  <CardContent
+                    sx={{
+                      position: 'relative',
+                      '&::after': {
+                        content: '""',
+                        position: 'absolute',
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: '50%', // Adjust the width as needed
+                        backgroundImage: getBackgroundImage(),
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }
+                    }}
+                  >
                     <Typography variant='h6' sx={{ marginBottom: 2 }}>
                       {dorm.name}
                     </Typography>
-                    <Typography variant='body2' sx={{ marginBottom: 3.5 }}>
-                      - Dormitory fee: 10,000 baht per person per semester. <br /> - Monthly electricity bill payment.
-                    </Typography>
+
                     <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
                       Gender :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
@@ -278,39 +302,6 @@ const ReservationBuilding = () => {
                         <AddCircleIcon fontSize='small' sx={{ marginRight: 2 }} />
                         Reservation Now!
                       </Button>
-
-                      <IconButton
-                        id='long-button'
-                        aria-label='share'
-                        aria-haspopup='true'
-                        onClick={handleClick}
-                        aria-controls='long-menu'
-                        aria-expanded={open ? 'true' : undefined}
-                      >
-                        <ShareVariant fontSize='small' />
-                      </IconButton>
-                      <Menu
-                        open={open}
-                        id='long-menu'
-                        anchorEl={anchorEl}
-                        onClose={handleClose}
-                        MenuListProps={{
-                          'aria-labelledby': 'long-button'
-                        }}
-                      >
-                        <MenuItem onClick={handleClose}>
-                          <Facebook />
-                        </MenuItem>
-                        <MenuItem onClick={handleClose}>
-                          <Twitter />
-                        </MenuItem>
-                        <MenuItem onClick={handleClose}>
-                          <Linkedin />
-                        </MenuItem>
-                        <MenuItem onClick={handleClose}>
-                          <GooglePlus />
-                        </MenuItem>
-                      </Menu>
                     </Box>
                   </CardActions>
                 </Grid>

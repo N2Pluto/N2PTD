@@ -9,7 +9,7 @@ const handler = async (req: any, res: any) => {
       // 1. Delete reservations associated with the round
       await supabase.from('Reservation').delete().eq('round_id', id)
 
-      const { error: renewalError } = await supabase.from('Renewal_Dormitory').delete().eq('round_id', id)
+      const { error: renewalError } = await supabase.from('Dormitory_Resident').delete().eq('round_id', id)
 
       // 2. Delete the round
       const { error: roundError } = await supabase.from('Reservation_System').delete().eq('id', id)

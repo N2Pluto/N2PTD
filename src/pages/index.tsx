@@ -18,6 +18,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
+import { Parallax, ParallaxLayer } from '@react-spring/parallax'
 
 const LandingPage = () => {
   return (
