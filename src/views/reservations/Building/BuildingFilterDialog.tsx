@@ -31,11 +31,13 @@ interface FilterDrawerProps {
     priceFilter: number | ''
     setPriceFilter: (value: number | '') => void
   }
+  disableScrollLock?: boolean
 }
 
 const FilterDrawer: React.FC<FilterDrawerProps> = ({
   open,
   onClose,
+  disableScrollLock = false,
   filters: {
     buildingFilter,
     setBuildingFilter,
@@ -53,6 +55,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
     <Drawer
       anchor='left'
       open={open}
+      disableScrollLock={disableScrollLock}
       onClose={onClose}
       ModalProps={{
         BackdropProps: {

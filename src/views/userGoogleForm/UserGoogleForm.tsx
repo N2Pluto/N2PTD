@@ -71,8 +71,17 @@ const UserGoogleFormCard = () => {
             </Typography>
             <Button
               variant='contained'
-              sx={{ padding: theme => theme.spacing(1.5, 4), marginTop: 2 }}
+              sx={{
+                padding: theme => theme.spacing(1.5, 4),
+                marginTop: 2,
+                backgroundColor: row.status === false ? 'grey' : undefined, // Set button color to grey when disabled
+                '&:disabled': {
+                  backgroundColor: 'lightgrey', // Ensure the button remains grey when disabled
+                  color: 'white' // Optional: Adjust text color for disabled state
+                }
+              }}
               onClick={() => window.open(row.form_url, '_blank')}
+              disabled={!row.status} // Disable button when row.status is false
             >
               Open Form
             </Button>

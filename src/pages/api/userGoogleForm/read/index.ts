@@ -3,11 +3,7 @@
 import supabase from 'src/libs/supabase'
 
 async function handler(req: any, res: any) {
-  const { data, error } = await supabase
-    .from('Google_Form')
-    .select('*')
-    .order('id', { ascending: true })
-    .eq('status', true)
+  const { data, error } = await supabase.from('Google_Form').select('*').order('id', { ascending: true })
 
   if (error) {
     res.status(500).json({ error })

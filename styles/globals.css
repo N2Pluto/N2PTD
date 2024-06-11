@@ -63,3 +63,10 @@ df-messenger {
   width: 150px; /* adjust as needed */
   height: 150px; /* adjust as needed */
 }
+
+.pixelify-sans {
+  font-family: "Pixelify Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
