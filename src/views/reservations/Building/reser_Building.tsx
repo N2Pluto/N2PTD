@@ -160,9 +160,9 @@ const ReservationBuilding = () => {
 
   const getBackgroundImage = () => {
     if (genderFilter === 'male') {
-      return 'url(https://img5.pic.in.th/file/secure-sv1/Walailak_DormitoryReservation.png)'
+      return 'url(https://img5.pic.in.th/file/secure-sv1/Man09f24199566c0285.png)'
     } else if (genderFilter === 'female') {
-      return 'url(https://img2.pic.in.th/pic/Walailak_DormitoryReservation-1.png)'
+      return 'url(https://img2.pic.in.th/pic/Girl39ae97a5e743e3c0.png)'
     }
 
     return ''
@@ -188,6 +188,7 @@ const ReservationBuilding = () => {
             <FilterDrawer
               open={dialogOpen}
               onClose={handleDialogToggle}
+              disableScrollLock={true}
               filters={{
                 buildingFilter,
                 setBuildingFilter,
@@ -219,7 +220,7 @@ const ReservationBuilding = () => {
               <Grid container spacing={6}>
                 <StyledGrid item md={4} xs={12}>
                   <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <img width={400} height={350} alt='dom img' src={dorm.images_url} />
+                    <img width={'100%'} height={'100%'} alt='dom img' src={dorm.images_url} />
                   </CardContent>
                 </StyledGrid>
                 <Grid
@@ -238,58 +239,84 @@ const ReservationBuilding = () => {
                         content: '""',
                         position: 'absolute',
                         right: 0,
-                        top: 0,
-                        bottom: 0,
-                        width: '50%', // Adjust the width as needed
+                        left: 125, // Adjusted to 0 to start from the very left
+                        top: 72,
+                        bottom: 0, // Adjusted to 0 to extend to the very bottom
+                        opacity: 0.1,
+                        width: '100%', // Ensure the width covers the entire area
+                        height: '100%', // Ensure the height covers the entire area
                         backgroundImage: getBackgroundImage(),
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
+                        backgroundSize: 'cover', // Changed to cover to ensure the image fully covers the CardContent
+                        backgroundPosition: 'center', // Center the image to ensure the focus is in the middle
                         backgroundRepeat: 'no-repeat'
                       }
                     }}
                   >
-                    <Typography variant='h6' sx={{ marginBottom: 2 }}>
+                    <Typography
+                      variant='h4'
+                      sx={{
+                        marginBottom: '16px', // Adjusted marginBottom
+                        fontFamily: '"Pixelify Sans", sans-serif',
+                        fontOpticalSizing: 'auto',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                      }}
+                    >
                       {dorm.name}
                     </Typography>
 
-                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                    <Typography sx={{ fontWeight: 500, marginBottom: '16px' }}>
+                      {' '}
+                      {/* Adjusted marginBottom */}
                       Gender :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.type_gender}
                       </Box>
                     </Typography>
-                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                    <Typography sx={{ fontWeight: 500, marginBottom: '16px' }}>
+                      {' '}
+                      {/* Adjusted marginBottom */}
                       Include :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.type_building}
                       </Box>
                     </Typography>
-                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                    <Typography sx={{ fontWeight: 500, marginBottom: '16px' }}>
+                      {' '}
+                      {/* Adjusted marginBottom */}
                       Bathroom :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.type_bathroom}
                       </Box>
                     </Typography>
 
-                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                    <Typography sx={{ fontWeight: 500, marginBottom: '16px' }}>
+                      {' '}
+                      {/* Adjusted marginBottom */}
                       Bed Type :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.type_bedtype}
                       </Box>
                     </Typography>
-                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                    <Typography sx={{ fontWeight: 500, marginBottom: '16px' }}>
+                      {' '}
+                      {/* Adjusted marginBottom */}
                       Roommate :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.type_roommate}
                       </Box>
                     </Typography>
-                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                    <Typography sx={{ fontWeight: 500, marginBottom: '16px' }}>
+                      {' '}
+                      {/* Adjusted marginBottom */}
                       Room Total :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.room_total}
                       </Box>
                     </Typography>
-                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                    <Typography sx={{ fontWeight: 500, marginBottom: '16px' }}>
+                      {' '}
+                      {/* Adjusted marginBottom */}
                       Price :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.price} / Person / Term.

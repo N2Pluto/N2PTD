@@ -77,8 +77,6 @@ const ReservationBuildingDetails = () => {
     fetchData()
   }, [])
 
-  console.log('type_gender:', dormitoryBuilding.type_gender)
-
   // const handleClick = (event: React.MouseEvent<HTMLElement>) => {
   //   setAnchorEl(event.currentTarget)
   // }
@@ -95,13 +93,12 @@ const ReservationBuildingDetails = () => {
     handleDialogToggle()
   }, [])
 
-  const getBackgroundImage = () => {
-    if (dormitoryBuilding.type_gender === 'male') {
-      return 'url(https://img5.pic.in.th/file/secure-sv1/Walailak_DormitoryReservation.png)'
-    } else if (dormitoryBuilding.type_gender === 'female') {
-      return 'url(https://img2.pic.in.th/pic/Walailak_DormitoryReservation-1.png)'
+  const getBackgroundImage = (type_gender: string) => {
+    if (type_gender === 'male') {
+      return 'url(https://img5.pic.in.th/file/secure-sv1/Man09f24199566c0285.png)'
+    } else if (type_gender === 'female') {
+      return 'url(https://img2.pic.in.th/pic/Girl39ae97a5e743e3c0.png)'
     }
-
     return ''
   }
 
@@ -143,7 +140,7 @@ const ReservationBuildingDetails = () => {
             </Box>
             <FilterDrawer
               open={dialogOpen}
-              onClose={handleDialogToggle}
+              onClose={handleDialogToggle}  
               filters={{
                 buildingFilter,
                 setBuildingFilter,
@@ -158,6 +155,7 @@ const ReservationBuildingDetails = () => {
                 genderFilter,
                 setGenderFilter
               }}
+              disableScrollLock={true}
             />
           </CardContent>
         </Card>
@@ -174,9 +172,9 @@ const ReservationBuildingDetails = () => {
           <Grid key={dorm.dorm_id} pb={5}>
             <Card>
               <Grid container spacing={6}>
-                <StyledGrid item md={5} xs={12}>
+                <StyledGrid item md={4} xs={12}>
                   <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <img width={300} height={300} alt='dom img' src={dorm.images_url} />
+                    <img width={'100%'} height={'100%'} alt='dom img' src={dorm.images_url} />
                   </CardContent>
                 </StyledGrid>
                 <Grid
@@ -195,58 +193,84 @@ const ReservationBuildingDetails = () => {
                         content: '""',
                         position: 'absolute',
                         right: 0,
-                        top: 0,
-                        bottom: 0,
-                        width: '50%', // Adjust the width as needed
-                        backgroundImage: getBackgroundImage(),
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
+                        left: 125, // Adjusted to 0 to start from the very left
+                        top: 72,
+                        bottom: 0, // Adjusted to 0 to extend to the very bottom
+                        opacity: 0.1,
+                        width: '100%', // Ensure the width covers the entire area
+                        height: '100%', // Ensure the height covers the entire area
+                        backgroundImage: getBackgroundImage(dorm.type_gender),
+                        backgroundSize: 'cover', // Changed to cover to ensure the image fully covers the CardContent
+                        backgroundPosition: 'center', // Center the image to ensure the focus is in the middle
                         backgroundRepeat: 'no-repeat'
                       }
                     }}
                   >
-                    <Typography variant='h6' sx={{ marginBottom: 2 }}>
+                    <Typography
+                      variant='h4'
+                      sx={{
+                        marginBottom: '16px', // Adjusted marginBottom
+                        fontFamily: '"Pixelify Sans", sans-serif',
+                        fontOpticalSizing: 'auto',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                      }}
+                    >
                       {dorm.name}
                     </Typography>
 
-                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                    <Typography sx={{ fontWeight: 500, marginBottom: '16px' }}>
+                      {' '}
+                      {/* Adjusted marginBottom */}
                       Gender :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.type_gender}
                       </Box>
                     </Typography>
-                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                    <Typography sx={{ fontWeight: 500, marginBottom: '16px' }}>
+                      {' '}
+                      {/* Adjusted marginBottom */}
                       Include :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.type_building}
                       </Box>
                     </Typography>
-                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                    <Typography sx={{ fontWeight: 500, marginBottom: '16px' }}>
+                      {' '}
+                      {/* Adjusted marginBottom */}
                       Bathroom :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.type_bathroom}
                       </Box>
                     </Typography>
 
-                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                    <Typography sx={{ fontWeight: 500, marginBottom: '16px' }}>
+                      {' '}
+                      {/* Adjusted marginBottom */}
                       Bed Type :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.type_bedtype}
                       </Box>
                     </Typography>
-                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                    <Typography sx={{ fontWeight: 500, marginBottom: '16px' }}>
+                      {' '}
+                      {/* Adjusted marginBottom */}
                       Roommate :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.type_roommate}
                       </Box>
                     </Typography>
-                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                    <Typography sx={{ fontWeight: 500, marginBottom: '16px' }}>
+                      {' '}
+                      {/* Adjusted marginBottom */}
                       Room Total :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.room_total}
                       </Box>
                     </Typography>
-                    <Typography sx={{ fontWeight: 500, marginBottom: 3 }}>
+                    <Typography sx={{ fontWeight: 500, marginBottom: '16px' }}>
+                      {' '}
+                      {/* Adjusted marginBottom */}
                       Price :{' '}
                       <Box component='span' sx={{ fontWeight: 'bold' }}>
                         {dorm.price} / Person / Term.

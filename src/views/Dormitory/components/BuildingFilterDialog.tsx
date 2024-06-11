@@ -33,11 +33,13 @@ interface FilterDrawerProps {
     genderFilter: string
     setGenderFilter: (value: string) => void
   }
+  disableScrollLock?: boolean
 }
 
 const FilterDrawer: React.FC<FilterDrawerProps> = ({
   open,
   onClose,
+  disableScrollLock = false,
   filters: {
     buildingFilter,
     setBuildingFilter,
@@ -58,6 +60,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
       anchor='left'
       open={open}
       onClose={onClose}
+      disableScrollLock={disableScrollLock}
       ModalProps={{
         BackdropProps: {
           style: {
