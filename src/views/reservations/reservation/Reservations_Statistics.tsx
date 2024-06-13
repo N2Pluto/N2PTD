@@ -15,6 +15,8 @@ import DoorBackIcon from '@mui/icons-material/DoorBack'
 import BedIcon from '@mui/icons-material/Bed'
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
+import PaymentIcon from '@mui/icons-material/Payment'
+import PersonIcon from '@mui/icons-material/Person'
 
 interface DataType {
   stats: string
@@ -26,14 +28,17 @@ interface DataType {
 const ReservationsStatistics = () => {
   const { user } = userStore()
   const [reservation, setReservation] = useState(null)
+  const [userInfo, setUserInfo] = useState(null)
   const [snackbarOpen, setSnackbarOpen] = useState(false)
   const [snackbarMessage, setSnackbarMessage] = useState('')
 
   useEffect(() => {
     const fetchReservationData = async () => {
       try {
-        const { data } = await fetch(`/api/reservation/select?user_id=${user?.user_id}`).then(res => res.json())
-        setReservation(data[0])
+        const response = await fetch(`/api/reservation/select?user_id=${user?.user_id}`)
+        const { reservationData, userInfoData } = await response.json()
+        setReservation(reservationData[0])
+        setUserInfo(userInfoData[0])
       } catch (error) {
         console.error('Error fetching reservation data:', error)
       }
@@ -44,46 +49,52 @@ const ReservationsStatistics = () => {
 
   const salesData: DataType[] = [
     {
-      stats: user?.student_id?.toString(),
+      stats: userInfo ? `${userInfo.name} ${userInfo.lastname}` : 'N/A',
+      title: 'Full Name',
+      color: 'error', // Neutral information
+      icon: <PersonIcon sx={{ fontSize: '1.75rem' }} />
+    },
+    {
+      stats: user?.student_id?.toString() || 'N/A',
       title: 'Student ID',
-      color: 'primary',
+      color: 'info', // Neutral information
       icon: <PermIdentityIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
       stats: reservation?.Dormitory_Building?.name || 'N/A',
       title: 'Dormitory Name',
-      color: 'secondary',
+      color: 'secondary', // Positive context
       icon: <CorporateFareIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.Dormitory_Room?.room_number || 'N/A',
+      stats: reservation?.Dormitory_Room?.room_number.toString() || 'N/A',
       title: 'Room Number',
-      color: 'info',
+      color: 'grey', // Positive context
       icon: <DoorBackIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.Dormitory_Bed?.bed_number || 'N/A',
+      stats: reservation?.Dormitory_Bed?.bed_number.toString() || 'N/A',
       title: 'Bed Number',
-      color: 'success',
+      color: 'primary', // Positive context
       icon: <BedIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
       stats: reservation?.Reservation_System?.round_name || 'N/A',
       title: 'Round',
-      color: 'error',
+      color: 'warning', // Caution or attention needed
       icon: <CalendarTodayIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
       stats: reservation?.status || 'N/A',
       title: 'Reservation Status',
-      color: 'warning',
+      color: reservation?.status === 'Approve' ? 'success' : 'error', // Dynamic based on status
       icon: <AssignmentTurnedInIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.payment_status || 'N/A',
+      stats: reservation?.payment_status === 'SUCCESS' ? 'Success' : reservation?.payment_status || 'N/A',
       title: 'Payment Status',
-      color: 'warning',
-      icon: <AssignmentTurnedInIcon sx={{ fontSize: '1.75rem' }} />
+      color: reservation?.payment_status === 'SUCCESS' ? 'success' : 'error', // Dynamic based on payment status
+      icon: <PaymentIcon sx={{ fontSize: '1.75rem' }} />
     }
   ]
 

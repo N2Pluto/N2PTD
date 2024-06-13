@@ -66,8 +66,9 @@ const AllResult = ({ open, handleClose }) => {
   useEffect(() => {
     const fetchReservationData = async () => {
       try {
-        const { data } = await fetch(`/api/reservation/select?user_id=${user?.user_id}`).then(res => res.json())
-        setReservation(data[0])
+          const response = await fetch(`/api/reservation/select?user_id=${user?.user_id}`)
+          const { reservationData, userInfoData } = await response.json()
+          setReservation(reservationData[0])
       } catch (error) {
         console.error('Error fetching reservation data:', error)
       }

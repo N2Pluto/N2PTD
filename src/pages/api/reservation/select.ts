@@ -3,7 +3,8 @@ import supabase from 'src/libs/supabase'
 const handler = async (req: any, res: any) => {
   const { user_id } = req.query
 
-  const { data, error } = await supabase
+  // Existing query for Reservation details
+  const { data: reservationData, error: reservationError } = await supabase
     .from('Reservation')
     .select(
       `
@@ -22,10 +23,16 @@ const handler = async (req: any, res: any) => {
     )
     .eq('user_id', user_id)
 
-  if (error) {
-    res.status(500).json({ error: error.message })
+  // New query for Users_Info details
+  const { data: userInfoData, error: userInfoError } = await supabase
+    .from('Users_Info')
+    .select('name, lastname')
+    .eq('user_id', user_id)
+
+  if (reservationError || userInfoError) {
+    res.status(500).json({ error: reservationError?.message || userInfoError?.message })
   } else {
-    res.status(200).json({ data })
+    res.status(200).json({ reservationData, userInfoData })
   }
 }
 
