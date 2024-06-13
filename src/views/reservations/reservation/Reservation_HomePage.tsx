@@ -34,12 +34,15 @@ const ReservationHomePage = () => {
   const handleNavigate = async () => {
     const intervalId = setInterval(async () => {
       try {
+        // Extract the first two characters of the student_id
+        const userYear = profileData?.userData?.student_id.toString().slice(0, 2)
         const response = await fetch('/api/reservation/checkReservationQualification', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ userYear: profileData?.userInfoData?.student_year })
+          // Send the extracted userYear
+          body: JSON.stringify({ userYear })
         })
         const data = await response.json()
         setIsEligible(data.isEligible)
@@ -55,7 +58,7 @@ const ReservationHomePage = () => {
       } catch (error) {
         // console.error('Error checking reservation qualification:', error)
       }
-    }, 1000) // Fetch every 3 seconds
+    }, 1000) // Fetch every second
   }
 
   useEffect(() => {

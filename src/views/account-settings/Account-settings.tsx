@@ -403,78 +403,76 @@ const AccountSettings = () => {
     }
   }, [user?.student_id])
 
-    const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
+  const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
 
-    const onChange = async (file: ChangeEvent) => {
-      const reader = new FileReader()
-      const { files } = file.target as HTMLInputElement
+  const onChange = async (file: ChangeEvent) => {
+    const reader = new FileReader()
+    const { files } = file.target as HTMLInputElement
 
-      if (files && files.length !== 0) {
-        reader.onload = () => setImgSrc(reader.result as string)
+    if (files && files.length !== 0) {
+      reader.onload = () => setImgSrc(reader.result as string)
 
-        reader.readAsDataURL(files[0])
+      reader.readAsDataURL(files[0])
 
-        // Upload file to Supabase
-        const filePath = `public/${files[0].name}`
-        const { error } = await supabase.storage.from('profile').upload(filePath, files[0])
-        if (error) {
-          console.error('Error uploading image: ', error.message)
+      // Upload file to Supabase
+      const filePath = `public/${files[0].name}`
+      const { error } = await supabase.storage.from('profile').upload(filePath, files[0])
+      if (error) {
+        console.error('Error uploading image: ', error.message)
+      } else {
+        console.log('Image uploaded successfully')
+        const { data, error: urlError } = await supabase.storage.from('profile').getPublicUrl(filePath)
+        if (urlError) {
+          console.error('Error getting public URL: ', urlError.message)
         } else {
-          console.log('Image uploaded successfully')
-          const { data, error: urlError } = await supabase.storage.from('profile').getPublicUrl(filePath)
-          if (urlError) {
-            console.error('Error getting public URL: ', urlError.message)
-          } else {
-            const { publicUrl } = data
-            setFormData(prevState => ({ ...prevState, image: publicUrl }))
-            console.log('Image URL:', publicUrl)
-          }
+          const { publicUrl } = data
+          setFormData(prevState => ({ ...prevState, image: publicUrl }))
+          console.log('Image URL:', publicUrl)
         }
       }
     }
+  }
 
-    const handleUserInfo = async (e: { preventDefault: () => void }) => {
-      e.preventDefault()
+  const handleUserInfo = async (e: { preventDefault: () => void }) => {
+    e.preventDefault()
 
-      try {
-        const response = await fetch('/api/account-setting/updateUser', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            user_id: user.user_id,
-            name: formData.name,
-            lastname: formData.lastname,
-            student_year: formData.student_year,
-            school: formData.school,
-            department: formData.department,
-            religion: formData.religion,
-            region: formData.region,
-            major: formData.major,
-            gender: formData.gender,
-            facebook: formData.facebook,
-            instagram: formData.instagram,
-            phone: formData.phone,
-            image: formData.image // Ensure image URL is being sent in the request
-          })
+    try {
+      const response = await fetch('/api/account-setting/updateUser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: user.user_id,
+          name: formData.name,
+          lastname: formData.lastname,
+          student_year: formData.student_year,
+          school: formData.school,
+          department: formData.department,
+          religion: formData.religion,
+          region: formData.region,
+          major: formData.major,
+          gender: formData.gender,
+          facebook: formData.facebook,
+          instagram: formData.instagram,
+          phone: formData.phone,
+          image: formData.image // Ensure image URL is being sent in the request
         })
+      })
 
-        const { data, error } = await response.json()
+      const { data, error } = await response.json()
 
-        if (error) {
-          console.error('Error Update data into Users table:', error.message)
-        } else {
-          console.log('Data Update Success:', data)
-          alert('Data Update Success')
-          router.push('/profile/')
-        }
-      } catch (error) {
+      if (error) {
         console.error('Error Update data into Users table:', error.message)
+      } else {
+        console.log('Data Update Success:', data)
+        alert('Data Update Success')
+        router.push('/profile/')
       }
+    } catch (error) {
+      console.error('Error Update data into Users table:', error.message)
     }
-
-
+  }
 
   const handleChange = (e: { target: { name: any; value: any } }) => {
     setFormData({
@@ -495,8 +493,6 @@ const AccountSettings = () => {
       setOpen(false)
     }, 3000)
   }
-
-
 
   return (
     <Grid container spacing={3}>

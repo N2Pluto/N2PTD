@@ -242,9 +242,9 @@ const LoginPage = () => {
             >
               <Box></Box>
               {/* <FormControlLabel control={<Checkbox />} label='Remember Me' /> */}
-              <Link passHref href='/'>
+              {/* <Link passHref href='/'>
                 <LinkStyled onClick={e => e.preventDefault()}>Forgot Password?</LinkStyled>
-              </Link>
+              </Link> */}
             </Box>
             <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} onClick={handleCheck}>
               Login

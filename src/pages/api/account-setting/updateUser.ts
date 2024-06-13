@@ -27,17 +27,6 @@ async function updateUserInfo(
     const { data: data1, error: error1 } = await supabase
       .from('Users_Info')
       .update({
-        name,
-        lastname,
-        student_year,
-        school,
-        department,
-        religion,
-        major,
-        gender,
-        facebook,
-        instagram,
-        phone,
         image
       })
       .eq('user_id', user_id)

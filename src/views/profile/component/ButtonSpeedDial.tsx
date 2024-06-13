@@ -60,42 +60,19 @@ export default function CustomizedMenus() {
 
   return (
     <div>
-      <Button
-        id='demo-customized-button'
-        aria-controls={open ? 'demo-customized-menu' : undefined}
-        aria-haspopup='true'
-        aria-expanded={open ? 'true' : undefined}
-        variant='contained'
-        disableElevation
-        onClick={handleClick}
-        endIcon={<KeyboardArrowDownIcon />}
-      >
-        Edit
-      </Button>
-      <StyledMenu
-        id='demo-customized-menu'
-        MenuListProps={{
-          'aria-labelledby': 'demo-customized-button'
-        }}
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-      >
-        <Link href='/profile/account-settings' passHref>
-          <MenuItem onClick={handleClose} disableRipple>
-            <EditIcon />
-            Edit Profile
-          </MenuItem>
-        </Link>
-        <Link href='/profile/personality-settings' passHref>
-          <MenuItem onClick={handleClose} disableRipple>
-            <FileCopyIcon />
-            Edit Requirement
-          </MenuItem>
-        </Link>
-
-        <Divider sx={{ my: 0.5 }} />
-      </StyledMenu>
+      <Link href='/profile/personality-settings' passHref>
+        <Button
+          id='demo-customized-button'
+          aria-controls={open ? 'demo-customized-menu' : undefined}
+          aria-haspopup='true'
+          aria-expanded={open ? 'true' : undefined}
+          variant='contained'
+          disableElevation
+          onClick={handleClick}
+        >
+          Edit Profile
+        </Button>
+      </Link>
     </div>
   )
 }

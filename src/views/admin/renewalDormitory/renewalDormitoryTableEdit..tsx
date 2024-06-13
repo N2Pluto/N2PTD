@@ -85,6 +85,16 @@ const RenewalFormEdit = ({ id }) => {
 
   const handleSubmit = async () => {
     try {
+      // Convert startDate and endDate to Date objects for comparison
+      const start = new Date(startDate)
+      const end = new Date(endDate)
+
+      // Check if start_date is less than end_date
+      if (start >= end) {
+        alert('Start date must be before end date.') // Or handle this error appropriately
+        return // Stop execution if the condition is not met
+      }
+
       const response = await fetch(`/api/admin/renewalDormitory/updateByID/${id}`, {
         method: 'POST',
         headers: {
@@ -100,7 +110,7 @@ const RenewalFormEdit = ({ id }) => {
       const result = await response.json()
       if (response.ok) {
         console.log('Update successful:', result)
-        onClose()
+        onClose() // Assuming onClose is a function to close the form or dialog
       } else {
         console.error('Failed to update data:', result.error)
       }

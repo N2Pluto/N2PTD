@@ -56,6 +56,14 @@ const GoogleFormEdit: React.FC<GoogleFormEditProps> = ({ drawerOpen, setDrawerOp
   }
 
   const handleSubmit = async () => {
+    const start = new Date(startDate)
+    const end = new Date(endDate)
+
+    // Check if start_date is less than end_date
+    if (start >= end) {
+      alert('Start date must be before end date.') // Or handle this error appropriately
+      return // Stop execution if the condition is not met
+    }
     const response = await fetch(`/api/admin/googleForm/update/${id}`, {
       method: 'POST',
       body: JSON.stringify({

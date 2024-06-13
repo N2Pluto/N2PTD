@@ -64,7 +64,7 @@ const ChatBot = (props: ChatBotProps) => {
       <ChatBotStyled className={className}>
         {children}
         <ChatBotButton variant='contained' onClick={handleClick('bottom-end')}>
-        <FaLine size={60} />
+          <FaLine size={60} />
         </ChatBotButton>
         <Popper open={open} anchorEl={anchorEl} placement={placement} transition>
           {({ TransitionProps }) => (
@@ -74,7 +74,7 @@ const ChatBot = (props: ChatBotProps) => {
                   WU DORMITORY CHATBOT
                 </Typography>
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '16px' }}>
-                  <QRCode value='https://liff.line.me/1645278921-kWRPP32q/?accountId=837kpnvf' size={180} />
+                  <QRCode value='https://line.me/R/ti/p/%40864rdudc' size={180} />
                 </div>
                 <Typography variant='body1' sx={{ p: 2, textAlign: 'center', color: theme.palette.primary.main }}>
                   Scan to Chat with WU Dormitory Chatbot

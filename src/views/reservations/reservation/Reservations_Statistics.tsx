@@ -3,22 +3,18 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import Avatar from '@mui/material/Avatar'
-import CardHeader from '@mui/material/CardHeader'
-import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
-import Button from '@mui/material/Button'
-import CartPlus from 'mdi-material-ui/CartPlus'
-import TrendingUp from 'mdi-material-ui/TrendingUp'
-import DotsVertical from 'mdi-material-ui/DotsVertical'
-import Snackbar from '@mui/material/Snackbar' // เพิ่ม Snackbar
-import MuiAlert from '@mui/material/Alert' // เพิ่ม Alert
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert from '@mui/material/Alert'
 import { ThemeColor } from 'src/@core/layouts/types'
 import { userStore } from 'src/stores/userStore'
 import PermIdentityIcon from '@mui/icons-material/PermIdentity'
 import CorporateFareIcon from '@mui/icons-material/CorporateFare'
 import DoorBackIcon from '@mui/icons-material/DoorBack'
 import BedIcon from '@mui/icons-material/Bed'
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 
 interface DataType {
   stats: string
@@ -40,14 +36,11 @@ const ReservationsStatistics = () => {
         setReservation(data[0])
       } catch (error) {
         console.error('Error fetching reservation data:', error)
-        console.log('asd')
       }
     }
 
     fetchReservationData()
   }, [user])
-
-  console.log('reservation:', reservation)
 
   const salesData: DataType[] = [
     {
@@ -57,42 +50,47 @@ const ReservationsStatistics = () => {
       icon: <PermIdentityIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.Dormitory_Building?.name,
+      stats: reservation?.Dormitory_Building?.name || 'N/A',
       title: 'Dormitory Name',
-      color: 'error',
+      color: 'secondary',
       icon: <CorporateFareIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.Dormitory_Room?.room_number,
+      stats: reservation?.Dormitory_Room?.room_number || 'N/A',
       title: 'Room Number',
       color: 'info',
       icon: <DoorBackIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.Dormitory_Bed?.bed_number,
+      stats: reservation?.Dormitory_Bed?.bed_number || 'N/A',
       title: 'Bed Number',
-      color: 'primary',
+      color: 'success',
       icon: <BedIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.status,
-      title: 'Status',
-      color: 'primary',
-      icon: <BedIcon sx={{ fontSize: '1.75rem' }} />
+      stats: reservation?.Reservation_System?.round_name || 'N/A',
+      title: 'Round',
+      color: 'error',
+      icon: <CalendarTodayIcon sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: reservation?.round_id,
-      title: 'Round ID',
-      color: 'primary',
-      icon: <BedIcon sx={{ fontSize: '1.75rem' }} />
+      stats: reservation?.status || 'N/A',
+      title: 'Reservation Status',
+      color: 'warning',
+      icon: <AssignmentTurnedInIcon sx={{ fontSize: '1.75rem' }} />
+    },
+    {
+      stats: reservation?.payment_status || 'N/A',
+      title: 'Payment Status',
+      color: 'warning',
+      icon: <AssignmentTurnedInIcon sx={{ fontSize: '1.75rem' }} />
     }
   ]
 
-  // Move renderStats below salesData declaration
   const renderStats = () => {
     return salesData.map((item: DataType, index: number) => (
-      <Grid item xs={12} sm={0} key={index}>
-        <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
+      <Grid item xs={12} sm={6} md={4} key={index}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar
             variant='rounded'
             sx={{
@@ -101,13 +99,15 @@ const ReservationsStatistics = () => {
               height: 44,
               boxShadow: 3,
               color: 'common.white',
-              backgroundColor: `${item.color}.main`
+              backgroundColor: theme => theme.palette[item.color].main
             }}
           >
             {item.icon}
           </Avatar>
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography variant='caption'>{item.title}</Typography>
+          <Box>
+            <Typography variant='caption' color='textSecondary'>
+              {item.title}
+            </Typography>
             <Typography variant='h6'>{item.stats}</Typography>
           </Box>
         </Box>
@@ -118,12 +118,19 @@ const ReservationsStatistics = () => {
   return (
     <Card>
       <CardContent>
-        {reservation?.Dormitory_Building && reservation?.Dormitory_Room && reservation?.Dormitory_Bed ? (
-          <Grid container spacing={2}>
+        {reservation ? (
+          <Grid container spacing={3}>
             {renderStats()}
           </Grid>
         ) : (
-          <Typography variant='h6'>No reservation has been made.</Typography>
+          <Box sx={{ textAlign: 'center' }}>
+            <img
+              src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/delete_13843116.png'
+              alt='No reservation'
+              style={{ width: '150px', marginBottom: '16px' }}
+            />
+            <Typography variant='h6'>No reservation has been made.</Typography>
+          </Box>
         )}
       </CardContent>
       <Snackbar

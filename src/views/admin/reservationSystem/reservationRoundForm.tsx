@@ -28,6 +28,7 @@ import FormControl from '@mui/material/FormControl'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import InputAdornment from '@mui/material/InputAdornment'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
+import List from '@mui/material/List'
 
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
@@ -52,6 +53,8 @@ export default function DeleteRound({ id }: { id: number }) {
   const [startDate, setStartDate] = useState<Date | null | undefined>(null)
   const [endDate, setEndDate] = useState<Date | null | undefined>(null)
   const [student_year, setStudentYear] = useState<string[]>([])
+  const initialYears = [63, 64, 65, 66, 67, 68]
+  const [years, setYears] = useState(initialYears)
   const [roundName, setRoundName] = useState('')
 
   useEffect(() => {
@@ -72,6 +75,12 @@ export default function DeleteRound({ id }: { id: number }) {
   console.log('id', id)
 
   const handleUpdate = async () => {
+    // Validation: Ensure start_date is less than end_date
+    if (new Date(startDate) >= new Date(endDate)) {
+      alert('Start date must be less than end date.')
+      return // Stop the function execution
+    }
+
     const response = await fetch(`/api/admin/reservationSystem/update`, {
       method: 'PUT',
       headers: {
@@ -103,6 +112,25 @@ export default function DeleteRound({ id }: { id: number }) {
     setStudentYear(event.target.value as string[])
   }
 
+  const addYear = () => {
+    const maxYear = Math.max(...years)
+    const newYear = maxYear + 1
+    setYears([...years, newYear])
+  }
+
+  const MenuProps = {
+    PaperProps: {},
+    getContentAnchorEl: null, // This is important to make the footer stick to the bottom
+    anchorOrigin: {
+      vertical: 'bottom',
+      horizontal: 'left'
+    },
+    transformOrigin: {
+      vertical: 'top',
+      horizontal: 'left'
+    }
+  }
+
   const handleClickOpen = () => {
     setOpen(true)
   }
@@ -132,29 +160,22 @@ export default function DeleteRound({ id }: { id: number }) {
         onClose={handleClose}
         aria-describedby='alert-dialog-slide-description'
       >
-        <DialogTitle>{'Delete This Round?'}</DialogTitle>
+        <DialogTitle>{'Round Info'}</DialogTitle>
         <DialogContent>
-          <DialogContentText id='alert-dialog-slide-description'>You Want to Delete This Round?</DialogContentText>
           <Card>
-            <CardHeader title='Multi Column with Form Separator' titleTypographyProps={{ variant: 'h6' }} />
-            <Divider sx={{ margin: 0 }} />
             <form onSubmit={e => e.preventDefault()}>
               <CardContent>
                 <Grid container spacing={5}>
-                  <Grid item xs={12}>
-                    <Divider sx={{ marginBottom: 0 }} />
-                  </Grid>
-
                   <Grid item xs={12}>
                     <Typography variant='body2' sx={{ fontWeight: 600 }}>
                       2. Round Info
                     </Typography>
                   </Grid>
 
-                  <Grid item xs={12}>
+                  <Grid item xs={6}>
                     <TextField
                       fullWidth
-                      style={{ width: '283px' }}
+                      style={{ width: '250px' }}
                       value={roundName}
                       onChange={handleRoundNameChange}
                       label='Round Name'
@@ -162,7 +183,7 @@ export default function DeleteRound({ id }: { id: number }) {
                     />
                   </Grid>
 
-                  <Grid item xs={12} sm={12}>
+                  <Grid item xs={6} sm={6}>
                     <FormControl fullWidth>
                       <InputLabel id='form-layouts-separator-multiple-select-label'>Student Year</InputLabel>
                       <Select
@@ -172,16 +193,22 @@ export default function DeleteRound({ id }: { id: number }) {
                         id='form-layouts-separator-multiple-select'
                         labelId='form-layouts-separator-multiple-select-label'
                         input={<OutlinedInput label='Student Year' id='select-multiple-language' />}
+                        MenuProps={MenuProps}
+                        renderValue={selected => selected.join(', ')}
                       >
-                        <MenuItem value={1}>ปี 1</MenuItem>
-                        <MenuItem value={2}>ปี 2</MenuItem>
-                        <MenuItem value={3}>ปี 3</MenuItem>
-                        <MenuItem value={4}>ปี 4</MenuItem>
-                        <MenuItem value={5}>ปี 5</MenuItem>
+                        {years.map(year => (
+                          <MenuItem key={year} value={year}>
+                            {year}
+                          </MenuItem>
+                        ))}
+                        <List component='nav' style={{ padding: 0 }}>
+                          <Button onClick={addYear} style={{ width: '100%' }}>
+                            Add More
+                          </Button>
+                        </List>
                       </Select>
                     </FormControl>
                   </Grid>
-
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <Grid item xs={12} sm={6}>
                       <DatePicker

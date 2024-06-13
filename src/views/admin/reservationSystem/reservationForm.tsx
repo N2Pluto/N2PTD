@@ -17,16 +17,11 @@ import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
-import Divider from '@mui/material/Divider'
-import CardHeader from '@mui/material/CardHeader'
-import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
-import CardActions from '@mui/material/CardActions'
 import OutlinedInput from '@mui/material/OutlinedInput'
-import InputAdornment from '@mui/material/InputAdornment'
 import { useState } from 'react'
-import AccountOutline from 'mdi-material-ui/AccountOutline'
+import List from '@mui/material/List'
 
 import DatePicker from '@mui/lab/DatePicker'
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
@@ -36,7 +31,9 @@ export default function ReservationForm() {
   const [open, setOpen] = React.useState(false)
   const [fullWidth, setFullWidth] = React.useState(true)
   const [maxWidth, setMaxWidth] = React.useState<DialogProps['maxWidth']>('sm')
-  const [student_year, setStudentYear] = useState<string[]>([])
+  const [student_year, setStudentYear] = useState<string[]>(['63', '64', '65', '66', '67', '68'])
+  const [years, setYears] = useState<number[]>([63, 64, 65, 66, 67, 68])
+
   const [roundName, setRoundName] = useState('')
   const [gender, setGender] = useState('')
   const [startDate, setStartDate] = useState<Date | null | undefined>(null)
@@ -60,8 +57,36 @@ export default function ReservationForm() {
   }
 
   // Handle Select
-  const handleSelectChange = (event: SelectChangeEvent<string[]>) => {
-    setStudentYear(event.target.value as string[])
+  const handleSelectChange = (event: SelectChangeEvent<typeof student_year>) => {
+    const value = event.target.value
+    // Check if "Add year" is selected
+    if (value.includes('Add year')) {
+      const newYears = [...years, years[years.length - 1] + 1] // Add next year
+      setYears(newYears) // Update years state
+      // Remove 'Add year' from selection and update with new years
+      setStudentYear(newYears.map(String))
+    } else {
+      setStudentYear(value as string[])
+    }
+  }
+
+  const addYear = () => {
+    const maxYear = Math.max(...years)
+    const newYear = maxYear + 1
+    setYears([...years, newYear])
+  }
+
+  const MenuProps = {
+    PaperProps: {},
+    getContentAnchorEl: null, // This is important to make the footer stick to the bottom
+    anchorOrigin: {
+      vertical: 'bottom',
+      horizontal: 'left'
+    },
+    transformOrigin: {
+      vertical: 'top',
+      horizontal: 'left'
+    }
   }
 
   // Update state variables when the field values change
@@ -149,16 +174,6 @@ export default function ReservationForm() {
           <Card>
             <CardContent>
               <Grid container spacing={3}>
-                {/* <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    style={{ width: '283px' }}
-                    value={roundName}
-                    onChange={handleRoundNameChange}
-                    label='Round Name'
-                    placeholder='รอบที่ 1 ผู้ชาย ปี1 เท่านั้น'
-                  />
-                </Grid> */}
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth>
                     <InputLabel id='form-layouts-separator-multiple-select-label'>Round</InputLabel>
@@ -186,13 +201,20 @@ export default function ReservationForm() {
                       onChange={handleSelectChange}
                       id='form-layouts-separator-multiple-select'
                       labelId='form-layouts-separator-multiple-select-label'
-                      input={<OutlinedInput label='Language' id='select-multiple-language' />}
+                      input={<OutlinedInput label='Student Year' id='select-multiple-language' />}
+                      MenuProps={MenuProps}
+                      renderValue={selected => selected.join(', ')}
                     >
-                      <MenuItem value='1'>ปี 1</MenuItem>
-                      <MenuItem value='2'>ปี 2</MenuItem>
-                      <MenuItem value='3'>ปี 3</MenuItem>
-                      <MenuItem value='4'>ปี 4</MenuItem>
-                      <MenuItem value='5'>ปี 5</MenuItem>
+                      {years.map(year => (
+                        <MenuItem key={year} value={year}>
+                          {year}
+                        </MenuItem>
+                      ))}
+                      <List component='nav' style={{ padding: 0 }}>
+                        <Button onClick={addYear} style={{ width: '100%' }}>
+                          Add More
+                        </Button>
+                      </List>
                     </Select>
                   </FormControl>
                 </Grid>

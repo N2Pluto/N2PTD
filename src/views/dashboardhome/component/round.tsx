@@ -35,7 +35,7 @@ const Round = () => {
           round.map((roundItem, index) => (
             <Typography key={index} variant='body2'>
               รอบที่เปิด {roundItem.round_name} เริ่ม {new Date(roundItem.start_date).toLocaleDateString()} สิ้นสุด{' '}
-              {new Date(roundItem.end_date).toLocaleDateString()} รับนักศึกษา ชั้นปี{' '}
+              {new Date(roundItem.end_date).toLocaleDateString()} รับนักศึกษา รหัสนักศึกษา{' '}
               {roundItem.student_year
                 .split(',')
                 .map(Number)

@@ -88,7 +88,7 @@ const useNavigation = (): VerticalNavItemsType => {
         sectionTitle: 'Import Student'
       },
       {
-        title: 'Import Student',
+        title: 'นำเข้ารายชื่อนักศึกษา',
         icon: AccountPlusOutline,
         path: '/admin/importStudent'
       },

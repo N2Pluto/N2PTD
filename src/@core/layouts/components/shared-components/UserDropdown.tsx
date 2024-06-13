@@ -161,13 +161,13 @@ const UserDropdown = () => {
           </Box>
         </MenuItem> */}
 
-        <Divider />
+        {/* <Divider />
         <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
           <Box sx={styles}>
             <CogOutline sx={{ marginRight: 2 }} />
             Settings
           </Box>
-        </MenuItem>
+        </MenuItem> */}
         {/* <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
           <Box sx={styles}>
             <CurrencyUsd sx={{ marginRight: 2 }} />

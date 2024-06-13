@@ -55,6 +55,12 @@ const RenewalForm = () => {
   }
 
   const handleSubmit = async () => {
+    // Check if startDate is less than endDate
+    if (new Date(startDate) >= new Date(endDate)) {
+      alert('Start date must be before end date.') // Or handle this error appropriately
+      return // Exit the function to prevent the form submission
+    }
+
     const response = await fetch('/api/admin/renewalDormitory/create/createRenewalForm', {
       method: 'POST',
       body: JSON.stringify({
@@ -69,7 +75,7 @@ const RenewalForm = () => {
     })
 
     if (response.ok) {
-      onClose()
+      onClose() // Close the form or modal if the request is successful
     }
   }
 
@@ -143,10 +149,14 @@ const RenewalForm = () => {
                       labelId='form-layouts-separator-round-select-label'
                       input={<OutlinedInput label='Renewal' />}
                     >
-                      <MenuItem value='2023'>2023</MenuItem>
-                      <MenuItem value='2024'>2024</MenuItem>
-                      <MenuItem value='2025'>2025</MenuItem>
-                      <MenuItem value='2026'>2026</MenuItem>
+                      {
+                        // Dynamically generate MenuItem components for years
+                        Array.from({ length: 4 }, (_, i) => new Date().getFullYear() + i).map(year => (
+                          <MenuItem key={year} value={year.toString()}>
+                            {year}
+                          </MenuItem>
+                        ))
+                      }
                     </Select>
                     <Typography variant='caption' display='block' gutterBottom>
                       Select the renewal year for the dormitory stay.

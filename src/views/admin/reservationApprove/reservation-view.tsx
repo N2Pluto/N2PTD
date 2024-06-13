@@ -10,7 +10,6 @@ import Paper from '@mui/material/Paper'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
-import { useEffect } from 'react'
 import { EnhancedTableHead } from './components/EnhancedTableHead'
 import { descendingComparator, getComparator, stableSort } from './helpers/helper'
 import Toolbar from '@mui/material/Toolbar'
@@ -46,6 +45,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import SearchIcon from '@mui/icons-material/Search'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+import { useEffect, useState } from 'react'
 
 const useStyles = makeStyles({
   success: {
@@ -141,6 +141,20 @@ const ReservationApprove = () => {
   const [openApprove, setOpenApprove] = React.useState(false)
   const [openReject, setOpenReject] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
+  const [openDialog, setOpenDialog] = useState(false)
+  const [rejectionReasons, setRejectionReasons] = useState([])
+
+  const handleOpenRejectDialog = async id => {
+    const reasons = prompt('Enter rejection reasons (comma separated):')
+    if (reasons === null) {
+      // User pressed cancel, exit the function without doing anything
+      return
+    }
+    const reasonsArray = reasons.split(',')
+    setRejectionReasons(reasonsArray)
+    setOpenDialog(true) // If using a dialog component
+    await handleReject([id], reasonsArray)
+  }
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -441,7 +455,8 @@ const ReservationApprove = () => {
     setLoading(false)
   }
 
-  const handleReject = async (ids: number[]) => {
+  // Modified handleReject to accept reasons
+  const handleReject = async (ids: number[], reasons: string[]) => {
     setLoading(true)
     await Promise.all(
       ids.map(async id => {
@@ -456,10 +471,8 @@ const ReservationApprove = () => {
         if (!response.ok) {
           console.error(`Failed to update reservation status for id ${id}`)
         } else {
-          // Find the user
           const user = users.find(user => user.id === id)
           if (user) {
-            // Send email to the user
             await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
               method: 'POST',
               headers: {
@@ -469,59 +482,23 @@ const ReservationApprove = () => {
                 to: user.Users.email,
                 subject: 'Reservation Rejected',
                 html: `
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <style>
-                  body {
-                    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-                    background-color: #f7f7f7;
-                  }
-                  .container {
-                    max-width: 600px;
-                    margin: 0 auto;
-                    background-color: #ffffff;
-                    padding: 30px;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                  }
-                  h1 {
-                    color: #333333;
-                    text-align: center;
-                    margin-top: 0;
-                    font-weight: 600;
-                  }
-                  p {
-                    line-height: 1.6;
-                    color: #555555;
-                  }
-                  ul {
-                    list-style-type: none;
-                    padding: 0;
-                    margin: 20px 0;
-                  }
-                  li {
-                    margin-bottom: 10px;
-                    color: #777777;
-                  }
-                </style>
-              </head>
-              <body>
-                <div class="container">
-                  <h1>Your Reservation is Rejected</h1>
-                  <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
-                  <p>We regret to inform you that your reservation has been rejected due to the following reasons:</p>
-                  <ul>
-                    <li>Reason 1</li>
-                    <li>Reason 2</li>
-                    <li>Reason 3</li>
-                  </ul>
-                  <p>We apologize for any inconvenience this may have caused you. If you have any further questions or concerns, please do not hesitate to contact our support team.</p>
-                  <p>Best regards,<br>WU Dormitory</p>
-                </div>
-              </body>
-            </html>
-            `
+                <!DOCTYPE html>
+                <html>
+                  <head>...</head>
+                  <body>
+                    <div class="container">
+                      <h1>Your Reservation is Rejected</h1>
+                      <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
+                      <p>We regret to inform you that your reservation has been rejected for the following reasons:</p>
+                      <ul>
+                        ${reasons.map(reason => `<li>${reason}</li>`).join('')}
+                      </ul>
+                      <p>We apologize for any inconvenience this may have caused you. If you have any further questions or concerns, please do not hesitate to contact our support team.</p>
+                      <p>Best regards,<br>WU Dormitory</p>
+                    </div>
+                  </body>
+                </html>
+              `
               })
             })
           }
@@ -679,7 +656,9 @@ const ReservationApprove = () => {
               setOpenApprove(true)
             }}
             handleReject={async ids => {
-              await handleReject(ids)
+              for (const id of ids) {
+                await handleOpenRejectDialog(id)
+              }
               resetSelected()
               setOpenReject(true)
             }}
@@ -751,9 +730,9 @@ const ReservationApprove = () => {
                               onClick={async event => {
                                 event.stopPropagation()
                                 setSelected([row.id])
-                                await handleReject([row.id])
+                                await handleOpenRejectDialog(row.id)
                                 resetSelected()
-                                setOpenReject(true)
+                                setOpenReject(true) // This might be redundant if handled inside handleReject or dialog logic
                               }}
                             >
                               <CloseIcon />

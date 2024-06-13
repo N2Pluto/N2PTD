@@ -105,8 +105,7 @@ const StudentTable = () => {
             major: student.major || '',
             gender: student.gender,
             phone: student.phone,
-            religion: student.religion,
-            school_id: student.school_id
+            religion: student.religion
           }))
           setRows(formattedData)
           setFilteredRows(formattedData)
@@ -177,7 +176,7 @@ const StudentTable = () => {
     let filtered = rows
 
     if (schoolFilter) {
-      filtered = filtered.filter(row => row.school_id === schoolFilter)
+      filtered = filtered.filter(row => row.school === schoolFilter)
     }
 
     if (nameFilter) {
@@ -198,9 +197,9 @@ const StudentTable = () => {
     setFilteredRows(filtered)
   }, [schoolFilter, nameFilter, genderFilter, studentIDPrefixFilter, rows])
 
-  const schoolOptions = Array.from(
-    new Set(rows.map(row => JSON.stringify({ id: row.school_id, name: row.school })))
-  ).map(str => JSON.parse(str))
+  const schoolOptions = Array.from(new Set(rows.map(row => JSON.stringify({ id: row.school, name: row.school })))).map(
+    str => JSON.parse(str)
+  )
 
   const studentIDPrefixes = Array.from(new Set(rows.map(row => row.student_id.toString().slice(0, 2))))
 
@@ -234,7 +233,7 @@ const StudentTable = () => {
               <MenuItem value=''>
                 <em>None</em>
               </MenuItem>
-              {studentIDPrefixes.map(prefix => (
+              {studentIDPrefixes.sort().map(prefix => (
                 <MenuItem key={prefix} value={prefix}>
                   {prefix}
                 </MenuItem>
@@ -274,8 +273,8 @@ const StudentTable = () => {
               <MenuItem value=''>
                 <em>None</em>
               </MenuItem>
-              <MenuItem value='Male'>Male</MenuItem>
-              <MenuItem value='Female'>Female</MenuItem>
+              <MenuItem value='male'>Male</MenuItem>
+              <MenuItem value='female'>Female</MenuItem>
             </TextField>
           </Grid>
           <Grid item xs={5.5}>

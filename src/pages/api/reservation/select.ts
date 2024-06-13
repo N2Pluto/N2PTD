@@ -13,9 +13,11 @@ const handler = async (req: any, res: any) => {
         bed_id,
         round_id,
         status,
+        payment_status,
         Dormitory_Building (name),
         Dormitory_Room (room_number),
-        Dormitory_Bed (bed_number)
+        Dormitory_Bed (bed_number),
+        Reservation_System (round_name)
       `
     )
     .eq('user_id', user_id)

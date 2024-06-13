@@ -29,6 +29,9 @@ import Checkbox from '@mui/material/Checkbox'
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
+import supabase from 'src/libs/supabase'
+import CircularProgress from '@mui/material/CircularProgress'
+import Backdrop from '@mui/material/Backdrop'
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
 const checkedIcon = <CheckBoxIcon fontSize='small' />
@@ -189,18 +192,55 @@ const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
 
 const PersonalitySettings = () => {
   const { user } = userStore()
-
   const [profileData, setProfileData] = useState(null)
   const [selectedSchool, setSelectedSchool] = useState(null)
   const [majorOptions, setMajorOptions] = React.useState([])
+  const [open, setOpen] = useState(false)
+  const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
 
-  const [selectedOptions, setSelectedOptions] = useState([])
+  const onChange = async (file: ChangeEvent) => {
+    const reader = new FileReader()
+    const { files } = file.target as HTMLInputElement
 
-  const handleOnChange = (event, newValue) => {
-    if (newValue.length > 3) {
-      return
+    if (files && files.length !== 0) {
+      reader.onload = () => setImgSrc(reader.result as string)
+
+      reader.readAsDataURL(files[0])
+
+      // Format current date and time
+      const now = new Date()
+      const dateTimeFormat = `${now.getFullYear()}-${
+        now.getMonth() + 1
+      }-${now.getDate()}_${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}`
+      const newFileName = `${dateTimeFormat}_${files[0].name}`
+
+      // Upload file to Supabase with the new file name
+      const filePath = `public/${newFileName}`
+      const { error } = await supabase.storage.from('profile').upload(filePath, files[0])
+      if (error) {
+        console.error('Error uploading image: ', error.message)
+      } else {
+        console.log('Image uploaded successfully')
+        const { data, error: urlError } = await supabase.storage.from('profile').getPublicUrl(filePath)
+        if (urlError) {
+          console.error('Error getting public URL: ', urlError.message)
+        } else {
+          const { publicUrl } = data
+          setFormData(prevState => ({ ...prevState, image: publicUrl }))
+          console.log('Image URL:', publicUrl)
+        }
+      }
     }
-    setSelectedOptions(newValue)
+  }
+
+  const handleOnChange = (event: ChangeEvent<Element>) => {
+    onChange(event) // Call the original onChange function
+
+    setOpen(true) // Show the Backdrop
+
+    setTimeout(() => {
+      setOpen(false)
+    }, 3000)
   }
 
   useEffect(() => {
@@ -232,7 +272,8 @@ const PersonalitySettings = () => {
     filter_school: profileData?.userReqData.filter_school,
     filter_major: profileData?.userReqData.filter_major,
     filter_religion: profileData?.userReqData.filter_religion,
-    filter_redflag: profileData?.userReqData.filter_redflag
+    filter_redflag: profileData?.userReqData.filter_redflag,
+    image: profileData?.userInfoData.image
   })
 
   console.log('profileData', profileData)
@@ -256,8 +297,6 @@ const PersonalitySettings = () => {
     }
   }, [user?.student_id])
 
-  const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
-
   const handleUserInfo = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
 
@@ -274,7 +313,8 @@ const PersonalitySettings = () => {
           filter_school: formData.filter_school,
           filter_major: formData.filter_major,
           filter_religion: formData.filter_religion,
-          filter_redflag: formData.filter_redflag
+          filter_redflag: formData.filter_redflag,
+          image: formData.image
         })
       })
 
@@ -289,23 +329,6 @@ const PersonalitySettings = () => {
       }
     } catch (error) {
       console.error('Error Update data into USers table:', error.message)
-    }
-  }
-
-  const handleChange = (e: { target: { name: any; value: any } }) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
-
-  const onChange = (file: ChangeEvent) => {
-    const reader = new FileReader()
-    const { files } = file.target as HTMLInputElement
-    if (files && files.length !== 0) {
-      reader.onload = () => setImgSrc(reader.result as string)
-
-      reader.readAsDataURL(files[0])
     }
   }
 
@@ -330,7 +353,42 @@ const PersonalitySettings = () => {
           </Typography>
         </Box>
       </Grid>
+      <Grid item xs={12} sm={12} md={12} lg={5}>
+        <Box sx={{ height: '600px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <CardContent>
+            <form onSubmit={handleUserInfo}>
+              <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
+                <Box sx={{ alignItems: 'center', justifyItems: 'center' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <ImgStyled src={imgSrc} alt='Profile Pic' />
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <Typography variant='body2' sx={{ marginTop: 5 }}>
+                      Allowed PNG or JPG. Max size of 800K.
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 3 }}>
+                    <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
+                      Upload Photo
+                      <input
+                        hidden
+                        type='file'
+                        onChange={handleOnChange}
+                        accept='image/png, image/jpeg , image/JPG, image/jpg, image/JPEG, image/PNG'
+                        id='account-settings-upload-image'
+                      />
+                    </ButtonStyled>
 
+                    <Backdrop sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }} open={open}>
+                      <CircularProgress color='inherit' />
+                    </Backdrop>
+                  </Box>
+                </Box>
+              </Grid>
+            </form>
+          </CardContent>
+        </Box>
+      </Grid>
       <Grid item xs={12} sm={12} md={12} lg={5}>
         <Box sx={{ justifyContent: 'center', alignItems: 'center' }}>
           <CardContent>

@@ -7,7 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Slide from '@mui/material/Slide'
 import { TransitionProps } from '@mui/material/transitions'
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from '@mui/icons-material/Delete'
 import router from 'next/router'
 
 const Transition = React.forwardRef(function Transition(
@@ -35,8 +35,7 @@ export default function DeletePost({ id }: { id: any }) {
       }
 
       alert('Post deleted successfully')
-
-
+      router.reload()
     } catch (error) {
       console.error(error)
     }
@@ -53,13 +52,12 @@ export default function DeletePost({ id }: { id: any }) {
 
   const handleDelete = () => {
     handleDeletePost(id)
-    router.reload()
     handleClose()
   }
 
   return (
     <React.Fragment>
-      <DeleteIcon onClick={handleClickOpen}/>
+      <DeleteIcon onClick={handleClickOpen} />
       <Dialog
         open={open}
         TransitionComponent={Transition}
