@@ -81,8 +81,13 @@ const UserManagementForm = () => {
   }
 
   useEffect(() => {
+    // Call fetchData immediately and then set an interval for it to be called every 10 seconds
     fetchData()
-  }, [])
+    const intervalId = setInterval(fetchData, 10000)
+
+    // Cleanup function to clear the interval when the component unmounts
+    return () => clearInterval(intervalId)
+  }, []) // Empty dependency array means this effect runs once on mount and cleanup on unmount
 
   console.log('rows', rows)
 

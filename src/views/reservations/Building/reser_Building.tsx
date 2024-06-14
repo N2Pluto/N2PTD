@@ -160,9 +160,9 @@ const ReservationBuilding = () => {
 
   const getBackgroundImage = () => {
     if (genderFilter === 'male') {
-      return 'url(https://img5.pic.in.th/file/secure-sv1/Man09f24199566c0285.png)'
+      return 'null'
     } else if (genderFilter === 'female') {
-      return 'url(https://img2.pic.in.th/pic/Girl39ae97a5e743e3c0.png)'
+      return 'null  '
     }
 
     return ''

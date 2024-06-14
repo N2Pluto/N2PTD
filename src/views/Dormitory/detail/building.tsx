@@ -95,9 +95,9 @@ const ReservationBuildingDetails = () => {
 
   const getBackgroundImage = (type_gender: string) => {
     if (type_gender === 'male') {
-      return 'url(https://img5.pic.in.th/file/secure-sv1/Man09f24199566c0285.png)'
+      return 'null'
     } else if (type_gender === 'female') {
-      return 'url(https://img2.pic.in.th/pic/Girl39ae97a5e743e3c0.png)'
+      return 'null'
     }
     return ''
   }

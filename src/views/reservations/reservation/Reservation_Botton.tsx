@@ -127,7 +127,9 @@ const ReservationBotton = () => {
 
   return (
     <>
-      <SuccessฺฺBar />
+      {reservation?.Dormitory_Building && reservation?.Dormitory_Room && reservation?.Dormitory_Bed ? null : (
+        <SuccessฺฺBar />
+      )}
 
       <Card sx={{ position: 'relative' }}>
         <CardMedia sx={{ height: '12.625rem' }} image='/images/cards/background-user.png' />

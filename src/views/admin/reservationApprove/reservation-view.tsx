@@ -304,7 +304,8 @@ const ReservationApprove = () => {
       { label: 'dorm_name', value: 'Dormitory_Building.name' },
       { label: 'room_number', value: 'Dormitory_Room.room_number' },
       { label: 'bed_number', value: 'Dormitory_Bed.bed_number' },
-      { label: 'room_name', value: 'Reservation_System.round_name' }
+      { label: 'room_name', value: 'Reservation_System.round_name' },
+      { label: 'status', value: 'status' }
     ]
     const parser = new Parser({ fields })
     const csv = parser.parse(filteredUsers)

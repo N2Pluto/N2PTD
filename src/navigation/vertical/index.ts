@@ -66,10 +66,18 @@ const useNavigation = (): VerticalNavItemsType => {
         icon: HomeOutline,
         path: '/admin/home'
       },
+      // {
+      //   title: 'dashboard',
+      //   icon: HomeOutline,
+      //   path: '/admin/dashboard'
+      // },
       {
-        title: 'dashboard',
-        icon: HomeOutline,
-        path: '/admin/dashboard'
+        sectionTitle: 'Import Student'
+      },
+      {
+        title: 'นำเข้ารายชื่อนักศึกษา',
+        icon: AccountPlusOutline,
+        path: '/admin/importStudent'
       },
       {
         sectionTitle: 'ศูนย์รวมข้อมูล'
@@ -84,14 +92,7 @@ const useNavigation = (): VerticalNavItemsType => {
         icon: DnsOutlinedIcon,
         path: '/admin/userManagement'
       },
-       {
-        sectionTitle: 'Import Student'
-      },
-      {
-        title: 'นำเข้ารายชื่อนักศึกษา',
-        icon: AccountPlusOutline,
-        path: '/admin/importStudent'
-      },
+
       {
         sectionTitle: 'การอนุมัติ'
       },
@@ -142,7 +143,7 @@ const useNavigation = (): VerticalNavItemsType => {
         title: 'สร้างตึก',
         icon: DomainAddOutlinedIcon,
         path: '/admin/building'
-      },
+      }
 
       // {
       //   title: 'เปลี่ยน Role',
@@ -150,58 +151,58 @@ const useNavigation = (): VerticalNavItemsType => {
       //   path: '/admin/userControl'
       // },
 
-      {
-        sectionTitle: 'แบบฟอร์ม'
-      },
-      {
-        title: 'แบบฟอร์มคำร้องผู้ใช้',
-        icon: ManageAccountsIcon,
-        path: '/admin/userManagementForm'
-      },
-      {
-        title: 'แบบฟอร์มย้ายห้อง',
-        icon: ChangeCircleIcon,
-        path: '/admin/dormitoryResident/changeRoomForm'
-      },
-      {
-        title: 'แบบฟอร์มสลับห้อง',
-        icon: DisplaySettingsIcon,
-        path: '/admin/dormitoryResident/transferRoomForm'
-      },
+      // {
+      //   sectionTitle: 'แบบฟอร์ม'
+      // },
+      // {
+      //   title: 'แบบฟอร์มคำร้องผู้ใช้',
+      //   icon: ManageAccountsIcon,
+      //   path: '/admin/userManagementForm'
+      // },
+      // {
+      //   title: 'แบบฟอร์มย้ายห้อง',
+      //   icon: ChangeCircleIcon,
+      //   path: '/admin/dormitoryResident/changeRoomForm'
+      // },
+      // {
+      //   title: 'แบบฟอร์มสลับห้อง',
+      //   icon: DisplaySettingsIcon,
+      //   path: '/admin/dormitoryResident/transferRoomForm'
+      // },
 
-      {
-        sectionTitle: 'User Interface'
-      },
-      {
-        title: 'Home',
-        icon: HomeOutline,
-        path: '/dashboard'
-      },
-      {
-        title: 'Typography',
-        icon: FormatLetterCase,
-        path: '/typography'
-      },
-      {
-        title: 'Icons',
-        path: '/icons',
-        icon: GoogleCirclesExtended
-      },
-      {
-        title: 'Cards',
-        icon: CreditCardOutline,
-        path: '/cards'
-      },
-      {
-        title: 'Tables',
-        icon: Table,
-        path: '/tables'
-      },
-      {
-        icon: CubeOutline,
-        title: 'Form Layouts',
-        path: '/form-layouts'
-      }
+      // {
+      //   sectionTitle: 'User Interface'
+      // },
+      // {
+      //   title: 'Home',
+      //   icon: HomeOutline,
+      //   path: '/dashboard'
+      // },
+      // {
+      //   title: 'Typography',
+      //   icon: FormatLetterCase,
+      //   path: '/typography'
+      // },
+      // {
+      //   title: 'Icons',
+      //   path: '/icons',
+      //   icon: GoogleCirclesExtended
+      // },
+      // {
+      //   title: 'Cards',
+      //   icon: CreditCardOutline,
+      //   path: '/cards'
+      // },
+      // {
+      //   title: 'Tables',
+      //   icon: Table,
+      //   path: '/tables'
+      // },
+      // {
+      //   icon: CubeOutline,
+      //   title: 'Form Layouts',
+      //   path: '/form-layouts'
+      // }
     ]
   } else if (roleFilter === 'user') {
     return [

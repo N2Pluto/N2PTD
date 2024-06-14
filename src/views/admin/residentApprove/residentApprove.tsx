@@ -584,7 +584,7 @@ const ResidentApprove = () => {
         building_name: user.Dormitory_Building.name,
         room_number: user.Dormitory_Room.room_number,
         bed_number: user.Dormitory_Bed.bed_number,
-        round_name: user.Reservation_System.round_name
+        round_name: user.Reservation_System.round_name,
       }))
       const csv = Papa.unparse(csvData)
       const csvBlob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })

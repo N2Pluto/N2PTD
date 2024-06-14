@@ -398,9 +398,9 @@ const DormitoryResidentControl = () => {
         <Box sx={{ display: 'flex', margin: 5 }}>
           <Grid item xs={12} sm={3}>
             <FormControl fullWidth>
-              <InputLabel id='form-layouts-separator-select-label'>Round</InputLabel>
+              <InputLabel id='form-layouts-separator-select-label'>Building</InputLabel>
               <Select
-                label='Round'
+                label='Building'
                 defaultValue='-1'
                 id='form-layouts-separator-select'
                 labelId='form-layouts-separator-select-label'
@@ -434,9 +434,9 @@ const DormitoryResidentControl = () => {
 
           <Grid item xs={12} sm={2}>
             <FormControl fullWidth sx={{ flexGrow: 1, marginLeft: 5, marginRight: 6 }}>
-              <InputLabel id='form-layouts-separator-select-label'>Round</InputLabel>
+              <InputLabel id='form-layouts-separator-select-label'>Floor</InputLabel>
               <Select
-                label='Round'
+                label='Floor'
                 defaultValue='-1'
                 id='form-layouts-separator-select'
                 labelId='form-layouts-separator-select-label'

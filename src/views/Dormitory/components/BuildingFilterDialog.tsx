@@ -212,7 +212,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Radio checked={bedFilter === 'bunk bed'} onChange={() => setBedFilter('bunk bed')} />}
+                control={<Radio checked={bedFilter === 'bunk bed '} onChange={() => setBedFilter('bunk bed ')} />}
                 label='Bunk Bed'
                 sx={{ ml: 2 }}
               />

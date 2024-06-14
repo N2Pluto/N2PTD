@@ -37,26 +37,29 @@ const ImportStudent = ({ drawerOpen, setDrawerOpen }) => {
     setParsedData([])
   }
 
-  const handleImportCSV = async data => {
-    try {
-      const response = await fetch('/api/admin/student/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
+ const handleImportCSV = async data => {
+   try {
+     const response = await fetch('/api/admin/student/create', {
+       method: 'POST',
+       headers: {
+         'Content-Type': 'application/json'
+       },
+       body: JSON.stringify(data)
+     })
 
-      if (response.ok) {
-        handleDrawerClose()
-        setSuccess(true)
-      } else {
-        throw new Error('Failed to import data.')
-      }
-    } catch (error) {
-      setError('Failed to import data.')
-    }
-  }
+     if (response.ok) {
+       handleDrawerClose()
+       setSuccess(true)
+     } else if (response.status === 400) {
+       const errorData = await response.json() // Assuming the server sends a JSON response
+       setError(`Failed to import data. ${errorData.error}`)
+     } else {
+       throw new Error('Failed to import data.')
+     }
+   } catch (error) {
+     setError(`Failed to import data. ${error.message}`)
+   }
+ }
 
   const onDrop = acceptedFiles => {
     if (acceptedFiles.length) {

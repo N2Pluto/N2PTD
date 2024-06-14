@@ -87,7 +87,12 @@ export default function EditUserForm({
       }
     }
 
+    // Call fetchData immediately and then set an interval for it to be called every 10 seconds
     fetchData()
+    const intervalId = setInterval(fetchData, 10000)
+
+    // Cleanup function to clear the interval when the component unmounts
+    return () => clearInterval(intervalId)
   }, [id])
 
   console.log('newUsers', newUsers)
@@ -473,7 +478,8 @@ export default function EditUserForm({
           </DialogContent>
           <DialogActions>
             <Button onClick={handleDelete}>Delete</Button>
-            <Button onClick={handleUpdate}>Update</Button>
+            {/* Conditionally render the Update button based on whether users exist */}
+            {users.length > 0 && <Button onClick={handleUpdate}>Update</Button>}
             <Button onClick={handleClose}>Cancel</Button>
           </DialogActions>
         </Dialog>

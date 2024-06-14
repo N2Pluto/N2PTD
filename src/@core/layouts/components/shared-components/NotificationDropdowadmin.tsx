@@ -108,15 +108,15 @@ const NotificationAdminDropdown = () => {
   }
 
   const handleRouter1 = () => {
-    router.push('/admin/userManagementForm')
+    router.push('/admin/userManagement')
   }
 
   const handleRouter2 = () => {
-    router.push('/admin/dormitoryResident/changeRoomForm')
+    router.push('/admin/dormitoryResident')
   }
 
   const handleRouter3 = () => {
-    router.push('/admin/dormitoryResident/transferRoomForm')
+    router.push('/admin/dormitoryResident')
   }
 
   const handleRouter4 = () => {

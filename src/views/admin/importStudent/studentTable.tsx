@@ -211,9 +211,9 @@ const StudentTable = () => {
             Student List
           </Typography>
 
-          <Button variant='contained' color='primary' onClick={() => setDrawerUpdateOpen(true)} sx={{ ml: 200 }}>
+          {/* <Button variant='contained' color='primary' onClick={() => setDrawerUpdateOpen(true)} sx={{ ml: 200 }}>
             UPDATE STUDENT YEAR
-          </Button>
+          </Button> */}
           <Button variant='contained' color='primary' onClick={() => setDrawerOpen(true)}>
             IMPORT STUDENT
           </Button>
@@ -364,7 +364,7 @@ const StudentTable = () => {
         />
       </Paper>
       <ImportStudent drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
-      <UpdateStudentYear drawerUpdateOpen={drawerUpdateOpen} setDrawerUpdateOpen={setDrawerUpdateOpen} />
+      {/* <UpdateStudentYear drawerUpdateOpen={drawerUpdateOpen} setDrawerUpdateOpen={setDrawerUpdateOpen} /> */}
     </>
   )
 }

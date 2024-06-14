@@ -31,13 +31,22 @@ export default function ReservationForm() {
   const [open, setOpen] = React.useState(false)
   const [fullWidth, setFullWidth] = React.useState(true)
   const [maxWidth, setMaxWidth] = React.useState<DialogProps['maxWidth']>('sm')
-  const [student_year, setStudentYear] = useState<string[]>(['63', '64', '65', '66', '67', '68'])
-  const [years, setYears] = useState<number[]>([63, 64, 65, 66, 67, 68])
+  const [student_year, setStudentYear] = useState<string[]>([])
+  const initialYears = [63, 64, 65, 66, 67, 68]
+  const [years, setYears] = useState(initialYears)
 
   const [roundName, setRoundName] = useState('')
+  const currentYear = new Date().getFullYear()
+  const yearsAhead = 5 // Adjust this value to show more years
   const [gender, setGender] = useState('')
   const [startDate, setStartDate] = useState<Date | null | undefined>(null)
   const [endDate, setEndDate] = useState<Date | null | undefined>(null)
+
+  const yearMenuItems = Array.from({ length: yearsAhead }, (_, index) => (
+    <MenuItem key={index} value={currentYear + index}>
+      {currentYear + index}
+    </MenuItem>
+  ))
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -57,17 +66,8 @@ export default function ReservationForm() {
   }
 
   // Handle Select
-  const handleSelectChange = (event: SelectChangeEvent<typeof student_year>) => {
-    const value = event.target.value
-    // Check if "Add year" is selected
-    if (value.includes('Add year')) {
-      const newYears = [...years, years[years.length - 1] + 1] // Add next year
-      setYears(newYears) // Update years state
-      // Remove 'Add year' from selection and update with new years
-      setStudentYear(newYears.map(String))
-    } else {
-      setStudentYear(value as string[])
-    }
+  const handleSelectChange = (event: SelectChangeEvent<string[]>) => {
+    setStudentYear(event.target.value as string[])
   }
 
   const addYear = () => {
@@ -107,9 +107,14 @@ export default function ReservationForm() {
   }
 
   // Send a POST request to the API endpoint with the form data when the form is submitted
-  // Send a POST request to the API endpoint with the form data when the form is submitted
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    // Ensure start_date is before end_date
+    if (new Date(startDate) >= new Date(endDate)) {
+      alert('Start date must be before end date.')
+      return
+    }
 
     const studentYearValue = student_year.length > 1 ? student_year.join(',') : student_year[0]
 
@@ -165,12 +170,15 @@ export default function ReservationForm() {
         sx={{ py: 2.5, width: '100%', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
         onClick={handleClickOpen}
       >
-        Add Round Dormitory
+        Create Booking Period
       </Button>
       <Dialog fullWidth={fullWidth} maxWidth={maxWidth} open={open} onClose={handleClose}>
         <DialogContent>
-          <Typography variant='h5'>Option</Typography>
-          <DialogContentText>You can set my maximum width and whether to adapt or not.</DialogContentText>
+          <Typography variant='h5'>Create Booking Period</Typography>
+          <DialogContentText>
+            You can create a booking period for your reservations. This feature allows you to specify the start and end
+            dates, ensuring that your bookings are organized and manageable.
+          </DialogContentText>
           <Card>
             <CardContent>
               <Grid container spacing={3}>
@@ -184,15 +192,12 @@ export default function ReservationForm() {
                       labelId='form-layouts-separator-multiple-select-label'
                       input={<OutlinedInput label='Language' id='select-multiple-language' />}
                     >
-                      <MenuItem value='2023'>2023</MenuItem>
-                      <MenuItem value='2024'>2024</MenuItem>
-                      <MenuItem value='2025'>2025</MenuItem>
-                      <MenuItem value='2026'>2026</MenuItem>
+                      {yearMenuItems}
                     </Select>
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={6} sm={6}>
                   <FormControl fullWidth>
                     <InputLabel id='form-layouts-separator-multiple-select-label'>Student Year</InputLabel>
                     <Select

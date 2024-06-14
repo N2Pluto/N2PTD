@@ -37,19 +37,20 @@ const FacebookPostAndEdit: React.FC = () => {
             subheader={new Date(post.created_at).toLocaleDateString('en-GB')}
             action={
               <Box>
-                <IconButton aria-label="edit">
-                <EditPost id={post.id} />
+                <IconButton aria-label='edit'>
+                  <EditPost id={post.id} />
                 </IconButton>
-                <IconButton aria-label="delete" >
-
+                <IconButton aria-label='delete'>
                   <DeletePost id={post.id} />
                 </IconButton>
               </Box>
             }
           />
           <CardContent>
-            <img src={post.image} alt='' style={{ maxWidth: '100%', height: 'auto' }} />
-            <Typography variant='h6' color='text.secondary' sx={{pt:2}}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <img src={post.image} alt='' style={{ maxWidth: '100%', height: 'auto' }} />
+            </div>
+            <Typography variant='h6' color='text.secondary' sx={{ pt: 2 }}>
               {post.header}
             </Typography>
             <Typography variant='body2' color='text.secondary'>
@@ -59,7 +60,7 @@ const FacebookPostAndEdit: React.FC = () => {
         </Card>
       ))}
     </>
-  );
+  )
 };
 
 export default FacebookPostAndEdit;
