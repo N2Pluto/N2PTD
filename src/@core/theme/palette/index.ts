@@ -35,7 +35,8 @@ const DefaultPalette = (mode: PaletteMode, themeColor: ThemeColor) => {
       white: '#FFF'
     },
     mode: mode,
-    primary: { // สีอยู่ขตรงนี้
+    primary: {
+      // สีอยู่ขตรงนี้
       light: '#E8ABB5',
       main: '#E8ABB5',
       dark: '#E8ABB5',

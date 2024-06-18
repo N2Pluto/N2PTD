@@ -1,15 +1,19 @@
 // ** React Imports
-import { useState, SyntheticEvent, Fragment } from 'react';
-import { styled } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
-import ColorLensIcon from '@mui/icons-material/ColorLens';
-import DefaultPalette from 'src/@core/theme/palette';
-import { Button } from '@mui/material';
+import { useState, SyntheticEvent, Fragment } from 'react'
+import { styled } from '@mui/material/styles'
+import IconButton from '@mui/material/IconButton'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Typography from '@mui/material/Typography'
+import ColorLensIcon from '@mui/icons-material/ColorLens'
+import { Button } from '@mui/material'
+
+// ** Type Imports
+import { PaletteMode } from '@mui/material'
+import { ThemeColor } from 'src/@core/layouts/types'
 
 // Import DefaultPalette function
+import DefaultPalette from 'src/@core/theme/palette'
 
 const StyledMenu = styled(Menu)(({ theme }) => ({
   '& .MuiMenu-paper': {
@@ -23,38 +27,56 @@ const StyledMenu = styled(Menu)(({ theme }) => ({
   '& .MuiMenu-list': {
     padding: 0
   }
-}));
+}))
 
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   paddingTop: theme.spacing(3),
   paddingBottom: theme.spacing(3),
   borderBottom: `1px solid ${theme.palette.divider}`
-}));
+}))
 
 const ModeColor = () => {
-  const [tencolor, setColors] = useState<string>('#F8D7DA');
-
+  const [color, setColor] = useState<string>('')
 
   // Define state and functions
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
-    setAnchorEl(event.currentTarget as HTMLElement);
-  };
+    setAnchorEl(event.currentTarget as HTMLElement)
+  }
 
   const handleDropdownClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   // Function to handle color change
   const handleColorChange = (color: string) => {
-    setColors(color);
+    setColor(color)
   }
+
+  // Get the palette
+  const mode: PaletteMode = 'light' // or 'dark', this should be dynamic based on your theme settings
+  const themeColor: ThemeColor = 'primary' // this should also be dynamic
+  const palette = DefaultPalette(mode, themeColor)
+
+  const colors = [
+    palette.primary.main,
+    palette.secondary.main,
+    palette.success.main,
+    palette.error.main,
+    palette.warning.main
+  ]
 
   // Render ModeColor component
   return (
     <Fragment>
-      <IconButton color='inherit' aria-haspopup='true' onClick={handleDropdownOpen} aria-controls='customized-menu'>
+      <IconButton
+        color='inherit'
+        aria-haspopup='true'
+        onClick={handleDropdownOpen}
+        aria-controls='customized-menu'
+        style={{ backgroundColor: color }} // Apply the selected color to the button
+      >
         <ColorLensIcon />
       </IconButton>
       <StyledMenu
@@ -71,15 +93,24 @@ const ModeColor = () => {
           disableRipple
           sx={{ py: 3.5, borderBottom: 0, borderTop: theme => `1px solid ${theme.palette.divider}` }}
         >
-          <Button variant='contained' sx={{ width: '100%', backgroundColor: '#F8D7DA' }} onClick={() => handleColorChange('#F8D7DA')}></Button>
-          <Button variant='contained' sx={{ width: '100%', backgroundColor: '#F1DEEE' }} onClick={() => handleColorChange('#F1DEEE')}></Button>
-          <Button variant='contained' sx={{ width: '100%', backgroundColor: '#B3DBD8' }} onClick={() => handleColorChange('#B3DBD8')}></Button>
-          <Button variant='contained' sx={{ width: '100%', backgroundColor: '#F898A4' }} onClick={() => handleColorChange('#F898A4')}></Button>
-          <Button variant='contained' sx={{ width: '100%', backgroundColor: '#E3EBFD' }} onClick={() => handleColorChange('#E3EBFD')}></Button>
+          {colors.map((color, index) => (
+            <Button
+              key={index}
+              variant='contained'
+              sx={{
+                width: '100%',
+                backgroundColor: color,
+                '&:hover': {
+                  backgroundColor: color // You can add logic to lighten/darken the color on hover if needed
+                }
+              }}
+              onClick={() => handleColorChange(color)}
+            ></Button>
+          ))}
         </StyledMenuItem>
       </StyledMenu>
     </Fragment>
-  );
-};
+  )
+}
 
-export default ModeColor;
+export default ModeColor

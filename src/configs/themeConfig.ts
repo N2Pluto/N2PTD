@@ -13,9 +13,9 @@ type ThemeConfig = {
 }
 
 const getMode = () => {
-  const currentHour = new Date().getHours();
-  
-  return (currentHour >= 8 && currentHour <= 21) ? 'light' : 'dark';
+  const currentHour = new Date().getHours()
+
+  return currentHour >= 8 && currentHour <= 23 ? 'light' : 'light'
 }
 
 const themeConfig: ThemeConfig = {

@@ -27,7 +27,8 @@ import ChatBot from '../components/chatbot'
 
 const VerticalLayoutWrapper = styled('div')({
   height: '100%',
-  display: 'flex'
+  display: 'flex',
+  overflow: 'hidden'
 })
 
 const MainContentWrapper = styled(Box)<BoxProps>({
@@ -45,24 +46,29 @@ const ContentWrapper = styled('main')(({ theme }) => ({
   transition: 'padding .25s ease-in-out',
   [theme.breakpoints.down('sm')]: {
     paddingLeft: theme.spacing(4),
-    paddingRight: theme.spacing(4)
-  }
+    paddingRight: theme.spacing(4),
+    paddingTop: theme.spacing()
+  },
+  // Set a max-width to prevent excessive growth
+  maxWidth: '1440px',
+  margin: '0 auto'
 }))
 
 const VerticalLayout = (props: LayoutProps) => {
   // ** Props
   const { settings, children, scrollToTop } = props
-  const { chatBot } = props
 
   // ** Vars
   const { contentWidth } = settings
-  const navWidth = themeConfig.navigationSize
+  const initialNavWidth = themeConfig.navigationSize
 
   // ** States
   const [navVisible, setNavVisible] = useState<boolean>(false)
+  const [navWidth, setNavWidth] = useState<number>(initialNavWidth)
 
   // ** Toggle Functions
   const toggleNavVisibility = () => setNavVisible(!navVisible)
+  const toggleNavWidth = () => setNavWidth(navWidth === 150 ? initialNavWidth : 150)
 
   return (
     <>
@@ -70,11 +76,13 @@ const VerticalLayout = (props: LayoutProps) => {
         {/* Navigation Menu */}
         <Navigation
           navWidth={navWidth}
+          toggleNavWidth={toggleNavWidth}
           navVisible={navVisible}
           setNavVisible={setNavVisible}
           toggleNavVisibility={toggleNavVisibility}
           {...props}
         />
+
         <MainContentWrapper className='layout-content-wrapper'>
           {/* AppBar Component */}
           <AppBar toggleNavVisibility={toggleNavVisibility} {...props} />
@@ -83,9 +91,10 @@ const VerticalLayout = (props: LayoutProps) => {
           <ContentWrapper
             className='layout-page-content'
             sx={{
+              mt: '90px', // Adjusted margin-top to push content below AppBar
               ...(contentWidth === 'boxed' && {
                 mx: 'auto',
-                '@media (min-width:1440px)': { maxWidth: 1440 },
+                '@media (min-width:1440px)': { maxWidth: '100%' },
                 '@media (min-width:1200px)': { maxWidth: '100%' }
               })
             }}
@@ -102,8 +111,6 @@ const VerticalLayout = (props: LayoutProps) => {
           </DatePickerWrapper>
         </MainContentWrapper>
       </VerticalLayoutWrapper>
-
-      {chatBot ? chatBot(props) : <ChatBot />}
 
       {scrollToTop ? (
         scrollToTop(props)

@@ -24,9 +24,7 @@ const Dashboard = () => {
         <Grid item xs={12} sm={12} md={12}>
           <RenewalChooseForm />
         </Grid>
-        <Grid item xs={12} sx={{ paddingBottom: 4 }}>
-          <Typography variant='h5'>Home </Typography>
-        </Grid>
+
         <Grid item xs={12} sm={6} md={3}>
           <CardUserStatistics />
         </Grid>

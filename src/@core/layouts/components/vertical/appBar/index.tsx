@@ -1,13 +1,9 @@
-// ** React Imports
 import { ReactNode } from 'react'
-
-// ** MUI Imports
 import { styled, useTheme } from '@mui/material/styles'
 import MuiAppBar, { AppBarProps } from '@mui/material/AppBar'
 import MuiToolbar, { ToolbarProps } from '@mui/material/Toolbar'
-
-// ** Type Import
 import { Settings } from 'src/@core/context/settingsContext'
+import { Box } from '@mui/material'
 
 interface Props {
   hidden: boolean
@@ -22,12 +18,17 @@ const AppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   padding: theme.spacing(0, 6),
-  backgroundColor: 'transparent',
+  backgroundColor: theme.palette.common.white,
   color: theme.palette.text.primary,
-  minHeight: theme.mixins.toolbar.minHeight,
-  [theme.breakpoints.down('sm')]: {
+  minHeight: theme.mixins.toolbar.minHeight + 25, // Increased height by adding 25px
+  top: 0,
+  position: 'fixed', // Set position to fixed
+  width: '100%', // Ensure it spans the full width
+  zIndex: theme.zIndex.appBar, // Ensure it stays above other elements
+  [theme.breakpoints.down('lg')]: {
     paddingLeft: theme.spacing(4),
-    paddingRight: theme.spacing(4)
+    paddingRight: theme.spacing(4),
+    minHeight: theme.mixins.toolbar.minHeight + 25 // Ensure the height increase is also applied for smaller screens
   }
 }))
 
@@ -42,22 +43,17 @@ const Toolbar = styled(MuiToolbar)<ToolbarProps>(({ theme }) => ({
 }))
 
 const LayoutAppBar = (props: Props) => {
-  // ** Props
   const { settings, verticalAppBarContent: userVerticalAppBarContent } = props
-
-  // ** Hooks
   const theme = useTheme()
-
-  // ** Vars
   const { contentWidth } = settings
 
   return (
-    <AppBar elevation={0} color='default' className='layout-navbar' position='static'>
+    <AppBar elevation={0} color='default' className='layout-navbar'>
       <Toolbar
         className='navbar-content-container'
         sx={{
           ...(contentWidth === 'boxed' && {
-            '@media (min-width:1440px)': { maxWidth: `calc(1440px - ${theme.spacing(6)} * 2)` }
+            '@media (min-width:1440px)': { maxWidth: `100%` }
           })
         }}
       >

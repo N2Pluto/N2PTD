@@ -15,12 +15,15 @@ import { Settings } from 'src/@core/context/settingsContext'
 
 // ** Components
 import ModeToggler from 'src/@core/layouts/components/shared-components/ModeToggler'
+import ModeColor from 'src/@core/layouts/components/shared-components/colorToggler'
 import UserDropdown from 'src/@core/layouts/components/shared-components/UserDropdown'
 import NotificationDropdown from 'src/@core/layouts/components/shared-components/NotificationDropdown'
 import { userStore } from 'src/stores/userStore'
 import { useEffect, useState } from 'react'
 import NotificationAdminDropdown from 'src/@core/layouts/components/shared-components/NotificationDropdowadmin'
 import RenewalChooseForm from 'src/views/admin/renewalDormitory/renewalChooseForm'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import DefaultPalette from 'src/@core/theme/palette'
 
 interface Props {
   hidden: boolean
@@ -66,6 +69,8 @@ const AppBarContent = (props: Props) => {
     }
   }, [user])
 
+  const isSmallScreen = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
+
   return roleFilter === 'admin' ? (
     <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
       <Box className='actions-left' sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
@@ -78,9 +83,12 @@ const AppBarContent = (props: Props) => {
             <Menu />
           </IconButton>
         ) : null}
-        <TextField
+        {/* <TextField
           size='small'
-          sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4 } }}
+          sx={{
+            ml: isSmallScreen ? 0 : 70, // Apply margin left only if not a small screen
+            '& .MuiOutlinedInput-root': { borderRadius: 4 }
+          }}
           InputProps={{
             startAdornment: (
               <InputAdornment position='start'>
@@ -88,11 +96,12 @@ const AppBarContent = (props: Props) => {
               </InputAdornment>
             )
           }}
-        />
+        /> */}
       </Box>
       <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
         {/* <ModeColor /> */}
-        <ModeToggler settings={settings} saveSettings={saveSettings} />
+        {/* <ModeToggler settings={settings} saveSettings={saveSettings} /> */}
+        <ModeColor />
         <NotificationAdminDropdown />
         <UserDropdown />
       </Box>
@@ -109,9 +118,12 @@ const AppBarContent = (props: Props) => {
             <Menu />
           </IconButton>
         ) : null}
-        <TextField
+        {/* <TextField
           size='small'
-          sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4 } }}
+          sx={{
+            ml: isSmallScreen ? 0 : 70, // Apply margin left only if not a small screen
+            '& .MuiOutlinedInput-root': { borderRadius: 4 }
+          }}
           InputProps={{
             startAdornment: (
               <InputAdornment position='start'>
@@ -119,10 +131,11 @@ const AppBarContent = (props: Props) => {
               </InputAdornment>
             )
           }}
-        />
+        /> */}
       </Box>
       <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
-        <ModeToggler settings={settings} saveSettings={saveSettings} />
+        {/* <ModeToggler settings={settings} saveSettings={saveSettings} /> */}
+        <ModeColor />
         {/* <NotificationDropdown /> */}
         {/* <RenewalChooseForm /> */}
         <UserDropdown />

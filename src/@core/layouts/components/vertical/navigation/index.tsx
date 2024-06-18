@@ -1,3 +1,5 @@
+// this is /
+
 // ** React Import
 import { ReactNode, useRef, useState } from 'react'
 
@@ -103,17 +105,10 @@ const Navigation = (props: Props) => {
 
   return (
     <Drawer {...props}>
-      <VerticalNavHeader {...props} />
-      <StyledBoxForShadow
-        ref={shadowRef}
-        sx={{
-          background: `linear-gradient(${theme.palette.background.default} 40%,${hexToRGBA(
-            theme.palette.background.default,
-            0.1
-          )} 95%,${hexToRGBA(theme.palette.background.default, 0.05)})`
-        }}
-      />
-      <Box sx={{ height: '100%', position: 'relative', overflow: 'hidden' }}>
+      <StyledBoxForShadow ref={shadowRef} />
+      <Box
+        sx={{ height: '100%', position: 'relative', overflow: 'hidden', backgroundColor: theme.palette.common.white }}
+      >
         {/* @ts-ignore */}
         <ScrollWrapper
           {...(hidden
@@ -133,6 +128,8 @@ const Navigation = (props: Props) => {
               userVerticalNavMenuContent(props)
             ) : (
               <List className='nav-items' sx={{ transition: 'padding .25s ease', pr: 4.5 }}>
+                <VerticalNavHeader {...props} />
+
                 <VerticalNavItems
                   groupActive={groupActive}
                   setGroupActive={setGroupActive}

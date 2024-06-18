@@ -1,30 +1,18 @@
-// ** React Imports
 import { ElementType, ReactNode } from 'react'
-
-// ** Next Imports
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-
-// ** MUI Imports
 import Chip from '@mui/material/Chip'
 import ListItem from '@mui/material/ListItem'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Box, { BoxProps } from '@mui/material/Box'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemButton, { ListItemButtonProps } from '@mui/material/ListItemButton'
-
-// ** Configs Import
+import useMediaQuery from '@mui/material/useMediaQuery'
 import themeConfig from 'src/configs/themeConfig'
-
-// ** Types
 import { NavLink } from 'src/@core/layouts/types'
 import { Settings } from 'src/@core/context/settingsContext'
-
-// ** Custom Components Imports
 import UserIcon from 'src/layouts/components/UserIcon'
-
-// ** Utils
 import { handleURLQueries } from 'src/@core/layouts/utils'
 
 interface Props {
@@ -32,9 +20,9 @@ interface Props {
   settings: Settings
   navVisible?: boolean
   toggleNavVisibility: () => void
+  navWidth: number // Add this line
 }
 
-// ** Styled Components
 const MenuNavLink = styled(ListItemButton)<
   ListItemButtonProps & { component?: ElementType; target?: '_blank' | undefined }
 >(({ theme }) => ({
@@ -62,11 +50,11 @@ const MenuItemTextMetaWrapper = styled(Box)<BoxProps>({
   ...(themeConfig.menuTextTruncate && { overflow: 'hidden' })
 })
 
-const VerticalNavLink = ({ item, navVisible, toggleNavVisibility }: Props) => {
-  // ** Hooks
+const VerticalNavLink = ({ item, navVisible, toggleNavVisibility, navWidth }: Props) => {
   const router = useRouter()
-
   const IconTag: ReactNode = item.icon
+  const theme = useTheme()
+  const isSmallScreen = useMediaQuery('(max-width:150px)')
 
   const isNavLinkActive = () => {
     if (router.pathname === item.path || handleURLQueries(router, item.path)) {
@@ -99,12 +87,19 @@ const VerticalNavLink = ({ item, navVisible, toggleNavVisibility }: Props) => {
           }}
           sx={{
             pl: 5.5,
-            ...(item.disabled ? { pointerEvents: 'none' } : { cursor: 'pointer' })
+            ...(item.disabled ? { pointerEvents: 'none' } : { cursor: 'pointer' }),
+            display: 'flex',
+            flexDirection: navWidth === 150 ? 'column' : 'row',
+            alignItems: navWidth === 150 ? 'center' : 'flex-start',
+            borderTopRightRadius: navWidth === 150 ? 0 : undefined,
+            borderBottomRightRadius: navWidth === 150 ? 0 : undefined,
+            borderRadius: navWidth === 150 ? 10 : undefined // Set borderRadius to 20 when navWidth is 150
           }}
         >
           <ListItemIcon
             sx={{
-              mr: 2.5,
+              mr: navWidth === 150 ? 5 : 2.5,
+              mb: navWidth === 150 ? 1 : 0,
               color: 'text.primary',
               transition: 'margin .25s ease-in-out'
             }}
@@ -112,21 +107,39 @@ const VerticalNavLink = ({ item, navVisible, toggleNavVisibility }: Props) => {
             <UserIcon icon={IconTag} />
           </ListItemIcon>
 
-          <MenuItemTextMetaWrapper>
-            <Typography {...(themeConfig.menuTextTruncate && { noWrap: true })}>{item.title}</Typography>
-            {item.badgeContent ? (
-              <Chip
-                label={item.badgeContent}
-                color={item.badgeColor || 'primary'}
+          {!isSmallScreen && (
+            <MenuItemTextMetaWrapper
+              sx={{
+                display: 'flex',
+                flexDirection: navWidth === 150 ? 'column' : 'row',
+                alignItems: navWidth === 150 ? 'center' : 'flex-start',
+                textAlign: navWidth === 150 ? 'center' : 'left',
+                justifyContent: 'center'
+              }}
+            >
+              <Typography
+                {...(themeConfig.menuTextTruncate && { noWrap: true })}
                 sx={{
-                  height: 20,
-                  fontWeight: 500,
-                  marginLeft: 1.25,
-                  '& .MuiChip-label': { px: 1.5, textTransform: 'capitalize' }
+                  fontSize: navWidth === 150 ? '0.75rem' : 'inherit',
+                  width: '100%'
                 }}
-              />
-            ) : null}
-          </MenuItemTextMetaWrapper>
+              >
+                {item.title}
+              </Typography>
+              {item.badgeContent && navWidth !== 150 && (
+                <Chip
+                  label={item.badgeContent}
+                  color={item.badgeColor || 'primary'}
+                  sx={{
+                    height: 20,
+                    fontWeight: 500,
+                    marginLeft: 1.25,
+                    '& .MuiChip-label': { px: 1.5, textTransform: 'capitalize' }
+                  }}
+                />
+              )}
+            </MenuItemTextMetaWrapper>
+          )}
         </MenuNavLink>
       </Link>
     </ListItem>

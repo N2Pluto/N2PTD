@@ -6,8 +6,13 @@ import Link from 'next/link'
 
 // ** MUI Imports
 import Box, { BoxProps } from '@mui/material/Box'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import Typography, { TypographyProps } from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+
+// ** Icons Imports
+import ChevronLeft from 'mdi-material-ui/ChevronLeft'
+import ChevronRight from 'mdi-material-ui/ChevronRight'
 
 // ** Type Import
 import { Settings } from 'src/@core/context/settingsContext'
@@ -21,6 +26,8 @@ interface Props {
   toggleNavVisibility: () => void
   saveSettings: (values: Settings) => void
   verticalNavMenuBranding?: (props?: any) => ReactNode
+  navWidth: number
+  toggleNavWidth: () => void
 }
 
 // ** Styled Components
@@ -49,31 +56,66 @@ const StyledLink = styled('a')({
 
 const VerticalNavHeader = (props: Props) => {
   // ** Props
-  const { verticalNavMenuBranding: userVerticalNavMenuBranding } = props
-
-  // ** Hooks
-
+  const { verticalNavMenuBranding: userVerticalNavMenuBranding, navWidth, toggleNavWidth } = props
+  const theme = useTheme() // Use the theme
 
   return (
     <MenuHeaderWrapper className='nav-header' sx={{ pl: 6 }}>
-      {userVerticalNavMenuBranding ? (
-        userVerticalNavMenuBranding(props)
-      ) : (
-        <Link href='/dashboard' passHref>
-          <StyledLink>
-            <Box
-              component='img'
+      <Box sx={{ display: 'flex', flexGrow: 1, alignItems: 'center' }}>
+        {navWidth === 150 ? (
+          <>
+            <img
               src={'https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png'}
-              sx={{ height: 75, width: 75, pt: 3 }}
               alt='logo'
-              >
-              </Box>
-            <HeaderTitle variant='h6' sx={{ ml: 3 , pt: 6}}>
-              {themeConfig.templateName}
-            </HeaderTitle>
-          </StyledLink>
-        </Link>
-      )}
+              style={{ height: 75, width: 75, paddingTop: 3 }}
+            />
+            <IconButton
+              color='primary'
+              onClick={toggleNavWidth}
+              sx={{
+                fontSize: 'large',
+                '& svg': { fontSize: '2rem' },
+                padding: 0,
+                ml: 1 // Adjust margin left for spacing
+              }}
+            >
+              <ChevronRight />
+            </IconButton>
+          </>
+        ) : (
+          <>
+            {userVerticalNavMenuBranding ? (
+              userVerticalNavMenuBranding(props)
+            ) : (
+              <Link href='/dashboard' passHref>
+                <StyledLink>
+                  <Box
+                    component='img'
+                    src={'https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png'}
+                    sx={{ height: 75, width: 75, pt: 3 }}
+                    alt='logo'
+                  ></Box>
+                  <HeaderTitle variant='h6' sx={{ ml: 3, pt: 6 }}>
+                    {themeConfig.templateName}
+                  </HeaderTitle>
+                </StyledLink>
+              </Link>
+            )}
+            <IconButton
+              color='primary'
+              onClick={toggleNavWidth}
+              sx={{
+                fontSize: 'large',
+                '& svg': { fontSize: '2rem' },
+                padding: 0,
+                ml: -2 // Adjust margin left for spacing
+              }}
+            >
+              {navWidth === 100 ? <ChevronRight /> : <ChevronLeft />}
+            </IconButton>
+          </>
+        )}
+      </Box>
     </MenuHeaderWrapper>
   )
 }

@@ -48,10 +48,10 @@ const CardUserStatistics = () => {
           border: 0,
           boxShadow: 0,
           color: 'common.white',
-          backgroundColor: 'pink',
+          backgroundColor: theme => theme.palette.primary.main, // Changed this line
           display: 'flex',
           justifyContent: 'center',
-          alignItems: 'center',
+          alignItems: 'center'
         }}
       >
         <CardContent
@@ -60,7 +60,7 @@ const CardUserStatistics = () => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            alignItems: 'center',
+            alignItems: 'center'
           }}
         >
           <Typography

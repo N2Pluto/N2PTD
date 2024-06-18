@@ -1,17 +1,7 @@
-// ** Icon imports
-import Table from 'mdi-material-ui/Table'
-import CubeOutline from 'mdi-material-ui/CubeOutline'
+// /src/navigation/vertical/index.ts
+
 import HomeOutline from 'mdi-material-ui/HomeOutline'
-import FormatLetterCase from 'mdi-material-ui/FormatLetterCase'
-import AccountCogOutline from 'mdi-material-ui/AccountCogOutline'
-import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
 import AccountPlusOutline from 'mdi-material-ui/AccountPlusOutline'
-import AlertCircleOutline from 'mdi-material-ui/AlertCircleOutline'
-import GoogleCirclesExtended from 'mdi-material-ui/GoogleCirclesExtended'
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
-import ChangeCircleIcon from '@mui/icons-material/ChangeCircle'
-import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings'
-import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges'
 import WifiProtectedSetupIcon from '@mui/icons-material/WifiProtectedSetup'
 import DomainAddOutlinedIcon from '@mui/icons-material/DomainAddOutlined'
 import CorporateFareOutlinedIcon from '@mui/icons-material/CorporateFareOutlined'
@@ -22,8 +12,10 @@ import FeedOutlinedIcon from '@mui/icons-material/FeedOutlined'
 import AutorenewIcon from '@mui/icons-material/Autorenew'
 import ChecklistIcon from '@mui/icons-material/Checklist'
 import GoogleIcon from '@mui/icons-material/Google'
-
-// ** Type import
+import ApartmentIcon from '@mui/icons-material/Apartment' // New icon for Dormitory
+import BookOnlineIcon from '@mui/icons-material/BookOnline' // New icon for Reservation
+import PersonIcon from '@mui/icons-material/Person' // New icon for Profile
+import RequestPageIcon from '@mui/icons-material/RequestPage'
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
 import { userStore } from 'src/stores/userStore'
 import { useEffect, useState } from 'react'
@@ -62,147 +54,90 @@ const useNavigation = (): VerticalNavItemsType => {
   if (roleFilter === 'admin') {
     return [
       {
-        title: 'Home',
+        title: 'หน้าหลัก',
         icon: HomeOutline,
         path: '/admin/home'
       },
-      // {
-      //   title: 'dashboard',
-      //   icon: HomeOutline,
-      //   path: '/admin/dashboard'
-      // },
       {
-        sectionTitle: 'Import Student'
-      },
-      {
-        title: 'นำเข้ารายชื่อนักศึกษา',
+        title: 'นำเข้าข้อมูล',
         icon: AccountPlusOutline,
         path: '/admin/importStudent'
       },
+
       {
-        sectionTitle: 'ศูนย์รวมข้อมูล'
-      },
-      {
-        title: 'ข้อมูลผู้อยู่อาศัย',
-        icon: FeedOutlinedIcon,
-        path: '/admin/dormitoryResident'
-      },
-      {
-        title: 'ข้อมูลผู้ใช้',
+        sectionTitle: 'ศูนย์รวมข้อมูล',
         icon: DnsOutlinedIcon,
-        path: '/admin/userManagement'
+        children: [
+          {
+            title: 'ข้อมูลผู้อยู่อาศัย',
+            icon: ApartmentIcon, // Updated icon
+            path: '/admin/dormitoryResident'
+          },
+          {
+            title: 'ข้อมูลผู้ใช้',
+            icon: PersonIcon, // Updated icon
+            path: '/admin/userManagement'
+          }
+        ]
       },
-
       {
-        sectionTitle: 'การอนุมัติ'
-      },
-      {
-        title: 'อนุมัติการจอง ',
+        sectionTitle: 'การอนุมัติ',
         icon: CheckBoxOutlinedIcon,
-        path: '/admin/reservationApprove'
+        children: [
+          {
+            title: 'อนุมัติการจอง',
+            icon: BookOnlineIcon, // Updated icon
+            path: '/admin/reservationApprove'
+          },
+          {
+            title: 'อนุมัติผู้อยู่อาศัย',
+            icon: DoneAllOutlinedIcon,
+            path: '/admin/residentApprove'
+          },
+          {
+            title: 'อนุมัติผู้อยู่ต่อ',
+            icon: ChecklistIcon,
+            path: '/admin/renewalSystem'
+          }
+        ]
       },
       {
-        title: 'อนุมัติผู้อยู่อาศัย',
-        icon: DoneAllOutlinedIcon,
-        path: '/admin/residentApprove'
-      },
-      {
-        title: 'อนุมัติผู้อยู่ต่อ',
-        icon: ChecklistIcon,
-        path: '/admin/renewalSystem'
-      },
-
-      {
-        sectionTitle: 'การสร้าง'
-      },
-      {
-        title: 'สร้างรอบการจอง',
-        icon: WifiProtectedSetupIcon,
-        path: '/admin/reservationSystem'
-      },
-      {
-        title: 'สร้างฟอร์มการอยู่ต่อ',
+        sectionTitle: 'การสร้าง',
         icon: AutorenewIcon,
-        path: '/admin/renewalDormitory'
+        children: [
+          {
+            title: 'สร้างรอบการจอง',
+            icon: WifiProtectedSetupIcon,
+            path: '/admin/reservationSystem'
+          },
+          {
+            title: 'สร้างฟอร์มการอยู่ต่อ',
+            icon: AutorenewIcon,
+            path: '/admin/renewalDormitory'
+          },
+          {
+            title: 'สร้างแบบฟอร์มประกาศ',
+            icon: GoogleIcon,
+            path: '/admin/googleForm'
+          }
+        ]
       },
       {
-        title: 'สร้างแบบฟอร์มประกาศ',
-        icon: GoogleIcon,
-        path: '/admin/googleForm'
-      },
-      {
-        sectionTitle: 'ควบคุม'
-      },
-
-      {
-        title: 'การควบคุมตึก',
+        sectionTitle: 'ควบคุม',
         icon: CorporateFareOutlinedIcon,
-        path: '/admin/buildingControl'
-      },
-      {
-        title: 'สร้างตึก',
-        icon: DomainAddOutlinedIcon,
-        path: '/admin/building'
+        children: [
+          {
+            title: 'การควบคุมตึก',
+            icon: CorporateFareOutlinedIcon,
+            path: '/admin/buildingControl'
+          },
+          {
+            title: 'สร้างตึก',
+            icon: DomainAddOutlinedIcon,
+            path: '/admin/building'
+          }
+        ]
       }
-
-      // {
-      //   title: 'เปลี่ยน Role',
-      //   icon: PublishedWithChangesIcon,
-      //   path: '/admin/userControl'
-      // },
-
-      // {
-      //   sectionTitle: 'แบบฟอร์ม'
-      // },
-      // {
-      //   title: 'แบบฟอร์มคำร้องผู้ใช้',
-      //   icon: ManageAccountsIcon,
-      //   path: '/admin/userManagementForm'
-      // },
-      // {
-      //   title: 'แบบฟอร์มย้ายห้อง',
-      //   icon: ChangeCircleIcon,
-      //   path: '/admin/dormitoryResident/changeRoomForm'
-      // },
-      // {
-      //   title: 'แบบฟอร์มสลับห้อง',
-      //   icon: DisplaySettingsIcon,
-      //   path: '/admin/dormitoryResident/transferRoomForm'
-      // },
-
-      // {
-      //   sectionTitle: 'User Interface'
-      // },
-      // {
-      //   title: 'Home',
-      //   icon: HomeOutline,
-      //   path: '/dashboard'
-      // },
-      // {
-      //   title: 'Typography',
-      //   icon: FormatLetterCase,
-      //   path: '/typography'
-      // },
-      // {
-      //   title: 'Icons',
-      //   path: '/icons',
-      //   icon: GoogleCirclesExtended
-      // },
-      // {
-      //   title: 'Cards',
-      //   icon: CreditCardOutline,
-      //   path: '/cards'
-      // },
-      // {
-      //   title: 'Tables',
-      //   icon: Table,
-      //   path: '/tables'
-      // },
-      // {
-      //   icon: CubeOutline,
-      //   title: 'Form Layouts',
-      //   path: '/form-layouts'
-      // }
     ]
   } else if (roleFilter === 'user') {
     return [
@@ -211,31 +146,30 @@ const useNavigation = (): VerticalNavItemsType => {
         icon: HomeOutline,
         path: '/dashboard'
       },
-
       {
         title: 'Dormitory',
-        icon: HomeOutline,
+        icon: ApartmentIcon, // Updated icon
         path: '/Dormitory'
       },
-
       {
         title: 'Reservation',
-        icon: HomeOutline,
+        icon: BookOnlineIcon, // Updated icon
         path: '/reservation'
       },
-
       {
         title: 'Profile',
-        icon: HomeOutline,
+        icon: PersonIcon, // Updated icon
         path: '/profile'
       },
       {
         title: 'Request Form',
-        icon: HomeOutline,
+        icon: RequestPageIcon, // Updated icon
         path: '/userGoogleForm'
       }
     ]
   }
+
+  return []
 }
 
 export default useNavigation

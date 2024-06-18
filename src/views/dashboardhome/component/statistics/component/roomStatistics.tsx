@@ -47,10 +47,10 @@ const CardRoomStatistics = () => {
           border: 0,
           boxShadow: 0,
           color: 'common.white',
-          backgroundColor: 'pink',
+          backgroundColor: theme => theme.palette.primary.main,
           display: 'flex',
           justifyContent: 'center',
-          alignItems: 'center',
+          alignItems: 'center'
         }}
       >
         <CardContent

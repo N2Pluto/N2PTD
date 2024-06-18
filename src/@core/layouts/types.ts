@@ -1,3 +1,5 @@
+// this is /src/@core/layouts/types.ts
+
 import { ReactNode } from 'react'
 import { Settings } from 'src/@core/context/settingsContext'
 
@@ -19,6 +21,7 @@ export type NavLink = {
 }
 
 export type NavSectionTitle = {
+  icon?: string | string[] | ReactNode
   sectionTitle: string
   action?: string
   subject?: string
