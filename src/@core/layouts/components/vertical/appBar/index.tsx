@@ -4,6 +4,7 @@ import MuiAppBar, { AppBarProps } from '@mui/material/AppBar'
 import MuiToolbar, { ToolbarProps } from '@mui/material/Toolbar'
 import { Settings } from 'src/@core/context/settingsContext'
 import { Box } from '@mui/material'
+import { alpha } from '@mui/material/styles'
 
 interface Props {
   hidden: boolean
@@ -18,7 +19,7 @@ const AppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   padding: theme.spacing(0, 6),
-  backgroundColor: theme.palette.common.white,
+  backgroundColor: alpha(theme.palette.common.white, 0.8),
   color: theme.palette.text.primary,
   minHeight: theme.mixins.toolbar.minHeight + 25, // Increased height by adding 25px
   top: 0,

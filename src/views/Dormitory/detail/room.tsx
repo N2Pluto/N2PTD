@@ -11,22 +11,12 @@ import TableRow from '@mui/material/TableRow'
 import TableBody from '@mui/material/TableBody'
 import { auto } from '@popperjs/core'
 import { userStore, IUser } from 'src/stores/userStore'
-import CheckIcon from '@mui/icons-material/Check'
-import CloseIcon from '@mui/icons-material/Close'
 import PersonIcon from '@mui/icons-material/Person'
-import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
-import SchoolIcon from '@mui/icons-material/School'
-import MosqueIcon from '@mui/icons-material/Mosque'
-import PoolIcon from '@mui/icons-material/Pool'
-import DangerousIcon from '@mui/icons-material/Dangerous'
-import HotelIcon from '@mui/icons-material/Hotel'
-import CardMedia from '@mui/material/CardMedia'
 import FeedIcon from '@mui/icons-material/Feed'
 import AllInboxIcon from '@mui/icons-material/AllInbox'
+import Chip from '@mui/material/Chip'
 
 interface Column {
   id: 'DETAILS' | 'room' | 'code' | 'Viewdetails' | 'bedstatus'
@@ -144,7 +134,6 @@ const ReservationRoomDetails = () => {
     // const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 10000)
 
     // return () => clearInterval(intervalId)
-
   }, [])
 
   console.log('sdasdad:', dormitoryRoom)
@@ -316,12 +305,15 @@ const ReservationRoomDetails = () => {
                         </Tooltip>
                       ))}
                     </TableCell>
-                    <TableCell align='center'>{room.status ? <CheckIcon /> : <CloseIcon color='primary' />}</TableCell>
-
+                    <TableCell align='center'>
+                      {room.status ? (
+                        <Chip label='Available' color='success' />
+                      ) : (
+                        <Chip label='Unavailable' color='error' />
+                      )}
+                    </TableCell>
                   </TableRow>
-                  <TableRow>
-
-                  </TableRow>
+                  <TableRow></TableRow>
                 </React.Fragment>
               ))}
             </TableBody>

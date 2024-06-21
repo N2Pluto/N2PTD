@@ -738,7 +738,11 @@ const ReservationRoomTest = () => {
                         <Box>
                           {room.room_rehearse ? (
                             room.status ? (
-                              <Button onClick={() => handleReservation(room.room_id)} variant='contained'>
+                              <Button
+                                onClick={() => handleReservation(room.room_id)}
+                                variant='contained'
+                                style={{ color: 'white' }}
+                              >
                                 Select
                               </Button>
                             ) : (
