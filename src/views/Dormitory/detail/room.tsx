@@ -244,7 +244,7 @@ const ReservationRoomDetails = () => {
                   <Typography variant='body1' sx={{ pr: 2 }}>
                     <AllInboxIcon sx={{ fontSize: 50 }} />
                   </Typography>
-                  <Typography variant='h5'>Facilities</Typography>
+                  <Typography variant='h5'>Accommodation</Typography>
                 </Box>
                 <Box sx={{ pl: 3, pt: 4 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>

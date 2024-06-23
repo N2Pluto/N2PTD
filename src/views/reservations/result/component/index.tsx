@@ -1,14 +1,21 @@
-
 import Grid, { GridProps } from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import { Stack, Step, StepConnector, StepIconProps, StepLabel, Stepper, stepConnectorClasses, styled } from '@mui/material'
+import {
+  Stack,
+  Step,
+  StepConnector,
+  StepIconProps,
+  StepLabel,
+  Stepper,
+  stepConnectorClasses,
+  styled
+} from '@mui/material'
 import SettingsIcon from '@mui/icons-material/Settings'
-import CorporateFareIcon from '@mui/icons-material/CorporateFare';
+import CorporateFareIcon from '@mui/icons-material/CorporateFare'
 import BedroomParentIcon from '@mui/icons-material/BedroomParent'
-import BedIcon from '@mui/icons-material/Bed';
-import SummarizeIcon from '@mui/icons-material/Summarize';
-
+import BedIcon from '@mui/icons-material/Bed'
+import SummarizeIcon from '@mui/icons-material/Summarize'
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -22,9 +29,13 @@ const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   }
 }))
 
-const SuccessฺฺBarResult = () => {
+const ZoomOutContainer = styled('div')({
+  transform: 'scale(0.8)',
+  transformOrigin: 'center top'
+})
 
-  const steps = ['Reservation', 'Building', 'Room' ,'Bed', 'summarize']
+const SuccessฺฺBarResult = () => {
+  const steps = ['Reservation', 'Building', 'Room', 'Bed', 'Summarize']
 
   const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
     [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -32,12 +43,14 @@ const SuccessฺฺBarResult = () => {
     },
     [`&.${stepConnectorClasses.active}`]: {
       [`& .${stepConnectorClasses.line}`]: {
-        backgroundImage: 'linear-gradient(90deg, rgba(145,85,253,1) 0%, rgba(208,85,253,0.31169030112044815) 81%, rgba(242,203,252,1) 100%)'
+        backgroundImage:
+          'linear-gradient(90deg, rgba(145,85,253,1) 0%, rgba(208,85,253,0.31169030112044815) 81%, rgba(242,203,252,1) 100%)'
       }
     },
     [`&.${stepConnectorClasses.completed}`]: {
       [`& .${stepConnectorClasses.line}`]: {
-        backgroundImage: 'linear-gradient(90deg, rgba(145,85,253,1) 0%, rgba(208,85,253,0.31169030112044815) 81%, rgba(242,203,252,1) 100%)'
+        backgroundImage:
+          'linear-gradient(90deg, rgba(145,85,253,1) 0%, rgba(208,85,253,0.31169030112044815) 81%, rgba(242,203,252,1) 100%)'
       }
     },
     [`& .${stepConnectorClasses.line}`]: {
@@ -49,13 +62,13 @@ const SuccessฺฺBarResult = () => {
   }))
 
   const ColorlibStepIconRoot = styled('div')<{
-    ownerState: { completed?: boolean; active?: boolean };
+    ownerState: { completed?: boolean; active?: boolean }
   }>(({ theme, ownerState }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[700] : '#ccc',
     zIndex: 1,
     color: '#fff',
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     display: 'flex',
     borderRadius: '50%',
     justifyContent: 'center',
@@ -63,13 +76,13 @@ const SuccessฺฺBarResult = () => {
     ...(ownerState.active && {
       backgroundImage:
         'linear-gradient(90deg, rgba(145,85,253,1) 0%, rgba(208,85,253,0.31169030112044815) 81%, rgba(242,203,252,1) 100%)',
-      boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)',
+      boxShadow: '0 4px 10px 0 rgba(0,0,0,.25)'
     }),
     ...(ownerState.completed && {
       backgroundImage:
-        'linear-gradient(90deg, rgba(145,85,253,1) 0%, rgba(208,85,253,0.31169030112044815) 81%, rgba(242,203,252,1) 100%)',
-    }),
-  }));
+        'linear-gradient(90deg, rgba(145,85,253,1) 0%, rgba(208,85,253,0.31169030112044815) 81%, rgba(242,203,252,1) 100%)'
+    })
+  }))
 
   function ColorlibStepIcon(props: StepIconProps) {
     const { active, completed, className } = props
@@ -89,21 +102,24 @@ const SuccessฺฺBarResult = () => {
     )
   }
 
-  return (<Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
-    <Card>
-      <CardContent>
-        <Stack sx={{ width: '100%' }} spacing={4}>
-          <Stepper alternativeLabel activeStep={5} connector={<ColorlibConnector />}>
-            {steps.map(label => (
-              <Step key={label}>
-                <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-        </Stack>
-      </CardContent>
-    </Card>
-  </Grid>
+  return (
+    <ZoomOutContainer sx={{ width: '100%' }}>
+      <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
+        <Card>
+          <CardContent>
+            <Stack sx={{ width: '100%' }} spacing={2}>
+              <Stepper alternativeLabel activeStep={5} connector={<ColorlibConnector />}>
+                {steps.map(label => (
+                  <Step key={label}>
+                    <StepLabel StepIconComponent={ColorlibStepIcon}>{label}</StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+            </Stack>
+          </CardContent>
+        </Card>
+      </Grid>
+    </ZoomOutContainer>
   )
 }
 

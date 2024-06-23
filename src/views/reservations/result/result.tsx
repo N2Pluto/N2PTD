@@ -46,15 +46,16 @@ const scaleUp = keyframes`
   }
 `
 
-const StyledImageContainer = styled.div`
-  animation: ${slideIn} 1s ease-in-out;
-`
-
-const StyledCard = styled(Card)`
-  animation: ${fadeIn} 1s ease-in-out;
-  animation-delay: ${({ delay }) => delay}s;
-  animation-fill-mode: both;
-`
+const StyledComponents = {
+  ImageContainer: styled.div`
+    animation: ${slideIn} 1s ease-in-out;
+  `,
+  Card: styled(Card)`
+    animation: ${fadeIn} 1s ease-in-out;
+    animation-delay: ${({ delay }) => delay}s;
+    animation-fill-mode: both;
+  `
+}
 
 const AllResult = ({ open, handleClose }) => {
   const { user } = userStore()
@@ -66,9 +67,9 @@ const AllResult = ({ open, handleClose }) => {
   useEffect(() => {
     const fetchReservationData = async () => {
       try {
-          const response = await fetch(`/api/reservation/select?user_id=${user?.user_id}`)
-          const { reservationData, userInfoData } = await response.json()
-          setReservation(reservationData[0])
+        const response = await fetch(`/api/reservation/select?user_id=${user?.user_id}`)
+        const { reservationData, userInfoData } = await response.json()
+        setReservation(reservationData[0])
       } catch (error) {
         console.error('Error fetching reservation data:', error)
       }
@@ -81,32 +82,21 @@ const AllResult = ({ open, handleClose }) => {
   }, [user])
 
   useEffect(() => {
-    const updateWindowSize = () => {
-      setWindowSize({ width: window.innerWidth, height: window.innerHeight })
+    if (open) {
+      const startConfettiTimer = setTimeout(() => {
+        setShowConfetti(true)
+        const stopConfettiTimer = setTimeout(() => {
+          setShowConfetti(false)
+        }, 7000) // Show confetti for 5 seconds
+
+        return () => clearTimeout(stopConfettiTimer)
+      }, 2500) // Delay confetti by 2.5 seconds
+
+      return () => clearTimeout(startConfettiTimer)
+    } else {
+      setShowConfetti(false)
     }
-
-    updateWindowSize()
-    window.addEventListener('resize', updateWindowSize)
-
-    return () => window.removeEventListener('resize', updateWindowSize)
-  }, [])
-
-   useEffect(() => {
-     if (open) {
-       const startConfettiTimer = setTimeout(() => {
-         setShowConfetti(true)
-         const stopConfettiTimer = setTimeout(() => {
-           setShowConfetti(false)
-         }, 7000) // Show confetti for 5 seconds
-
-         return () => clearTimeout(stopConfettiTimer)
-       }, 2500) // Delay confetti by 2.5 seconds
-
-       return () => clearTimeout(startConfettiTimer)
-     } else {
-       setShowConfetti(false)
-     }
-   }, [open])
+  }, [open])
 
   const discordHandle = async (id, email, domname, roomnum, bednum) => {
     await sendDiscordMessage(
@@ -125,39 +115,51 @@ const AllResult = ({ open, handleClose }) => {
     <Dialog open={open} onClose={handleClose} fullScreen aria-labelledby='full-screen-dialog-title'>
       {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
       <DialogContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <SuccessbarResult style={{ transform: 'scale(0.7)' }} />
-
         <Grid container spacing={3} sx={{ flex: 1, alignItems: 'center' }}>
-          <Grid item xs={12} md={12} sx={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
-            <StyledImageContainer
-              style={{
-                overflow: 'hidden',
-                height: 'calc(40% - 20px)'
-              }}
-            >
-              <img
-                src='https://img2.pic.in.th/pic/anime-flat-building-illustration.png'
-                alt='Building Illustration'
+          <Grid item xs={12} md={12} sm={12} s sx={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
+            <Grid>
+              <Grid item xs={12} md={12} sm={12} sx={{ display: 'flex', justifyContent: 'center', height: '100px' }}>
+                <SuccessbarResult />
+              </Grid>{' '}
+              <StyledComponents.ImageContainer
                 style={{
-                  width: '35%',
-                  height: '10%',
-                  position: 'relative',
-                  top: '-90px',
-                  left: '285px'
+                  overflow: 'hidden',
+                  height: 'calc(100%)'
                 }}
-              />
-            </StyledImageContainer>
-            <Box
+              >
+                <img
+                  src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/bedimg/isometric-view-3d-rendering-city.png'
+                  alt='Building Illustration'
+                  style={{
+                    width: '32%',
+                    position: 'relative',
+                    top: '-0px',
+                    left: '450px'
+                  }}
+                />
+              </StyledComponents.ImageContainer>
+            </Grid>
+
+            <Grid
               sx={{
                 width: '100%',
                 maxWidth: 400,
+                maxHeight: 400,
                 position: 'absolute',
-                top: '55%',
-                left: '50%',
+                top: '60%',
+                left: '45%',
                 transform: 'translateY(-50%)'
               }}
             >
-              <StyledCard sx={{ mb: 5, boxShadow: '0 8px 8px 0 rgba(0, 0, 0, 0.6)', borderRadius: '10px' }} delay={1}>
+              <StyledComponents.Card
+                sx={{
+                  mb: 1,
+                  boxShadow: '0 8px 8px 0 rgba(0, 0, 0, 0.6)',
+                  borderRadius: '10px',
+                  transform: 'scale(0.75)'
+                }}
+                delay={1}
+              >
                 <CardContent>
                   <Grid container>
                     <Grid item xs={2}>
@@ -183,9 +185,17 @@ const AllResult = ({ open, handleClose }) => {
                     </Grid>
                   </Grid>
                 </CardContent>
-              </StyledCard>
+              </StyledComponents.Card>
 
-              <StyledCard sx={{ mb: 5, boxShadow: '0 8px 8px 0 rgba(0, 0, 0, 0.6)', borderRadius: '10px' }} delay={1.5}>
+              <StyledComponents.Card
+                sx={{
+                  mb: 1,
+                  boxShadow: '0 8px 8px 0 rgba(0, 0, 0, 0.6)',
+                  borderRadius: '10px',
+                  transform: 'scale(0.75)'
+                }}
+                delay={1.5}
+              >
                 <CardContent>
                   <Grid container>
                     <Grid item xs={2}>
@@ -211,9 +221,17 @@ const AllResult = ({ open, handleClose }) => {
                     </Grid>
                   </Grid>
                 </CardContent>
-              </StyledCard>
+              </StyledComponents.Card>
 
-              <StyledCard sx={{ mb: 5, boxShadow: '0 8px 8px 0 rgba(0, 0, 0, 0.6)', borderRadius: '10px' }} delay={2}>
+              <StyledComponents.Card
+                sx={{
+                  mb: 1,
+                  boxShadow: '0 8px 8px 0 rgba(0, 0, 0, 0.6)',
+                  borderRadius: '10px',
+                  transform: 'scale(0.75)'
+                }}
+                delay={2}
+              >
                 <CardContent>
                   <Grid container>
                     <Grid item xs={2}>
@@ -239,9 +257,17 @@ const AllResult = ({ open, handleClose }) => {
                     </Grid>
                   </Grid>
                 </CardContent>
-              </StyledCard>
+              </StyledComponents.Card>
 
-              <StyledCard sx={{ mb: 5, boxShadow: '0 8px 8px 0 rgba(0, 0, 0, 0.6)', borderRadius: '10px' }} delay={2.5}>
+              <StyledComponents.Card
+                sx={{
+                  mb: 1,
+                  boxShadow: '0 8px 8px 0 rgba(0, 0, 0, 0.6)',
+                  borderRadius: '10px',
+                  transform: 'scale(0.75)'
+                }}
+                delay={2.5}
+              >
                 <CardContent>
                   <Grid container>
                     <Grid item xs={2}>
@@ -267,30 +293,35 @@ const AllResult = ({ open, handleClose }) => {
                     </Grid>
                   </Grid>
                 </CardContent>
-              </StyledCard>
-            </Box>
+              </StyledComponents.Card>
+            </Grid>
           </Grid>
+          <Box
+            sx={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}
+          >
+            <Button
+              onClick={() =>
+                handleSummit(
+                  user?.student_id,
+                  user?.email,
+                  reservation?.Dormitory_Building?.name,
+                  reservation?.Dormitory_Room?.room_number,
+                  reservation?.Dormitory_Bed?.bed_number
+                )
+              }
+              variant='contained'
+            >
+              Go to Reservation HomePAGE
+            </Button>
+          </Box>
         </Grid>
       </DialogContent>
-
-      <DialogActions>
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-          <Button
-            onClick={() =>
-              handleSummit(
-                user?.student_id,
-                user?.email,
-                reservation?.Dormitory_Building?.name,
-                reservation?.Dormitory_Room?.room_number,
-                reservation?.Dormitory_Bed?.bed_number
-              )
-            }
-            variant='contained'
-          >
-            Go to Reservation
-          </Button>
-        </Box>
-      </DialogActions>
     </Dialog>
   )
 }

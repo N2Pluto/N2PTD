@@ -48,6 +48,7 @@ const ReservationBuilding = () => {
   const [bedFilter, setBedFilter] = useState<string>('')
   const [priceFilter, setPriceFilter] = useState<number | ''>('')
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isLoadingBedInfo, setIsLoadingBedInfo] = useState<boolean>(true)
   const [dialogOpen, setDialogOpen] = useState<boolean>(false)
   const [roomCounts, setRoomCounts] = useState<{ [key: string]: number }>({})
 
@@ -144,10 +145,9 @@ const ReservationBuilding = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setIsLoading(true) // Set loading to true before fetching data
+        setIsLoadingBedInfo(true) // Set loading to true before fetching data
         const response = await fetch('/api/building/countBedPerRoom')
         const jsonResponse = await response.json()
-        console.log('Full response data:', jsonResponse) // Log the full response to inspect its structure
 
         // Assuming the expected data is wrapped in a result property based on your server-side handler
         if (jsonResponse && jsonResponse.result) {
@@ -156,10 +156,10 @@ const ReservationBuilding = () => {
           console.error('Unexpected response structure:', jsonResponse)
         }
 
-        setIsLoading(false) // Set loading to false after data is fetched
+        setIsLoadingBedInfo(false) // Set loading to false after data is fetched
       } catch (error) {
         console.error('Error fetching dormitory building data:', error)
-        setIsLoading(false) // Ensure loading is set to false even if there is an error
+        setIsLoadingBedInfo(false) // Ensure loading is set to false even if there is an error
       }
     }
 
@@ -222,7 +222,7 @@ const ReservationBuilding = () => {
         </Card>
       </Grid>
       <Grid container spacing={4}>
-        {isLoading
+        {isLoading || isLoadingBedInfo
           ? // Display skeletons when data is loading
             Array.from(new Array(8)).map((_, index) => (
               <Grid key={index} item xs={12} sm={6} md={3} pb={5}>

@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { SyntheticEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
@@ -11,25 +11,24 @@ import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContentText from '@mui/material/DialogContentText'
 import { DialogActions, DialogContent } from '@mui/material'
-import CheckIcon from '@mui/icons-material/Check'
-import CloseIcon from '@mui/icons-material/Close'
-import SuccessBarBed from './component'
-import Allresult from '../result/result'
-import { userStore } from 'src/stores/userStore'
 import IconButton from '@mui/material/IconButton'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
-import CardMedia from '@mui/material/CardMedia'
+import SuccessBarBed from './component'
+import Allresult from '../result/result'
+import { userStore } from 'src/stores/userStore'
 
 const ReservationBedviwe = () => {
   const router = useRouter()
   const [dormitoryBed, setDormitoryBed] = useState(null)
   const [dormitoryRoom, setDormitoryRoom] = useState([])
   const [userReservations, setUserReservations] = useState<{ [key: string]: any }>({})
-  const [open, setOpen] = useState(false)
+  const [openWarn, setOpenWarn] = useState(false)
   const [openAllResult, setOpenAllResult] = useState(false)
   const [roundData, setRoundData] = useState(null)
   const [expanded, setExpanded] = useState<string | false>(false)
+  const [confirmationOpen, setConfirmationOpen] = useState(false)
+  const [selectedBedId, setSelectedBedId] = useState<string | null>(null)
 
   const userStoreInstance = userStore()
   const { user } = userStoreInstance
@@ -42,12 +41,12 @@ const ReservationBedviwe = () => {
     }
   }
 
-  const handleOpen = () => {
-    setOpen(true)
+  const handleOpenWarn = () => {
+    setOpenWarn(true)
   }
 
-  const handleClose = () => {
-    setOpen(false)
+  const handleCloseWarn = () => {
+    setOpenWarn(false)
   }
 
   const handleOpenAllResult = () => {
@@ -56,6 +55,16 @@ const ReservationBedviwe = () => {
 
   const handleCloseAllResult = () => {
     setOpenAllResult(false)
+  }
+
+  const handleOpenConfirmation = (bedId: string) => {
+    setSelectedBedId(bedId)
+    setConfirmationOpen(true)
+  }
+
+  const handleCloseConfirmation = () => {
+    setSelectedBedId(null)
+    setConfirmationOpen(false)
   }
 
   const fetchData = async () => {
@@ -99,10 +108,10 @@ const ReservationBedviwe = () => {
     fetchRoundProfile()
   }, [])
 
-  const handleReservation = async (bed_id: string) => {
+  const handleReservation = async () => {
     try {
-      if (!user) {
-        console.error('User data is missing.')
+      if (!user || !selectedBedId) {
+        console.error('User data or bed ID is missing.')
         return
       }
 
@@ -110,15 +119,17 @@ const ReservationBedviwe = () => {
       const { hasReservation } = await checkResponse.json()
 
       if (hasReservation) {
-        handleOpen()
+        handleOpenWarn()
+        handleCloseConfirmation()
         return
       }
 
-      const checkBedResponse = await fetch(`/api/reservation/checkRepeat?bed_id=${bed_id}`)
+      const checkBedResponse = await fetch(`/api/reservation/checkRepeat?bed_id=${selectedBedId}`)
       const { isReserved } = await checkBedResponse.json()
 
       if (isReserved) {
-        handleOpen()
+        handleOpenWarn()
+        handleCloseConfirmation()
         return
       }
 
@@ -129,7 +140,7 @@ const ReservationBedviwe = () => {
         },
         body: JSON.stringify({
           user_id: user.user_id,
-          bed_id: bed_id,
+          bed_id: selectedBedId,
           round_id: roundData?.data?.id
         })
       })
@@ -142,8 +153,10 @@ const ReservationBedviwe = () => {
         console.log('Data inserted successfully:', data)
         setOpenAllResult(true)
       }
+      handleCloseConfirmation()
     } catch (error) {
       console.error('Error inserting data into Reservation table:', error.message)
+      handleCloseConfirmation()
     }
   }
 
@@ -161,10 +174,10 @@ const ReservationBedviwe = () => {
         </Card>
       </Grid>
 
-      <Grid container spacing={2}>
+      <Grid container spacing={0}>
         {dormitoryRoom.map((room, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
-            <Card>
+            <Card sx={{ maxWidth: '90%' }}>
               <Box>
                 <img
                   height='100%'
@@ -174,24 +187,14 @@ const ReservationBedviwe = () => {
                 />
               </Box>
               <CardContent>
-                {/* <Typography variant='h6' sx={{ marginBottom: 2 }}>
-                  Bed Number: {room.bed_number}
-                </Typography>
-                <Box display='flex' alignItems='center' mb={2}>
-                 
-                  <Typography variant='body1' sx={{ fontSize: '0.85rem' }}>
-                    {' '}
-                    : {room.bed_number}
-                  </Typography>
-                </Box> */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
                     {room.bed_status ? (
-                      <Button onClick={() => handleReservation(room.bed_id)} variant='contained'>
+                      <Button onClick={() => handleOpenConfirmation(room.bed_id)} variant='contained'>
                         Select
                       </Button>
                     ) : (
-                      <Button onClick={handleOpen} variant='contained' disabled>
+                      <Button onClick={handleOpenWarn} variant='contained' disabled>
                         Close
                       </Button>
                     )}
@@ -230,7 +233,6 @@ const ReservationBedviwe = () => {
                                 />
                                 <Box display='flex' flexDirection='column' justifyContent='center'>
                                   <Typography variant='body1' sx={{ fontSize: '0.85rem' }}>
-                                    {' '}
                                     : {reservation.Users?.student_id.replace(/(?<=..)....../, '******')}
                                   </Typography>
                                 </Box>
@@ -243,7 +245,6 @@ const ReservationBedviwe = () => {
                                 />
                                 <Box display='flex' flexDirection='column' justifyContent='center'>
                                   <Typography variant='body1' sx={{ fontSize: '0.85rem' }}>
-                                    {' '}
                                     : {reservation.Users?.Users_Info[0]?.school}
                                   </Typography>
                                 </Box>
@@ -256,7 +257,6 @@ const ReservationBedviwe = () => {
                                 />
                                 <Box display='flex' flexDirection='column' justifyContent='center'>
                                   <Typography variant='body1' sx={{ fontSize: '0.85rem' }}>
-                                    {' '}
                                     : {reservation.Users?.Users_Info[0]?.department}
                                   </Typography>
                                 </Box>
@@ -269,12 +269,10 @@ const ReservationBedviwe = () => {
                                 />
                                 <Box display='flex' flexDirection='column' justifyContent='center'>
                                   <Typography variant='body1' sx={{ fontSize: '0.85rem' }}>
-                                    {' '}
                                     : {reservation.Users?.Users_Info[0]?.major}
                                   </Typography>
                                 </Box>
                               </Box>
-
                               <Box display='flex' alignItems='flex-start' mb={2}>
                                 <img
                                   src='https://img5.pic.in.th/file/secure-sv1/religion_9311967.png'
@@ -283,7 +281,6 @@ const ReservationBedviwe = () => {
                                 />
                                 <Box display='flex' flexDirection='column' justifyContent='center'>
                                   <Typography variant='body1' sx={{ fontSize: '0.85rem' }}>
-                                    {' '}
                                     : {reservation.Users?.Users_Info[0]?.religion}
                                   </Typography>
                                 </Box>
@@ -308,7 +305,6 @@ const ReservationBedviwe = () => {
                                 />
                                 <Box display='flex' flexDirection='column' justifyContent='center'>
                                   <Typography variant='body1' sx={{ fontSize: '0.85rem' }}>
-                                    {' '}
                                     : {reservation.Users?.Users_Req[0].filter_redflag}
                                   </Typography>
                                 </Box>
@@ -321,7 +317,6 @@ const ReservationBedviwe = () => {
                                 />
                                 <Box display='flex' flexDirection='column' justifyContent='center'>
                                   <Typography variant='body1' sx={{ fontSize: '0.85rem' }}>
-                                    {' '}
                                     : {reservation.Users?.Users_Req[0].sleep}
                                   </Typography>
                                 </Box>
@@ -339,8 +334,8 @@ const ReservationBedviwe = () => {
       </Grid>
 
       <Dialog
-        open={open}
-        onClose={handleClose}
+        open={openWarn}
+        onClose={handleCloseWarn}
         aria-labelledby='alert-dialog-title'
         aria-describedby='alert-dialog-description'
       >
@@ -349,7 +344,27 @@ const ReservationBedviwe = () => {
           <DialogContentText id='alert-dialog-description'>THIS BED IS ALREADY RESERVED!</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Accept</Button>
+          <Button onClick={handleCloseWarn}>Accept</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={confirmationOpen}
+        onClose={handleCloseConfirmation}
+        aria-labelledby='confirmation-dialog-title'
+        aria-describedby='confirmation-dialog-description'
+      >
+        <DialogTitle id='confirmation-dialog-title'>{'Confirm Reservation'}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id='confirmation-dialog-description'>
+            Are you sure you want to reserve this bed?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmation}>Cancel</Button>
+          <Button onClick={handleReservation} autoFocus>
+            Confirm
+          </Button>
         </DialogActions>
       </Dialog>
 
