@@ -93,6 +93,9 @@ const ReservationRoomTest = () => {
   const [showCard, setShowCard] = useState(false)
   const [showRoomCard, setShowRoomCard] = useState(false)
   const [key, setKey] = React.useState(0)
+  const [schoolFilter, setSchoolFilter] = useState(null)
+  const [majorFilter, setMajorFilter] = useState(null)
+  const [religionFilter, setReligionFilter] = useState(null)
 
   const HighlightText = ({ children }) => {
     const classes = useStyles()
@@ -261,8 +264,6 @@ const ReservationRoomTest = () => {
       return -1
     }
   }
-
-  // dsfsdfsdf
 
   const handleSmartReservation = () => {
     const userSchoolReq = profileData?.userReqData?.filter_school
@@ -644,12 +645,19 @@ const ReservationRoomTest = () => {
                 Filter Room
               </Button>
               <RoomFilterDialog
+                disableScrollLock={true}
                 open={dialogOpen}
                 onClose={handleDialogClose}
                 bedAvailableFilter={bedAvailableFilter}
                 setBedAvailableFilter={setBedAvailableFilter}
                 floorFilter={floorFilter}
                 setFloorFilter={setFloorFilter}
+                schoolFilter={schoolFilter}
+                setSchoolFilter={setSchoolFilter}
+                majorFilter={majorFilter}
+                setMajorFilter={setMajorFilter}
+                religionFilter={religionFilter}
+                setReligionFilter={setReligionFilter}
               />
             </div>
           </CardContent>
@@ -701,6 +709,54 @@ const ReservationRoomTest = () => {
               {dormitoryRoom
                 .filter(room => bedAvailableFilter === null || room.bed_available === bedAvailableFilter)
                 .filter(room => floorFilter === null || mapToFloorCategory(room.room_number) === floorFilter)
+                .filter(room => {
+                  if (schoolFilter === null) return true
+                  if (schoolFilter === 0) {
+                    const reservations = reservationData.get(room.room_id) || []
+                    return reservations.some(
+                      reservation => profileData?.userInfoData?.school === reservation.Users_Info?.school
+                    )
+                  }
+                  if (schoolFilter === 1) {
+                    const reservations = reservationData.get(room.room_id) || []
+                    return reservations.some(
+                      reservation => profileData?.userInfoData?.school !== reservation.Users_Info?.school
+                    )
+                  }
+                  return true
+                })
+                .filter(room => {
+                  if (majorFilter === null) return true
+                  if (majorFilter === 0) {
+                    const reservations = reservationData.get(room.room_id) || []
+                    return reservations.some(
+                      reservation => profileData?.userInfoData?.major === reservation.Users_Info?.major
+                    )
+                  }
+                  if (majorFilter === 1) {
+                    const reservations = reservationData.get(room.room_id) || []
+                    return reservations.some(
+                      reservation => profileData?.userInfoData?.major !== reservation.Users_Info?.major
+                    )
+                  }
+                  return true
+                })
+                .filter(room => {
+                  if (religionFilter === null) return true
+                  if (religionFilter === 0) {
+                    const reservations = reservationData.get(room.room_id) || []
+                    return reservations.some(
+                      reservation => profileData?.userInfoData?.religion === reservation.Users_Info?.religion
+                    )
+                  }
+                  if (religionFilter === 1) {
+                    const reservations = reservationData.get(room.room_id) || []
+                    return reservations.some(
+                      reservation => profileData?.userInfoData?.religion !== reservation.Users_Info?.religion
+                    )
+                  }
+                  return true
+                })
                 .map(room => (
                   <React.Fragment key={room.room_id}>
                     <TableRow hover role='checkbox' tabIndex={-1}>
@@ -906,7 +962,79 @@ const ReservationRoomTest = () => {
                       </TableCell>
                     </TableRow>
                   </React.Fragment>
-                ))}
+                ))
+                .concat(
+                  dormitoryRoom
+                    .filter(room => bedAvailableFilter === null || room.bed_available === bedAvailableFilter)
+                    .filter(room => floorFilter === null || mapToFloorCategory(room.room_number) === floorFilter)
+                    .filter(room => {
+                      if (schoolFilter === null) return true
+                      if (schoolFilter === 0) {
+                        const reservations = reservationData.get(room.room_id) || []
+                        return reservations.some(
+                          reservation => profileData?.userInfoData?.school === reservation.Users_Info?.school
+                        )
+                      }
+                      if (schoolFilter === 1) {
+                        const reservations = reservationData.get(room.room_id) || []
+                        return reservations.some(
+                          reservation => profileData?.userInfoData?.school !== reservation.Users_Info?.school
+                        )
+                      }
+                      return true
+                    })
+                    .filter(room => {
+                      if (majorFilter === null) return true
+                      if (majorFilter === 0) {
+                        const reservations = reservationData.get(room.room_id) || []
+                        return reservations.some(
+                          reservation => profileData?.userInfoData?.major === reservation.Users_Info?.major
+                        )
+                      }
+                      if (majorFilter === 1) {
+                        const reservations = reservationData.get(room.room_id) || []
+                        return reservations.some(
+                          reservation => profileData?.userInfoData?.major !== reservation.Users_Info?.major
+                        )
+                      }
+                      return true
+                    })
+                    .filter(room => {
+                      if (religionFilter === null) return true
+                      if (religionFilter === 0) {
+                        const reservations = reservationData.get(room.room_id) || []
+                        return reservations.some(
+                          reservation => profileData?.userInfoData?.religion === reservation.Users_Info?.religion
+                        )
+                      }
+                      if (religionFilter === 1) {
+                        const reservations = reservationData.get(room.room_id) || []
+
+                        return reservations.some(
+                          reservation => profileData?.userInfoData?.religion !== reservation.Users_Info?.religion
+                        )
+                      }
+
+                      return true
+                    }).length === 0
+                    ? [
+                        <TableRow>
+                          <TableCell colSpan={6} align='center'>
+                            <img
+                              src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/folder_12478062.png'
+                              alt='No Rooms Found'
+                              style={{ maxWidth: '150px' }} // Adjust the image size here
+                            />
+                            <Typography variant='h6' component='div'>
+                              {' '}
+                              The filter you have selected did not match any rooms. Please select a different filter to
+                              find the room you desire.
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      ]
+                    : []
+                )}
             </TableBody>
           </Table>
         </TableContainer>

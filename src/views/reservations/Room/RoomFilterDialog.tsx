@@ -18,24 +18,39 @@ import RefreshIcon from '@mui/icons-material/Refresh'
 interface RoomFilterDrawerProps {
   open: boolean
   onClose: () => void
+  disableScrollLock?: boolean
   bedAvailableFilter: number | null
   setBedAvailableFilter: (value: number | null) => void
   floorFilter: number | null
   setFloorFilter: (value: number | null) => void
+  schoolFilter: number | null
+  setSchoolFilter: (value: number | null) => void
+  majorFilter: number | null
+  setMajorFilter: (value: number | null) => void
+  religionFilter: number | null
+  setReligionFilter: (value: number | null) => void
 }
 
 const RoomFilterDrawer: React.FC<RoomFilterDrawerProps> = ({
   open,
   onClose,
+  disableScrollLock = false,
   bedAvailableFilter,
   setBedAvailableFilter,
   floorFilter,
-  setFloorFilter
+  setFloorFilter,
+  schoolFilter,
+  setSchoolFilter,
+  majorFilter,
+  setMajorFilter,
+  religionFilter,
+  setReligionFilter
 }) => {
   return (
     <Drawer
       anchor='left'
       open={open}
+      disableScrollLock={disableScrollLock}
       onClose={onClose}
       ModalProps={{
         BackdropProps: {
@@ -45,114 +60,228 @@ const RoomFilterDrawer: React.FC<RoomFilterDrawerProps> = ({
         }
       }}
     >
-      <Box sx={{ width: 300,  padding: 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant='h5' sx={{ pb: 2, pt: 5, pr: 2, ml: 4, fontWeight: 'bold' }}>
-            Filter Room
-          </Typography>
-          <IconButton
-            color='secondary'
-            onClick={() => {
-              setBedAvailableFilter(null)
-              setFloorFilter(null)
-            }}
-          >
-            <RefreshIcon sx={{ pt: 2, pl: 6, fontSize: '50px' }} />
-          </IconButton>
-          <IconButton onClick={onClose}>
-            <CloseIcon sx={{ pt: 2, fontSize: '35px' }} />
-          </IconButton>
-        </Box>
+      <Box sx={{ width: 250, padding: 2 }}>
+        <Grid container alignItems='center'>
+          <Grid item xs={8}>
+            <Typography variant='body1' sx={{ pb: 2, pt: 5, pr: 2, ml: 4, fontWeight: 'bold' }}>
+              Filter Room
+            </Typography>
+          </Grid>
+          <Grid item xs={2} sx={{ textAlign: 'right', mt: 2 }}>
+            <IconButton
+              color='secondary'
+              onClick={() => {
+                setBedAvailableFilter(null)
+                setFloorFilter(null)
+                setSchoolFilter(null)
+                setMajorFilter(null)
+                setReligionFilter(null)
+              }}
+            >
+              <RefreshIcon sx={{ fontSize: '20px' }} />
+            </IconButton>
+          </Grid>
+          <Grid item xs={2} sx={{ textAlign: 'right', mt: 2 }}>
+            <IconButton onClick={onClose}>
+              <CloseIcon sx={{ fontSize: '20px' }} />
+            </IconButton>
+          </Grid>
+        </Grid>
         <Divider />
         <Box sx={{ marginTop: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant='h6' sx={{ paddingRight: 2, ml: 4, fontWeight: 'bold' }}>
+            <Typography variant='body1' sx={{ paddingRight: 2, ml: 4, fontWeight: 'bold' }}>
               Floor
             </Typography>
           </Box>
           <Grid container spacing={0} pb={3} pt={1}>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Radio checked={floorFilter === null} onChange={() => setFloorFilter(null)} />}
-                label='All'
+                control={<Radio checked={floorFilter === null} onChange={() => setFloorFilter(null)} size='small' />}
+                label={<Typography variant='body2'>All</Typography>}
                 sx={{ ml: 2 }}
               />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Radio checked={floorFilter === 1} onChange={() => setFloorFilter(1)} />}
-                label='1st Floor'
+                control={<Radio checked={floorFilter === 1} onChange={() => setFloorFilter(1)} size='small' />}
+                label={<Typography variant='body2'>1st Floor</Typography>}
                 sx={{ ml: 2 }}
               />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Radio checked={floorFilter === 2} onChange={() => setFloorFilter(2)} />}
-                label='2nd Floor'
+                control={<Radio checked={floorFilter === 2} onChange={() => setFloorFilter(2)} size='small' />}
+                label={<Typography variant='body2'>2nd Floor</Typography>}
                 sx={{ ml: 2 }}
               />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Radio checked={floorFilter === 3} onChange={() => setFloorFilter(3)} />}
-                label='3rd Floor'
+                control={<Radio checked={floorFilter === 3} onChange={() => setFloorFilter(3)} size='small' />}
+                label={<Typography variant='body2'>3rd Floor</Typography>}
                 sx={{ ml: 2 }}
               />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Radio checked={floorFilter === 4} onChange={() => setFloorFilter(4)} />}
-                label='4th Floor'
+                control={<Radio checked={floorFilter === 4} onChange={() => setFloorFilter(4)} size='small' />}
+                label={<Typography variant='body2'>4th Floor</Typography>}
                 sx={{ ml: 2 }}
               />
             </Grid>
           </Grid>
           <Divider />
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant='h6' sx={{ paddingRight: 2, ml: 4, fontWeight: 'bold' }}>
+            <Typography variant='body1' sx={{ paddingRight: 2, ml: 4, fontWeight: 'bold' }}>
               Bed Available
             </Typography>
           </Box>
           <Grid container spacing={0}>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Radio checked={bedAvailableFilter === null} onChange={() => setBedAvailableFilter(null)} />}
-                label='All'
+                control={
+                  <Radio
+                    checked={bedAvailableFilter === null}
+                    onChange={() => setBedAvailableFilter(null)}
+                    size='small'
+                  />
+                }
+                label={<Typography variant='body2'>All</Typography>}
                 sx={{ ml: 2 }}
               />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Radio checked={bedAvailableFilter === 0} onChange={() => setBedAvailableFilter(0)} />}
-                label='No Person'
+                control={
+                  <Radio checked={bedAvailableFilter === 0} onChange={() => setBedAvailableFilter(0)} size='small' />
+                }
+                label={<Typography variant='body2'>No Person</Typography>}
                 sx={{ ml: 2 }}
               />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Radio checked={bedAvailableFilter === 1} onChange={() => setBedAvailableFilter(1)} />}
-                label='1 Person'
+                control={
+                  <Radio checked={bedAvailableFilter === 1} onChange={() => setBedAvailableFilter(1)} size='small' />
+                }
+                label={<Typography variant='body2'>1 Person</Typography>}
                 sx={{ ml: 2 }}
               />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Radio checked={bedAvailableFilter === 2} onChange={() => setBedAvailableFilter(2)} />}
-                label='2 Person'
+                control={
+                  <Radio checked={bedAvailableFilter === 2} onChange={() => setBedAvailableFilter(2)} size='small' />
+                }
+                label={<Typography variant='body2'>2 Person</Typography>}
                 sx={{ ml: 2 }}
               />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Radio checked={bedAvailableFilter === 3} onChange={() => setBedAvailableFilter(3)} />}
-                label='3 Person'
+                control={
+                  <Radio checked={bedAvailableFilter === 3} onChange={() => setBedAvailableFilter(3)} size='small' />
+                }
+                label={<Typography variant='body2'>3 Person</Typography>}
                 sx={{ ml: 2 }}
               />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Radio checked={bedAvailableFilter === 4} onChange={() => setBedAvailableFilter(4)} />}
-                label='4 Person'
+                control={
+                  <Radio checked={bedAvailableFilter === 4} onChange={() => setBedAvailableFilter(4)} size='small' />
+                }
+                label={<Typography variant='body2'>4 Person</Typography>}
+                sx={{ ml: 2 }}
+              />
+            </Grid>
+          </Grid>
+          <Divider />
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant='body1' sx={{ paddingRight: 2, ml: 4, fontWeight: 'bold' }}>
+              School
+            </Typography>
+          </Box>
+          <Grid container spacing={0}>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Radio checked={schoolFilter === null} onChange={() => setSchoolFilter(null)} size='small' />}
+                label={<Typography variant='body2'>All</Typography>}
+                sx={{ ml: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Radio checked={schoolFilter === 0} onChange={() => setSchoolFilter(0)} size='small' />}
+                label={<Typography variant='body2'>Same School</Typography>}
+                sx={{ ml: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Radio checked={schoolFilter === 1} onChange={() => setSchoolFilter(1)} size='small' />}
+                label={<Typography variant='body2'>Different School</Typography>}
+                sx={{ ml: 2 }}
+              />
+            </Grid>
+          </Grid>
+          <Divider />
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant='body1' sx={{ paddingRight: 2, ml: 4, fontWeight: 'bold' }}>
+              Major
+            </Typography>
+          </Box>
+          <Grid container spacing={0}>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Radio checked={majorFilter === null} onChange={() => setMajorFilter(null)} size='small' />}
+                label={<Typography variant='body2'>All</Typography>}
+                sx={{ ml: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Radio checked={majorFilter === 0} onChange={() => setMajorFilter(0)} size='small' />}
+                label={<Typography variant='body2'>Same Major</Typography>}
+                sx={{ ml: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Radio checked={majorFilter === 1} onChange={() => setMajorFilter(1)} size='small' />}
+                label={<Typography variant='body2'>Different Major</Typography>}
+                sx={{ ml: 2 }}
+              />
+            </Grid>
+          </Grid>
+          <Divider />
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant='body1' sx={{ paddingRight: 2, ml: 4, fontWeight: 'bold' }}>
+              Religion
+            </Typography>
+          </Box>
+          <Grid container spacing={0}>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Radio checked={religionFilter === null} onChange={() => setReligionFilter(null)} size='small' />
+                }
+                label={<Typography variant='body2'>All</Typography>}
+                sx={{ ml: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Radio checked={religionFilter === 0} onChange={() => setReligionFilter(0)} size='small' />}
+                label={<Typography variant='body2'>Same Religion</Typography>}
+                sx={{ ml: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Radio checked={religionFilter === 1} onChange={() => setReligionFilter(1)} size='small' />}
+                label={<Typography variant='body2'>Different Religion</Typography>}
                 sx={{ ml: 2 }}
               />
             </Grid>
