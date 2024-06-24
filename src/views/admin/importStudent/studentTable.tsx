@@ -326,29 +326,65 @@ const StudentTable = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
-                const isItemSelected = selected.indexOf(row.student_id) !== -1
+              {filteredRows.length > 0 ? (
+                filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                  const isItemSelected = selected.indexOf(row.student_id) !== -1
 
-                return (
-                  <StyledTableRow hover role='checkbox' tabIndex={-1} key={row.student_id}>
-                    <TableCell padding='checkbox'>
-                      <Checkbox
-                        checked={isItemSelected}
-                        onChange={event => handleClick(event, row.student_id)}
-                        inputProps={{ 'aria-labelledby': `checkbox-${row.student_id}` }}
-                      />
-                    </TableCell>
-                    {columns.map(column => {
-                      const value = row[column.id]
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === 'number' ? column.format(value) : value}
-                        </TableCell>
-                      )
-                    })}
-                  </StyledTableRow>
-                )
-              })}
+                  return (
+                    <StyledTableRow hover role='checkbox' tabIndex={-1} key={row.student_id}>
+                      <TableCell padding='checkbox'>
+                        <Checkbox
+                          checked={isItemSelected}
+                          onChange={event => handleClick(event, row.student_id)}
+                          inputProps={{ 'aria-labelledby': `checkbox-${row.student_id}` }}
+                        />
+                      </TableCell>
+                      {columns.map(column => {
+                        const value = row[column.id]
+                        return (
+                          <TableCell key={column.id} align={column.align}>
+                            {column.format && typeof value === 'number' ? column.format(value) : value}
+                          </TableCell>
+                        )
+                      })}
+                    </StyledTableRow>
+                  )
+                })
+              ) : (
+                <TableRow style={{ height: 100 }}>
+                  <TableCell colSpan={columns.length + 1}>
+                    {' '}
+                    {/* Adjusted colspan to match the number of columns + checkbox column */}
+                    <Paper
+                      style={{
+                        padding: '20px',
+                        height: '100%',
+                        width: '100%',
+                        backgroundColor: 'rgba(128, 128, 128, 0.05)'
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: '100%'
+                        }}
+                      >
+                        <img
+                          src='https://img5.pic.in.th/file/secure-sv1/erase_1981540.png'
+                          alt='No Data'
+                          width='100'
+                          height='100'
+                          style={{ marginBottom: '10px' }}
+                        />
+                        <Typography variant='body2'>Data Not Found</Typography>
+                      </div>
+                    </Paper>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </StyledTableContainer>
