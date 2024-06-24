@@ -29,6 +29,8 @@ interface RoomFilterDrawerProps {
   setMajorFilter: (value: number | null) => void
   religionFilter: number | null
   setReligionFilter: (value: number | null) => void
+  sleepFilter: number | null
+  setSleepFilter: (value: number | null) => void
 }
 
 const RoomFilterDrawer: React.FC<RoomFilterDrawerProps> = ({
@@ -44,7 +46,9 @@ const RoomFilterDrawer: React.FC<RoomFilterDrawerProps> = ({
   majorFilter,
   setMajorFilter,
   religionFilter,
-  setReligionFilter
+  setReligionFilter,
+  sleepFilter,
+  setSleepFilter
 }) => {
   return (
     <Drawer
@@ -76,6 +80,7 @@ const RoomFilterDrawer: React.FC<RoomFilterDrawerProps> = ({
                 setSchoolFilter(null)
                 setMajorFilter(null)
                 setReligionFilter(null)
+                setSleepFilter(null)
               }}
             >
               <RefreshIcon sx={{ fontSize: '20px' }} />
@@ -282,6 +287,35 @@ const RoomFilterDrawer: React.FC<RoomFilterDrawerProps> = ({
               <FormControlLabel
                 control={<Radio checked={religionFilter === 1} onChange={() => setReligionFilter(1)} size='small' />}
                 label={<Typography variant='body2'>Different Religion</Typography>}
+                sx={{ ml: 2 }}
+              />
+            </Grid>
+          </Grid>
+          <Divider />
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant='body1' sx={{ paddingRight: 2, ml: 4, fontWeight: 'bold' }}>
+              Sleep Style
+            </Typography>
+          </Box>
+          <Grid container spacing={0}>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Radio checked={sleepFilter === null} onChange={() => setSleepFilter(null)} size='small' />}
+                label={<Typography variant='body2'>All</Typography>}
+                sx={{ ml: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Radio checked={sleepFilter === 0} onChange={() => setSleepFilter(0)} size='small' />}
+                label={<Typography variant='body2'>Same Sleep Style</Typography>}
+                sx={{ ml: 2 }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Radio checked={sleepFilter === 1} onChange={() => setSleepFilter(1)} size='small' />}
+                label={<Typography variant='body2'>Different Sleep Style</Typography>}
                 sx={{ ml: 2 }}
               />
             </Grid>

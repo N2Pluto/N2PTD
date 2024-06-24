@@ -755,8 +755,8 @@ const ReservationApprove = () => {
                       <Paper
                         style={{
                           padding: '20px',
-                          width: '1350px',
-                          height: '350px',
+                          height: '100%',
+                          width: '100%',
                           backgroundColor: 'rgba(128, 128, 128, 0.05)'
                         }}
                       >

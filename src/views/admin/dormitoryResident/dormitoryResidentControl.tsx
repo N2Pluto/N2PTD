@@ -568,8 +568,8 @@ const DormitoryResidentControl = () => {
                       <Paper
                         style={{
                           padding: '20px',
-                          width: '1350px',
-                          height: '350px',
+                          height: '100%',
+                          width: '100%',
                           backgroundColor: 'rgba(128, 128, 128, 0.05)'
                         }}
                       >
@@ -579,7 +579,8 @@ const DormitoryResidentControl = () => {
                             flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            height: '100%'
+                            height: '100%',
+                            width: '100%'
                           }}
                         >
                           <img

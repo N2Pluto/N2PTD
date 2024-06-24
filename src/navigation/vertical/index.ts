@@ -54,87 +54,87 @@ const useNavigation = (): VerticalNavItemsType => {
   if (roleFilter === 'admin') {
     return [
       {
-        title: 'หน้าหลัก',
+        title: 'Home Page',
         icon: HomeOutline,
         path: '/admin/home'
       },
       {
-        title: 'นำเข้าข้อมูล',
+        title: 'Import Data',
         icon: AccountPlusOutline,
         path: '/admin/importStudent'
       },
 
       {
-        sectionTitle: 'ศูนย์รวมข้อมูล',
+        sectionTitle: 'Information',
         icon: DnsOutlinedIcon,
         children: [
           {
-            title: 'ข้อมูลผู้อยู่อาศัย',
+            title: 'Resident Info',
             icon: ApartmentIcon, // Updated icon
             path: '/admin/dormitoryResident'
           },
           {
-            title: 'ข้อมูลผู้ใช้',
+            title: 'User Info',
             icon: PersonIcon, // Updated icon
             path: '/admin/userManagement'
           }
         ]
       },
       {
-        sectionTitle: 'การอนุมัติ',
+        sectionTitle: 'Approve',
         icon: CheckBoxOutlinedIcon,
         children: [
           {
-            title: 'อนุมัติการจอง',
+            title: 'Reservation',
             icon: BookOnlineIcon, // Updated icon
             path: '/admin/reservationApprove'
           },
           {
-            title: 'อนุมัติผู้อยู่อาศัย',
+            title: 'Resident',
             icon: DoneAllOutlinedIcon,
             path: '/admin/residentApprove'
           },
           {
-            title: 'อนุมัติผู้อยู่ต่อ',
+            title: 'Renewal',
             icon: ChecklistIcon,
             path: '/admin/renewalSystem'
           }
         ]
       },
       {
-        sectionTitle: 'การสร้าง',
+        sectionTitle: 'Create',
         icon: AutorenewIcon,
         children: [
           {
-            title: 'สร้างรอบการจอง',
+            title: 'Booking Period',
             icon: WifiProtectedSetupIcon,
             path: '/admin/reservationSystem'
           },
           {
-            title: 'สร้างฟอร์มการอยู่ต่อ',
+            title: 'Renewal Period',
             icon: AutorenewIcon,
             path: '/admin/renewalDormitory'
           },
           {
-            title: 'สร้างแบบฟอร์มประกาศ',
+            title: 'Form Request',
             icon: GoogleIcon,
             path: '/admin/googleForm'
           }
         ]
       },
       {
-        sectionTitle: 'ควบคุม',
+        sectionTitle: 'Building',
         icon: CorporateFareOutlinedIcon,
         children: [
           {
-            title: 'การควบคุมตึก',
-            icon: CorporateFareOutlinedIcon,
-            path: '/admin/buildingControl'
-          },
-          {
-            title: 'สร้างตึก',
+            title: 'Building System',
             icon: DomainAddOutlinedIcon,
             path: '/admin/building'
+          },
+          {
+            title: 'Building Control',
+            icon: CorporateFareOutlinedIcon,
+            path: '/admin/buildingControl'
           }
         ]
       }
@@ -142,7 +142,7 @@ const useNavigation = (): VerticalNavItemsType => {
   } else if (roleFilter === 'user') {
     return [
       {
-        title: 'Home',
+        title: 'Home Page',
         icon: HomeOutline,
         path: '/dashboard'
       },
@@ -157,12 +157,12 @@ const useNavigation = (): VerticalNavItemsType => {
         path: '/reservation'
       },
       {
-        title: 'Profile',
+        title: 'My Profile',
         icon: PersonIcon, // Updated icon
         path: '/profile'
       },
       {
-        title: 'Request Form',
+        title: 'Form Request',
         icon: RequestPageIcon, // Updated icon
         path: '/userGoogleForm'
       }

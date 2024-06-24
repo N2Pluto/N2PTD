@@ -121,6 +121,8 @@ const VerticalNavLink = ({ item, navVisible, toggleNavVisibility, navWidth }: Pr
                 {...(themeConfig.menuTextTruncate && { noWrap: true })}
                 sx={{
                   fontSize: navWidth === 150 ? '0.75rem' : 'inherit',
+                  marginLeft: navWidth === 150 ? '20px' : '7px',
+                  textAlign: navWidth !== 150 ? 'left' : 'left',
                   width: '100%'
                 }}
               >

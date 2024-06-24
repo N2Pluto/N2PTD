@@ -17,16 +17,9 @@ import Tooltip from '@mui/material/Tooltip'
 import * as React from 'react'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
-
-import SchoolIcon from '@mui/icons-material/School'
-import MosqueIcon from '@mui/icons-material/Mosque'
-import PoolIcon from '@mui/icons-material/Pool'
-import DangerousIcon from '@mui/icons-material/Dangerous'
-import HotelIcon from '@mui/icons-material/Hotel'
 import ConstructionIcon from '@mui/icons-material/Construction'
 import SuccessฺฺBarRoom from './component'
 import RoomFilterDialog from './RoomFilterDialog'
-import SmartReservationDialog from './SmartReservationDialog'
 import RoomCard from './RoomCard'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -96,6 +89,16 @@ const ReservationRoomTest = () => {
   const [schoolFilter, setSchoolFilter] = useState(null)
   const [majorFilter, setMajorFilter] = useState(null)
   const [religionFilter, setReligionFilter] = useState(null)
+  const [sleepFilter, setSleepFilter] = useState(null) // This useState and other related code should remain unchanged
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [selectedOptions, setSelectedOptions] = useState([
+    'School',
+    'Major',
+    'Religion',
+    'Activity',
+    'Redflag',
+    'Sleep'
+  ])
 
   const HighlightText = ({ children }) => {
     const classes = useStyles()
@@ -588,17 +591,6 @@ const ReservationRoomTest = () => {
     setKey(prevKey => prevKey + 1)
   }
 
-  // This useState and other related code should remain unchanged
-  const [anchorEl, setAnchorEl] = useState(null)
-  const [selectedOptions, setSelectedOptions] = useState([
-    'School',
-    'Major',
-    'Religion',
-    'Activity',
-    'Redflag',
-    'Sleep'
-  ])
-
   const handleClickMatchBy = event => {
     setAnchorEl(event.currentTarget)
   }
@@ -658,6 +650,8 @@ const ReservationRoomTest = () => {
                 setMajorFilter={setMajorFilter}
                 religionFilter={religionFilter}
                 setReligionFilter={setReligionFilter}
+                sleepFilter={sleepFilter}
+                setSleepFilter={setSleepFilter}
               />
             </div>
           </CardContent>
@@ -757,6 +751,24 @@ const ReservationRoomTest = () => {
                   }
                   return true
                 })
+                .filter(room => {
+                  if (sleepFilter === null) return true
+                  if (sleepFilter === 0) {
+                    const reservations = reservationData.get(room.room_id) || []
+                    return reservations.some(
+                      reservation => profileData?.userReqData?.sleep === reservation.Users_Req?.sleep
+                    )
+                  }
+                  if (sleepFilter === 1) {
+                    const reservations = reservationData.get(room.room_id) || []
+                    return reservations.some(
+                      reservation => profileData?.userReqData?.sleep !== reservation.Users_Req?.sleep
+                    )
+                  }
+
+                  return true
+                })
+
                 .map(room => (
                   <React.Fragment key={room.room_id}>
                     <TableRow hover role='checkbox' tabIndex={-1}>
@@ -1012,6 +1024,23 @@ const ReservationRoomTest = () => {
 
                         return reservations.some(
                           reservation => profileData?.userInfoData?.religion !== reservation.Users_Info?.religion
+                        )
+                      }
+
+                      return true
+                    })
+                    .filter(room => {
+                      if (sleepFilter === null) return true
+                      if (sleepFilter === 0) {
+                        const reservations = reservationData.get(room.room_id) || []
+                        return reservations.some(
+                          reservation => profileData?.userReqData?.sleep === reservation.Users_Req?.sleep
+                        )
+                      }
+                      if (sleepFilter === 1) {
+                        const reservations = reservationData.get(room.room_id) || []
+                        return reservations.some(
+                          reservation => profileData?.userReqData?.sleep !== reservation.Users_Req?.sleep
                         )
                       }
 

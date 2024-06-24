@@ -140,8 +140,8 @@ const TransferRoomForm = () => {
                     <Paper
                       style={{
                         padding: '20px',
-                        width: '1350px',
-                        height: '250px',
+                        width: '100%',
+                        height: '100%',
                         backgroundColor: 'rgba(128, 128, 128, 0.05)'
                       }}
                     >
@@ -224,8 +224,8 @@ const TransferRoomForm = () => {
                     <Paper
                       style={{
                         padding: '20px',
-                        width: '1350px',
-                        height: '250px',
+                        width: '100%',
+                        height: '100%',
                         backgroundColor: 'rgba(128, 128, 128, 0.05)'
                       }}
                     >
@@ -307,8 +307,8 @@ const TransferRoomForm = () => {
                     <Paper
                       style={{
                         padding: '20px',
-                        width: '1350px',
-                        height: '250px',
+                        width: '100%',
+                        height: '100%',
                         backgroundColor: 'rgba(128, 128, 128, 0.05)'
                       }}
                     >

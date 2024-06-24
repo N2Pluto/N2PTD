@@ -82,7 +82,7 @@ const VerticalNavItems = (props: Props) => {
             >
               <ListItemIcon
                 style={{
-                  marginLeft: navWidth === 150 ? '46px' : '18px',
+                  marginLeft: navWidth === 150 ? '46px' : '18px', // Adjusted for icon alignment
                   marginRight: navWidth === 150 ? 0 : '16px',
                   marginBottom: navWidth === 150 ? '8px' : 0
                 }}
@@ -94,7 +94,7 @@ const VerticalNavItems = (props: Props) => {
                   <Typography
                     style={{
                       fontSize: navWidth === 150 ? '0.75rem' : 'inherit',
-                      marginLeft: navWidth === 150 ? '33px' : '-6px',
+                      marginLeft: navWidth === 150 ? '30px' : '0', // Adjust marginLeft when navWidth is 150
                       textAlign: navWidth !== 150 ? 'center' : 'left'
                     }}
                   >
@@ -161,7 +161,11 @@ const VerticalNavItems = (props: Props) => {
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         PaperProps={{
           style: {
-            marginLeft: 'calc(7% )' // Adjust marginLeft to position the menu on the right side of the screen
+            position: 'fixed',
+            top: '10%', 
+            left: 'calc(91%)', 
+            transform: 'none',
+            margin: 0,
           }
         }}
       >

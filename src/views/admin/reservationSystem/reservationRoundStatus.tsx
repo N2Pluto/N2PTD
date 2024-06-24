@@ -14,6 +14,7 @@ import TuneIcon from '@mui/icons-material/Tune'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import DeleteRound from './reservationRoundForm'
+import Typography from '@mui/material/Typography'
 
 interface Round {
   id: number
@@ -21,7 +22,7 @@ interface Round {
   start_date: string
   end_date: string
   student_year: string
-  gender : string
+  gender: string
 }
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -40,12 +41,11 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
     backgroundColor: theme.palette.action.hover
   },
-  
+
   '&:last-child td, &:last-child th': {
     border: 0
   }
 }))
-
 
 export default function ReservationRoundStatus() {
   const [rows, setRows] = useState([])
@@ -64,7 +64,6 @@ export default function ReservationRoundStatus() {
     return () => clearInterval(intervalId)
   }, [])
 
-
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 700 }} aria-label='customized table'>
@@ -80,29 +79,63 @@ export default function ReservationRoundStatus() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map(row => (
-            <StyledTableRow key={row.id}>
-              <StyledTableCell>{row.round_name}</StyledTableCell>
-              <StyledTableCell>{new Date(row.start_date).toLocaleDateString('en-US')}</StyledTableCell>
-              <StyledTableCell>{new Date(row.end_date).toLocaleDateString('en-US')}</StyledTableCell>
-              {/* <StyledTableCell>{row.gender}</StyledTableCell> */}
-              <StyledTableCell>{row.student_year}</StyledTableCell>
-              <StyledTableCell>
-                {row.round_status ? (
-                  <Chip label='อยู่ในช่วงเวลา' color='success' />
-                ) : (
-                  <Chip label='ไม่อยู่ในช่วงเวลา' sx={{ backgroundColor: 'red', color: 'white' }} />
-                )}
-              </StyledTableCell>
-              <StyledTableCell>
-                <DeleteRound id={row.id}>
-                  <Button>
-                    <TuneIcon />
-                  </Button>
-                </DeleteRound>
-              </StyledTableCell>
-            </StyledTableRow>
-          ))}
+          {rows.length > 0 ? (
+            rows.map(row => (
+              <StyledTableRow key={row.id}>
+                <StyledTableCell>{row.round_name}</StyledTableCell>
+                <StyledTableCell>{new Date(row.start_date).toLocaleDateString('en-US')}</StyledTableCell>
+                <StyledTableCell>{new Date(row.end_date).toLocaleDateString('en-US')}</StyledTableCell>
+                {/* <StyledTableCell>{row.gender}</StyledTableCell> */}
+                <StyledTableCell>{row.student_year}</StyledTableCell>
+                <StyledTableCell>
+                  {row.round_status ? (
+                    <Chip label='อยู่ในช่วงเวลา' color='success' />
+                  ) : (
+                    <Chip label='ไม่อยู่ในช่วงเวลา' sx={{ backgroundColor: 'red', color: 'white' }} />
+                  )}
+                </StyledTableCell>
+                <StyledTableCell>
+                  <DeleteRound id={row.id}>
+                    <Button>
+                      <TuneIcon />
+                    </Button>
+                  </DeleteRound>
+                </StyledTableCell>
+              </StyledTableRow>
+            ))
+          ) : (
+            <TableRow style={{ height: 100 }}>
+              <TableCell colSpan={11}>
+                <Paper
+                  style={{
+                    padding: '20px',
+                    height: '100%',
+                    width: '100%',
+                    backgroundColor: 'rgba(128, 128, 128, 0.05)'
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      height: '100%'
+                    }}
+                  >
+                    <img
+                      src='https://img5.pic.in.th/file/secure-sv1/erase_1981540.png'
+                      alt='No Data'
+                      width='100'
+                      height='100'
+                      style={{ marginBottom: '10px' }}
+                    />
+                    <Typography variant='body2'>Booking Period Not Found</Typography>
+                  </div>
+                </Paper>
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </TableContainer>
