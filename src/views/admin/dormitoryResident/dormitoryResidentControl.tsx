@@ -49,6 +49,9 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 const useStyles = makeStyles({
   success: {
     backgroundColor: '#4caf50'
+  },
+  error: {
+    backgroundColor: '#f44336'
   }
 })
 
@@ -70,10 +73,12 @@ interface EnhancedTableToolbarProps {
   selected: readonly number[]
   resetSelected: () => void
   deleteResident: (id: number) => void
+  mode: 'swap' | 'delete'
+  setMode: (mode: 'swap' | 'delete') => void
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected, selected, resetSelected, deleteResident } = props
+  const { numSelected, selected, resetSelected, deleteResident, mode, setMode } = props
   const [swapSnackbarOpen, setSwapSnackbarOpen] = useState(false)
   const classes = useStyles()
 
@@ -84,7 +89,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     setSwapSnackbarOpen(false)
   }
 
-  const handleSwap = async (selectedIds: string[]) => {
+  const handleSwap = async (selectedIds: number[]) => {
     // Check if exactly two IDs are selected
     if (selectedIds.length !== 2) {
       alert('Please select exactly two residents to swap.')
@@ -131,18 +136,28 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         ) : (
           <Typography sx={{ flex: '1 1 100%' }} variant='h6' id='tableTitle' component='div'></Typography>
         )}
-        <Tooltip title='สลับห้อง'>
+        <Tooltip title='Swap Rooms'>
           <IconButton
             onClick={() => {
-              // Call a function with the selected IDs
-              handleSwap(selected)
+              setMode('swap')
             }}
+            color={mode === 'swap' ? 'primary' : 'default'}
           >
             <SwapHorizIcon />
           </IconButton>
         </Tooltip>
-        {numSelected > 0 ? (
-          <Tooltip title='Delete'>
+        <Tooltip title='Delete'>
+          <IconButton
+            onClick={() => {
+              setMode('delete')
+            }}
+            color={mode === 'delete' ? 'primary' : 'default'}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+        {numSelected > 0 && mode === 'delete' ? (
+          <Tooltip title='Delete Selected'>
             <IconButton
               onClick={() => {
                 selected.forEach(id => deleteResident(id))
@@ -152,13 +167,18 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
               <DeleteIcon />
             </IconButton>
           </Tooltip>
-        ) : (
-          <Tooltip title='Filter list'>
-            <IconButton>
-              <FilterListIcon />
+        ) : null}
+        {numSelected > 0 && mode === 'swap' ? (
+          <Tooltip title='Swap Selected'>
+            <IconButton
+              onClick={() => {
+                handleSwap(selected)
+              }}
+            >
+              <SwapHorizIcon />
             </IconButton>
           </Tooltip>
-        )}
+        ) : null}
       </Toolbar>
       <Snackbar
         open={swapSnackbarOpen}
@@ -197,7 +217,9 @@ const DormitoryResidentControl = () => {
   const [selectedDormitoryForDownload, setSelectedDormitoryForDownload] = React.useState<number | null>(null)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [exportSnackbarOpen, setExportSnackbarOpen] = useState(false)
+  const [deleteSnackbarOpen, setDeleteSnackbarOpen] = useState(false)
   const [openSnackbar, setOpenSnackbar] = useState(false)
+  const [mode, setMode] = useState<'swap' | 'delete'>('delete')
 
   useEffect(() => {
     const intervalId = setInterval(async () => {
@@ -228,6 +250,14 @@ const DormitoryResidentControl = () => {
     console.log('handleCloseExportSnackbar')
   }
 
+  const handleDeleteSnackbar = () => {
+    setDeleteSnackbarOpen(true)
+  }
+
+  const handleCloseDeleteSnackbar = () => {
+    setDeleteSnackbarOpen(false)
+  }
+
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -248,6 +278,8 @@ const DormitoryResidentControl = () => {
 
       if (!response.ok) {
         throw new Error('Error deleting resident')
+      } else {
+        setDeleteSnackbarOpen(true)
       }
 
       // Remove the deleted resident from the users state
@@ -333,19 +365,41 @@ const DormitoryResidentControl = () => {
   }
 
   const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
-    const selectedIndex = selected.indexOf(id)
-    let newSelected: readonly number[] = []
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id)
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1))
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1))
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1))
+    if (mode === 'swap') {
+      const selectedIndex = selected.indexOf(id)
+      let newSelected: readonly number[] = []
+
+      if (selectedIndex === -1) {
+        if (selected.length < 2) {
+          newSelected = newSelected.concat(selected, id)
+        } else {
+          newSelected = selected.slice(1).concat(id)
+        }
+      } else if (selectedIndex === 0) {
+        newSelected = newSelected.concat(selected.slice(1))
+      } else if (selectedIndex === selected.length - 1) {
+        newSelected = newSelected.concat(selected.slice(0, -1))
+      } else if (selectedIndex > 0) {
+        newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1))
+      }
+
+      setSelected(newSelected)
+    } else {
+      const selectedIndex = selected.indexOf(id)
+      let newSelected: readonly number[] = []
+
+      if (selectedIndex === -1) {
+        newSelected = newSelected.concat(selected, id)
+      } else if (selectedIndex === 0) {
+        newSelected = newSelected.concat(selected.slice(1))
+      } else if (selectedIndex === selected.length - 1) {
+        newSelected = newSelected.concat(selected.slice(0, -1))
+      } else if (selectedIndex > 0) {
+        newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1))
+      }
+
+      setSelected(newSelected)
     }
-    setSelected(newSelected)
-    console.log(id)
   }
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -412,7 +466,7 @@ const DormitoryResidentControl = () => {
                     setSelectedDormitoryForDownload(null)
                   }}
                 >
-                  รายชื่อนักศึกษาทุกหอพัก
+                  List of Students in all Dormitories
                 </MenuItem>
                 {uniqueDormitories.map(dorm_id => {
                   const dormitoryName = users.find(user => user.dorm_id === dorm_id)?.Dormitory_Building.name
@@ -442,19 +496,19 @@ const DormitoryResidentControl = () => {
                 labelId='form-layouts-separator-select-label'
               >
                 <MenuItem value='-1' onClick={() => setSelectedFloor(null)}>
-                  ทุกชั้น
+                  All Flor
                 </MenuItem>
                 <MenuItem value='1' onClick={() => setSelectedFloor('1')}>
-                  ชั้น 1
+                  1st Floor
                 </MenuItem>
                 <MenuItem value='2' onClick={() => setSelectedFloor('2')}>
-                  ชั้น 2
+                  2nd Floor
                 </MenuItem>
                 <MenuItem value='3' onClick={() => setSelectedFloor('3')}>
-                  ชั้น 3
+                  3rd Floor
                 </MenuItem>
                 <MenuItem value='4' onClick={() => setSelectedFloor('4')}>
-                  ชั้น 4
+                  4th Floor
                 </MenuItem>
               </Select>
             </FormControl>
@@ -504,8 +558,10 @@ const DormitoryResidentControl = () => {
           <EnhancedTableToolbar
             numSelected={selected.length}
             selected={selected}
-            resetSelected={resetSelected}
+            resetSelected={() => setSelected([])}
             deleteResident={deleteResident}
+            mode={mode}
+            setMode={setMode}
           />
           <TableContainer>
             <Table sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size={dense ? 'small' : 'medium'}>
@@ -518,45 +574,49 @@ const DormitoryResidentControl = () => {
                 rowCount={users.length}
               />
               <TableBody>
-                {visibleRows.map((row, index) => {
-                  const isItemSelected = isSelected(row.id)
-                  const labelId = `enhanced-table-checkbox-${index}`
+                {stableSort(users, getComparator(order, orderBy))
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) => {
+                    const isItemSelected = isSelected(row.id)
+                    const labelId = `enhanced-table-checkbox-${index}`
 
-                  return (
-                    <TableRow
-                      hover
-                      onClick={event => handleClick(event, row.id)}
-                      role='checkbox'
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row.id}
-                      selected={isItemSelected}
-                      sx={{ cursor: 'pointer' }}
-                    >
-                      <TableCell padding='checkbox'>
-                        <Checkbox
-                          color='primary'
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        />
-                      </TableCell>
-                      <TableCell component='th' id={labelId} scope='row' padding='none'>
-                        {row.Users ? row.Users.student_id : ''}
-                      </TableCell>
-                      <TableCell>
-                        {' '}
-                        {row.Users?.Users_Info[0]?.name} {row.Users?.Users_Info[0]?.lastname}
-                      </TableCell>
-                      <TableCell>{row.Dormitory_Building.name}</TableCell>
-                      <TableCell>{row.Dormitory_Room.room_number}</TableCell>
-                      <TableCell>{row.Dormitory_Bed.bed_number}</TableCell>
-                      <TableCell>{row.Reservation_System.round_name}</TableCell>
-                      <TableCell>
-                        <EditResident id={row.id} resetSelected={resetSelected} onOpenSnackbar={handleOpenSnackbar} />
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
+                    return (
+                      <TableRow
+                        hover
+                        onClick={event => handleClick(event, row.id)}
+                        role='checkbox'
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={row.id}
+                        selected={isItemSelected}
+                      >
+                        <TableCell padding='checkbox'>
+                          <Checkbox
+                            color='primary'
+                            checked={isItemSelected}
+                            inputProps={{
+                              'aria-labelledby': labelId
+                            }}
+                            disabled={mode === 'swap' && selected.length === 2 && !isItemSelected}
+                          />
+                        </TableCell>
+                        <TableCell component='th' id={labelId} scope='row' padding='none'>
+                          {row.Users ? row.Users.student_id : ''}
+                        </TableCell>
+                        <TableCell>
+                          {' '}
+                          {row.Users?.Users_Info[0]?.name} {row.Users?.Users_Info[0]?.lastname}
+                        </TableCell>
+                        <TableCell>{row.Dormitory_Building.name}</TableCell>
+                        <TableCell>{row.Dormitory_Room.room_number}</TableCell>
+                        <TableCell>{row.Dormitory_Bed.bed_number}</TableCell>
+                        <TableCell>{row.Reservation_System.round_name}</TableCell>
+                        <TableCell>
+                          <EditResident id={row.id} resetSelected={resetSelected} onOpenSnackbar={handleOpenSnackbar} />
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
                 {emptyRows > 0 && (
                   <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
                     <TableCell colSpan={9} />
@@ -646,6 +706,24 @@ const DormitoryResidentControl = () => {
         }
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         ContentProps={{ className: classes.success }}
+      />
+      <Snackbar
+        open={deleteSnackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleCloseDeleteSnackbar}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {'Delete User Successfully!'}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleCloseDeleteSnackbar}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.error }}
       />
     </>
   )

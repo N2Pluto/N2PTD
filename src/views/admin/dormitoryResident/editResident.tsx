@@ -108,7 +108,7 @@ export default function EditResident({ id, resetSelected, onOpenSnackbar }: Edit
           แลกเปลี่ยนห้อง
         </MenuItem> */}
         <MenuItem onClick={handleOpenChangeRoom} disableRipple>
-          ย้ายห้อง
+          Change Room
         </MenuItem>
       </StyledMenu>
       <TransferRoom open={openTransferRoom} onClose={handleCloseTransferRoom} id={id} />

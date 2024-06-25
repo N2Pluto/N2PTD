@@ -16,7 +16,7 @@ const MUITable = () => {
       <Grid container spacing={6}>
         <Grid item xs={12} md={12} lg={12}>
           <Card>
-            <CardHeader title='รายชื่อนักศึกษาที่เป็นผู้อยู่อาศัย' titleTypographyProps={{ variant: 'h6' }} />
+            <CardHeader title='Student Resident List' titleTypographyProps={{ variant: 'h6' }} />
             <DormitoryResidentControl />
           </Card>
         </Grid>
