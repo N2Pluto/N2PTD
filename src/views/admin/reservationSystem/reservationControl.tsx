@@ -12,7 +12,7 @@ import { useRouter } from 'next/router'
 import ReservationForm from './reservationForm'
 
 const handleClick = async () => {
-  router.push('/admin/building/formbuilding')
+  router.push('/admin/reservationSystem/')
 }
 
 

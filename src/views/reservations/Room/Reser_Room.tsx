@@ -291,164 +291,168 @@ const ReservationRoomTest = () => {
 
     let roomMatches = []
 
-    const filteredRooms = dormitoryRoom.filter(room => {
-      if (!room || !room.room_id) {
-        console.error('Invalid room:', room)
-        return false
-      }
+    const filteredRooms = dormitoryRoom
+      .filter(room => room.status === true) // Filter rooms where status is true
+      .filter(room => {
+        if (!room || !room.room_id) {
+          console.error('Invalid room:', room)
+          return false
+        }
 
-      const roomId = room.room_id.toString().trim()
+        const roomId = room.room_id.toString().trim()
 
-      const roomReservations = reservationArray.filter(
-        reservationArrayItem =>
-          Array.isArray(reservationArrayItem) &&
-          reservationArrayItem.some(reservation => reservation.Reservation_Info?.room_id?.toString().trim() === roomId)
-      )
-
-      let matchCount = 0
-      let matchMajorCount = 0
-      let matchReligionCount = 0
-      let matchActivityCount = 0
-      let matchRedflagCount = 0
-      let matchSleepCount = 0
-      let matchingActivities = new Set()
-      let matchingRedflags = new Set()
-
-      roomReservations.forEach(reservationArrayItem =>
-        reservationArrayItem.forEach(reservation => {
-          const reservationBedId = reservation.Reservation_Info?.bed_id?.toString().trim()
-
-          console.log(`Room ID: ${roomId}, Bed ID : ${reservationBedId}`)
-
-          if (userSchoolReq) {
-            let match = false
-            switch (userSchoolReq) {
-              case 'find roommates who attend the same school':
-                match = reservation.Users_Info?.school === userSchool
-                break
-              case 'find roommates from any school':
-                match = reservation.Users_Info?.school !== userSchool
-                break
-              case 'find all school':
-                match = true
-                break
-            }
-            if (match) matchCount++
-            console.log(
-              `สำนักผู้ใช้ที่จองแล้ว: ${reservation.Users_Info?.school}, ผู้ใช้: ${userSchool}, Match: ${match}, userSchoolReq: ${userSchoolReq}`
+        const roomReservations = reservationArray.filter(
+          reservationArrayItem =>
+            Array.isArray(reservationArrayItem) &&
+            reservationArrayItem.some(
+              reservation => reservation.Reservation_Info?.room_id?.toString().trim() === roomId
             )
-          }
+        )
 
-          if (userMajorReq) {
-            let match = false
-            switch (userMajorReq) {
-              case 'find roommates who study the same major':
-                match = reservation.Users_Info?.major === userMajor
-                break
-              case 'find roommates from any major':
-                match = reservation.Users_Info?.major !== userMajor
-                break
-              case 'find all major':
-                match = true
-                break
-            }
-            if (match) matchMajorCount++
-            console.log(
-              `หลักสูตรผู้ใช้ที่จองแล้ว: ${reservation.Users_Info?.major}, ผู้ใช้: ${userMajor}, Match: ${match}, userMajorReq: ${userMajorReq}`
-            )
-          }
+        let matchCount = 0
+        let matchMajorCount = 0
+        let matchReligionCount = 0
+        let matchActivityCount = 0
+        let matchRedflagCount = 0
+        let matchSleepCount = 0
+        let matchingActivities = new Set()
+        let matchingRedflags = new Set()
 
-          if (userReligionReq) {
-            let match = false
-            switch (userReligionReq) {
-              case 'find roommates who have the same religion':
-                match = reservation.Users_Info?.religion === userReligion
-                break
-              case 'find roommates from any religion':
-                match = reservation.Users_Info?.religion !== userReligion
-                break
-              case 'find all religion':
-                match = true
-                break
-            }
-            if (match) matchReligionCount++
-            console.log(
-              `ศาสนาผู้ใช้ที่จองแล้ว: ${reservation.Users_Info?.religion}, ผู้ใช้: ${userReligion}, Match: ${match}, userReligionReq: ${userReligionReq}`
-            )
-          }
+        roomReservations.forEach(reservationArrayItem =>
+          reservationArrayItem.forEach(reservation => {
+            const reservationBedId = reservation.Reservation_Info?.bed_id?.toString().trim()
 
-          if (userActivityReq) {
-            const userActivities = parseCommaSeparatedValues(userActivityReq)
-            const reservationActivities = reservation.Users_Req?.activity
-              ? parseCommaSeparatedValues(reservation.Users_Req.activity)
-              : []
-            const currentMatchingActivities = userActivities.filter(activity =>
-              reservationActivities.includes(activity)
-            )
-            if (currentMatchingActivities.length > 0) {
-              matchActivityCount += currentMatchingActivities.length
-              currentMatchingActivities.forEach(activity => matchingActivities.add(activity))
+            console.log(`Room ID: ${roomId}, Bed ID : ${reservationBedId}`)
+
+            if (userSchoolReq) {
+              let match = false
+              switch (userSchoolReq) {
+                case 'find roommates who attend the same school':
+                  match = reservation.Users_Info?.school === userSchool
+                  break
+                case 'find roommates from any school':
+                  match = reservation.Users_Info?.school !== userSchool
+                  break
+                case 'find all school':
+                  match = true
+                  break
+              }
+              if (match) matchCount++
               console.log(
-                `กิจกรรมผู้ใช้: ${userActivities}, กิจของผู้ใช้ที่จองแล้ว: ${reservationActivities}, Matching Activities: ${currentMatchingActivities}`
+                `สำนักผู้ใช้ที่จองแล้ว: ${reservation.Users_Info?.school}, ผู้ใช้: ${userSchool}, Match: ${match}, userSchoolReq: ${userSchoolReq}`
               )
             }
-          }
 
-          if (userRedflagReq) {
-            const userRedflags = parseCommaSeparatedValues(userRedflagReq)
-            const reservationRedflags = reservation.Users_Req?.filter_redflag
-              ? parseCommaSeparatedValues(reservation.Users_Req.filter_redflag)
-              : []
-            const currentMatchingRedflags = userRedflags.filter(redflag => reservationRedflags.includes(redflag))
-            if (currentMatchingRedflags.length > 0) {
-              matchRedflagCount += currentMatchingRedflags.length
-              currentMatchingRedflags.forEach(redflag => matchingRedflags.add(redflag))
+            if (userMajorReq) {
+              let match = false
+              switch (userMajorReq) {
+                case 'find roommates who study the same major':
+                  match = reservation.Users_Info?.major === userMajor
+                  break
+                case 'find roommates from any major':
+                  match = reservation.Users_Info?.major !== userMajor
+                  break
+                case 'find all major':
+                  match = true
+                  break
+              }
+              if (match) matchMajorCount++
               console.log(
-                `สิ่งที่ไม่ชอบผู้ใช้: ${userRedflags}, สิ่งที่ไม่ชอบผู้ใช้ที่จองแล้ว: ${reservationRedflags}, Matching Redflags: ${currentMatchingRedflags}`
+                `หลักสูตรผู้ใช้ที่จองแล้ว: ${reservation.Users_Info?.major}, ผู้ใช้: ${userMajor}, Match: ${match}, userMajorReq: ${userMajorReq}`
               )
             }
-          }
 
-          if (userSleepReq) {
-            const match = reservation.Users_Req?.sleep === userSleepReq
-            if (match) matchSleepCount++
-            console.log(
-              `การนอนผู้ใช้: ${userSleepReq}, การนอนผู้ใช้ที่จองแล้ว: ${reservation.Users_Req?.sleep}, Match: ${match}`
-            )
-          }
+            if (userReligionReq) {
+              let match = false
+              switch (userReligionReq) {
+                case 'find roommates who have the same religion':
+                  match = reservation.Users_Info?.religion === userReligion
+                  break
+                case 'find roommates from any religion':
+                  match = reservation.Users_Info?.religion !== userReligion
+                  break
+                case 'find all religion':
+                  match = true
+                  break
+              }
+              if (match) matchReligionCount++
+              console.log(
+                `ศาสนาผู้ใช้ที่จองแล้ว: ${reservation.Users_Info?.religion}, ผู้ใช้: ${userReligion}, Match: ${match}, userReligionReq: ${userReligionReq}`
+              )
+            }
+
+            if (userActivityReq) {
+              const userActivities = parseCommaSeparatedValues(userActivityReq)
+              const reservationActivities = reservation.Users_Req?.activity
+                ? parseCommaSeparatedValues(reservation.Users_Req.activity)
+                : []
+              const currentMatchingActivities = userActivities.filter(activity =>
+                reservationActivities.includes(activity)
+              )
+              if (currentMatchingActivities.length > 0) {
+                matchActivityCount += currentMatchingActivities.length
+                currentMatchingActivities.forEach(activity => matchingActivities.add(activity))
+                console.log(
+                  `กิจกรรมผู้ใช้: ${userActivities}, กิจของผู้ใช้ที่จองแล้ว: ${reservationActivities}, Matching Activities: ${currentMatchingActivities}`
+                )
+              }
+            }
+
+            if (userRedflagReq) {
+              const userRedflags = parseCommaSeparatedValues(userRedflagReq)
+              const reservationRedflags = reservation.Users_Req?.filter_redflag
+                ? parseCommaSeparatedValues(reservation.Users_Req.filter_redflag)
+                : []
+              const currentMatchingRedflags = userRedflags.filter(redflag => reservationRedflags.includes(redflag))
+              if (currentMatchingRedflags.length > 0) {
+                matchRedflagCount += currentMatchingRedflags.length
+                currentMatchingRedflags.forEach(redflag => matchingRedflags.add(redflag))
+                console.log(
+                  `สิ่งที่ไม่ชอบผู้ใช้: ${userRedflags}, สิ่งที่ไม่ชอบผู้ใช้ที่จองแล้ว: ${reservationRedflags}, Matching Redflags: ${currentMatchingRedflags}`
+                )
+              }
+            }
+
+            if (userSleepReq) {
+              const match = reservation.Users_Req?.sleep === userSleepReq
+              if (match) matchSleepCount++
+              console.log(
+                `การนอนผู้ใช้: ${userSleepReq}, การนอนผู้ใช้ที่จองแล้ว: ${reservation.Users_Req?.sleep}, Match: ${match}`
+              )
+            }
+          })
+        )
+        console.log('matchCount:', matchCount)
+        console.log('matchMajorCount:', matchMajorCount)
+        console.log('matchReligionCount:', matchReligionCount)
+        console.log('matchActivityCount:', matchActivityCount)
+        console.log('matchRedflagCount:', matchRedflagCount)
+        console.log('matchSleepCount:', matchSleepCount)
+
+        roomMatches.push({
+          roomId,
+          userSchoolReq,
+          userMajorReq,
+          userReligionReq,
+          userActivityReq,
+          userRedflagReq,
+          userSleepReq,
+          userSchool,
+          userMajor,
+          userReligion,
+          scoreSchool: matchCount,
+          scoreMajor: matchMajorCount,
+          scoreReligion: matchReligionCount,
+          scoreActivity: matchActivityCount,
+          scoreRedflag: matchRedflagCount,
+          scoreSleep: matchSleepCount,
+          totalMatches: 0,
+          matchActivityEachRoom: Array.from(matchingActivities).join(' ,  '),
+          matchRedflagEachRoom: Array.from(matchingRedflags).join(' ,  ')
         })
-      )
-      console.log('matchCount:', matchCount)
-      console.log('matchMajorCount:', matchMajorCount)
-      console.log('matchReligionCount:', matchReligionCount)
-      console.log('matchActivityCount:', matchActivityCount)
-      console.log('matchRedflagCount:', matchRedflagCount)
-      console.log('matchSleepCount:', matchSleepCount)
 
-      roomMatches.push({
-        roomId,
-        userSchoolReq,
-        userMajorReq,
-        userReligionReq,
-        userActivityReq,
-        userRedflagReq,
-        userSleepReq,
-        userSchool,
-        userMajor,
-        userReligion,
-        scoreSchool: matchCount,
-        scoreMajor: matchMajorCount,
-        scoreReligion: matchReligionCount,
-        scoreActivity: matchActivityCount,
-        scoreRedflag: matchRedflagCount,
-        scoreSleep: matchSleepCount,
-        totalMatches: 0,
-        matchActivityEachRoom: Array.from(matchingActivities).join(' ,  '),
-        matchRedflagEachRoom: Array.from(matchingRedflags).join(' ,  ')
+        return true
       })
-
-      return true
-    })
 
     roomMatches = roomMatches.map(room => {
       let totalMatches = 0

@@ -154,7 +154,7 @@ const UserManagement = () => {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.setAttribute('download', 'WU_UserInformation.csv')
+    link.setAttribute('download', 'WU_User_Information.csv')
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)

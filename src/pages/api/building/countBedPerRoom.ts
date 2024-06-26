@@ -20,7 +20,6 @@ const handler = async (req, res) => {
         .from('Dormitory_Room')
         .select('room_id', { count: 'exact' })
         .eq('dorm_id', building.dorm_id)
-        .eq('status', true)
 
       if (roomCountError) {
         throw roomCountError
@@ -31,7 +30,6 @@ const handler = async (req, res) => {
         .from('Dormitory_Room')
         .select('room_id')
         .eq('dorm_id', building.dorm_id)
-        .eq('status', true)
 
       if (roomError) {
         throw roomError

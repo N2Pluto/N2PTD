@@ -310,13 +310,13 @@ const DormitoryResidentControl = () => {
       round_name: user.Reservation_System.round_name
     }))
 
-    const dormitoryName = dormitoryId === null ? 'WU_allDormitory' : filteredUsers[0]?.Dormitory_Building.name || 'all'
+    const dormitoryName = dormitoryId === null ? 'WU_AllDormitory' : filteredUsers[0]?.Dormitory_Building.name || 'all'
     const csv = Papa.unparse(dataToExport)
     const csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const csvURL = window.URL.createObjectURL(csvData)
     let tempLink = document.createElement('a')
     tempLink.href = csvURL
-    tempLink.setAttribute('download', `${dormitoryName}.csv`)
+    tempLink.setAttribute('download', `Student_Resident_${dormitoryName}.csv`)
     tempLink.click()
     setExportSnackbarOpen(true)
   }

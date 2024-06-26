@@ -27,7 +27,6 @@ import CloseIcon from '@mui/icons-material/Close'
 import Chip from '@mui/material/Chip'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
-import Select from '@mui/material/Select'
 import TextField from '@mui/material/TextField'
 import InputLabel from '@mui/material/InputLabel'
 import Grid from '@mui/material/Grid'
@@ -40,6 +39,12 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { makeStyles } from '@mui/styles'
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
 
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
@@ -98,7 +103,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Typography>
       ) : (
         <Typography sx={{ flex: '1 1 100%', pl: 5 }} variant='h6' id='tableTitle' component='div'>
-          Reservation Control
+          User Reservation List
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -125,11 +130,11 @@ const ReservationApprove = () => {
   const classes = useStyles()
   const [users, setUsers] = React.useState<User[]>([])
   const [order, setOrder] = React.useState<'asc' | 'desc'>('asc')
-  const [orderBy, setOrderBy] = React.useState<keyof User>('id')
+  const [orderBy, setOrderBy] = React.useState<keyof User>('room_id')
   const [selected, setSelected] = React.useState<readonly number[]>([])
   const [page, setPage] = React.useState(0)
   const [dense, setDense] = React.useState(false)
-  const [rowsPerPage, setRowsPerPage] = React.useState(5)
+  const [rowsPerPage, setRowsPerPage] = React.useState(10)
   const [tab, setTab] = React.useState('pending')
   const [searchValue, setSearchValue] = React.useState('')
   const [roundNames, setRoundNames] = React.useState<{ round_name: string; round_id: number }[]>([])
@@ -140,20 +145,35 @@ const ReservationApprove = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [openApprove, setOpenApprove] = React.useState(false)
   const [openReject, setOpenReject] = React.useState(false)
+  const [openSnackbar, setOpenSnackbar] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
   const [openDialog, setOpenDialog] = useState(false)
-  const [rejectionReasons, setRejectionReasons] = useState([])
+  const [openRejectDialog, setOpenRejectDialog] = useState(false)
+  const [currentRejectId, setCurrentRejectId] = useState(null)
+  const [rejectionReasons, setRejectionReasons] = useState<string[]>([])
 
-  const handleOpenRejectDialog = async id => {
-    const reasons = prompt('Enter rejection reasons (comma separated):')
-    if (reasons === null) {
-      // User pressed cancel, exit the function without doing anything
-      return
+  const handleSelectChange = (event: SelectChangeEvent<typeof rejectionReasons>) => {
+    // Assuming MUI Select is properly configured for multiple selections
+    const value = event.target.value
+    setRejectionReasons(typeof value === 'string' ? value.split(',') : value)
+  }
+  const handleOpenRejectDialog = id => {
+    setCurrentRejectId(id)
+    setOpenRejectDialog(true)
+  }
+
+  const handleCloseRejectDialog = () => {
+    setOpenRejectDialog(false)
+    setCurrentRejectId(null)
+    setRejectionReasons([])
+  }
+
+  const handleRejectWithReasons = async () => {
+    if (rejectionReasons.length > 0) {
+      // No need to split, as rejectionReasons is already an array
+      await handleReject([currentRejectId], rejectionReasons)
+      handleCloseRejectDialog()
     }
-    const reasonsArray = reasons.split(',')
-    setRejectionReasons(reasonsArray)
-    setOpenDialog(true) // If using a dialog component
-    await handleReject([id], reasonsArray)
   }
 
   const handleClose = (event, reason) => {
@@ -316,6 +336,7 @@ const ReservationApprove = () => {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+    setOpenSnackbar(true)
   }
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -628,7 +649,12 @@ const ReservationApprove = () => {
               <MoreVertIcon />
             </IconButton>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-              <MenuItem onClick={handleExportCSV}>
+              <MenuItem
+                onClick={() => {
+                  handleExportCSV()
+                  handleMenuClose()
+                }}
+              >
                 <img
                   src='https://img5.pic.in.th/file/secure-sv1/csv-file-format-extension_28842.png'
                   width='25'
@@ -661,7 +687,6 @@ const ReservationApprove = () => {
                 await handleOpenRejectDialog(id)
               }
               resetSelected()
-              setOpenReject(true)
             }}
           />
           <TableContainer>
@@ -733,7 +758,6 @@ const ReservationApprove = () => {
                                 setSelected([row.id])
                                 await handleOpenRejectDialog(row.id)
                                 resetSelected()
-                                setOpenReject(true) // This might be redundant if handled inside handleReject or dialog logic
                               }}
                             >
                               <CloseIcon />
@@ -795,6 +819,43 @@ const ReservationApprove = () => {
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
+          <Dialog open={openRejectDialog} onClose={handleCloseRejectDialog}>
+            <DialogContent>
+              <Grid container spacing={6}>
+                <Grid item xs={12}>
+                  <Typography variant='h6'>Reject Reservation ID: {currentRejectId}</Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id='rejection-reason-label'>Rejection Reasons</InputLabel>
+                    <Select
+                      labelId='rejection-reason-label'
+                      value={rejectionReasons}
+                      label='Rejection Reasons'
+                      onChange={handleSelectChange}
+                      renderValue={selected => selected.join(', ')}
+                      autoFocus
+                      margin='dense'
+                      fullWidth
+                      multiple
+                    >
+                      <MenuItem value='Reason 1'>Reason 1</MenuItem>
+                      <MenuItem value='Reason 2'>Reason 2</MenuItem>
+                      <MenuItem value='Reason 3'>Reason 3</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseRejectDialog} color='primary'>
+                Cancel
+              </Button>
+              <Button onClick={handleRejectWithReasons} color='primary'>
+                Reject
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Paper>
         {/* <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label='Dense' /> */}
       </Box>
@@ -838,6 +899,24 @@ const ReservationApprove = () => {
         }
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         ContentProps={{ className: classes.reject }}
+      />
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={5000}
+        onClose={() => setOpenSnackbar(false)}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {'CSV file exported successfully!'}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={() => setOpenSnackbar(false)}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.success }}
       />
     </>
   )
