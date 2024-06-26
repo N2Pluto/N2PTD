@@ -548,7 +548,12 @@ const DormitoryResidentControl = () => {
                   alt='CSV Icon'
                   style={{ marginRight: '10px' }}
                 />
-                Export to CSV
+                <div>
+                  <Typography variant='subtitle1'>Export</Typography>
+                  <Typography variant='body2' color='textSecondary'>
+                    Exporting CSV data.
+                  </Typography>
+                </div>
               </MenuItem>
               {/* Add more menu items if needed */}
             </Menu>

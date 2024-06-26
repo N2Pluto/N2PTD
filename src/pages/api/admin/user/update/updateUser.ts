@@ -5,10 +5,10 @@ import supabase from 'src/libs/supabase'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
-    const { id, name, lastname, student_id, gender, religion, school, department, major, user_id } = req.body
+    const { id, name, lastname, student_id, gender, religion, school, department, major } = req.body
     console.log(req.body)
 
-    // Update Users_Info table
+    // First, update Users_Info table
     const { data: dataInfo, error: errorInfo } = await supabase
       .from('Users_Info')
       .update({ name, lastname, gender, religion, school, department, major })
@@ -16,11 +16,20 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (errorInfo) return res.status(500).json({ error: errorInfo.message })
 
-    // Update Users table
+    // Then, retrieve user_id from Users_Info table for the given id
+    const { data: userInfo, error: userInfoError } = await supabase
+      .from('Users_Info')
+      .select('user_id')
+      .eq('id', id)
+      .single() // Assuming id is unique and only one record is expected
+
+    if (userInfoError || !userInfo) return res.status(500).json({ error: userInfoError?.message || 'User not found' })
+
+    // Finally, update Users table using the retrieved user_id
     const { data: dataUser, error: errorUser } = await supabase
       .from('Users')
       .update({ student_id })
-      .eq('user_id', user_id) 
+      .eq('user_id', userInfo.user_id)
 
     if (errorUser) return res.status(500).json({ error: errorUser.message })
 

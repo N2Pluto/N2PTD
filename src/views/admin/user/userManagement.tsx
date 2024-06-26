@@ -36,11 +36,11 @@ import Snackbar from '@mui/material/Snackbar'
 import CloseIcon from '@mui/icons-material/Close'
 import { makeStyles } from '@mui/styles'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-
+import Alert from '@mui/material/Alert'
 
 const useStyles = makeStyles({
   success: {
-    backgroundColor: 'green'
+    backgroundColor: '#4caf50'
   }
 })
 
@@ -82,7 +82,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography sx={{ flex: '1 1 100%' }} variant='h6' id='tableTitle' component='div'>
+        <Typography sx={{ flex: '1 1 100%', ml: 5 }} variant='h6' id='tableTitle' component='div'>
           User Management
         </Typography>
       )}
@@ -95,11 +95,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           </DeleteUser>
         </Tooltip>
       ) : (
-        <Tooltip title='Filter list'>
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
+        <Tooltip title='Filter list'></Tooltip>
       )}
     </Toolbar>
   )
@@ -113,13 +109,13 @@ const UserManagement = () => {
   const [selected, setSelected] = useState<readonly number[]>([])
   const [page, setPage] = useState(0)
   const [dense, setDense] = useState(false)
-  const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
   const [schoolFilter, setSchoolFilter] = useState(-1)
   const [yearFilter, setYearFilter] = useState(-1)
   const [searchTerm, setSearchTerm] = useState('')
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [open, setOpen] = useState(false)
-
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
 
   const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -163,6 +159,7 @@ const UserManagement = () => {
     link.click()
     document.body.removeChild(link)
     handleCloseCSV()
+    setSnackbarOpen(true)
   }
 
   const resetSelected = () => {
@@ -250,7 +247,7 @@ const UserManagement = () => {
 
   const filteredUsers = users.filter(user => {
     const matchesSchool = schoolFilter === -1 || user.school === schoolFilter
-    const matchesYear = yearFilter === -1 || user.student_year === yearFilter
+    const matchesYear = yearFilter === -1 || user.Users?.student_id.substring(0, 2) === yearFilter
     const matchesSearchTerm =
       searchTerm.length === 0 ||
       (searchTerm.match(/^\d+$/)
@@ -270,7 +267,7 @@ const UserManagement = () => {
   )
 
   const uniqueSchools = Array.from(new Set(users.map(user => user.school)))
-  const uniqueYears = Array.from(new Set(users.map(user => user.student_year)))
+  const uniqueYears = Array.from(new Set(users.map(user => user.Users?.student_id.substring(0, 2)))).sort()
 
   const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
@@ -359,6 +356,24 @@ const UserManagement = () => {
               </MenuItem>
             </Menu>
           </Grid>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={() => setSnackbarOpen(false)}
+            message={
+              <span>
+                <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+                {'CSV export successful!'}
+              </span>
+            }
+            action={
+              <IconButton size='small' aria-label='close' color='inherit' onClick={() => setSnackbarOpen(false)}>
+                <CloseIcon fontSize='small' />
+              </IconButton>
+            }
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            ContentProps={{ className: classes.success }}
+          />
         </Box>
 
         <TableContainer>
@@ -373,7 +388,7 @@ const UserManagement = () => {
             />
             <TableBody>
               {visibleRows.length === 0 ? (
-                <TableRow style={{ height: 53 * rowsPerPage }}>
+                <TableRow style={{ height: '100%' }}>
                   <TableCell colSpan={11}>
                     <Paper
                       style={{
