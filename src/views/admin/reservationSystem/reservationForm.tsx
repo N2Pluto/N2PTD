@@ -1,36 +1,50 @@
-// ** React Imports
-import { ChangeEvent, forwardRef, MouseEvent } from 'react'
-import * as React from 'react'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Dialog, { DialogProps } from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
-import DialogTitle from '@mui/material/DialogTitle'
-import FormControl from '@mui/material/FormControl'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import InputLabel from '@mui/material/InputLabel'
-import MenuItem from '@mui/material/MenuItem'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
-import Switch from '@mui/material/Switch'
-import TextField from '@mui/material/TextField'
-import Grid from '@mui/material/Grid'
-import Card from '@mui/material/Card'
-import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
-import OutlinedInput from '@mui/material/OutlinedInput'
-import { useState } from 'react'
-import List from '@mui/material/List'
-
+import React, { useState } from 'react'
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogProps,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  OutlinedInput,
+  TextField,
+  Grid,
+  Card,
+  Typography,
+  CardContent,
+  List,
+  Snackbar,
+  Alert,
+  IconButton
+} from '@mui/material'
 import DatePicker from '@mui/lab/DatePicker'
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import LocalizationProvider from '@mui/lab/LocalizationProvider'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import CloseIcon from '@mui/icons-material/Close'
+import { makeStyles } from '@mui/styles'
+
+const useStyles = makeStyles(theme => ({
+  success: {
+    backgroundColor: theme.palette.success.main
+  },
+  error: {
+    backgroundColor: theme.palette.error.main
+  }
+}))
 
 export default function ReservationForm() {
-  const [open, setOpen] = React.useState(false)
-  const [fullWidth, setFullWidth] = React.useState(true)
-  const [maxWidth, setMaxWidth] = React.useState<DialogProps['maxWidth']>('sm')
+  const classes = useStyles()
+  const [open, setOpen] = useState(false)
+  const [fullWidth, setFullWidth] = useState(true)
+  const [maxWidth, setMaxWidth] = useState<DialogProps['maxWidth']>('sm')
   const [student_year, setStudentYear] = useState<string[]>([])
   const initialYears = [63, 64, 65, 66, 67, 68]
   const [years, setYears] = useState(initialYears)
@@ -41,6 +55,7 @@ export default function ReservationForm() {
   const [gender, setGender] = useState('')
   const [startDate, setStartDate] = useState<Date | null | undefined>(null)
   const [endDate, setEndDate] = useState<Date | null | undefined>(null)
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
 
   const yearMenuItems = Array.from({ length: yearsAhead }, (_, index) => (
     <MenuItem key={index} value={currentYear + index}>
@@ -160,7 +175,12 @@ export default function ReservationForm() {
     })
 
     const data = await response.json()
+    setSnackbarOpen(true) // Show the Snackbar on success
     handleClose()
+  }
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false)
   }
 
   return (
@@ -257,6 +277,25 @@ export default function ReservationForm() {
           <Button onClick={handleSubmit}>Submit</Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {'Create Booking Period Successfully'}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleSnackbarClose}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        ContentProps={{ className: classes.success }}
+      />
     </React.Fragment>
   )
 }

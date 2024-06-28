@@ -1,6 +1,4 @@
-// ** React Imports
 import { ChangeEvent, forwardRef, MouseEvent, useState } from 'react'
-
 import * as React from 'react'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -29,17 +27,27 @@ import OutlinedInput from '@mui/material/OutlinedInput'
 import InputAdornment from '@mui/material/InputAdornment'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import List from '@mui/material/List'
-
+import Snackbar from '@mui/material/Snackbar'
+import { makeStyles } from '@mui/styles'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import CloseIcon from '@mui/icons-material/Close'
+import MuiAlert, { AlertProps } from '@mui/material/Alert'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
-
-// ** Third Party Imports
-import { CarBrakeFluidLevel } from 'mdi-material-ui'
 import DatePicker from '@mui/lab/DatePicker'
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import LocalizationProvider from '@mui/lab/LocalizationProvider'
 
-const Transition = React.forwardRef(function Transition(
+const useStyles = makeStyles(theme => ({
+  success: {
+    backgroundColor: theme.palette.success.main
+  },
+  error: {
+    backgroundColor: theme.palette.error.main
+  }
+}))
+
+const Transition = forwardRef(function Transition(
   props: TransitionProps & {
     children: React.ReactElement<any, any>
   },
@@ -48,8 +56,9 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction='up' ref={ref} {...props} />
 })
 
-export default function DeleteRound({ id }: { id: number }) {
-  const [open, setOpen] = React.useState(false)
+export default function DeleteRound({ id, setSnackbarOpen, setSnackbarMessage, setSnackbarSeverity }) {
+  const classes = useStyles()
+  const [open, setOpen] = useState(false)
   const [startDate, setStartDate] = useState<Date | null | undefined>(null)
   const [endDate, setEndDate] = useState<Date | null | undefined>(null)
   const [student_year, setStudentYear] = useState<string[]>([])
@@ -61,26 +70,19 @@ export default function DeleteRound({ id }: { id: number }) {
     const fetchData = async () => {
       const response = await fetch(`/api/admin/reservationSystem/read/${id}`)
       const data = await response.json()
-
-      // Set the state variables with the fetched data
       setStartDate(new Date(data.data.start_date))
       setEndDate(new Date(data.data.end_date))
       setStudentYear(data.data.student_year.split(',').map(Number))
       setRoundName(data.data.round_name)
     }
-
     fetchData()
   }, [id])
 
-  console.log('id', id)
-
   const handleUpdate = async () => {
-    // Validation: Ensure start_date is less than end_date
     if (new Date(startDate) >= new Date(endDate)) {
       alert('Start date must be less than end date.')
-      return // Stop the function execution
+      return
     }
-
     const response = await fetch(`/api/admin/reservationSystem/update`, {
       method: 'PUT',
       headers: {
@@ -96,10 +98,13 @@ export default function DeleteRound({ id }: { id: number }) {
     })
 
     if (response.ok) {
+      setSnackbarSeverity('success')
+      setSnackbarMessage('Update Booking Period Successfully')
+      setSnackbarOpen(true)
       handleClose()
     } else {
       const responseData = await response.json()
-      alert(responseData.error) // Show an alert with the error message
+      alert(responseData.error)
     }
   }
 
@@ -107,7 +112,6 @@ export default function DeleteRound({ id }: { id: number }) {
     setRoundName(event.target.value)
   }
 
-  // Handle Select
   const handleSelectChange = (event: SelectChangeEvent<string[]>) => {
     setStudentYear(event.target.value as string[])
   }
@@ -120,7 +124,7 @@ export default function DeleteRound({ id }: { id: number }) {
 
   const MenuProps = {
     PaperProps: {},
-    getContentAnchorEl: null, // This is important to make the footer stick to the bottom
+    getContentAnchorEl: null,
     anchorOrigin: {
       vertical: 'bottom',
       horizontal: 'left'
@@ -143,10 +147,11 @@ export default function DeleteRound({ id }: { id: number }) {
     await fetch(`/api/admin/reservationSystem/delete/${id}`, {
       method: 'DELETE'
     })
+    setSnackbarSeverity('error')
+    setSnackbarMessage('Delete Booking Period Successfully')
+    setSnackbarOpen(true)
     setOpen(false)
   }
-
-  console.log(id)
 
   return (
     <React.Fragment>
@@ -171,7 +176,6 @@ export default function DeleteRound({ id }: { id: number }) {
                       2. Round Info
                     </Typography>
                   </Grid>
-
                   <Grid item xs={6}>
                     <TextField
                       fullWidth
@@ -182,7 +186,6 @@ export default function DeleteRound({ id }: { id: number }) {
                       placeholder='รอบที่ 1 ผู้ชาย ปี1 เท่านั้น'
                     />
                   </Grid>
-
                   <Grid item xs={6} sm={6}>
                     <FormControl fullWidth>
                       <InputLabel id='form-layouts-separator-multiple-select-label'>Student Year</InputLabel>

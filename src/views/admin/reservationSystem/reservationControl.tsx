@@ -15,30 +15,20 @@ const handleClick = async () => {
   router.push('/admin/reservationSystem/')
 }
 
-
 const ReservationControl = () => {
   const router = useRouter()
 
   return (
     <>
       <Card>
-        
         <CardContent sx={{ padding: theme => `${theme.spacing(3, 5.25, 4)} !important` }}>
           <Typography variant='h6' sx={{ marginBottom: 2 }}>
-            เปิดรอบการจองหอพัก
+            Booking Period
           </Typography>
-          <Typography variant='body2'>Click to add a dormitory. for building a new dormitory</Typography>
+          <Typography variant='body2'>Please click here to initiate the creation of a new booking period.</Typography>
         </CardContent>
 
-        <ReservationForm>
-          <Button
-            onClick={handleClick}
-            variant='contained'
-            sx={{ py: 2.5, width: '100%', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
-          >
-            Add Round Dormitory
-          </Button>
-        </ReservationForm>
+        <ReservationForm />
       </Card>
     </>
   )
