@@ -320,6 +320,7 @@ const DormitoryResidentControl = () => {
     tempLink.click()
     setExportSnackbarOpen(true)
   }
+  
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value)
   }
@@ -468,20 +469,22 @@ const DormitoryResidentControl = () => {
                 >
                   List of Students in all Dormitories
                 </MenuItem>
-                {uniqueDormitories.map(dorm_id => {
-                  const dormitoryName = users.find(user => user.dorm_id === dorm_id)?.Dormitory_Building.name
-                  return (
-                    <MenuItem
-                      value={dorm_id}
-                      onClick={() => {
-                        setSelectedDormitory(dorm_id)
-                        setSelectedDormitoryForDownload(dorm_id)
-                      }}
-                    >
-                      {dormitoryName}
-                    </MenuItem>
-                  )
-                })}
+                {uniqueDormitories
+                  .sort((a, b) => a - b)
+                  .map(dorm_id => {
+                    const dormitoryName = users.find(user => user.dorm_id === dorm_id)?.Dormitory_Building.name
+                    return (
+                      <MenuItem
+                        value={dorm_id}
+                        onClick={() => {
+                          setSelectedDormitory(dorm_id)
+                          setSelectedDormitoryForDownload(dorm_id)
+                        }}
+                      >
+                        {dormitoryName}
+                      </MenuItem>
+                    )
+                  })}
               </Select>
             </FormControl>
           </Grid>
@@ -579,49 +582,47 @@ const DormitoryResidentControl = () => {
                 rowCount={users.length}
               />
               <TableBody>
-                {stableSort(users, getComparator(order, orderBy))
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) => {
-                    const isItemSelected = isSelected(row.id)
-                    const labelId = `enhanced-table-checkbox-${index}`
+                {visibleRows.map((row, index) => {
+                  const isItemSelected = isSelected(row.id)
+                  const labelId = `enhanced-table-checkbox-${index}`
 
-                    return (
-                      <TableRow
-                        hover
-                        onClick={event => handleClick(event, row.id)}
-                        role='checkbox'
-                        aria-checked={isItemSelected}
-                        tabIndex={-1}
-                        key={row.id}
-                        selected={isItemSelected}
-                      >
-                        <TableCell padding='checkbox'>
-                          <Checkbox
-                            color='primary'
-                            checked={isItemSelected}
-                            inputProps={{
-                              'aria-labelledby': labelId
-                            }}
-                            disabled={mode === 'swap' && selected.length === 2 && !isItemSelected}
-                          />
-                        </TableCell>
-                        <TableCell component='th' id={labelId} scope='row' padding='none'>
-                          {row.Users ? row.Users.student_id : ''}
-                        </TableCell>
-                        <TableCell>
-                          {' '}
-                          {row.Users?.Users_Info[0]?.name} {row.Users?.Users_Info[0]?.lastname}
-                        </TableCell>
-                        <TableCell>{row.Dormitory_Building.name}</TableCell>
-                        <TableCell>{row.Dormitory_Room.room_number}</TableCell>
-                        <TableCell>{row.Dormitory_Bed.bed_number}</TableCell>
-                        <TableCell>{row.Reservation_System.round_name}</TableCell>
-                        <TableCell>
-                          <EditResident id={row.id} resetSelected={resetSelected} onOpenSnackbar={handleOpenSnackbar} />
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
+                  return (
+                    <TableRow
+                      hover
+                      onClick={event => handleClick(event, row.id)}
+                      role='checkbox'
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={row.id}
+                      selected={isItemSelected}
+                    >
+                      <TableCell padding='checkbox'>
+                        <Checkbox
+                          color='primary'
+                          checked={isItemSelected}
+                          inputProps={{
+                            'aria-labelledby': labelId
+                          }}
+                          disabled={mode === 'swap' && selected.length === 2 && !isItemSelected}
+                        />
+                      </TableCell>
+                      <TableCell component='th' id={labelId} scope='row' padding='none'>
+                        {row.Users ? row.Users.student_id : ''}
+                      </TableCell>
+                      <TableCell>
+                        {' '}
+                        {row.Users?.Users_Info[0]?.name} {row.Users?.Users_Info[0]?.lastname}
+                      </TableCell>
+                      <TableCell>{row.Dormitory_Building.name}</TableCell>
+                      <TableCell>{row.Dormitory_Room.room_number}</TableCell>
+                      <TableCell>{row.Dormitory_Bed.bed_number}</TableCell>
+                      <TableCell>{row.Reservation_System.round_name}</TableCell>
+                      <TableCell>
+                        <EditResident id={row.id} resetSelected={resetSelected} onOpenSnackbar={handleOpenSnackbar} />
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
                 {emptyRows > 0 && (
                   <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
                     <TableCell colSpan={9} />

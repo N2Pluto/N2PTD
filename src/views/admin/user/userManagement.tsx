@@ -41,7 +41,11 @@ import Alert from '@mui/material/Alert'
 const useStyles = makeStyles({
   success: {
     backgroundColor: '#4caf50'
+  },
+  error: {
+    backgroundColor: '#f44336'
   }
+
 })
 
 interface User {
@@ -116,6 +120,8 @@ const UserManagement = () => {
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [open, setOpen] = useState(false)
   const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
+  const [snackbarColor, setSnackbarColor] = useState('success')
 
   const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -137,6 +143,14 @@ const UserManagement = () => {
   }
 
   const handleExportCSV = () => {
+    if (filteredUsers.length === 0) {
+      // Set the Snackbar state to show "No Data to Export" message
+      setSnackbarMessage('No Data to Export')
+      setSnackbarColor('error') // Assuming you have a state to control the Snackbar's color
+      setSnackbarOpen(true)
+      return
+    }
+
     const dataToExport = filteredUsers.map(user => ({
       student_id: user.Users?.student_id,
       name: user.name,
@@ -159,6 +173,10 @@ const UserManagement = () => {
     link.click()
     document.body.removeChild(link)
     handleCloseCSV()
+
+    // Set the Snackbar state to show "CSV export successful!" message
+    setSnackbarMessage('CSV export successful!')
+    setSnackbarColor('success') // Assuming you have a state to control the Snackbar's color
     setSnackbarOpen(true)
   }
 
@@ -363,7 +381,7 @@ const UserManagement = () => {
             message={
               <span>
                 <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
-                {'CSV export successful!'}
+                {snackbarMessage}
               </span>
             }
             action={
@@ -372,7 +390,7 @@ const UserManagement = () => {
               </IconButton>
             }
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            ContentProps={{ className: classes.success }}
+            ContentProps={{ className: classes[snackbarColor] }} // Use dynamic class based on the Snackbar's color state
           />
         </Box>
 
