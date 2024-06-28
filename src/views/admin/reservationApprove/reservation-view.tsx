@@ -27,6 +27,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import Chip from '@mui/material/Chip'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
+import Select from '@mui/material/Select'
 import TextField from '@mui/material/TextField'
 import InputLabel from '@mui/material/InputLabel'
 import Grid from '@mui/material/Grid'
@@ -39,18 +40,13 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { makeStyles } from '@mui/styles'
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
-import DialogTitle from '@mui/material/DialogTitle'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
 
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import SearchIcon from '@mui/icons-material/Search'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { useEffect, useState } from 'react'
+import RejectDialog from './reject-dialog'
 
 const useStyles = makeStyles({
   success: {
@@ -73,6 +69,9 @@ interface User {
   round_id: number
   status: string
   created_at: string
+  Users?: {
+    student_id: string
+  }
 }
 
 type EnhancedTableToolbarProps = {
@@ -103,7 +102,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Typography>
       ) : (
         <Typography sx={{ flex: '1 1 100%', pl: 5 }} variant='h6' id='tableTitle' component='div'>
-          User Reservation List
+          Reservation Control
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -130,11 +129,11 @@ const ReservationApprove = () => {
   const classes = useStyles()
   const [users, setUsers] = React.useState<User[]>([])
   const [order, setOrder] = React.useState<'asc' | 'desc'>('asc')
-  const [orderBy, setOrderBy] = React.useState<keyof User>('room_id')
+  const [orderBy, setOrderBy] = React.useState<keyof User>('id')
   const [selected, setSelected] = React.useState<readonly number[]>([])
   const [page, setPage] = React.useState(0)
   const [dense, setDense] = React.useState(false)
-  const [rowsPerPage, setRowsPerPage] = React.useState(10)
+  const [rowsPerPage, setRowsPerPage] = React.useState(5)
   const [tab, setTab] = React.useState('pending')
   const [searchValue, setSearchValue] = React.useState('')
   const [roundNames, setRoundNames] = React.useState<{ round_name: string; round_id: number }[]>([])
@@ -145,35 +144,81 @@ const ReservationApprove = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [openApprove, setOpenApprove] = React.useState(false)
   const [openReject, setOpenReject] = React.useState(false)
-  const [openSnackbar, setOpenSnackbar] = React.useState(false)
+  const [openSnackbarCSV, setOpenSnackbarCSV] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
   const [openDialog, setOpenDialog] = useState(false)
-  const [openRejectDialog, setOpenRejectDialog] = useState(false)
-  const [currentRejectId, setCurrentRejectId] = useState(null)
-  const [rejectionReasons, setRejectionReasons] = useState<string[]>([])
+  const [selectedUserIds, setSelectedUserIds] = useState([])
+  const [studentIds, setStudentIds] = useState([])
 
-  const handleSelectChange = (event: SelectChangeEvent<typeof rejectionReasons>) => {
-    // Assuming MUI Select is properly configured for multiple selections
-    const value = event.target.value
-    setRejectionReasons(typeof value === 'string' ? value.split(',') : value)
-  }
-  const handleOpenRejectDialog = id => {
-    setCurrentRejectId(id)
-    setOpenRejectDialog(true)
+  const handleOpenRejectDialog = async (ids, studentIds) => {
+    console.log('Opening reject dialog for IDs:', ids, 'and Student IDs:', studentIds)
+    setSelectedUserIds(ids) // Assuming setSelectedUserIds is updated to handle array of IDs
+    setOpenDialog(true)
+    setStudentIds(studentIds) // Assuming setStudentIds is a state setter function for studentIds
   }
 
-  const handleCloseRejectDialog = () => {
-    setOpenRejectDialog(false)
-    setCurrentRejectId(null)
-    setRejectionReasons([])
-  }
-
-  const handleRejectWithReasons = async () => {
-    if (rejectionReasons.length > 0) {
-      // No need to split, as rejectionReasons is already an array
-      await handleReject([currentRejectId], rejectionReasons)
-      handleCloseRejectDialog()
+  const handleDialogSubmit = reasonsArray => {
+    console.log('Submitting dialog for IDs:', selectedUserIds) // Log the IDs being submitted
+    if (selectedUserIds.length > 0) {
+      selectedUserIds.forEach(id => {
+        console.log('Handling reject for ID:', id)
+        console.log('Reasons:', reasonsArray)
+        handleReject(id, reasonsArray) // Call handleReject for each ID with the same reasonsArray
+      })
+      setSelectedUserIds([]) // Clear the selected IDs after handling
     }
+  }
+
+  const handleReject = async (id, reasons) => {
+    console.log('Rejecting for ID:', id) // Log the ID being rejected
+    setLoading(true)
+    const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id, status: 'Reject' })
+    })
+
+    if (!response.ok) {
+      console.error(`Failed to update reservation status for id ${id}`)
+    } else {
+      const user = users.find(user => user.id === id)
+      if (user) {
+        console.log('Sending rejection email to:', user.Users.email) // Log the email being notified
+        await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            to: user.Users.email,
+            subject: 'Reservation Rejected',
+            html: `
+                    <!DOCTYPE html>
+                    <html>
+                      <head>...</head>
+                      <body>
+                        <div class="container">
+                          <h1>Your Reservation is Rejected</h1>
+                          <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
+                          <p>We regret to inform you that your reservation has been rejected for the following reasons:</p>
+                          <ul>
+                            ${reasons.map(reason => `<li>${reason}</li>`).join('')}
+                          </ul>
+                          <p>We apologize for any inconvenience this may have caused you. If you have any further questions or concerns, please do not hesitate to contact our support team.</p>
+                          <p>Best regards,<br>WU Dormitory</p>
+                        </div>
+                      </body>
+                    </html>
+                  `
+          })
+        })
+      }
+    }
+    setOpenReject(true)
+    resetSelected()
+    setLoading(false)
   }
 
   const handleClose = (event, reason) => {
@@ -317,6 +362,7 @@ const ReservationApprove = () => {
   const isSelected = (id: number) => selected.indexOf(id) !== -1
 
   const handleExportCSV = () => {
+    // Define the fields for the CSV file
     const fields = [
       { label: 'student_id', value: 'Users.student_id' },
       { label: 'name', value: 'Users_Info.name' },
@@ -324,19 +370,37 @@ const ReservationApprove = () => {
       { label: 'dorm_name', value: 'Dormitory_Building.name' },
       { label: 'room_number', value: 'Dormitory_Room.room_number' },
       { label: 'bed_number', value: 'Dormitory_Bed.bed_number' },
-      { label: 'room_name', value: 'Reservation_System.round_name' },
-      { label: 'status', value: 'status' }
+      { label: 'room_name', value: 'Reservation_System.round_name' }
     ]
+
+    // Filter users based on the selected tab
+    let filteredData = filteredUsers
+    if (tab === 'pending') {
+      filteredData = filteredUsers.filter(user => user.status === 'Pending')
+    } else if (tab === 'approve') {
+      filteredData = filteredUsers.filter(user => user.status === 'Approve')
+    }
+
+    // Parse the filtered data to CSV
     const parser = new Parser({ fields })
-    const csv = parser.parse(filteredUsers)
+    const csv = parser.parse(filteredData)
+
+    // Create a Blob from the CSV data
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+
+    // Create a link and trigger the download
     const link = document.createElement('a')
     link.href = URL.createObjectURL(blob)
-    link.setAttribute('download', 'WU_User_Reservation.csv')
+    link.setAttribute('download', `WU_User_Reservation(${tab}).csv`)
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    setOpenSnackbar(true)
+
+    // Optionally, show a notification
+    setOpenSnackbarCSV(true)
+
+    // Close the menu
+    handleMenuClose()
   }
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -478,59 +542,6 @@ const ReservationApprove = () => {
   }
 
   // Modified handleReject to accept reasons
-  const handleReject = async (ids: number[], reasons: string[]) => {
-    setLoading(true)
-    await Promise.all(
-      ids.map(async id => {
-        const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ id, status: 'Reject' })
-        })
-
-        if (!response.ok) {
-          console.error(`Failed to update reservation status for id ${id}`)
-        } else {
-          const user = users.find(user => user.id === id)
-          if (user) {
-            await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                to: user.Users.email,
-                subject: 'Reservation Rejected',
-                html: `
-                <!DOCTYPE html>
-                <html>
-                  <head>...</head>
-                  <body>
-                    <div class="container">
-                      <h1>Your Reservation is Rejected</h1>
-                      <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
-                      <p>We regret to inform you that your reservation has been rejected for the following reasons:</p>
-                      <ul>
-                        ${reasons.map(reason => `<li>${reason}</li>`).join('')}
-                      </ul>
-                      <p>We apologize for any inconvenience this may have caused you. If you have any further questions or concerns, please do not hesitate to contact our support team.</p>
-                      <p>Best regards,<br>WU Dormitory</p>
-                    </div>
-                  </body>
-                </html>
-              `
-              })
-            })
-          }
-        }
-      })
-    )
-    setOpenReject(true)
-    resetSelected()
-    setLoading(false)
-  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -550,6 +561,13 @@ const ReservationApprove = () => {
 
   return (
     <>
+      <RejectDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        onSubmit={handleDialogSubmit}
+        studentIds={studentIds}
+      />
+
       <Box sx={{ width: '100%' }}>
         <Tabs value={tab} onChange={handleTabChange} aria-label='reservation status tabs'>
           <Tab
@@ -649,12 +667,7 @@ const ReservationApprove = () => {
               <MoreVertIcon />
             </IconButton>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-              <MenuItem
-                onClick={() => {
-                  handleExportCSV()
-                  handleMenuClose()
-                }}
-              >
+              <MenuItem onClick={handleExportCSV}>
                 <img
                   src='https://img5.pic.in.th/file/secure-sv1/csv-file-format-extension_28842.png'
                   width='25'
@@ -683,9 +696,16 @@ const ReservationApprove = () => {
               setOpenApprove(true)
             }}
             handleReject={async ids => {
-              for (const id of ids) {
-                await handleOpenRejectDialog(id)
-              }
+              console.log('handleReject ids', ids)
+              // Map selected IDs to their corresponding user objects
+              const selectedUsers = ids
+                .map(id => filteredUsers.find(user => user.id === id))
+                .filter(user => user !== undefined)
+              // Extract student_ids from the selected users
+              const studentIds = selectedUsers
+                .map(user => user.Users?.student_id)
+                .filter(studentId => studentId !== undefined)
+              await handleOpenRejectDialog(ids, studentIds)
               resetSelected()
             }}
           />
@@ -755,9 +775,11 @@ const ReservationApprove = () => {
                             <IconButton
                               onClick={async event => {
                                 event.stopPropagation()
-                                setSelected([row.id])
-                                await handleOpenRejectDialog(row.id)
-                                resetSelected()
+                                const ids = [row.id] // Existing row ID
+                                const studentIds = [row.Users?.student_id] // New: Prepare the studentIds array
+                                console.log('handleReject ids', ids, 'studentIds', studentIds) // Logging both IDs
+                                await handleOpenRejectDialog(ids, studentIds) // Pass both IDs and Student IDs
+                                resetSelected() // Resetting selection after handling reject
                               }}
                             >
                               <CloseIcon />
@@ -779,8 +801,8 @@ const ReservationApprove = () => {
                       <Paper
                         style={{
                           padding: '20px',
-                          height: '100%',
                           width: '100%',
+                          height: '100%',
                           backgroundColor: 'rgba(128, 128, 128, 0.05)'
                         }}
                       >
@@ -819,43 +841,6 @@ const ReservationApprove = () => {
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
-          <Dialog open={openRejectDialog} onClose={handleCloseRejectDialog}>
-            <DialogContent>
-              <Grid container spacing={6}>
-                <Grid item xs={12}>
-                  <Typography variant='h6'>Reject Reservation ID: {currentRejectId}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <InputLabel id='rejection-reason-label'>Rejection Reasons</InputLabel>
-                    <Select
-                      labelId='rejection-reason-label'
-                      value={rejectionReasons}
-                      label='Rejection Reasons'
-                      onChange={handleSelectChange}
-                      renderValue={selected => selected.join(', ')}
-                      autoFocus
-                      margin='dense'
-                      fullWidth
-                      multiple
-                    >
-                      <MenuItem value='Reason 1'>Reason 1</MenuItem>
-                      <MenuItem value='Reason 2'>Reason 2</MenuItem>
-                      <MenuItem value='Reason 3'>Reason 3</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </Grid>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseRejectDialog} color='primary'>
-                Cancel
-              </Button>
-              <Button onClick={handleRejectWithReasons} color='primary'>
-                Reject
-              </Button>
-            </DialogActions>
-          </Dialog>
         </Paper>
         {/* <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label='Dense' /> */}
       </Box>
@@ -901,17 +886,17 @@ const ReservationApprove = () => {
         ContentProps={{ className: classes.reject }}
       />
       <Snackbar
-        open={openSnackbar}
+        open={openSnackbarCSV}
         autoHideDuration={5000}
-        onClose={() => setOpenSnackbar(false)}
+        onClose={() => setOpenSnackbarCSV(false)}
         message={
           <span>
             <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
-            {'CSV file exported successfully!'}
+            {'CSV Exported Successfully!'}
           </span>
         }
         action={
-          <IconButton size='small' aria-label='close' color='inherit' onClick={() => setOpenSnackbar(false)}>
+          <IconButton size='small' aria-label='close' color='inherit' onClick={() => setOpenSnackbarCSV(false)}>
             <CloseIcon fontSize='small' />
           </IconButton>
         }
