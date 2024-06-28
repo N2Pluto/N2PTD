@@ -381,6 +381,14 @@ const ReservationApprove = () => {
       filteredData = filteredUsers.filter(user => user.status === 'Approve')
     }
 
+    // Further filter data based on selectRoundValue and selectDormValue
+    if (selectRoundValue !== '-1') {
+      filteredData = filteredData.filter(user => user.round_id === Number(selectRoundValue))
+    }
+    if (selectDormValue !== '-1') {
+      filteredData = filteredData.filter(user => user.dorm_id === Number(selectDormValue))
+    }
+
     // Parse the filtered data to CSV
     const parser = new Parser({ fields })
     const csv = parser.parse(filteredData)

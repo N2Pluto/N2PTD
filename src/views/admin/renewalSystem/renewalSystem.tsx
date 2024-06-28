@@ -84,10 +84,11 @@ const RenewalSystem = () => {
   const [dense, setDense] = useState(false)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [searchTerm, setSearchTerm] = useState('')
-  const [tab, setTab] = useState('all')
+  const [tab, setTab] = useState('Pending')
   const [selectRoundValue, setSelectRoundValue] = useState('-1')
   const [open, setOpen] = useState(false)
   const [snackbarMessage, setSnackbarMessage] = useState('')
+  const [snackbarColor, setSnackbarColor] = useState('success')
   const [logMessages, setLogMessages] = useState<string[]>([])
   const [selectedCount, setSelectedCount] = useState(0)
   const [backdropOpen, setBackdropOpen] = useState(false)
@@ -118,7 +119,6 @@ const RenewalSystem = () => {
     })
 
     const dataToExport = filteredUsersForExport.map(user => ({
-      renew_status: user.renew_status,
       student_id: user.Users?.student_id,
       name: user.Users_Info?.name,
       lastname: user.Users_Info?.lastname,
@@ -129,8 +129,14 @@ const RenewalSystem = () => {
     }))
 
     if (dataToExport.length === 0) {
-      setSnackbarMessage('No data available for export')
+      setSnackbarMessage(
+        <span>
+          <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+          No data available for export
+        </span>
+      )
       setOpen(true)
+      setSnackbarColor('error') // Assuming there's a state to control Snackbar color
       return
     }
 
@@ -140,15 +146,22 @@ const RenewalSystem = () => {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.setAttribute('download', 'WU_UserInformation.csv')
+    link.setAttribute('download', `WU_Renewal_Resident_${tab}.csv`)
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
 
-    setSnackbarMessage('CSV Exported Successfully')
+    setSnackbarMessage(
+      <span>
+        <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+        CSV Exported Successfully
+      </span>
+    )
     setOpen(true)
+    setSnackbarColor('success') // Assuming there's a state to control Snackbar color
     setSelected([]) // Reset selected state
     setSelectedCount(0) // Reset selected count
+    handleMenuClose()
   }
 
   useEffect(() => {
@@ -338,7 +351,13 @@ const RenewalSystem = () => {
   `
           })
         })
-        setSnackbarMessage('Reservation approved successfully')
+        setSnackbarMessage(
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            Reservation approved successfully
+          </span>
+        )
+        setSnackbarColor('success')
         setOpen(true)
         setSelected([]) // Reset selected state
         setSelectedCount(0) // Reset selected count
@@ -426,7 +445,13 @@ const RenewalSystem = () => {
         }
 
         setUsers(prevUsers => prevUsers.filter(user => user.id !== id))
-        setSnackbarMessage('Reservation deleted successfully')
+        setSnackbarMessage(
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            Reservation deleted successfully
+          </span>
+        )
+        setSnackbarColor('error')
         setOpen(true)
         setSelected([]) // Reset selected state
         setSelectedCount(0) // Reset selected count
@@ -606,16 +631,14 @@ const RenewalSystem = () => {
                           }}
                         />
                       </TableCell>
-                      <TableCell component='th' id={labelId} scope='row' padding='none'>
-                        {row.Users?.student_id}
-                      </TableCell>
-                      <TableCell>
+                      <TableCell align='left'>{row.Users?.student_id}</TableCell>
+                      <TableCell align='left'>
                         {row.Users_Info?.name} {row.Users_Info?.lastname}
                       </TableCell>
-                      <TableCell>{row.Dormitory_Building.name}</TableCell>
-                      <TableCell>{row.Dormitory_Room.room_number}</TableCell>
-                      <TableCell>{row.Dormitory_Bed.bed_number}</TableCell>
-                      <TableCell>
+                      <TableCell align='left'>{row.Dormitory_Building.name}</TableCell>
+                      <TableCell align='left'>{row.Dormitory_Room.room_number}</TableCell>
+                      <TableCell align='left'>{row.Dormitory_Bed.bed_number}</TableCell>
+                      <TableCell align='left'>
                         {row.Reservation_System.round_name} ({row.round_id})
                       </TableCell>
                       <TableCell>
@@ -705,14 +728,16 @@ const RenewalSystem = () => {
         message={snackbarMessage}
         action={
           <>
-            <Button color='secondary' size='small' onClick={handleSnackbarClose}>
-              UNDO
-            </Button>
             <IconButton size='small' aria-label='close' color='inherit' onClick={handleSnackbarClose}>
               <CloseIcon fontSize='small' />
             </IconButton>
           </>
         }
+        ContentProps={{
+          style: {
+            backgroundColor: snackbarColor === 'success' ? '#4caf50' : '#f44336' // Green for success, red for error
+          }
+        }}
       />
       <Backdrop open={backdropOpen} style={{ zIndex: 1301, color: '#fff' }}>
         <CircularProgress color='inherit' />

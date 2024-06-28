@@ -102,7 +102,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Typography>
       ) : (
         <Typography sx={{ flex: '1 1 100%', pl: 5 }} variant='h6' id='tableTitle' component='div'>
-          User Management
+          Resident Control
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -116,9 +116,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </>
       ) : (
         <Tooltip title='Filter list'>
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
+          <IconButton>{/* <FilterListIcon /> */}</IconButton>
         </Tooltip>
       )}
     </Toolbar>
@@ -573,30 +571,59 @@ const ResidentApprove = () => {
   const exportToCSV = (roundId: number | null) => {
     console.log('exportToCSV called')
     try {
-      // Filter users based on the selected round ID
-      const filteredUsers = users.filter(user => roundId === null || user.round_id === roundId)
+      // First, filter users based on the selected round ID
+      const filteredUsersByRound = users.filter(user => roundId === null || user.round_id === roundId)
+
+      // Then, filter the already filtered users based on the selected tab
+      const filteredUsersByTab = filteredUsersByRound.filter(user => {
+        switch (tab) {
+          case 'Waiting':
+            return user.payment_status === 'Pending'
+          case 'TRUE':
+            return user.payment_status === 'TRUE'
+          case 'FALSE':
+            return user.payment_status === 'FALSE'
+          case 'SUCCESS':
+            return user.payment_status === 'SUCCESS'
+          default:
+            return true
+        }
+      })
 
       // Format the data for CSV export
-      const csvData = filteredUsers.map(user => ({
+      const csvData = filteredUsersByTab.map(user => ({
         student_id: user.Users?.student_id,
         name: user.Users_Info?.name,
         lastname: user.Users_Info?.lastname,
         building_name: user.Dormitory_Building.name,
         room_number: user.Dormitory_Room.room_number,
         bed_number: user.Dormitory_Bed.bed_number,
-        round_name: user.Reservation_System.round_name,
+        round_name: user.Reservation_System.round_name
       }))
       const csv = Papa.unparse(csvData)
       const csvBlob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
       const csvURL = window.URL.createObjectURL(csvBlob)
       let tempLink = document.createElement('a')
       tempLink.href = csvURL
-      tempLink.setAttribute('download', `data_${roundId || 'all'}.csv`)
+      tempLink.setAttribute(
+        'download',
+        `data_${roundId || 'all'}_${
+          tab === 'TRUE'
+            ? 'Paid'
+            : tab === 'FALSE'
+            ? 'Not Paid'
+            : tab === 'Waiting'
+            ? 'Pending'
+            : tab === 'SUCCESS'
+            ? 'Success'
+            : tab
+        }.csv`
+      )
       tempLink.click()
 
       // If no errors occurred during the export operation, open the Snackbar
       console.log('selectedRound:', roundId)
-      console.log('filteredUsers:', filteredUsers)
+      console.log('filteredUsers:', filteredUsersByTab)
       setExportSnackbarOpen(true)
       console.log('Snackbar is set to open')
     } catch (error) {
@@ -722,7 +749,7 @@ const ResidentApprove = () => {
                     setSelectedRound(null)
                   }}
                 >
-                  รอบจองหอพักทั้งหมด
+                  All Rounds
                 </MenuItem>
                 {roundNames.map(round => (
                   <MenuItem
@@ -1162,7 +1189,7 @@ const ResidentApprove = () => {
         message={
           <span>
             <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
-            {'Approved Successfully!'}
+            {'Approved Resident Successfully!'}
           </span>
         }
         action={
@@ -1180,7 +1207,7 @@ const ResidentApprove = () => {
         message={
           <span>
             <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
-            {'Rejected Successfully!'}
+            {'Rejected User Successfully!'}
           </span>
         }
         action={
