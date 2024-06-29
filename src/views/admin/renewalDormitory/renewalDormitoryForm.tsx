@@ -20,14 +20,30 @@ import DatePicker from '@mui/lab/DatePicker'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
+import Snackbar from '@mui/material/Snackbar'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import { makeStyles } from '@mui/styles'
+
+const useStyles = makeStyles(theme => ({
+  success: {
+    backgroundColor: theme.palette.success.main
+  },
+  error: {
+    backgroundColor: theme.palette.error.main
+  }
+}))
 
 const RenewalForm = () => {
+  const classes = useStyles()
   const router = useRouter()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
   const [renewalName, setRenewalName] = useState('')
   const [renewalPhase, setRenewalPhase] = useState<number[]>([])
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success')
 
   const onClose = () => {
     setDrawerOpen(false)
@@ -75,8 +91,22 @@ const RenewalForm = () => {
     })
 
     if (response.ok) {
+      setSnackbarMessage('Create Renewal Period successfully!')
+      setSnackbarSeverity('success')
+      setSnackbarOpen(true)
       onClose() // Close the form or modal if the request is successful
+    } else {
+      setSnackbarMessage('Failed to Create Renewal Period. Please try again.')
+      setSnackbarSeverity('error')
+      setSnackbarOpen(true)
     }
+  }
+
+  const handleSnackbarClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setSnackbarOpen(false)
   }
 
   return (
@@ -84,16 +114,16 @@ const RenewalForm = () => {
       <Card>
         <CardContent sx={{ padding: theme => `${theme.spacing(3, 5.25, 4)} !important` }}>
           <Typography variant='h6' sx={{ marginBottom: 2 }}>
-            Renewal Form
+            Renewal Period
           </Typography>
-          <Typography variant='body2'>Click to Create Renewal Form. for Create a new Renewal Form</Typography>
+          <Typography variant='body2'>Click to Create Renewal Period. for Create a new Renewal Period</Typography>
         </CardContent>
         <Button
           variant='contained'
           sx={{ py: 2.5, width: '100%', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
           onClick={toggleDrawer(true)}
         >
-          Create Renewal Form
+          Create Renewal Period
         </Button>
       </Card>
 
@@ -226,6 +256,25 @@ const RenewalForm = () => {
           </Grid>
         </Box>
       </Drawer>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        message={
+          <Box display='flex' alignItems='center'>
+            <CheckCircleIcon fontSize='small' style={{ marginRight: '8px' }} />
+            {snackbarMessage}
+          </Box>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleSnackbarClose}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        ContentProps={{ className: snackbarSeverity === 'success' ? classes.success : classes.error }}
+      />
     </>
   )
 }

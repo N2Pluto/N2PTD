@@ -57,6 +57,9 @@ const useStyles = makeStyles({
   },
   backdrop: {
     color: '#fff'
+  },
+  error: {
+    backgroundColor: '#f44336'
   }
 })
 
@@ -149,6 +152,8 @@ const ReservationApprove = () => {
   const [openDialog, setOpenDialog] = useState(false)
   const [selectedUserIds, setSelectedUserIds] = useState([])
   const [studentIds, setStudentIds] = useState([])
+  const [snackbarMessage, setSnackbarMessage] = React.useState('')
+  const [snackbarStyle, setSnackbarStyle] = React.useState({})
 
   const handleOpenRejectDialog = async (ids, studentIds) => {
     console.log('Opening reject dialog for IDs:', ids, 'and Student IDs:', studentIds)
@@ -389,22 +394,32 @@ const ReservationApprove = () => {
       filteredData = filteredData.filter(user => user.dorm_id === Number(selectDormValue))
     }
 
-    // Parse the filtered data to CSV
-    const parser = new Parser({ fields })
-    const csv = parser.parse(filteredData)
+    if (filteredData.length > 0) {
+      // Parse the filtered data to CSV
+      const parser = new Parser({ fields })
+      const csv = parser.parse(filteredData)
 
-    // Create a Blob from the CSV data
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+      // Create a Blob from the CSV data
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
 
-    // Create a link and trigger the download
-    const link = document.createElement('a')
-    link.href = URL.createObjectURL(blob)
-    link.setAttribute('download', `WU_User_Reservation(${tab}).csv`)
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+      // Create a link and trigger the download
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(blob)
+      link.setAttribute('download', `WU_User_Reservation(${tab}).csv`)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
 
-    // Optionally, show a notification
+      // Set success message and style
+      setSnackbarMessage('CSV Exported Successfully!')
+      setSnackbarStyle(classes.success) // Assuming `classes.success` is your success style
+    } else {
+      // Set no data message and style
+      setSnackbarMessage('No Data to Export CSV')
+      setSnackbarStyle(classes.error) // Assuming `classes.error` is your error style
+    }
+
+    // Show the notification
     setOpenSnackbarCSV(true)
 
     // Close the menu
@@ -910,6 +925,24 @@ const ReservationApprove = () => {
         }
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         ContentProps={{ className: classes.success }}
+      />
+      <Snackbar
+        open={openSnackbarCSV}
+        autoHideDuration={5000}
+        onClose={() => setOpenSnackbarCSV(false)}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {snackbarMessage}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={() => setOpenSnackbarCSV(false)}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: snackbarStyle }}
       />
     </>
   )

@@ -144,6 +144,8 @@ const ResidentApprove = () => {
   const [parsedData, setParsedData] = useState([])
   const [file, setFile] = React.useState(null)
   const [exportSnackbarOpen, setExportSnackbarOpen] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
+  const [snackbarClass, setSnackbarClass] = useState('')
   const [importSnackbarOpen, setImportSnackbarOpen] = useState(false)
   const [approvedSnackbarOpen, setApprovedSnackbarOpen] = useState(false)
   const [rejectedSnackbarOpen, setRejectedSnackbarOpen] = useState(false)
@@ -590,40 +592,48 @@ const ResidentApprove = () => {
         }
       })
 
-      // Format the data for CSV export
-      const csvData = filteredUsersByTab.map(user => ({
-        student_id: user.Users?.student_id,
-        name: user.Users_Info?.name,
-        lastname: user.Users_Info?.lastname,
-        building_name: user.Dormitory_Building.name,
-        room_number: user.Dormitory_Room.room_number,
-        bed_number: user.Dormitory_Bed.bed_number,
-        round_name: user.Reservation_System.round_name
-      }))
-      const csv = Papa.unparse(csvData)
-      const csvBlob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-      const csvURL = window.URL.createObjectURL(csvBlob)
-      let tempLink = document.createElement('a')
-      tempLink.href = csvURL
-      tempLink.setAttribute(
-        'download',
-        `data_${roundId || 'all'}_${
-          tab === 'TRUE'
-            ? 'Paid'
-            : tab === 'FALSE'
-            ? 'Not Paid'
-            : tab === 'Waiting'
-            ? 'Pending'
-            : tab === 'SUCCESS'
-            ? 'Success'
-            : tab
-        }.csv`
-      )
-      tempLink.click()
+      if (filteredUsersByTab.length > 0) {
+        // Format the data for CSV export
+        const csvData = filteredUsersByTab.map(user => ({
+          student_id: user.Users?.student_id,
+          name: user.Users_Info?.name,
+          lastname: user.Users_Info?.lastname,
+          building_name: user.Dormitory_Building.name,
+          room_number: user.Dormitory_Room.room_number,
+          bed_number: user.Dormitory_Bed.bed_number,
+          round_name: user.Reservation_System.round_name
+        }))
+        const csv = Papa.unparse(csvData)
+        const csvBlob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+        const csvURL = window.URL.createObjectURL(csvBlob)
+        let tempLink = document.createElement('a')
+        tempLink.href = csvURL
+        tempLink.setAttribute(
+          'download',
+          `data_${roundId || 'all'}_${
+            tab === 'TRUE'
+              ? 'Paid'
+              : tab === 'FALSE'
+              ? 'Not Paid'
+              : tab === 'Waiting'
+              ? 'Pending'
+              : tab === 'SUCCESS'
+              ? 'Success'
+              : tab
+          }.csv`
+        )
+        tempLink.click()
 
-      // If no errors occurred during the export operation, open the Snackbar
-      console.log('selectedRound:', roundId)
-      console.log('filteredUsers:', filteredUsersByTab)
+        // Success Snackbar
+        setSnackbarMessage('Exporting CSV Successfully!')
+        setSnackbarClass(classes.success) // Assuming `classes.success` is your success style
+      } else {
+        // No data Snackbar
+        setSnackbarMessage('No Data to Export')
+        setSnackbarClass(classes.error) // Assuming `classes.error` is your error style
+      }
+
+      // Open the Snackbar
       setExportSnackbarOpen(true)
       console.log('Snackbar is set to open')
     } catch (error) {
@@ -1153,7 +1163,7 @@ const ResidentApprove = () => {
         message={
           <span>
             <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
-            {'Exporting CSV Successfully!'}
+            {snackbarMessage}
           </span>
         }
         action={
@@ -1162,7 +1172,7 @@ const ResidentApprove = () => {
           </IconButton>
         }
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        ContentProps={{ className: classes.success }}
+        ContentProps={{ className: snackbarClass }}
       />
       <Snackbar
         open={importSnackbarOpen}

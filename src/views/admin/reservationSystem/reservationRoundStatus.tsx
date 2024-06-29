@@ -107,9 +107,9 @@ export default function ReservationRoundStatus() {
                   <StyledTableCell>{row.student_year}</StyledTableCell>
                   <StyledTableCell>
                     {row.round_status ? (
-                      <Chip label='อยู่ในช่วงเวลา' color='success' />
+                      <Chip label='Active' color='success' />
                     ) : (
-                      <Chip label='ไม่อยู่ในช่วงเวลา' sx={{ backgroundColor: 'red', color: 'white' }} />
+                      <Chip label='Inactive' sx={{ backgroundColor: 'red', color: 'white' }} />
                     )}
                   </StyledTableCell>
                   <StyledTableCell>

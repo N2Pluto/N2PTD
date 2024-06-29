@@ -13,7 +13,6 @@ const MUITable = () => {
   return (
     <AdminLayout>
       <Grid container spacing={6}>
-      
         <Grid item xs={12} md={12} lg={12}>
           <Card>
             <RenewalForm />
@@ -26,7 +25,7 @@ const MUITable = () => {
         </Grid>
         <Grid item xs={12} md={12} lg={12}>
           <Card>
-            <CardHeader title='ระบบต่ออายุ' titleTypographyProps={{ variant: 'h6' }} />
+            <CardHeader title='Renewal Period Table' titleTypographyProps={{ variant: 'h6' }} />
             <RenewalTable />
           </Card>
         </Grid>

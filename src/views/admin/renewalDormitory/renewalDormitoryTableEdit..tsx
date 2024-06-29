@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
+import { makeStyles } from '@mui/styles'
 import Card from '@mui/material/Card'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -21,9 +22,21 @@ import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import TuneIcon from '@mui/icons-material/Tune'
+import Snackbar from '@mui/material/Snackbar'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import ErrorIcon from '@mui/icons-material/Error'
 
-const RenewalFormEdit = ({ id }) => {
-  console.log('received id', id)
+const useStyles = makeStyles(theme => ({
+  success: {
+    backgroundColor: theme.palette.success.main
+  },
+  error: {
+    backgroundColor: theme.palette.error.main
+  }
+}))
+
+const RenewalFormEdit = ({ id, showSnackbar }) => {
+  const classes = useStyles()
   const router = useRouter()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [startDate, setStartDate] = useState<Date | null>(null)
@@ -52,11 +65,6 @@ const RenewalFormEdit = ({ id }) => {
 
     fetchData()
   }, [id])
-
-  console.log('renewalName:', renewalName)
-  console.log('renewalPhase:', renewalPhase)
-  console.log('startDate:', startDate)
-  console.log('endDate:', endDate)
 
   const onClose = () => {
     setDrawerOpen(false)
@@ -109,7 +117,7 @@ const RenewalFormEdit = ({ id }) => {
       })
       const result = await response.json()
       if (response.ok) {
-        console.log('Update successful:', result)
+        showSnackbar('Update successful', classes.success)
         onClose() // Assuming onClose is a function to close the form or dialog
       } else {
         console.error('Failed to update data:', result.error)
@@ -126,7 +134,7 @@ const RenewalFormEdit = ({ id }) => {
       })
       const result = await response.json()
       if (response.ok) {
-        console.log('Delete successful:', result)
+        showSnackbar('Delete successful', classes.error)
         onClose()
       } else {
         console.error('Failed to delete data:', result.error)
