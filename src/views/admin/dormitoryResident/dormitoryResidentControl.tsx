@@ -217,6 +217,8 @@ const DormitoryResidentControl = () => {
   const [selectedDormitoryForDownload, setSelectedDormitoryForDownload] = React.useState<number | null>(null)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [exportSnackbarOpen, setExportSnackbarOpen] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
+  const [snackbarClass, setSnackbarClass] = useState('')
   const [deleteSnackbarOpen, setDeleteSnackbarOpen] = useState(false)
   const [openSnackbar, setOpenSnackbar] = useState(false)
   const [mode, setMode] = useState<'swap' | 'delete'>('delete')
@@ -292,6 +294,7 @@ const DormitoryResidentControl = () => {
   const exportToCSV = (dormitoryId: number | null) => {
     const filteredUsers = users
       .filter(user => dormitoryId === null || user.dorm_id === dormitoryId)
+      .filter(user => selectedFloor === null || user.Dormitory_Room.room_number.toString().startsWith(selectedFloor))
       .sort((a, b) => {
         if (a.Dormitory_Room.room_number !== b.Dormitory_Room.room_number) {
           return a.Dormitory_Room.room_number - b.Dormitory_Room.room_number
@@ -300,27 +303,37 @@ const DormitoryResidentControl = () => {
         return a.Dormitory_Bed.bed_number - b.Dormitory_Bed.bed_number
       })
 
-    const dataToExport = filteredUsers.map(user => ({
-      student_id: user.Users.student_id,
-      name: user.Users.Users_Info[0].name,
-      lastname: user.Users.Users_Info[0].lastname,
-      dormitory_name: user.Dormitory_Building.name,
-      room_number: user.Dormitory_Room.room_number,
-      bed_number: user.Dormitory_Bed.bed_number,
-      round_name: user.Reservation_System.round_name
-    }))
+    if (filteredUsers.length > 0) {
+      const dataToExport = filteredUsers.map(user => ({
+        student_id: user.Users.student_id,
+        name: user.Users.Users_Info[0].name,
+        lastname: user.Users.Users_Info[0].lastname,
+        dormitory_name: user.Dormitory_Building.name,
+        room_number: user.Dormitory_Room.room_number,
+        bed_number: user.Dormitory_Bed.bed_number,
+        round_name: user.Reservation_System.round_name
+      }))
 
-    const dormitoryName = dormitoryId === null ? 'WU_AllDormitory' : filteredUsers[0]?.Dormitory_Building.name || 'all'
-    const csv = Papa.unparse(dataToExport)
-    const csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const csvURL = window.URL.createObjectURL(csvData)
-    let tempLink = document.createElement('a')
-    tempLink.href = csvURL
-    tempLink.setAttribute('download', `Student_Resident_${dormitoryName}.csv`)
-    tempLink.click()
+      const dormitoryName =
+        dormitoryId === null ? 'WU_AllDormitory' : filteredUsers[0]?.Dormitory_Building.name || 'all'
+      const csv = Papa.unparse(dataToExport)
+      const csvData = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+      const csvURL = window.URL.createObjectURL(csvData)
+      let tempLink = document.createElement('a')
+      tempLink.href = csvURL
+      tempLink.setAttribute('download', `Student_Resident_${dormitoryName}.csv`)
+      tempLink.click()
+
+      setSnackbarMessage('Exporting CSV Successfully!')
+      setSnackbarClass(classes.success) // Assuming `classes.success` is your success style
+    } else {
+      setSnackbarMessage('No Data to Export')
+      setSnackbarClass(classes.error) // Assuming `classes.error` is your error style
+    }
+
     setExportSnackbarOpen(true)
   }
-  
+
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value)
   }
@@ -684,7 +697,7 @@ const DormitoryResidentControl = () => {
         message={
           <span>
             <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
-            {'Exporting CSV Successfully!'}
+            {snackbarMessage}
           </span>
         }
         action={
@@ -693,7 +706,7 @@ const DormitoryResidentControl = () => {
           </IconButton>
         }
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        ContentProps={{ className: classes.success }}
+        ContentProps={{ className: snackbarClass }}
       />
       <Snackbar
         open={openSnackbar}

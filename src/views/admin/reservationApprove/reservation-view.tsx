@@ -660,11 +660,13 @@ const ReservationApprove = () => {
                 labelId='form-layouts-separator-select-label'
               >
                 <MenuItem value='-1'>All Dormitories</MenuItem>
-                {dormNames.map(dorm => (
-                  <MenuItem key={dorm.dorm_id} value={dorm.dorm_id}>
-                    {dorm.dorm_name}
-                  </MenuItem>
-                ))}
+                {dormNames
+                  .sort((a, b) => a.dorm_id - b.dorm_id)
+                  .map(dorm => (
+                    <MenuItem key={dorm.dorm_id} value={dorm.dorm_id}>
+                      {dorm.dorm_name}
+                    </MenuItem>
+                  ))}
               </Select>
             </FormControl>
           </Grid>
