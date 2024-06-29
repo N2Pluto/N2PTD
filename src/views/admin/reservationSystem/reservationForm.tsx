@@ -2,12 +2,10 @@ import React, { useState } from 'react'
 import {
   Box,
   Button,
-  Dialog,
+  Drawer,
   DialogProps,
-  DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle,
   FormControl,
   InputLabel,
   MenuItem,
@@ -30,6 +28,7 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CloseIcon from '@mui/icons-material/Close'
 import { makeStyles } from '@mui/styles'
+import Divider from '@mui/material/Divider'
 
 const useStyles = makeStyles(theme => ({
   success: {
@@ -42,9 +41,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function ReservationForm() {
   const classes = useStyles()
-  const [open, setOpen] = useState(false)
-  const [fullWidth, setFullWidth] = useState(true)
-  const [maxWidth, setMaxWidth] = useState<DialogProps['maxWidth']>('sm')
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const [student_year, setStudentYear] = useState<string[]>([])
   const initialYears = [63, 64, 65, 66, 67, 68]
   const [years, setYears] = useState(initialYears)
@@ -63,13 +60,16 @@ export default function ReservationForm() {
     </MenuItem>
   ))
 
-  const handleClickOpen = () => {
-    setOpen(true)
-  }
+  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+    if (
+      event.type === 'keydown' &&
+      ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')
+    ) {
+      return
+    }
 
-  const handleClose = () => {
-    setOpen(false)
-    resetForm()
+    setDrawerOpen(open)
+    if (!open) resetForm()
   }
 
   const resetForm = () => {
@@ -119,6 +119,10 @@ export default function ReservationForm() {
 
   const handleGenderChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setGender(event.target.value as string)
+  }
+
+  const onClose = () => {
+    setDrawerOpen(false)
   }
 
   // Send a POST request to the API endpoint with the form data when the form is submitted
@@ -175,8 +179,8 @@ export default function ReservationForm() {
     })
 
     const data = await response.json()
+    onClose()
     setSnackbarOpen(true) // Show the Snackbar on success
-    handleClose()
   }
 
   const handleSnackbarClose = () => {
@@ -188,21 +192,54 @@ export default function ReservationForm() {
       <Button
         variant='contained'
         sx={{ py: 2.5, width: '100%', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
-        onClick={handleClickOpen}
+        onClick={toggleDrawer(true)}
       >
         Create Booking Period
       </Button>
-      <Dialog fullWidth={fullWidth} maxWidth={maxWidth} open={open} onClose={handleClose}>
-        <DialogContent>
-          <Typography variant='h5'>Create Booking Period</Typography>
-          <DialogContentText>
+      <Drawer
+        anchor='right'
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
+        PaperProps={{
+          sx: {
+            width: '30%',
+            height: '100%',
+            overflow: 'auto',
+            display: 'flex',
+            flexDirection: 'column'
+          }
+        }}
+      >
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant='h6' sx={{ pb: 2, pt: 5, pr: 2, ml: 4 }}>
+            Create Booking Period
+          </Typography>
+          <IconButton onClick={toggleDrawer(false)}>
+            {' '}
+            <CloseIcon sx={{ pt: 2, fontSize: '35px' }} />
+          </IconButton>
+        </Box>
+        <Divider />
+        <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+          <Typography variant='body2' sx={{ ml: 5, margin: 3 }}>
+            {' '}
             You can create a booking period for your reservations. This feature allows you to specify the start and end
             dates, ensuring that your bookings are organized and manageable.
-          </DialogContentText>
-          <Card>
-            <CardContent>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
+          </Typography>
+          <Divider />
+
+          <Box
+            sx={{
+              margin: 2,
+              padding: 3,
+              display: 'flex',
+              flexDirection: 'column',
+              border: '1px dashed rgba(0, 0, 0, 0.12)' // Add this line
+            }}
+          >
+            <Box sx={{ margin: 5 }}>
+              <Grid container spacing={2} justifyContent='center'>
+                <Grid item xs={12} sm={12}>
                   <FormControl fullWidth>
                     <InputLabel id='form-layouts-separator-multiple-select-label'>Round</InputLabel>
                     <Select
@@ -214,10 +251,12 @@ export default function ReservationForm() {
                     >
                       {yearMenuItems}
                     </Select>
+                    <Typography variant='caption' display='block' gutterBottom>
+                      Select the Round name.
+                    </Typography>
                   </FormControl>
                 </Grid>
-
-                <Grid item xs={6} sm={6}>
+                <Grid item xs={12} sm={12}>
                   <FormControl fullWidth>
                     <InputLabel id='form-layouts-separator-multiple-select-label'>Student Year</InputLabel>
                     <Select
@@ -241,10 +280,13 @@ export default function ReservationForm() {
                         </Button>
                       </List>
                     </Select>
+                    <Typography variant='caption' display='block' gutterBottom>
+                      Select the Student Year.
+                    </Typography>
                   </FormControl>
                 </Grid>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={12}>
                     <DatePicker
                       label='Start Date'
                       value={startDate}
@@ -253,9 +295,13 @@ export default function ReservationForm() {
                       }}
                       renderInput={params => <TextField {...params} />}
                       format='dd/MM/yyyy'
+                      renderInput={params => <TextField {...params} fullWidth />}
                     />
+                    <Typography variant='caption' display='block' gutterBottom>
+                      Select the Start Date.
+                    </Typography>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={12}>
                     <DatePicker
                       label='End Date'
                       value={endDate}
@@ -264,19 +310,34 @@ export default function ReservationForm() {
                       }}
                       renderInput={params => <TextField {...params} />}
                       format='dd/MM/yyyy'
+                      renderInput={params => <TextField {...params} fullWidth />}
                     />
+                    <Typography variant='caption' display='block' gutterBottom>
+                      Select the End Date.
+                    </Typography>
                   </Grid>
                 </LocalizationProvider>
               </Grid>
-            </CardContent>
-          </Card>
-        </DialogContent>
+            </Box>
+          </Box>
+        </Box>
+        <Divider />
 
-        <DialogActions>
-          <Button onClick={handleClose}>Close</Button>
-          <Button onClick={handleSubmit}>Submit</Button>
-        </DialogActions>
-      </Dialog>
+        <Box sx={{ padding: 3 }}>
+          <Grid container spacing={4} alignItems='center' justifyContent='flex-end'>
+            <Grid item xs={3}>
+              <Button variant='contained' onClick={toggleDrawer(false)} sx={{ ml: -1 }}>
+                Close
+              </Button>
+            </Grid>
+            <Grid item xs={3}>
+              <Button variant='contained' onClick={handleSubmit} sx={{ ml: -3 }}>
+                Submit
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+      </Drawer>
 
       <Snackbar
         open={snackbarOpen}

@@ -264,21 +264,21 @@ const RenewalFormEdit = ({ id, showSnackbar }) => {
         </Box>
         <Divider />
         <Box sx={{ padding: 3 }}>
-          <Grid container spacing={4} alignItems='center' justifyContent='flex-end'>
-            <Grid item xs={3}>
-              <Button variant='contained' color='error' fullWidth onClick={handleDelete} sx={{ ml: -35 }}>
+          <Grid container spacing={4} alignItems='center' justifyContent='space-between'>
+            <Grid item>
+              <Button variant='contained' color='error' onClick={handleDelete}>
                 Delete
               </Button>
             </Grid>
-            <Grid item xs={3}>
-              <Button variant='contained' color='primary' fullWidth onClick={onClose} sx={{ ml: -1 }}>
-                Cancel
-              </Button>
-            </Grid>
-            <Grid item xs={3}>
-              <Button variant='contained' color='primary' fullWidth onClick={handleSubmit} sx={{ ml: -3 }}>
-                Apply
-              </Button>
+            <Grid item>
+              <Box>
+                <Button variant='contained' color='primary' onClick={onClose} sx={{ marginRight: 2 }}>
+                  Cancel
+                </Button>
+                <Button variant='contained' color='primary' onClick={handleSubmit}>
+                  Apply
+                </Button>
+              </Box>
             </Grid>
           </Grid>
         </Box>
