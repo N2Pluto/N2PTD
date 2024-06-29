@@ -400,7 +400,6 @@ const StudentTable = () => {
         />
       </Paper>
       <ImportStudent drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} />
-      {/* <UpdateStudentYear drawerUpdateOpen={drawerUpdateOpen} setDrawerUpdateOpen={setDrawerUpdateOpen} /> */}
     </>
   )
 }

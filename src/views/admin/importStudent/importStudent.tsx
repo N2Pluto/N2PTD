@@ -10,16 +10,33 @@ import Divider from '@mui/material/Divider'
 import { useDropzone } from 'react-dropzone'
 import MuiAlert from '@mui/material/Alert'
 import Papa from 'papaparse'
+import Snackbar from '@mui/material/Snackbar'
+import IconButton from '@mui/material/IconButton'
+import CloseIcon from '@mui/icons-material/Close'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import { makeStyles } from '@mui/styles'
 
 const Alert = props => {
   return <MuiAlert elevation={6} variant='filled' {...props} />
 }
 
+const useStyles = makeStyles(theme => ({
+  success: {
+    backgroundColor: '#4CAF50', // This sets the background color to green
+    color: '#FFFFFF' // This sets the text color to white for contrast
+  }
+}))
+
 const ImportStudent = ({ drawerOpen, setDrawerOpen }) => {
+  const classes = useStyles()
   const [file, setFile] = useState(null)
   const [parsedData, setParsedData] = useState([])
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
+  const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false)
+
+  const handleCloseSuccessSnackbar = () => {
+    setSuccessSnackbarOpen(false)
+  }
 
   const handleDrawerClose = () => {
     setDrawerOpen(false)
@@ -37,29 +54,29 @@ const ImportStudent = ({ drawerOpen, setDrawerOpen }) => {
     setParsedData([])
   }
 
- const handleImportCSV = async data => {
-   try {
-     const response = await fetch('/api/admin/student/create', {
-       method: 'POST',
-       headers: {
-         'Content-Type': 'application/json'
-       },
-       body: JSON.stringify(data)
-     })
+  const handleImportCSV = async data => {
+    try {
+      const response = await fetch('/api/admin/student/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
 
-     if (response.ok) {
-       handleDrawerClose()
-       setSuccess(true)
-     } else if (response.status === 400) {
-       const errorData = await response.json() // Assuming the server sends a JSON response
-       setError(`Failed to import data. ${errorData.error}`)
-     } else {
-       throw new Error('Failed to import data.')
-     }
-   } catch (error) {
-     setError(`Failed to import data. ${error.message}`)
-   }
- }
+      if (response.ok) {
+        handleDrawerClose()
+        setSuccessSnackbarOpen(true) // Open success snackbar
+      } else if (response.status === 400) {
+        const errorData = await response.json() // Assuming the server sends a JSON response
+        setError(`Failed to import data. ${errorData.error}`)
+      } else {
+        throw new Error('Failed to import data.')
+      }
+    } catch (error) {
+      setError(`Failed to import data. ${error.message}`)
+    }
+  }
 
   const onDrop = acceptedFiles => {
     if (acceptedFiles.length) {
@@ -80,8 +97,10 @@ const ImportStudent = ({ drawerOpen, setDrawerOpen }) => {
   const { getRootProps, getInputProps } = useDropzone({ onDrop })
 
   return (
-    <Card>
-      {/* <CardContent>
+    <>
+      {' '}
+      <Card>
+        {/* <CardContent>
           <Box display='flex' justifyContent='flex-end' mb={2}>
             <Button variant='contained' color='primary' onClick={() => setDrawerOpen(true)}>
               Import CSV
@@ -89,152 +108,170 @@ const ImportStudent = ({ drawerOpen, setDrawerOpen }) => {
           </Box>
         </CardContent> */}
 
-      <Drawer anchor='right' open={drawerOpen} onClose={handleDrawerClose}>
-        <Box sx={{ width: '40vw', padding: 4 }}>
-          <Typography variant='h5' sx={{ mb: 2 }}>
-            Import CSV
-          </Typography>
+        <Drawer anchor='right' open={drawerOpen} onClose={handleDrawerClose}>
+          <Box sx={{ width: '40vw', padding: 4 }}>
+            <Typography variant='h5' sx={{ mb: 2 }}>
+              Import CSV
+            </Typography>
 
-          <Divider sx={{ borderWidth: '1px', mb: 2 }} />
+            <Divider sx={{ borderWidth: '1px', mb: 2 }} />
 
-          <Typography variant='body2' sx={{ mb: 2 }}>
-            Upload a CSV or TSV file. The first row should be the headers of the table, and your headers should not
-            include any special characters other than hyphens ( - ) or underscores ( _ ).
-            <br />
-            Tip: Datetime columns should be formatted as YYYY-MM-DD HH:mm:ss
-          </Typography>
+            <Typography variant='body2' sx={{ mb: 2 }}>
+              Upload a CSV or TSV file. The first row should be the headers of the table, and your headers should not
+              include any special characters other than hyphens ( - ) or underscores ( _ ).
+              <br />
+              Tip: Datetime columns should be formatted as YYYY-MM-DD HH:mm:ss
+            </Typography>
 
-          {!file ? (
-            <Grid
-              sx={{
-                height: '150px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: '2px dashed #ccc',
-                borderRadius: 1,
-                padding: 4,
-                textAlign: 'center',
-                cursor: 'pointer',
-                mb: 2
-              }}
-              {...getRootProps()}
-            >
-              <input {...getInputProps()} />
-              <Typography variant='body1'>
-                Drag and drop, or <span style={{ color: '#3f51b5', cursor: 'pointer' }}>browse</span> your files
-              </Typography>
-            </Grid>
-          ) : (
-            <Box
-              sx={{
-                border: '2px dashed #ccc',
-                borderRadius: 1,
-                padding: 4,
-                textAlign: 'center',
-                cursor: 'pointer',
-                mb: 2,
-                height: '150px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <Typography variant='body1'>{file.name}</Typography>
-              <Button variant='contained' color='secondary' onClick={handleRemoveFile} sx={{ mt: 2 }}>
-                Remove File
-              </Button>
-            </Box>
-          )}
-
-          {error && (
-            <Alert severity='error' sx={{ mb: 2 }}>
-              {error}
-            </Alert>
-          )}
-
-          {parsedData.length > 0 && (
-            <Box sx={{ mt: 4, height: 'auto', overflow: 'auto' }}>
-              <Typography variant='h6' sx={{ mb: 2 }}>
-                Preview data to be imported
-              </Typography>
+            {!file ? (
+              <Grid
+                sx={{
+                  height: '150px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '2px dashed #ccc',
+                  borderRadius: 1,
+                  padding: 4,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  mb: 2
+                }}
+                {...getRootProps()}
+              >
+                <input {...getInputProps()} />
+                <Typography variant='body1'>
+                  Drag and drop, or <span style={{ color: '#3f51b5', cursor: 'pointer' }}>browse</span> your files
+                </Typography>
+              </Grid>
+            ) : (
               <Box
                 sx={{
-                  height: '400px',
-                  overflow: 'auto',
-                  border: '1px solid #ccc',
-                  padding: 2,
+                  border: '2px dashed #ccc',
                   borderRadius: 1,
-                  boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-                  backgroundColor: '#fff'
+                  padding: 4,
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  mb: 2,
+                  height: '150px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
               >
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr>
-                      {Object.keys(parsedData[0]).map(key => (
-                        <th
-                          key={key}
-                          style={{
-                            padding: '12px 8px',
-                            borderBottom: '1px solid #ccc',
-                            borderRight: '1px solid #ccc',
-                            backgroundColor: '#f5f5f5',
-                            fontWeight: 'bold',
-                            textAlign: 'left'
-                          }}
-                        >
-                          {key}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {parsedData.map((row, index) => (
-                      <tr
-                        key={index}
-                        style={{
-                          transition: 'background-color 0.3s ease',
-                          cursor: 'pointer'
-                        }}
-                        onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
-                        onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#fff')}
-                      >
-                        {Object.values(row).map((value, idx) => (
-                          <td
-                            key={idx}
+                <Typography variant='body1'>{file.name}</Typography>
+                <Button variant='contained' color='secondary' onClick={handleRemoveFile} sx={{ mt: 2 }}>
+                  Remove File
+                </Button>
+              </Box>
+            )}
+
+            {error && (
+              <Alert severity='error' sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+
+            {parsedData.length > 0 && (
+              <Box sx={{ mt: 4, height: 'auto', overflow: 'auto' }}>
+                <Typography variant='h6' sx={{ mb: 2 }}>
+                  Preview data to be imported
+                </Typography>
+                <Box
+                  sx={{
+                    height: '400px',
+                    overflow: 'auto',
+                    border: '1px solid #ccc',
+                    padding: 2,
+                    borderRadius: 1,
+                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                    backgroundColor: '#fff'
+                  }}
+                >
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr>
+                        {Object.keys(parsedData[0]).map(key => (
+                          <th
+                            key={key}
                             style={{
-                              padding: '8px 8px',
-                              borderBottom: '1px solid #eee',
-                              borderRight: '1px solid #eee',
+                              padding: '12px 8px',
+                              borderBottom: '1px solid #ccc',
+                              borderRight: '1px solid #ccc',
+                              backgroundColor: '#f5f5f5',
+                              fontWeight: 'bold',
                               textAlign: 'left'
                             }}
                           >
-                            {value}
-                          </td>
+                            {key}
+                          </th>
                         ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {parsedData.map((row, index) => (
+                        <tr
+                          key={index}
+                          style={{
+                            transition: 'background-color 0.3s ease',
+                            cursor: 'pointer'
+                          }}
+                          onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
+                          onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#fff')}
+                        >
+                          {Object.values(row).map((value, idx) => (
+                            <td
+                              key={idx}
+                              style={{
+                                padding: '8px 8px',
+                                borderBottom: '1px solid #eee',
+                                borderRight: '1px solid #eee',
+                                textAlign: 'left'
+                              }}
+                            >
+                              {value}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </Box>
               </Box>
+            )}
+
+            <Divider sx={{ borderWidth: '1px', mt: 4 }} />
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+              <Button variant='contained' color='primary' onClick={handleDrawerClose} sx={{ mr: 2 }}>
+                Cancel
+              </Button>
+              <Button variant='contained' color='primary' onClick={() => handleImportCSV(parsedData)} sx={{ mr: 2 }}>
+                Import data
+              </Button>
             </Box>
-          )}
-
-          <Divider sx={{ borderWidth: '1px', mt: 4 }} />
-
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-            <Button variant='contained' color='primary' onClick={handleDrawerClose} sx={{ mr: 2 }}>
-              Cancel
-            </Button>
-            <Button variant='contained' color='primary' onClick={() => handleImportCSV(parsedData)} sx={{ mr: 2 }}>
-              Import data
-            </Button>
           </Box>
-        </Box>
-      </Drawer>
-    </Card>
+        </Drawer>
+      </Card>
+      <Snackbar
+        open={successSnackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleCloseSuccessSnackbar}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {'Imported CSV Successfully!'}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleCloseSuccessSnackbar}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      />
+    </>
   )
 }
 
