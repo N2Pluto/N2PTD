@@ -1,9 +1,8 @@
-import React, { useState, useEffect, Fragment } from 'react'
+import React, { useState, useEffect } from 'react'
 import Card from '@mui/material/Card'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
-import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import MenuItem from '@mui/material/MenuItem'
@@ -15,12 +14,10 @@ import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import { userStore } from 'src/stores/userStore'
-import { Avatar, Badge } from '@mui/material'
-
+import { Avatar } from '@mui/material'
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh'
-import BellOutline from 'mdi-material-ui/BellOutline'
-import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
-import ErrorIcon from '@mui/icons-material/Error'
+import Confetti from 'react-confetti'
+import Countdown from 'react-countdown'
 
 const RenewalChooseForm = () => {
   const [userRenewal, setUserRenewal] = useState('')
@@ -29,6 +26,7 @@ const RenewalChooseForm = () => {
   const userStoreInstance = userStore()
   const [userExistsInRenewalDormitory, setUserExistsInRenewalDormitory] = useState(false)
   const [residentData, setResidentData] = useState(null)
+  const [confetti, setConfetti] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,8 +57,6 @@ const RenewalChooseForm = () => {
 
     return () => clearInterval(intervalId)
   }, [])
-
-  console.log('userExistsInRenewalDormitory', userExistsInRenewalDormitory)
 
   const handleUserRenewalChange = (event: SelectChangeEvent) => {
     setUserRenewal(event.target.value as string)
@@ -107,8 +103,37 @@ const RenewalChooseForm = () => {
     setDrawerOpen(open)
   }
 
+  const renderer = ({ days, hours, minutes, seconds, completed }) => {
+    if (completed) {
+      return <span>Time is up!</span>
+    } else {
+      return (
+        <div className='countdown'>
+          <div className='countdown-item'>
+            <span className='countdown-time'>{days}</span>
+            <span className='countdown-label'>Days</span>
+          </div>
+          <div className='countdown-item'>
+            <span className='countdown-time'>{hours}</span>
+            <span className='countdown-label'>Hours</span>
+          </div>
+          <div className='countdown-item'>
+            <span className='countdown-time'>{minutes}</span>
+            <span className='countdown-label'>Minutes</span>
+          </div>
+          <div className='countdown-item'>
+            <span className='countdown-time'>{seconds}</span>
+            <span className='countdown-label'>Seconds</span>
+          </div>
+        </div>
+      )
+    }
+  }
+
   const renderButton = () => {
     if (formData && formData.data && formData.data.length > 0) {
+      const endDate = new Date(formData.data[0].end_date)
+
       return (
         <Card>
           <CardContent
@@ -126,10 +151,31 @@ const RenewalChooseForm = () => {
               <PriorityHighIcon sx={{ fontSize: '2rem' }} />
             </Avatar>
             <Typography variant='h6' sx={{ marginBottom: 2.75 }}>
-              Very important
+              Very important!
             </Typography>
-            <Typography variant='body2' sx={{ marginBottom: 6 }}>
-              every semester A stay-on questionnaire will be filled out for ease of use. Please respond within 15 days.
+            <Typography variant='body2' sx={{ marginBottom: 2 }}>
+              Every semester a stay-on questionnaire will be filled out for ease of use.
+              <br />
+              Please respond within{' '}
+              <b>
+                {new Date(formData.data[0].start_date).toLocaleDateString('en-GB', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: '2-digit'
+                })}
+              </b>{' '}
+              to{' '}
+              <b>
+                {new Date(formData.data[0].end_date).toLocaleDateString('en-GB', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: '2-digit'
+                })}
+              </b>
+              . Please ensure to submit your decision within this period.
+            </Typography>
+            <Typography variant='body2' sx={{ marginBottom: 2, cursor: 'pointer' }} onClick={() => setConfetti(true)}>
+              <Countdown date={endDate} renderer={renderer} />
             </Typography>
             <Button
               variant='contained'
@@ -149,6 +195,8 @@ const RenewalChooseForm = () => {
   return (
     <>
       {!userExistsInRenewalDormitory && <>{renderButton()}</>}
+
+      {confetti && <Confetti recycle={false} numberOfPieces={500} onConfettiComplete={() => setConfetti(false)} />}
 
       <Drawer
         anchor='bottom'

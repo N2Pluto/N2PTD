@@ -70,3 +70,35 @@ df-messenger {
   font-weight: 700;
   font-style: normal;
 }
+
+.countdown {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.countdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #282c34;
+  color: white;
+  border-radius: 10px;
+  padding: 10px;
+  min-width: 60px;
+}
+
+.countdown-time {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.countdown-label {
+  font-size: 1rem;
+  margin-top: 5px;
+}
+
+.countdown-item:nth-child(odd) {
+  background-color: #3b3f4c;
+}
