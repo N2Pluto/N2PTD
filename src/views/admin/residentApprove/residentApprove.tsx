@@ -540,35 +540,38 @@ const ResidentApprove = () => {
 
   console.log('filteredUsers:', filteredUsers)
 
-  const handleImportCSV = async (parsedData: any[]) => {
-    console.log('Imported CSV data:', parsedData)
-    const updatedUsers = [...users]
+ const handleImportCSV = async (parsedData: any[]) => {
+   console.log('Imported CSV data:', parsedData)
+   const updatedUsers = [...users]
 
-    updatedUsers.forEach(user => {
-      // Check if the student_id exists in the imported data
-      const existsInImportedData = parsedData.some(({ student_id }) => student_id === user.Users?.student_id)
+   updatedUsers.forEach(user => {
+     // Check if the student_id exists in the imported data
+     const existsInImportedData = parsedData.some(({ student_id }) => student_id === user.Users?.student_id)
 
-      // Set the payment_status based on the existence of the student_id in the imported data
-      user.payment_status = existsInImportedData ? 'TRUE' : 'FALSE'
-    })
+     // Update only if current payment_status is 'Pending'
+     if (user.payment_status === 'Pending') {
+       // Set the payment_status based on the existence of the student_id in the imported data
+       user.payment_status = existsInImportedData ? 'TRUE' : 'FALSE'
+     }
+   })
 
-    setUsers(updatedUsers)
-    console.log('updatedUsers', updatedUsers)
+   setUsers(updatedUsers)
+   console.log('updatedUsers', updatedUsers)
 
-    const response = await fetch('/api/admin/residentApprove/update/updateResidentApprove', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ updatedUsers })
-    })
-    handleDrawerClose()
-    if (!response.ok) {
-      console.error('Failed to update users:', await response.text())
-    } else {
-      setImportSnackbarOpen(true)
-    }
-  }
+   const response = await fetch('/api/admin/residentApprove/update/updateResidentApprove', {
+     method: 'POST',
+     headers: {
+       'Content-Type': 'application/json'
+     },
+     body: JSON.stringify({ updatedUsers })
+   })
+   handleDrawerClose()
+   if (!response.ok) {
+     console.error('Failed to update users:', await response.text())
+   } else {
+     setImportSnackbarOpen(true)
+   }
+ }
 
   const exportToCSV = (roundId: number | null) => {
     console.log('exportToCSV called')

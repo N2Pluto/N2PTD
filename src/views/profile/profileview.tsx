@@ -75,19 +75,26 @@ const Profile = () => {
     <Grid item xs={12} sm={6} md={12}>
       <Box sx={{ pb: 3 }}>
         <Card sx={{ position: 'relative' }}>
-          <CardMedia sx={{ height: '12.625rem' }} image='/images/cards/background-user.png' />
-          <Avatar
-            alt='Robert Meyer'
-            src={profileData?.userInfoData.image}
-            sx={{
-              width: 140,
-              height: 140,
-              left: '1.313rem',
-              top: '6.28125rem',
-              position: 'absolute',
-              border: theme => `0.25rem solid ${theme.palette.common.white}`
-            }}
-          />
+          <Box sx={{ position: 'relative', height: 220 }}>
+            {' '}
+            <img
+              src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/w/Publie/backiee-202851-landscape.jpg'
+              alt='Cover'
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+            <Avatar
+              alt='Robert Meyer'
+              src={profileData?.userInfoData.image}
+              sx={{
+                width: 140,
+                height: 140,
+                left: '1.313rem',
+                top: '6.28125rem',
+                position: 'absolute',
+                border: theme => `0.25rem solid ${theme.palette.common.white}`
+              }}
+            />
+          </Box>
           <CardContent>
             <Box
               sx={{

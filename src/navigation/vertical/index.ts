@@ -181,7 +181,6 @@ const useNavigation = (): VerticalNavItemsType => {
       icon: RequestPageIcon,
       path: '/userGoogleForm'
     }
-
   ]
 
   if (reservation?.status === 'Approve' && reservation?.payment_status === 'SUCCESS') {
