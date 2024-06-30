@@ -41,6 +41,8 @@ const ReservationBedviwe = () => {
     }
   }
 
+  console.log('userReservations5555',userReservations)
+
   const handleOpenWarn = () => {
     setOpenWarn(true)
   }
@@ -112,6 +114,7 @@ const ReservationBedviwe = () => {
     try {
       if (!user || !selectedBedId) {
         console.error('User data or bed ID is missing.')
+
         return
       }
 
@@ -121,6 +124,7 @@ const ReservationBedviwe = () => {
       if (hasReservation) {
         handleOpenWarn()
         handleCloseConfirmation()
+
         return
       }
 
@@ -130,6 +134,7 @@ const ReservationBedviwe = () => {
       if (isReserved) {
         handleOpenWarn()
         handleCloseConfirmation()
+
         return
       }
 
