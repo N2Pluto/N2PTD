@@ -41,6 +41,20 @@ const UserDropdown = () => {
   const router = useRouter()
 
   useEffect(() => {
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await fetch('/api/reservation/room/checkRoom')
+        const data = await response.json()
+        console.log('Data:', data)
+      } catch (error) {
+        console.error('Failed to fetch data:', error)
+      }
+    }, 3000)
+
+    return () => clearInterval(intervalId)
+  }, [])
+
+  useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await fetch('/api/profile/fetchUserProfile', {
@@ -53,8 +67,7 @@ const UserDropdown = () => {
         const data = await response.json()
         setProfileData(data) // เซ็ตข้อมูลผู้ใช้ที่ได้รับจาก API
         console.log(data)
-      } catch (error) {
-      }
+      } catch (error) {}
     }
 
     if (user?.user_id) {
@@ -62,7 +75,6 @@ const UserDropdown = () => {
     }
 
     fetchUserProfile()
-
   }, [user])
 
   const handleDropdownOpen = (event: SyntheticEvent) => {

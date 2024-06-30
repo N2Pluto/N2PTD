@@ -179,7 +179,7 @@ const RenewalChooseForm = () => {
             </Typography>
             <Button
               variant='contained'
-              sx={{ padding: theme => theme.spacing(1.75, 5.5) }}
+              sx={{ padding: theme => theme.spacing(1.75, 5.5) , mt: 5 }}
               onClick={toggleDrawer(true)}
             >
               OPEN FORM
