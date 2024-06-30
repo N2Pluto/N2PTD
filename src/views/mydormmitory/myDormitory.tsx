@@ -8,6 +8,8 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import { useEffect, useState } from 'react'
 import { userStore } from 'src/stores/userStore'
+import { Chip } from '@mui/material'
+import WhereToVoteIcon from '@mui/icons-material/WhereToVote';
 
 
 const Mydormitorydetail = () => {
@@ -34,6 +36,10 @@ const Mydormitorydetail = () => {
     fetchReservationData()
   }, [user])
 
+  const handleClick = () => {
+    console.info('You clicked the Chip.');
+  };
+
   return (
       <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label='simple table'>
@@ -54,13 +60,18 @@ const Mydormitorydetail = () => {
             }}
           >
             <TableCell component='th' scope='row' >
-              {reservation?.Dormitory_Building?.name} {'\u00A0\u00A0\u00A0'} Room{' '}
-              {reservation?.Dormitory_Room?.room_number} {'\u00A0\u00A0\u00A0'} Bed{' '}
-              {reservation?.Dormitory_Bed?.bed_number}
+            <Chip label={reservation?.Dormitory_Building?.name} variant="outlined" onClick={handleClick} />  {'\u00A0\u00A0'}
+            <Chip label={`Room ${reservation?.Dormitory_Room?.room_number}`} variant="outlined" onClick={handleClick} />  {'\u00A0\u00A0'}
+            <Chip label={`Bed ${reservation?.Dormitory_Bed?.bed_number}`} variant="outlined" onClick={handleClick} />
             </TableCell>
-            <TableCell align='center'> {reservation?.Reservation_System?.round_name}</TableCell>
-            <TableCell align='center'> {reservation?.status}</TableCell>
-            <TableCell align='center'> {reservation?.payment_status}</TableCell>
+            <TableCell align='center'>
+            <Chip label={reservation?.Reservation_System?.round_name} variant="outlined" onClick={handleClick} />
+             </TableCell>
+            <TableCell align='center' >
+            <Chip icon={<WhereToVoteIcon style={{ color: 'green', borderColor: 'green' }} />} label={reservation?.status} variant="outlined"  style={{ color: 'green', borderColor: 'green' }}/>
+               </TableCell>
+            <TableCell align='center'>
+            <Chip icon={<WhereToVoteIcon style={{ color: 'green', borderColor: 'green' }}/>} label={reservation?.payment_status} variant="outlined"style={{ color: 'green', borderColor: 'green' }} /></TableCell>
           </TableRow>
         </TableBody>
       </Table>

@@ -7,6 +7,7 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import { useEffect, useState } from 'react'
 import { userStore } from 'src/stores/userStore'
+import { Chip } from '@mui/material'
 
 const MyRoommate = () => {
   const { user } = userStore()
@@ -73,7 +74,10 @@ const MyRoommate = () => {
     }
   }, [reservation?.room_id])
 
-  console.log('dormitoryRoom', dormitoryRoom)
+
+  const handleClick = () => {
+    console.info('You clicked the Chip.')
+  }
 
   return (
     <TableContainer component={Paper}>
@@ -90,14 +94,22 @@ const MyRoommate = () => {
           {dormitoryRoom.map(room => (
             <TableRow key={room.id}>
               <TableCell component='th' scope='row'>
-                {room.Users?.Users_Info[0].name.slice(0, 2) + '*****'}{' '}
-                {room.Users?.Users_Info[0].lastname.slice(0, 2) + '*****'}
+              <Chip label={room.Users?.Users_Info[0].name.slice(0, 2) + '*****'} variant="outlined" onClick={handleClick} />{'\u00A0\u00A0'}
+              <Chip label={room.Users?.Users_Info[0].lastname.slice(0, 2) + '*****'} variant="outlined" onClick={handleClick} />
+
+
               </TableCell>
               {room.Users.Users_Info.length > 0 && (
                 <>
-                  <TableCell align='center'>{room.Users?.student_id.replace(/(?<=..)....../, '******')}</TableCell>
-                  <TableCell align='center'>{room.Users?.Users_Info[0].school}</TableCell>
-                  <TableCell align='center'>{room.Users?.Users_Info[0].religion}</TableCell>
+                  <TableCell align='center'>
+                  <Chip label={room.Users?.student_id.replace(/(?<=..)....../, '******')} variant="outlined" onClick={handleClick} />
+                    </TableCell>
+                  <TableCell align='center'>
+                  <Chip label={room.Users?.Users_Info[0].school} variant="outlined" onClick={handleClick} />
+                    </TableCell>
+                  <TableCell align='center'>
+                  <Chip label={room.Users?.Users_Info[0].religion} variant="outlined" onClick={handleClick} />
+                    </TableCell>
                 </>
               )}
             </TableRow>
