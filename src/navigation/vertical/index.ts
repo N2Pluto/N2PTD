@@ -1,5 +1,3 @@
-// /src/navigation/vertical/index.ts
-
 import HomeOutline from 'mdi-material-ui/HomeOutline'
 import AccountPlusOutline from 'mdi-material-ui/AccountPlusOutline'
 import WifiProtectedSetupIcon from '@mui/icons-material/WifiProtectedSetup'
@@ -23,6 +21,8 @@ import { useEffect, useState } from 'react'
 const useNavigation = (): VerticalNavItemsType => {
   const { user } = userStore()
   const [roleFilter, setRoleFilter] = useState<string>('')
+  const [reservation, setReservation] = useState(null)
+  const [userInfo, setUserInfo] = useState(null)
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -51,122 +51,157 @@ const useNavigation = (): VerticalNavItemsType => {
     }
   }, [user])
 
-  if (roleFilter === 'admin') {
-    return [
-      {
-        title: 'Home Page',
-        icon: HomeOutline,
-        path: '/admin/home'
-      },
-      {
-        title: 'Import Data',
-        icon: AccountPlusOutline,
-        path: '/admin/importStudent'
-      },
+  useEffect(() => {
+    const fetchReservationData = async () => {
+      try {
+        const response = await fetch(`/api/reservation/select?user_id=${user?.user_id}`)
+        const { reservationData, userInfoData } = await response.json()
+        setReservation(reservationData[0])
+        setUserInfo(userInfoData[0])
+      } catch (error) {
+        console.error('Error fetching reservation data:', error)
+      }
+    }
 
-      {
-        sectionTitle: 'Information',
-        icon: DnsOutlinedIcon,
-        children: [
-          {
-            title: 'Resident Info',
-            icon: ApartmentIcon, // Updated icon
-            path: '/admin/dormitoryResident'
-          },
-          {
-            title: 'User Info',
-            icon: PersonIcon, // Updated icon
-            path: '/admin/userManagement'
+    fetchReservationData()
+  }, [user])
+
+  console.log('reservation', reservation)
+
+  const navItemsForAdmin = [
+    {
+      title: 'Home Page',
+      icon: HomeOutline,
+      path: '/admin/home'
+    },
+    {
+      title: 'Import Data',
+      icon: AccountPlusOutline,
+      path: '/admin/importStudent'
+    },
+    {
+      sectionTitle: 'Information',
+      icon: DnsOutlinedIcon,
+      children: [
+        {
+          title: 'Resident Info',
+          icon: ApartmentIcon,
+          path: '/admin/dormitoryResident'
+        },
+        {
+          title: 'User Info',
+          icon: PersonIcon,
+          path: '/admin/userManagement'
+        }
+      ]
+    },
+    {
+      sectionTitle: 'Approve',
+      icon: CheckBoxOutlinedIcon,
+      children: [
+        {
+          title: 'Reservation',
+          icon: BookOnlineIcon,
+          path: '/admin/reservationApprove'
+        },
+        {
+          title: 'Resident',
+          icon: DoneAllOutlinedIcon,
+          path: '/admin/residentApprove'
+        },
+        {
+          title: 'Renewal',
+          icon: ChecklistIcon,
+          path: '/admin/renewalSystem'
+        }
+      ]
+    },
+    {
+      sectionTitle: 'Create',
+      icon: AutorenewIcon,
+      children: [
+        {
+          title: 'Booking Period',
+          icon: WifiProtectedSetupIcon,
+          path: '/admin/reservationSystem'
+        },
+        {
+          title: 'Renewal Period',
+          icon: AutorenewIcon,
+          path: '/admin/renewalDormitory'
+        },
+        {
+          title: 'Form Request',
+          icon: GoogleIcon,
+          path: '/admin/googleForm'
+        }
+      ]
+    },
+    {
+      sectionTitle: 'Building',
+      icon: CorporateFareOutlinedIcon,
+      children: [
+        {
+          title: 'Building System',
+          icon: DomainAddOutlinedIcon,
+          path: '/admin/building'
+        },
+        {
+          title: 'Building Control',
+          icon: CorporateFareOutlinedIcon,
+          path: '/admin/buildingControl'
+        }
+      ]
+    }
+  ]
+
+  const navItemsForUser = [
+    {
+      title: 'Home Page',
+      icon: HomeOutline,
+      path: '/dashboard'
+    },
+    {
+      title: 'Dormitory',
+      icon: ApartmentIcon,
+      path: '/Dormitory'
+    },
+    {
+      title: 'Reservation',
+      icon: BookOnlineIcon,
+      path: '/reservation'
+    },
+    {
+      title: 'My Profile',
+      icon: PersonIcon,
+      path: '/profile'
+    },
+    {
+      title: 'Form Request',
+      icon: RequestPageIcon,
+      path: '/userGoogleForm'
+    }
+
+  ]
+
+  if (reservation?.status === 'Approve' && reservation?.payment_status === 'SUCCESS') {
+    const updatedNavItemsForUser = navItemsForUser.map(item =>
+      item.title === 'Reservation'
+        ? {
+            title: 'My Dormitory',
+            icon: FeedOutlinedIcon,
+            path: '/mydormitory'
           }
-        ]
-      },
-      {
-        sectionTitle: 'Approve',
-        icon: CheckBoxOutlinedIcon,
-        children: [
-          {
-            title: 'Reservation',
-            icon: BookOnlineIcon, // Updated icon
-            path: '/admin/reservationApprove'
-          },
-          {
-            title: 'Resident',
-            icon: DoneAllOutlinedIcon,
-            path: '/admin/residentApprove'
-          },
-          {
-            title: 'Renewal',
-            icon: ChecklistIcon,
-            path: '/admin/renewalSystem'
-          }
-        ]
-      },
-      {
-        sectionTitle: 'Create',
-        icon: AutorenewIcon,
-        children: [
-          {
-            title: 'Booking Period',
-            icon: WifiProtectedSetupIcon,
-            path: '/admin/reservationSystem'
-          },
-          {
-            title: 'Renewal Period',
-            icon: AutorenewIcon,
-            path: '/admin/renewalDormitory'
-          },
-          {
-            title: 'Form Request',
-            icon: GoogleIcon,
-            path: '/admin/googleForm'
-          }
-        ]
-      },
-      {
-        sectionTitle: 'Building',
-        icon: CorporateFareOutlinedIcon,
-        children: [
-          {
-            title: 'Building System',
-            icon: DomainAddOutlinedIcon,
-            path: '/admin/building'
-          },
-          {
-            title: 'Building Control',
-            icon: CorporateFareOutlinedIcon,
-            path: '/admin/buildingControl'
-          }
-        ]
-      }
-    ]
+        : item
+    )
+
+    return updatedNavItemsForUser
+  }
+
+  if (roleFilter === 'admin') {
+    return navItemsForAdmin
   } else if (roleFilter === 'user') {
-    return [
-      {
-        title: 'Home Page',
-        icon: HomeOutline,
-        path: '/dashboard'
-      },
-      {
-        title: 'Dormitory',
-        icon: ApartmentIcon, // Updated icon
-        path: '/Dormitory'
-      },
-      {
-        title: 'Reservation',
-        icon: BookOnlineIcon, // Updated icon
-        path: '/reservation'
-      },
-      {
-        title: 'My Profile',
-        icon: PersonIcon, // Updated icon
-        path: '/profile'
-      },
-      {
-        title: 'Form Request',
-        icon: RequestPageIcon, // Updated icon
-        path: '/userGoogleForm'
-      }
-    ]
+    return navItemsForUser
   }
 
   return []
