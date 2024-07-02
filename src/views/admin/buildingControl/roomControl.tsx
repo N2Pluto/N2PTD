@@ -1,4 +1,3 @@
-// ** MUI Imports
 import Paper from '@mui/material/Paper'
 import Table from '@mui/material/Table'
 import TableRow from '@mui/material/TableRow'
@@ -28,13 +27,7 @@ const RoomControl = () => {
       setDormitoryBuilding(data)
     }
 
-    // Call fetchData immediately
     fetchData()
-
-    // Then call fetchData every 50 seconds
-    // const intervalId = setInterval(fetchData, 50000)
-
-    // Clear interval on component unmount
   }, [])
 
   useEffect(() => {
@@ -44,23 +37,10 @@ const RoomControl = () => {
       setRoom(data)
     }
 
-    const fetchDataAndUpdateStatusRoom = async () => {
-      await fetchDataRoomByDormID() // Fetch the updated data
-    }
-
-    fetchDataAndUpdateStatusRoom()
-    // const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 50000)
-
-    // return () => clearInterval(intervalId)
+    fetchDataRoomByDormID()
   }, [])
 
-  const handleSelect = (id: string) => {
-    // Handle the selection of the building by its ID
-    console.log(`Building with ID ${id} selected.`)
-    alert(`Building with ID ${id} selected.`)
-  }
-
-  const discordHandle = async (room_rehearse: boolean, room_number: string, dormitoryBuilding: string) => {
+  const discordHandle = async (room_rehearse, room_number, dormitoryBuilding) => {
     if (!room_rehearse) {
       await sendDiscordMessage(
         `${user.student_id}`,
@@ -76,7 +56,7 @@ const RoomControl = () => {
     }
   }
 
-  const handleUserInfo = async (roomId: string, currentStatus: boolean, roomNum: string, domname: string) => {
+  const handleUserInfo = async (roomId, currentStatus, roomNum, domname) => {
     try {
       const response = await fetch('/api/room/updateStatus', {
         method: 'POST',
@@ -91,20 +71,17 @@ const RoomControl = () => {
         })
       })
 
-      discordHandle(!currentStatus, roomNum, domname)
+      if (response.ok) {
+        discordHandle(!currentStatus, roomNum, domname)
 
-      setTimeout(() => {
-        router.reload()
-      }, 2000)
-
+        // Update the room state immediately
+        setRoom(prevRoom =>
+          prevRoom.map(room => (room.room_id === roomId ? { ...room, room_rehearse: !currentStatus } : room))
+        )
+      }
     } catch (error) {
       console.error('Error Update data into Users table:', error.message)
     }
-  }
-
-  const handleInputfield = (id: string) => {
-    console.log('id:', id)
-    router.push(`/admin/buildingControl/room/${id}`)
   }
 
   return (
@@ -112,10 +89,10 @@ const RoomControl = () => {
       <Table sx={{ minWidth: 650 }} aria-label='simple table'>
         <TableHead>
           <TableRow>
-            <TableCell align='center'>room number</TableCell>
-            <TableCell align='center'>bed capacity</TableCell>
-            <TableCell align='center'>bed available </TableCell>
-            <TableCell align='center'>status </TableCell>
+            <TableCell align='center'>Room Number</TableCell>
+            <TableCell align='center'>Bed Capacity</TableCell>
+            <TableCell align='center'>Bed Available</TableCell>
+            <TableCell align='center'>Status</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -142,12 +119,6 @@ const RoomControl = () => {
                   icon={<BuildCircleIcon sx={{ display: 'flex', alignItems: 'center', mt: -0.3 }} color='error' />}
                 />
               </TableCell>
-
-              <TableCell align='center'>
-                {/* <Button variant='contained' onClick={() => handleSelect(room.dorm_id)}>
-                  Select
-                </Button> */}
-              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -157,5 +128,3 @@ const RoomControl = () => {
 }
 
 export default RoomControl
-
-// onChange={() => handleUserInfo(room.room_id, room.room_rehearse)}

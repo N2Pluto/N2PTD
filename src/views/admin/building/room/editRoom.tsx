@@ -1,24 +1,10 @@
-// ** React Imports
 import { ChangeEvent, forwardRef, MouseEvent, useState } from 'react'
 
 // ** MUI Imports
 import Card from '@mui/material/Card'
-import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import MenuItem from '@mui/material/MenuItem'
-import TextField from '@mui/material/TextField'
 import CardHeader from '@mui/material/CardHeader'
-import InputLabel from '@mui/material/InputLabel'
-import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
-import CardActions from '@mui/material/CardActions'
-import FormControl from '@mui/material/FormControl'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
-import Autocomplete from '@mui/material/Autocomplete'
-import Checkbox from '@mui/material/Checkbox'
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
-import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import { styled } from '@mui/material/styles'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -27,15 +13,29 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
+import Backdrop from '@mui/material/Backdrop'
+import CircularProgress from '@mui/material/CircularProgress'
 import { IoSettingsOutline } from 'react-icons/io5'
 
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import SettingRoom from './settingRoom'
 import CreateRoom from './createRoom'
+import Snackbar from '@mui/material/Snackbar'
+import CloseIcon from '@mui/icons-material/Close'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import ErrorIcon from '@mui/icons-material/Error'
+import { makeStyles } from '@mui/styles'
+import IconButton from '@mui/material/IconButton'
 
-const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
-const checkedIcon = <CheckBoxIcon fontSize='small' />
+const useStyles = makeStyles(theme => ({
+  error: {
+    backgroundColor: theme.palette.error.dark
+  },
+  success: {
+    backgroundColor: theme.palette.success.dark
+  }
+}))
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -61,44 +61,39 @@ function createData(room_id: number, dorm_id: number, room_number: number, bed_c
   return { room_id, dorm_id, room_number, bed_capacity }
 }
 
-const furnitureOptions = [
-  { title: 'closet' },
-  { title: '3.5-foot mattress' },
-  { title: 'reading desk' },
-  { title: 'chair' }
-]
-
-const facilityOptions = [
-  { title: 'high-speed internet' },
-  { title: 'washing machine' },
-  { title: 'clothes dryer' },
-  { title: 'water dispenser' },
-  { title: 'fingerprint access system' },
-  { title: 'CCTV' },
-  { title: '7-11 Automatic Food Cabinet' }
-]
-
 const EditRoom = () => {
-  // ** States
-
-  const [floor, setFloor] = useState('')
-  const [bedCapacity, setBedCapacity] = useState('')
-  const [roomsPerFloor, setRoomsPerFloor] = useState<string[]>([])
+  const classes = useStyles()
   const [dormitoryBuilding, setDormitoryBuilding] = useState([])
   const [dormitoryRoom, setDormitoryRoom] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const [snackbarDeleteRoom, setSnackbarDeleteRoom] = useState(false)
   const router = useRouter()
+
+  const handleSnackbarDeleteRoomClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setSnackbarDeleteRoom(false)
+  }
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setSnackbarOpen(false)
+  }
 
   useEffect(() => {
     const fetchDataRoomByDormID = async () => {
       console.log('router.query.id:', router.query.id)
       const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
       setDormitoryRoom(data)
-      console.log('data:', data)
+      console.log('fetchDataRoomByDormID data:', data)
     }
+    const intervalId = setInterval(fetchDataRoomByDormID, 5000)
 
-    const intervalId = setInterval(fetchDataRoomByDormID, 5000) // Fetch data every 5 seconds
-
-    return () => clearInterval() // Clean up the interval on component unmount
+    return () => clearInterval(intervalId)
   }, [])
 
   const rows = dormitoryRoom.map(room => createData(room.room_id, room.dorm_id, room.room_number, room.bed_capacity))
@@ -106,63 +101,44 @@ const EditRoom = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const dorm_id = router.query.id
-        const { data } = await fetch(`/api/admin/read/${dorm_id}`).then(res => res.json())
+        const response = await fetch(`/api/admin/read/${router.query.id}`)
+        const { data } = await response.json()
         if (data) {
+          console.log('setDormitoryBuilding data:', data)
           setDormitoryBuilding(Array.isArray(data) ? data : [data])
         } else {
           console.error('No data returned from API')
         }
       } catch (error) {
         console.error('Error fetching dormitory building data:', error)
+      } finally {
+        setLoading(false)
       }
     }
 
-    const intervalId = setInterval(fetchData, 5000) // Fetch data every 5 seconds
+    const intervalId = setInterval(fetchData, 5000)
 
-    return () => clearInterval(intervalId) // Clean up the interval on component unmount
-  }, [])
-
-  const handleRoomsChange = (index: number, value: string) => {
-    const newRoomsPerFloor = [...roomsPerFloor]
-    newRoomsPerFloor[index] = value
-    setRoomsPerFloor(newRoomsPerFloor)
-  }
-
-  const generateRoomNumbers = () => {
-    const roomNumbers: string[] = []
-    let floorNumber = 1
-    for (const rooms of roomsPerFloor) {
-      for (let i = 1; i <= parseInt(rooms, 10); i++) {
-        const roomNumber = `${floorNumber}${String(i).padStart(2, '0')}`
-        roomNumbers.push(roomNumber)
-      }
-      floorNumber++
-    }
-
-    return roomNumbers
-  }
-
-  const handleFloorChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setFloor(event.target.value as string)
-  }
+    return () => clearInterval(intervalId)
+  }, [router.query.id])
 
   const handleFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
   }
 
-  const handleToSetting = (event: MouseEvent) => {
-    router.push('/admin/building/editBuilding')
-  }
-
   return (
     <>
+      <Backdrop open={loading} style={{ zIndex: 9999, color: '#fff' }}>
+        <CircularProgress color='inherit' />
+      </Backdrop>
       <Card>
         <CardHeader
-          title='Form for Edit Room'
+          title={`Edit Room - ${dormitoryBuilding.length > 0 ? dormitoryBuilding[0].name : ''}`}
           titleTypographyProps={{ variant: 'h6' }}
           action={
-            <CreateRoom id={dormitoryBuilding.dorm_id}>
+            <CreateRoom
+              setSnackbarOpen={setSnackbarOpen}
+              id={dormitoryBuilding.length > 0 ? dormitoryBuilding[0].dorm_id : ''}
+            >
               <Button variant='contained' color='primary'>
                 Add Room
               </Button>
@@ -176,23 +152,23 @@ const EditRoom = () => {
               <TableHead>
                 <TableRow>
                   <StyledTableCell>Dorm ID</StyledTableCell>
-                  <StyledTableCell align='right'>Room ID</StyledTableCell>
-                  <StyledTableCell align='right'>Room Number</StyledTableCell>
-                  <StyledTableCell align='right'>Bed Capacity</StyledTableCell>
-                  <StyledTableCell align='right'>Setting</StyledTableCell>
+                  <StyledTableCell>Room ID</StyledTableCell>
+                  <StyledTableCell align='center'>Room Number</StyledTableCell>
+                  <StyledTableCell align='center'>Bed Capacity</StyledTableCell>
+                  <StyledTableCell align='center'>Setting</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows.map(row => (
                   <StyledTableRow key={row.room_id}>
                     <StyledTableCell component='th' scope='row'>
-                      {row.dorm_id}
+                      {dormitoryBuilding.length > 0 ? dormitoryBuilding[0]?.name : ''}
                     </StyledTableCell>
-                    <StyledTableCell align='right'>{row.room_id}</StyledTableCell>
-                    <StyledTableCell align='right'>{row.room_number}</StyledTableCell>
-                    <StyledTableCell align='right'>{row.bed_capacity}</StyledTableCell>
-                    <StyledTableCell align='right'>
-                      <SettingRoom id={row.room_id}>
+                    <StyledTableCell>{row.room_id}</StyledTableCell>
+                    <StyledTableCell align='center'>{row.room_number}</StyledTableCell>
+                    <StyledTableCell align='center'>{row.bed_capacity}</StyledTableCell>
+                    <StyledTableCell align='center'>
+                      <SettingRoom id={row.room_id} setSnackbarDeleteRoom={setSnackbarDeleteRoom}>
                         <Button>
                           <IoSettingsOutline size={25} />
                         </Button>
@@ -206,6 +182,43 @@ const EditRoom = () => {
           <Divider sx={{ margin: 0 }} />
         </form>
       </Card>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleSnackbarClose}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {`Create room in ${dormitoryBuilding.length > 0 ? dormitoryBuilding[0]?.name : ''} Successfully!`}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleSnackbarClose}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.success }}
+      />
+      <Snackbar
+        open={snackbarDeleteRoom}
+        autoHideDuration={5000}
+        onClose={handleSnackbarDeleteRoomClose}
+        message={
+          <span>
+            <ErrorIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {`Delete room in ${dormitoryBuilding.length > 0 ? dormitoryBuilding[0]?.name : ''} Successfully!`}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleSnackbarDeleteRoomClose}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.error }}
+      />
     </>
   )
 }

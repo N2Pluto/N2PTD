@@ -19,6 +19,9 @@ import Autocomplete from '@mui/material/Autocomplete'
 import Checkbox from '@mui/material/Checkbox'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
+import IconButton from '@mui/material/IconButton'
+import CloseIcon from '@mui/icons-material/Close'
+import Box from '@mui/material/Box'
 
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
@@ -43,7 +46,7 @@ const facilityOptions = [
   { title: '7-11 Automatic Food Cabinet' }
 ]
 
-const FormBuilding = () => {
+const FormBuilding = ({ onClose, setSnackbarOpen }) => {
   // ** States
   const [name, setName] = useState('')
   const [images_url, setImagesUrl] = useState('')
@@ -163,16 +166,25 @@ const FormBuilding = () => {
           }
         }
       }
-      window.alert('Dormitory created successfully')
-      router.push('/admin/building')
+      setSnackbarOpen(true)
+      onClose()
     }
   }
 
   return (
     <>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant='h6' sx={{ pb: 2, pt: 5, pr: 2, ml: 4 }}>
+          Create Dormitory
+        </Typography>
+        <IconButton onClick={onClose}>
+          {' '}
+          <CloseIcon sx={{ pt: 2, fontSize: '35px' }} />
+        </IconButton>
+      </Box>
+      <Divider />
+
       <Card>
-        <CardHeader title='Form for adding a dormitory' titleTypographyProps={{ variant: 'h6' }} />
-        <Divider sx={{ margin: 0 }} />
         <form onSubmit={handleFormSubmit}>
           <CardContent>
             <Grid container spacing={5}>
@@ -310,7 +322,7 @@ const FormBuilding = () => {
                       {option.title}
                     </li>
                   )}
-                  style={{ width: 665 }}
+                  style={{ width: '100%' }}
                   renderInput={params => <TextField {...params} label='Furniture' placeholder='Furniture' />}
                 />
               </Grid>
@@ -325,13 +337,13 @@ const FormBuilding = () => {
                   onChange={(event, newValue) => {
                     setFacility(newValue)
                   }}
+                  style={{ width: '100%' }}
                   renderOption={(props, option, { selected }) => (
                     <li {...props}>
                       <Checkbox icon={icon} checkedIcon={checkedIcon} style={{ marginRight: 8 }} checked={selected} />
                       {option.title}
                     </li>
                   )}
-                  style={{ width: 665 }}
                   renderInput={params => <TextField {...params} label='Facility' placeholder='Facility' />}
                 />
               </Grid>
@@ -343,7 +355,7 @@ const FormBuilding = () => {
                   2. Room Details
                 </Typography>
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={12}>
                 <FormControl fullWidth>
                   <InputLabel id='form-layouts-separator-select-label'>Floor</InputLabel>
                   <Select
@@ -369,8 +381,8 @@ const FormBuilding = () => {
                 </FormControl>
               </Grid>
               {Array.from({ length: Number(floor) || 0 }, (_, index) => (
-                <Grid item xs={12} sm={2} key={index} container justifyContent='space-between' alignItems='center'>
-                  <Grid item xs={10}>
+                <Grid item xs={12} sm={12} key={index} container justifyContent='space-between' alignItems='center'>
+                  <Grid item xs={12}>
                     <TextField
                       fullWidth
                       label={`Rooms in Floor ${index + 1}`}
@@ -382,20 +394,21 @@ const FormBuilding = () => {
                 </Grid>
               ))}
               <Grid item xs={12} sm={12}>
-                <Typography variant='body2' sx={{ fontWeight: 600 }}>
-                  Room Numbers: {generateRoomNumbers().join(', ')}
-                </Typography>
+                {floor && floor !== 'reset' && (
+                  <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                    Room Numbers: {generateRoomNumbers().join(', ')}
+                  </Typography>
+                )}
               </Grid>
-
             </Grid>
           </CardContent>
           <Divider sx={{ margin: 0 }} />
-          <CardActions>
+          <CardActions style={{ justifyContent: 'flex-end' }}>
+            <Button size='large' color='secondary' variant='outlined' onClick={onClose}>
+              Cancel
+            </Button>
             <Button size='large' type='submit' sx={{ mr: 2 }} variant='contained'>
               Submit
-            </Button>
-            <Button size='large' color='secondary' variant='outlined'>
-              Cancel
             </Button>
           </CardActions>
         </form>

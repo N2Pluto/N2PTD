@@ -149,7 +149,7 @@ const useNavigation = (): VerticalNavItemsType => {
         {
           title: 'Building Control',
           icon: CorporateFareOutlinedIcon,
-          path: '/admin/buildingControl'
+          path: '/admin/controlRoom'
         }
       ]
     }

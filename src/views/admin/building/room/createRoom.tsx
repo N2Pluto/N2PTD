@@ -32,7 +32,7 @@ import MessageOutline from 'mdi-material-ui/MessageOutline'
 import { MdMeetingRoom } from 'react-icons/md'
 import { FaBed } from 'react-icons/fa6'
 
-export default function CreateRoom() {
+export default function CreateRoom({ setSnackbarOpen }) {
   const [open, setOpen] = React.useState(false)
   const [fullWidth, setFullWidth] = React.useState(true)
   const [maxWidth, setMaxWidth] = React.useState<DialogProps['maxWidth']>('sm')
@@ -44,47 +44,48 @@ export default function CreateRoom() {
   const dorm_id = router.query.id
   console.log('dorm_id:', dorm_id)
 
-const handleSubmit = async () => {
-  try {
-    const response = await fetch('/api/admin/create/room/createRoomByID', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        dorm_id,
-        room_number: room_number,
-        bed_capacity: bed_capacity
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch('/api/admin/create/room/createRoomByID', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          dorm_id,
+          room_number: room_number,
+          bed_capacity: bed_capacity
+        })
       })
-    })
 
-    if (!response.ok) {
-      throw new Error(`Response is not ok. Status: ${response.status}, Status Text: ${response.statusText}`)
-    }
+      if (!response.ok) {
+        throw new Error(`Response is not ok. Status: ${response.status}, Status Text: ${response.statusText}`)
+      }
 
-    const data = await response.json()
+      const data = await response.json()
 
-    // Call createBedByID after successfully creating the room
-    const bedResponse = await fetch('/api/admin/create/room/createBedByID', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        dorm_id, // Pass dorm_id instead of room_id
-        bed_capacity: bed_capacity
+      // Call createBedByID after successfully creating the room
+      const bedResponse = await fetch('/api/admin/create/room/createBedByID', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          dorm_id, // Pass dorm_id instead of room_id
+          bed_capacity: bed_capacity
+        })
       })
-    })
 
-    if (!bedResponse.ok) {
-      throw new Error('Failed to create beds')
+      if (!bedResponse.ok) {
+        throw new Error('Failed to create beds')
+      }
+
+      handleClose()
+      setSnackbarOpen(true)
+    } catch (error) {
+      console.error(error)
     }
-
-    handleClose()
-  } catch (error) {
-    console.error(error)
   }
-}
 
   const handleClickOpen = () => {
     setOpen(true)

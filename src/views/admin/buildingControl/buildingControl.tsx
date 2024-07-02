@@ -8,10 +8,12 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import { useEffect, useState } from 'react'
 import Button from '@mui/material/Button'
-import router from 'next/router'
+import { useRouter } from 'next/router'
+import Typography from '@mui/material/Typography'
 
 const BuildingControl = () => {
   const [building, setBuilding] = useState([])
+  const router = useRouter()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,9 +28,7 @@ const BuildingControl = () => {
   }, [])
 
   const handleSelect = (id: string) => {
-    // Handle the selection of the building by its ID
-    console.log(`Building with ID ${id} selected.`)
-    router.push(`/admin/buildingControl/room/${id}`)
+    router.push(`/admin/controlRoom/roomByID/${id}`)
   }
 
   return (
@@ -37,8 +37,9 @@ const BuildingControl = () => {
         <TableHead>
           <TableRow>
             <TableCell>Building name</TableCell>
-            <TableCell align='right'>gender</TableCell>
-            <TableCell align='right'>price </TableCell>
+            <TableCell>Building Type</TableCell>
+            <TableCell>gender</TableCell>
+            <TableCell align='center'>price </TableCell>
             <TableCell align='center'>room total </TableCell>
             <TableCell align='center'>detail </TableCell>
           </TableRow>
@@ -56,12 +57,15 @@ const BuildingControl = () => {
               <TableCell component='th' scope='row'>
                 {building.name}
               </TableCell>
-              <TableCell align='right'>{building.type_gender}</TableCell>
-              <TableCell align='right'>{building.price}</TableCell>
+              <TableCell>{building.type_building}</TableCell>
+              <TableCell>{building.type_gender}</TableCell>
+              <TableCell align='center'>{building.price}</TableCell>
               <TableCell align='center'>{building.room_total}</TableCell>
               <TableCell align='center'>
                 <Button variant='contained' onClick={() => handleSelect(building.dorm_id)}>
-                  Select
+                  <Typography variant='button' style={{ color: 'white' }}>
+                    Select
+                  </Typography>
                 </Button>
               </TableCell>
             </TableRow>

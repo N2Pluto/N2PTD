@@ -9,7 +9,7 @@ const EditBuildingPage = () => {
     <AdminLayout>
       <Grid container spacing={6}>
         <Grid item xs={12} md={12} lg={12}>
-          <EditBuilding />
+          <EditRoom />
         </Grid>
       </Grid>
     </AdminLayout>

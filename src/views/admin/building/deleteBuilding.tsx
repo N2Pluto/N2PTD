@@ -11,6 +11,9 @@ import Snackbar from '@mui/material/Snackbar'
 import Alert from '@mui/material/Alert'
 import { TransitionProps } from '@mui/material/transitions'
 import { Typography } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
+import IconButton from '@mui/material/IconButton'
+import ErrorIcon from '@mui/icons-material/Error'
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -56,7 +59,9 @@ export default function DeleteBuilding({ dorm_id, name, handleDeleteBuilding }) 
 
   return (
     <React.Fragment>
-      <Button onClick={handleClickOpen}>Delete</Button>
+      <IconButton size='small' color='primary' onClick={handleClickOpen}>
+        <DeleteIcon />
+      </IconButton>
       <Dialog
         open={open}
         TransitionComponent={Transition}
@@ -68,8 +73,8 @@ export default function DeleteBuilding({ dorm_id, name, handleDeleteBuilding }) 
         <DialogContent>
           <DialogContentText id='alert-dialog-slide-description'>
             To confirm deletion please type :
-            <Typography component='span' style={{ fontWeight: 'bold' }} sx={{pl:2}}>
-               delete-{name}
+            <Typography component='span' style={{ fontWeight: 'bold' }} sx={{ pl: 2 }}>
+              delete-{name}
             </Typography>
           </DialogContentText>
           <TextField
@@ -91,11 +96,6 @@ export default function DeleteBuilding({ dorm_id, name, handleDeleteBuilding }) 
           </Button>
         </DialogActions>
       </Dialog>
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
-        <Alert onClose={handleSnackbarClose} severity='success' sx={{ width: '100%' }}>
-          Dormitory deleted successfully!
-        </Alert>
-      </Snackbar>
     </React.Fragment>
   )
 }

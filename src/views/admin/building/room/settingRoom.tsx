@@ -21,14 +21,38 @@ import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
+import Snackbar from '@mui/material/Snackbar'
+import CloseIcon from '@mui/icons-material/Close'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import ErrorIcon from '@mui/icons-material/Error'
+import { makeStyles } from '@mui/styles'
+import IconButton from '@mui/material/IconButton'
+import { useState } from 'react'
 
+const useStyles = makeStyles(theme => ({
+  error: {
+    backgroundColor: theme.palette.error.dark
+  },
+  success: {
+    backgroundColor: theme.palette.success.dark
+  }
+}))
 
-export default function SettingRoom({ id }: { id: string }) {
+export default function SettingRoom({ id, setSnackbarDeleteRoom }: { id: string }) {
+  const classes = useStyles()
   const [open, setOpen] = React.useState(false)
   const [fullWidth, setFullWidth] = React.useState(true)
   const [maxWidth, setMaxWidth] = React.useState<DialogProps['maxWidth']>('lg')
   const [dormitoryRoom, setDormitoryRoom] = React.useState<any[]>([])
   const router = useRouter()
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setSnackbarOpen(false)
+  }
 
   useEffect(() => {
     const fetchDataBedByRoomID = async () => {
@@ -38,7 +62,6 @@ export default function SettingRoom({ id }: { id: string }) {
     }
     fetchDataBedByRoomID()
   }, [id])
-
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -72,33 +95,35 @@ export default function SettingRoom({ id }: { id: string }) {
       // Refresh the dormitoryRoom data after successful deletion
       const { data } = await fetch(`/api/bed/room/${id}`).then(res => res.json())
       setDormitoryRoom(data)
+      setSnackbarOpen(true)
     } catch (error) {
       console.error(error)
     }
   }
 
-   const handleDeleteRoom = async (room_id: string) => {
-     try {
-       const response = await fetch('/api/admin/delete/room/deleteRoomByID', {
-         method: 'POST',
-         headers: {
-           'Content-Type': 'application/json'
-         },
-         body: JSON.stringify({ room_id })
-       })
+  const handleDeleteRoom = async (room_id: string) => {
+    try {
+      const response = await fetch('/api/admin/delete/room/deleteRoomByID', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ room_id })
+      })
 
-       if (!response.ok) {
-         throw new Error(`Response is not ok. Status: ${response.status}, Status Text: ${response.statusText}`)
-       }
+      if (!response.ok) {
+        throw new Error(`Response is not ok. Status: ${response.status}, Status Text: ${response.statusText}`)
+      }
 
-       // Refresh the dormitoryRoom data after successful deletion
-       const { data } = await fetch(`/api/bed/room/${id}`).then(res => res.json())
-       setDormitoryRoom(data)
-       handleClose()
-     } catch (error) {
-       console.error(error)
-     }
-   }
+      // Refresh the dormitoryRoom data after successful deletion
+      const { data } = await fetch(`/api/bed/room/${id}`).then(res => res.json())
+      setDormitoryRoom(data)
+      handleClose()
+      setSnackbarDeleteRoom(true)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   return (
     <React.Fragment>
@@ -136,6 +161,25 @@ export default function SettingRoom({ id }: { id: string }) {
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleSnackbarClose}
+        message={
+          <span>
+            <ErrorIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {`Delete Bed Successfully!`}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleSnackbarClose}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.error }}
+      />
     </React.Fragment>
   )
 }
