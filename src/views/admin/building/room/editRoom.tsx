@@ -15,18 +15,20 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
-import { IoSettingsOutline } from 'react-icons/io5'
-
-import { useRouter } from 'next/router'
-import { useEffect } from 'react'
-import SettingRoom from './settingRoom'
-import CreateRoom from './createRoom'
 import Snackbar from '@mui/material/Snackbar'
 import CloseIcon from '@mui/icons-material/Close'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorIcon from '@mui/icons-material/Error'
-import { makeStyles } from '@mui/styles'
 import IconButton from '@mui/material/IconButton'
+import Skeleton from '@mui/material/Skeleton' // Import Skeleton component
+import { IoSettingsOutline } from 'react-icons/io5'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import { makeStyles } from '@mui/styles'
+import SettingRoom from './settingRoom'
+import CreateRoom from './createRoom'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 
 const useStyles = makeStyles(theme => ({
   error: {
@@ -127,61 +129,75 @@ const EditRoom = () => {
 
   return (
     <>
-      <Backdrop open={loading} style={{ zIndex: 9999, color: '#fff' }}>
+      <Backdrop
+        open={loading}
+        style={{ zIndex: 9999, color: '#fff', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
+      >
         <CircularProgress color='inherit' />
+        <Typography variant='h6' style={{ marginTop: '20px' }}>
+          Loading, please wait...
+        </Typography>
       </Backdrop>
-      <Card>
-        <CardHeader
-          title={`Edit Room - ${dormitoryBuilding.length > 0 ? dormitoryBuilding[0].name : ''}`}
-          titleTypographyProps={{ variant: 'h6' }}
-          action={
-            <CreateRoom
-              setSnackbarOpen={setSnackbarOpen}
-              id={dormitoryBuilding.length > 0 ? dormitoryBuilding[0].dorm_id : ''}
-            >
-              <Button variant='contained' color='primary'>
-                Add Room
-              </Button>
-            </CreateRoom>
-          }
-        />
-        <Divider sx={{ margin: 0 }} />
-        <form onSubmit={handleFormSubmit}>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 700 }} aria-label='customized table'>
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell>Dorm ID</StyledTableCell>
-                  <StyledTableCell>Room ID</StyledTableCell>
-                  <StyledTableCell align='center'>Room Number</StyledTableCell>
-                  <StyledTableCell align='center'>Bed Capacity</StyledTableCell>
-                  <StyledTableCell align='center'>Setting</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map(row => (
-                  <StyledTableRow key={row.room_id}>
-                    <StyledTableCell component='th' scope='row'>
-                      {dormitoryBuilding.length > 0 ? dormitoryBuilding[0]?.name : ''}
-                    </StyledTableCell>
-                    <StyledTableCell>{row.room_id}</StyledTableCell>
-                    <StyledTableCell align='center'>{row.room_number}</StyledTableCell>
-                    <StyledTableCell align='center'>{row.bed_capacity}</StyledTableCell>
-                    <StyledTableCell align='center'>
-                      <SettingRoom id={row.room_id} room_number ={row.room_number} setSnackbarDeleteRoom={setSnackbarDeleteRoom}>
-                        <Button>
-                          <IoSettingsOutline size={25} />
-                        </Button>
-                      </SettingRoom>
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+      {loading ? (
+        <Typography variant='h1'>{loading ? <Skeleton /> : 'h1'}</Typography>
+      ) : (
+        <Card>
+          <CardHeader
+            title={`Edit Room - ${dormitoryBuilding.length > 0 ? dormitoryBuilding[0].name : ''}`}
+            titleTypographyProps={{ variant: 'h6' }}
+            action={
+              <CreateRoom
+                setSnackbarOpen={setSnackbarOpen}
+                id={dormitoryBuilding.length > 0 ? dormitoryBuilding[0].dorm_id : ''}
+              >
+                <Button variant='contained' color='primary'>
+                  Add Room
+                </Button>
+              </CreateRoom>
+            }
+          />
           <Divider sx={{ margin: 0 }} />
-        </form>
-      </Card>
+          <form onSubmit={handleFormSubmit}>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 700 }} aria-label='customized table'>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Dorm ID</TableCell>
+                    <TableCell>Room ID</TableCell>
+                    <TableCell align='center'>Room Number</TableCell>
+                    <TableCell align='center'>Bed Capacity</TableCell>
+                    <TableCell align='center'>Setting</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map(row => (
+                    <StyledTableRow key={row.room_id}>
+                      <StyledTableCell component='th' scope='row'>
+                        {dormitoryBuilding.length > 0 ? dormitoryBuilding[0]?.name : ''}
+                      </StyledTableCell>
+                      <StyledTableCell>{row.room_id}</StyledTableCell>
+                      <StyledTableCell align='center'>{row.room_number}</StyledTableCell>
+                      <StyledTableCell align='center'>{row.bed_capacity}</StyledTableCell>
+                      <StyledTableCell align='center'>
+                        <SettingRoom
+                          id={row.room_id}
+                          room_number={row.room_number}
+                          setSnackbarDeleteRoom={setSnackbarDeleteRoom}
+                        >
+                          <Button>
+                            <IoSettingsOutline size={25} />
+                          </Button>
+                        </SettingRoom>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Divider sx={{ margin: 0 }} />
+          </form>
+        </Card>
+      )}
 
       <Snackbar
         open={snackbarOpen}
