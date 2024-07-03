@@ -1,8 +1,8 @@
-import { ChangeEvent, MouseEvent, ReactNode, useEffect, useState } from 'react'
+// this is pages/login/index.tsx
 
+import { ChangeEvent, MouseEvent, ReactNode, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -18,16 +18,11 @@ import { styled, useTheme } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
-
 import { userStore } from 'src/stores/userStore'
-
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
-
 import themeConfig from 'src/configs/themeConfig'
-
 import BlankLayout from 'src/@core/layouts/BlankLayout'
-
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 
 interface State {
@@ -240,11 +235,9 @@ const LoginPage = () => {
             <Box
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
             >
-              <Box></Box>
-              {/* <FormControlLabel control={<Checkbox />} label='Remember Me' /> */}
-              {/* <Link passHref href='/'>
-                <LinkStyled onClick={e => e.preventDefault()}>Forgot Password?</LinkStyled>
-              </Link> */}
+              <Link passHref href='login/forget'>
+                <LinkStyled>Forgot Password?</LinkStyled>
+              </Link>
             </Box>
             <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} onClick={handleCheck}>
               Login

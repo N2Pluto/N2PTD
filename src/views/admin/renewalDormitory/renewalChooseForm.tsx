@@ -18,15 +18,32 @@ import { Avatar } from '@mui/material'
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh'
 import Confetti from 'react-confetti'
 import Countdown from 'react-countdown'
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+
+import { makeStyles } from '@mui/styles'
+
+const useStyles = makeStyles(theme => ({
+  error: {
+    backgroundColor: theme.palette.error.dark
+  },
+  success: {
+    backgroundColor: theme.palette.success.dark
+  }
+}))
 
 const RenewalChooseForm = () => {
+  const classes = useStyles()
   const [userRenewal, setUserRenewal] = useState('')
   const [formData, setFormData] = useState(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const userStoreInstance = userStore()
   const [userExistsInRenewalDormitory, setUserExistsInRenewalDormitory] = useState(false)
-  const [residentData, setResidentData] = useState(null)
   const [confetti, setConfetti] = useState(false)
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -84,11 +101,20 @@ const RenewalChooseForm = () => {
         if (response.ok) {
           console.log('Data updated successfully')
           setDrawerOpen(false)
+          setSnackbarMessage('Data updated successfully')
+          setSnackbarSeverity('success')
+          setSnackbarOpen(true)
         } else {
           console.error('Failed to update data')
+          setSnackbarMessage('Failed to update data')
+          setSnackbarSeverity('error')
+          setSnackbarOpen(true)
         }
       } catch (error) {
         console.error('Error updating data:', error)
+        setSnackbarMessage('Error updating data')
+        setSnackbarSeverity('error')
+        setSnackbarOpen(true)
       }
     }
   }
@@ -101,6 +127,10 @@ const RenewalChooseForm = () => {
       return
     }
     setDrawerOpen(open)
+  }
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false)
   }
 
   const renderer = ({ days, hours, minutes, seconds, completed }) => {
@@ -282,6 +312,25 @@ const RenewalChooseForm = () => {
           </Grid>
         </Box>
       </Drawer>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackbar}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {snackbarMessage}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleCloseSnackbar}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.success }}
+      />
     </>
   )
 }
