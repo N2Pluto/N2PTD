@@ -168,7 +168,7 @@ const EditRoom = () => {
                     <StyledTableCell align='center'>{row.room_number}</StyledTableCell>
                     <StyledTableCell align='center'>{row.bed_capacity}</StyledTableCell>
                     <StyledTableCell align='center'>
-                      <SettingRoom id={row.room_id} setSnackbarDeleteRoom={setSnackbarDeleteRoom}>
+                      <SettingRoom id={row.room_id} room_number ={row.room_number} setSnackbarDeleteRoom={setSnackbarDeleteRoom}>
                         <Button>
                           <IoSettingsOutline size={25} />
                         </Button>

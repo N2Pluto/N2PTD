@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react'
 import Paper from '@mui/material/Paper'
 import Table from '@mui/material/Table'
 import TableRow from '@mui/material/TableRow'
@@ -5,20 +6,21 @@ import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
-import { useEffect, useState } from 'react'
 import Button from '@mui/material/Button'
 import Switch from '@mui/material/Switch'
-import router from 'next/router'
-
-// ** MUI Icons
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
 import BuildCircleIcon from '@mui/icons-material/BuildCircle'
 import { sendDiscordMessage } from 'src/pages/api/discord/admin'
 import { userStore } from 'src/stores/userStore'
+import router from 'next/router'
 
 const RoomControl = () => {
   const [room, setRoom] = useState([])
   const { user } = userStore()
   const [dormitoryBuilding, setDormitoryBuilding] = useState([])
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,52 +80,75 @@ const RoomControl = () => {
         setRoom(prevRoom =>
           prevRoom.map(room => (room.room_id === roomId ? { ...room, room_rehearse: !currentStatus } : room))
         )
+
+        // Set Snackbar message and open status
+      const message = !currentStatus
+        ? `Room ${roomNum} in building ${domname} is now open ✅`
+        : `Room ${roomNum} in building ${domname} is now closed ❌`
+        setSnackbarMessage(message)
+        setSnackbarOpen(true)
       }
     } catch (error) {
       console.error('Error Update data into Users table:', error.message)
     }
   }
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false)
+  }
+
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label='simple table'>
-        <TableHead>
-          <TableRow>
-            <TableCell align='center'>Room Number</TableCell>
-            <TableCell align='center'>Bed Capacity</TableCell>
-            <TableCell align='center'>Bed Available</TableCell>
-            <TableCell align='center'>Status</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {room.map(room => (
-            <TableRow
-              key={room?.room_number}
-              sx={{
-                '&:last-of-type td, &:last-of-type th': {
-                  border: 0
-                }
-              }}
-            >
-              <TableCell component='th' scope='row' align='center'>
-                {room.room_number}
-              </TableCell>
-              <TableCell align='center'>{room.bed_capacity}</TableCell>
-              <TableCell align='center'>{room.bed_available}</TableCell>
-              <TableCell align='center'>
-                <Switch
-                  checked={room.room_rehearse}
-                  onChange={() =>
-                    handleUserInfo(room.room_id, room.room_rehearse, room.room_number, dormitoryBuilding.name)
-                  }
-                  icon={<BuildCircleIcon sx={{ display: 'flex', alignItems: 'center', mt: -0.3 }} color='error' />}
-                />
-              </TableCell>
+    <>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label='simple table'>
+          <TableHead>
+            <TableRow>
+              <TableCell align='center'>Room Number</TableCell>
+              <TableCell align='center'>Bed Capacity</TableCell>
+              <TableCell align='center'>Bed Available</TableCell>
+              <TableCell align='center'>Status</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {room.map(room => (
+              <TableRow
+                key={room?.room_number}
+                sx={{
+                  '&:last-of-type td, &:last-of-type th': {
+                    border: 0
+                  }
+                }}
+              >
+                <TableCell component='th' scope='row' align='center'>
+                  {room.room_number}
+                </TableCell>
+                <TableCell align='center'>{room.bed_capacity}</TableCell>
+                <TableCell align='center'>{room.bed_available}</TableCell>
+                <TableCell align='center'>
+                  <Switch
+                    checked={room.room_rehearse}
+                    onChange={() =>
+                      handleUserInfo(room.room_id, room.room_rehearse, room.room_number, dormitoryBuilding.name)
+                    }
+                    icon={<BuildCircleIcon sx={{ display: 'flex', alignItems: 'center', mt: -0.3 }} color='error' />}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity='success' sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </>
   )
 }
 

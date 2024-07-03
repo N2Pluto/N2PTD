@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function SettingRoom({ id, setSnackbarDeleteRoom }: { id: string }) {
+export default function SettingRoom({ id, setSnackbarDeleteRoom, room_number }: { id: string }) {
   const classes = useStyles()
   const [open, setOpen] = React.useState(false)
   const [fullWidth, setFullWidth] = React.useState(true)
@@ -131,19 +131,20 @@ export default function SettingRoom({ id, setSnackbarDeleteRoom }: { id: string 
         <IoSettingsOutline size={25} />
       </Button>
       <Dialog fullWidth={fullWidth} maxWidth={maxWidth} open={open} onClose={handleClose}>
-        <DialogTitle>Setting Room</DialogTitle>
+        <DialogTitle>Setting Room {room_number}</DialogTitle>
         <DialogContent>
-          <DialogContentText>You can set my maximum width and whether to adapt or not.</DialogContentText>
+          <DialogContentText sx={{ mb: 5 }}>
+            In this section, you have the flexibility to customize the settings for Room {room_number} within the
+            dormitory.
+          </DialogContentText>
           <Grid container spacing={2}>
-            {dormitoryRoom &&
+            {dormitoryRoom && dormitoryRoom.length > 0 ? (
               dormitoryRoom.map((room, index) => (
                 <Grid item xs={12} md={6} lg={6} key={index}>
                   <Card>
                     <CardHeader title={`Bed Number ${room.bed_number}`} />
                     <CardContent>
-                      <Typography variant='body2' sx={{ marginBottom: 3.25 }}>
-                        Bed ID: {room.bed_id}
-                      </Typography>
+                      <Typography variant='body2'>Bed ID: {room.bed_id}</Typography>
                       <Typography variant='body2'>Room ID: {room.room_id}</Typography>
                       <Typography variant='body2'>Bed Status: {room.bed_status.toString()}</Typography>
                       <Typography variant='body2'>Bed Number: {room.bed_number}</Typography>
@@ -153,7 +154,28 @@ export default function SettingRoom({ id, setSnackbarDeleteRoom }: { id: string 
                     </CardActions>
                   </Card>
                 </Grid>
-              ))}
+              ))
+            ) : (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '100%',
+                  width: '100%'
+                }}
+              >
+                <img
+                  src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/bedimg/no_bed_13322224.png'
+                  alt='No Data'
+                  width='200'
+                  height='200'
+                  style={{ marginBottom: '10px' }}
+                />
+                <Typography variant='body1'>Bed Not Found in this Room.</Typography>
+              </div>
+            )}
           </Grid>
         </DialogContent>
         <DialogActions>

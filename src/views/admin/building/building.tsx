@@ -156,19 +156,27 @@ const Building = ({ dorm_id }) => {
       <Grid container spacing={3} sx={{ pt: 5 }}>
         {dormitoryBuilding &&
           dormitoryBuilding.map(dorm => (
-            <Grid item xs={12} sm={6} md={4} key={dorm.dorm_id}>
+            <Grid item xs={12} sm={6} md={3} key={dorm.dorm_id}>
               <Card>
-                <CardActionArea>
-                  <CardMedia sx={{ height: '14.5625rem' }} image={dorm.images_url} />
-                  <CardContent>
-                    <Typography gutterBottom variant='h5' component='div'>
-                      {dorm.name}
-                    </Typography>
-                    <Typography variant='body2' color='text.secondary'>
-                      {dorm.dorm_description}
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
+                <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <img width={'100%'} height={'100%'} alt='dom img' src={dorm.images_url} />
+                </CardContent>
+                <CardContent>
+                  <Typography
+                    variant='h6'
+                    sx={{
+                      fontWeight: 700,
+                      fontStyle: 'normal',
+                      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
+                    }}
+                  >
+                    {dorm.name}
+                  </Typography>
+
+                  <Typography variant='body2' color='text.secondary'>
+                    {dorm.dorm_description}
+                  </Typography>
+                </CardContent>
 
                 <CardActions>
                   <Box display='flex' justifyContent='space-between' width='100%'>
