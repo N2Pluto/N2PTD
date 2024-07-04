@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Box from '@mui/material/Box'
@@ -31,8 +31,33 @@ const ForgetPasswordPage = () => {
   const [error, setError] = useState<string | null>(null)
   const [isVerified, setIsVerified] = useState<boolean>(false)
   const [isOtpSent, setIsOtpSent] = useState<boolean>(false)
-  const [generatedOtp, setGeneratedOtp] = useState('')
+  const [isOtpVerified, setIsOtpVerified] = useState<boolean>(false)
+  const [generatedOtp, setGeneratedOtp] = useState<string>('')
+  const [otpTimestamp, setOtpTimestamp] = useState<Date | null>(null)
+  const [cooldownTime, setCooldownTime] = useState<number>(0)
+  const [failedAttempts, setFailedAttempts] = useState<number>(0)
+  const [lockoutTime, setLockoutTime] = useState<number>(0)
   const router = useRouter()
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout
+
+    if (cooldownTime > 0) {
+      interval = setInterval(() => {
+        setCooldownTime(prev => (prev > 0 ? prev - 1 : 0))
+      }, 1000)
+    }
+
+    if (lockoutTime > 0) {
+      interval = setInterval(() => {
+        setLockoutTime(prev => (prev > 0 ? prev - 1 : 0))
+      }, 1000)
+    }
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [cooldownTime, lockoutTime])
 
   const handleChangeEmail = (event: ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value)
@@ -74,101 +99,6 @@ const ForgetPasswordPage = () => {
         if (data.valid) {
           setIsVerified(true)
           setError(null)
-
-          // Generate OTP and store it
-          const otp = generateOtp()
-          setGeneratedOtp(otp) // Store the generated OTP for later verification
-
-          // Send OTP
-         const otpResponse = await fetch('/api/loginforget/nodemailer/nodemailer', {
-           method: 'POST',
-           headers: {
-             'Content-Type': 'application/json'
-           },
-           body: JSON.stringify({
-             to: email,
-             subject: 'Your OTP Code for Password Reset',
-             text: `Your OTP code is ${otp}`,
-             html: `
-      <!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>OTP Code</title>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              background-color: #f9f9f9;
-              margin: 0;
-              padding: 0;
-              color: #333;
-            }
-            .container {
-              max-width: 600px;
-              margin: 0 auto;
-              padding: 20px;
-              background-color: #ffffff;
-              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-              border-radius: 8px;
-            }
-            .header {
-              text-align: center;
-              padding-bottom: 20px;
-              border-bottom: 1px solid #eeeeee;
-            }
-            .header img {
-              max-width: 100px;
-              margin-bottom: 20px;
-            }
-            .content {
-              padding: 20px 0;
-            }
-            .otp {
-              font-size: 24px;
-              font-weight: bold;
-              color: #4caf50;
-              margin: 20px 0;
-              text-align: center;
-            }
-            .footer {
-              text-align: center;
-              padding-top: 20px;
-              border-top: 1px solid #eeeeee;
-              font-size: 12px;
-              color: #999999;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <img src="https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png" alt="Logo">
-              <h2>OTP Code for Password Reset</h2>
-            </div>
-            <div class="content">
-              <p>Hello,</p>
-              <p>We received a request to reset your password. Please use the OTP code below to proceed:</p>
-              <div class="otp">${otp}</div>
-              <p>If you did not request a password reset, please ignore this email.</p>
-              <p>Thank you.</p>
-            </div>
-            <div class="footer">
-              <p>&copy; ${new Date().getFullYear()} Your Company. All rights reserved.</p>
-            </div>
-          </div>
-        </body>
-      </html>
-    `
-           })
-         })
-
-
-          if (otpResponse.ok) {
-            setIsOtpSent(true)
-          } else {
-            setError('Failed to send OTP. Please try again.')
-          }
         } else {
           setError('Email or student ID is incorrect')
         }
@@ -184,24 +114,171 @@ const ForgetPasswordPage = () => {
     return Math.floor(100000 + Math.random() * 900000).toString()
   }
 
-  const handleSubmit = async () => {
-    if (!newPassword) {
-      setError('Please enter a new password')
+  const handleRequestOtp = async () => {
+    if (!email || !studentId) {
+      setError('Please enter your email and student ID')
       return
+    }
+
+    if (cooldownTime > 0) {
+      setError(`Please wait ${cooldownTime} seconds before requesting a new OTP`)
+      return
+    }
+
+    const otp = generateOtp()
+    setGeneratedOtp(otp)
+    setOtpTimestamp(new Date())
+    setCooldownTime(60)
+
+    try {
+      const otpResponse = await fetch('/api/loginforget/nodemailer/nodemailer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          to: email,
+          subject: 'Your OTP Code for Password Reset',
+          text: `Your OTP code is ${otp}`,
+          html: `
+            <!DOCTYPE html>
+            <html lang="en">
+              <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>OTP Code</title>
+                <style>
+                  body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f9f9f9;
+                    margin: 0;
+                    padding: 0;
+                    color: #333;
+                  }
+                  .container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    background-color: #ffffff;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    border-radius: 8px;
+                  }
+                  .header {
+                    text-align: center;
+                    padding-bottom: 20px;
+                    border-bottom: 1px solid #eeeeee;
+                  }
+                  .header img {
+                    max-width: 100px;
+                    margin-bottom: 20px;
+                  }
+                  .content {
+                    padding: 20px 0;
+                  }
+                  .otp {
+                    font-size: 24px;
+                    font-weight: bold;
+                    color: #4caf50;
+                    margin: 20px 0;
+                    text-align: center;
+                  }
+                  .footer {
+                    text-align: center;
+                    padding-top: 20px;
+                    border-top: 1px solid #eeeeee;
+                    font-size: 12px;
+                    color: #999999;
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="header">
+                    <img src="https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png" alt="Logo">
+                    <h2>OTP Code for Password Reset</h2>
+                  </div>
+                  <div class="content">
+                    <p>Hello,</p>
+                    <p>We received a request to reset your password. Please use the OTP code below to proceed:</p>
+                    <div class="otp">${otp}</div>
+                    <p>If you did not request a password reset, please ignore this email.</p>
+                    <p>Thank you.</p>
+                  </div>
+                  <div class="footer">
+                    <p>&copy; ${new Date().getFullYear()} Your Company. All rights reserved.</p>
+                  </div>
+                </div>
+              </body>
+            </html>
+          `
+        })
+      })
+
+      if (otpResponse.ok) {
+        setIsOtpSent(true)
+      } else {
+        setError('Failed to send OTP. Please try again.')
+      }
+    } catch (error) {
+      setError('An error occurred. Please try again.')
     }
   }
 
-  const handleVerifyOtp = async () => {
+  const handleVerifyOtp = () => {
     if (!otp) {
       setError('Please enter the OTP sent to your email')
-      console.log('Please enter the OTP sent to your email')
       return
     }
 
-    // Verify the OTP
+    // Increment failed attempts if OTP is incorrect
+    if (otp !== generatedOtp) {
+      setFailedAttempts(prev => prev + 1)
+    }
+
+    // Check if the user should be locked out
+    if (failedAttempts >= 3) {
+      // Start with 10 seconds for demonstration
+      setLockoutTime(60)
+      setError(`Too many failed attempts. Please wait 60 seconds before trying again.`)
+      const countdown = () => {
+        let timeLeft = 60 // Start countdown from 10 seconds
+        const timerId = setInterval(() => {
+          timeLeft -= 1
+          if (timeLeft <= 0) {
+            clearInterval(timerId) // Stop the countdown
+            setError('') // Optionally clear or update the error message
+            setFailedAttempts(0) // Reset failedAttempts after lockout
+          } else {
+            setError(`Too many failed attempts. Please wait ${timeLeft} seconds before trying again.`)
+          }
+        }, 1000)
+      }
+      countdown()
+      return
+    }
+
+    // If OTP is incorrect, show error and return without verifying further
     if (otp !== generatedOtp) {
       setError('Invalid OTP. Please try again.')
-      console.log('Invalid OTP. Please try again.')
+      return
+    }
+
+    // Check if OTP has expired
+    const now = new Date()
+    if (otpTimestamp && (now.getTime() - otpTimestamp.getTime()) / 1000 > 900) {
+      setError('OTP has expired. Please request a new OTP.')
+      return
+    }
+
+    // If OTP is correct, not expired, and user is not locked out
+    setIsOtpVerified(true)
+    setError(null)
+    setFailedAttempts(0) // Reset failedAttempts on successful verification
+  }
+
+  const handleResetPassword = async () => {
+    if (!newPassword) {
+      setError('Please enter a new password')
       return
     }
 
@@ -278,18 +355,6 @@ const ForgetPasswordPage = () => {
               required
               disabled={isVerified}
             />
-            {isVerified && (
-              <TextField
-                fullWidth
-                id='new_password'
-                label='New Password'
-                type='password'
-                onChange={handleChangeNewPassword}
-                value={newPassword}
-                sx={{ marginBottom: 4 }}
-                required
-              />
-            )}
             {isOtpSent && (
               <TextField
                 fullWidth
@@ -297,6 +362,19 @@ const ForgetPasswordPage = () => {
                 label='OTP'
                 onChange={handleChangeOtp}
                 value={otp}
+                sx={{ marginBottom: 4 }}
+                required
+                disabled={isOtpVerified}
+              />
+            )}
+            {isOtpVerified && (
+              <TextField
+                fullWidth
+                id='new_password'
+                label='New Password'
+                type='password'
+                onChange={handleChangeNewPassword}
+                value={newPassword}
                 sx={{ marginBottom: 4 }}
                 required
               />
@@ -311,10 +389,31 @@ const ForgetPasswordPage = () => {
               size='large'
               variant='contained'
               sx={{ marginBottom: 7 }}
-              onClick={isOtpSent ? handleVerifyOtp : isVerified ? handleSubmit : handleCheck}
+              onClick={
+                isOtpSent
+                  ? isOtpVerified
+                    ? handleResetPassword
+                    : handleVerifyOtp
+                  : isVerified
+                  ? handleRequestOtp
+                  : handleCheck
+              }
+              disabled={lockoutTime > 0}
             >
-              {isOtpSent ? 'Verify OTP' : isVerified ? 'Reset Password' : 'Check'}
+              {isOtpSent ? (isOtpVerified ? 'Reset Password' : 'Verify OTP') : isVerified ? 'Request OTP' : 'Check'}
             </Button>
+            {isOtpSent && !isOtpVerified && (
+              <Button
+                fullWidth
+                size='large'
+                variant='outlined'
+                sx={{ marginBottom: 7 }}
+                onClick={handleRequestOtp}
+                disabled={cooldownTime > 0}
+              >
+                Resend OTP {cooldownTime > 0 && `(${cooldownTime}s)`}
+              </Button>
+            )}
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Typography variant='body2' sx={{ marginRight: 2 }}>
                 Remember your password?
