@@ -6,8 +6,7 @@ const handler = async (req: any, res: any) => {
 
     // Fetch data from Users table
     const { data: userData, error: userError } = await supabase.from('Users').select('*').eq('user_id', user_id)
-
-    if (userError || userData.length === 0) {
+    if (userError || !userData || userData.length === 0) {
       throw new Error(userError?.message || 'No user found')
     }
 
@@ -16,8 +15,7 @@ const handler = async (req: any, res: any) => {
       .from('Users_Info')
       .select('*')
       .eq('user_id', user_id)
-
-    if (userInfoError ) {
+    if (userInfoError || !userInfoData) {
       throw new Error(userInfoError?.message || 'No user info found')
     }
 
@@ -26,8 +24,7 @@ const handler = async (req: any, res: any) => {
       .from('Users_Req')
       .select('*')
       .eq('user_id', user_id)
-
-    if (userReqError || userReqData.length === 0) {
+    if (userReqError || !userReqData || userReqData.length === 0) {
       throw new Error(userReqError?.message || 'No user request found')
     }
 
@@ -36,12 +33,51 @@ const handler = async (req: any, res: any) => {
       .from('Reservation')
       .select('*')
       .eq('user_id', user_id)
-
-    if (reservationError) {
+    if (reservationError || !reservationData) {
       throw new Error(reservationError.message || 'No reservation found')
     }
 
-    res.status(200).json({ userData: userData[0], userInfoData: userInfoData[0], userReqData: userReqData[0] , reservationData: reservationData[0]})
+    // Additional details fetch
+    let dormitoryBuildingName = null,
+      dormitoryRoomNumber = null,
+      dormitoryBedNumber = null
+    if (reservationData && reservationData.length > 0) {
+      const { dorm_id, room_id, bed_id } = reservationData[0]
+
+      // Fetch Dormitory_Building name
+      if (dorm_id) {
+        const { data: dormBuildingData } = await supabase
+          .from('Dormitory_Building')
+          .select('name')
+          .eq('dorm_id', dorm_id)
+        dormitoryBuildingName = dormBuildingData && dormBuildingData.length > 0 ? dormBuildingData[0].name : null
+      }
+
+      // Fetch Dormitory_Room number
+      if (room_id) {
+        const { data: dormRoomData } = await supabase
+          .from('Dormitory_Room')
+          .select('room_number')
+          .eq('room_id', room_id)
+        dormitoryRoomNumber = dormRoomData && dormRoomData.length > 0 ? dormRoomData[0].room_number : null
+      }
+
+      // Fetch Dormitory_Bed number
+      if (bed_id) {
+        const { data: dormBedData } = await supabase.from('Dormitory_Bed').select('bed_number').eq('bed_id', bed_id)
+        dormitoryBedNumber = dormBedData && dormBedData.length > 0 ? dormBedData[0].bed_number : null
+      }
+    }
+
+    res.status(200).json({
+      userData: userData[0],
+      userInfoData: userInfoData[0],
+      userReqData: userReqData[0],
+      reservationData: reservationData[0],
+      dormitoryBuildingName,
+      dormitoryRoomNumber,
+      dormitoryBedNumber
+    })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }

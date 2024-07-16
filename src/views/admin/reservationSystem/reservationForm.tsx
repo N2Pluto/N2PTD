@@ -179,7 +179,7 @@ export default function ReservationForm() {
     })
 
     const data = await response.json()
-    onClose()
+    setDrawerOpen(false)
     setSnackbarOpen(true) // Show the Snackbar on success
   }
 

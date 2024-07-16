@@ -80,6 +80,27 @@ const useNavigation = (): VerticalNavItemsType => {
       path: '/admin/importStudent'
     },
     {
+      sectionTitle: 'Form Req',
+      icon: DnsOutlinedIcon,
+      children: [
+        {
+          title: 'Edit Profile',
+          icon: ApartmentIcon,
+          path: '/admin/form/editProfileForm'
+        },
+        {
+          title: 'Change Room',
+          icon: ApartmentIcon,
+          path: '/admin/form/changeRoomForm'
+        },
+        {
+          title: 'Transfer Room',
+          icon: PersonIcon,
+          path: '/admin/form/transferRoomForm'
+        }
+      ]
+    },
+    {
       sectionTitle: 'Information',
       icon: DnsOutlinedIcon,
       children: [
@@ -180,6 +201,27 @@ const useNavigation = (): VerticalNavItemsType => {
       title: 'Form Request',
       icon: RequestPageIcon,
       path: '/userGoogleForm'
+    },
+    {
+      sectionTitle: 'Form',
+      icon: CorporateFareOutlinedIcon,
+      children: [
+        {
+          title: 'Edit Profile',
+          icon: DomainAddOutlinedIcon,
+          path: '/userGoogleForm/editCard'
+        },
+        {
+          title: 'Change Room',
+          icon: CorporateFareOutlinedIcon,
+          path: '/userGoogleForm/changeCard'
+        },
+        {
+          title: 'Transfer Room',
+          icon: CorporateFareOutlinedIcon,
+          path: '/userGoogleForm/transferCard'
+        }
+      ]
     }
   ]
 
