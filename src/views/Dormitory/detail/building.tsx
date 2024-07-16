@@ -5,7 +5,6 @@ import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
 import { useEffect, useState } from 'react'
-import { styled } from '@mui/material/styles'
 import Grid, { GridProps } from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
 import { CardActions, Dialog, DialogContent, DialogTitle } from '@mui/material'
@@ -20,6 +19,31 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import TransgenderIcon from '@mui/icons-material/Transgender'
 import FilterDrawer from '../components/BuildingFilterDialog'
 import Skeleton from '@mui/material/Skeleton'
+import { keyframes, styled } from '@mui/system'
+
+const slideIn = keyframes`
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+`
+
+const AnimatedCard = styled(Card)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  flexGrow: 1,
+  animation: `${slideIn} 0.5s ease-in-out`,
+  transform: 'scale(1)',
+  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+  '&:hover': {
+    transform: 'scale(1.05)', // Added transform: scale(1.05) on hover
+    boxShadow: '0 0 20px rgba(0,0,0,0.3)'
+  }
+}))
 
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
@@ -181,7 +205,19 @@ const ReservationBuildingDetails = () => {
               .filter(dorm => priceFilter === '' || dorm.price === priceFilter)
               .map(dorm => (
                 <Grid key={dorm.dorm_id} item xs={12} sm={6} md={3} pb={5}>
-                  <Card>
+                  <AnimatedCard
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      flexGrow: 1,
+                      transform: 'scale(1)',
+                      transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+                      '&:hover': {
+                        transform: 'scale(1.05)', // Added transform: scale(1.05) on hover
+                        boxShadow: '0 0 20px rgba(0,0,0,0.15)'
+                      }
+                    }}
+                  >
                     <Grid container spacing={6}>
                       <StyledGrid item md={12} xs={12}>
                         <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -290,7 +326,7 @@ const ReservationBuildingDetails = () => {
                         </CardActions>
                       </Grid>
                     </Grid>
-                  </Card>
+                  </AnimatedCard>
                 </Grid>
               ))}
       </Grid>
