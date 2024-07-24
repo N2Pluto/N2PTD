@@ -65,9 +65,6 @@ const VerticalNavItems = (props: Props) => {
               handleClick((item as NavSectionTitle).sectionTitle, (item as NavSectionTitle).children, event)
             }
             style={{
-              backgroundColor: open.includes((item as NavSectionTitle).sectionTitle)
-                ? theme.palette.action.selected
-                : theme.palette.common.white,
               display: 'flex',
               flexDirection: 'row',
               justifyContent: 'space-between'
@@ -162,10 +159,10 @@ const VerticalNavItems = (props: Props) => {
         PaperProps={{
           style: {
             position: 'fixed',
-            top: '10%', 
-            left: 'calc(91%)', 
+            top: '10%',
+            left: 'calc(91%)',
             transform: 'none',
-            margin: 0,
+            margin: 0
           }
         }}
       >

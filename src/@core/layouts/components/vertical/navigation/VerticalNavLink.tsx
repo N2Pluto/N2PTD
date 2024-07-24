@@ -31,7 +31,10 @@ const MenuNavLink = styled(ListItemButton)<
   borderBottomRightRadius: 100,
   color: theme.palette.text.primary,
   padding: theme.spacing(2.25, 3.5),
-  transition: 'opacity .25s ease-in-out',
+  transition: 'opacity .25s ease-in-out, transform .25s ease-in-out', // Add transition for transform
+  '&:hover': {
+    transform: 'scale(1.1)' // Add scale effect on hover
+  },
   '&.active, &.active:hover': {
     boxShadow: theme.shadows[3],
     backgroundImage: `linear-gradient(98deg, ${theme.palette.customColors.primaryGradient}, ${theme.palette.primary.main} 94%)`
@@ -93,7 +96,7 @@ const VerticalNavLink = ({ item, navVisible, toggleNavVisibility, navWidth }: Pr
             alignItems: navWidth === 150 ? 'center' : 'flex-start',
             borderTopRightRadius: navWidth === 150 ? 0 : undefined,
             borderBottomRightRadius: navWidth === 150 ? 0 : undefined,
-            borderRadius: navWidth === 150 ? 10 : undefined // Set borderRadius to 20 when navWidth is 150
+            borderRadius: navWidth === 150 ? 10 : undefined // Set borderRadius to 10 when navWidth is 150
           }}
         >
           <ListItemIcon

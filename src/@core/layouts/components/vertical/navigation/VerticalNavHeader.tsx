@@ -45,7 +45,10 @@ const HeaderTitle = styled(Typography)<TypographyProps>(({ theme }) => ({
   lineHeight: 'normal',
   textTransform: 'uppercase',
   color: theme.palette.text.primary,
-  transition: 'opacity .25s ease-in-out, margin .25s ease-in-out'
+  transition: 'opacity .25s ease-in-out, margin .25s ease-in-out, transform .25s ease-in-out', // Add transform transition
+  '&:hover': {
+    transform: 'scale(1.2)' // Add scale effect on hover
+  }
 }))
 
 const StyledLink = styled('a')({
@@ -64,10 +67,19 @@ const VerticalNavHeader = (props: Props) => {
       <Box sx={{ display: 'flex', flexGrow: 1, alignItems: 'center' }}>
         {navWidth === 150 ? (
           <>
-            <img
+            <Box
+              component='img'
               src={'https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png'}
+              sx={{
+                height: 75,
+                width: 75,
+                pt: 3,
+                transition: 'transform .25s ease-in-out', // Add transform transition
+                '&:hover': {
+                  transform: 'scale(1.2)' // Add scale effect on hover
+                }
+              }}
               alt='logo'
-              style={{ height: 75, width: 75, paddingTop: 3 }}
             />
             <IconButton
               color='primary'
@@ -76,7 +88,13 @@ const VerticalNavHeader = (props: Props) => {
                 fontSize: 'large',
                 '& svg': { fontSize: '2rem' },
                 padding: 0,
-                ml: 1 // Adjust margin left for spacing
+                ml: 1, // Adjust margin left for spacing
+                backgroundColor: theme.palette.background.paper, // Background color
+                boxShadow: theme.shadows[3], // Box shadow for depth
+                borderRadius: theme.shape.borderRadius, // Border radius
+                '&:hover': {
+                  backgroundColor: theme.palette.action.hover // Hover effect
+                }
               }}
             >
               <ChevronRight />
@@ -92,27 +110,43 @@ const VerticalNavHeader = (props: Props) => {
                   <Box
                     component='img'
                     src={'https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png'}
-                    sx={{ height: 75, width: 75, pt: 3 }}
+                    sx={{
+                      height: 75,
+                      width: '100%',
+                      pt: 3,
+                      transition: 'transform .25s ease-in-out', // Add transform transition
+                      '&:hover': {
+                        transform: 'scale(1.2)' // Add scale effect on hover
+                      }
+                    }}
                     alt='logo'
-                  ></Box>
-                  <HeaderTitle variant='h6' sx={{ ml: 3, pt: 6 }}>
-                    {themeConfig.templateName}
-                  </HeaderTitle>
+                  />
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <HeaderTitle variant='body1' sx={{ ml: 1, pt: 6, textAlign: 'center' }}>
+                      DORMITORY MENU
+                    </HeaderTitle>
+                    <IconButton
+                      color='primary'
+                      onClick={toggleNavWidth}
+                      sx={{
+                        fontSize: 'large',
+                        '& svg': { fontSize: '2rem' },
+                        padding: 0,
+                        ml: 2, // Adjust margin left for spacing
+                        backgroundColor: theme.palette.background.paper, // Background color
+                        boxShadow: theme.shadows[3], // Box shadow for depth
+                        borderRadius: theme.shape.borderRadius, // Border radius
+                        '&:hover': {
+                          backgroundColor: theme.palette.action.hover // Hover effect
+                        }
+                      }}
+                    >
+                      {navWidth === 100 ? <ChevronRight /> : <ChevronLeft />}
+                    </IconButton>
+                  </Box>
                 </StyledLink>
               </Link>
             )}
-            <IconButton
-              color='primary'
-              onClick={toggleNavWidth}
-              sx={{
-                fontSize: 'large',
-                '& svg': { fontSize: '2rem' },
-                padding: 0,
-                ml: -2 // Adjust margin left for spacing
-              }}
-            >
-              {navWidth === 100 ? <ChevronRight /> : <ChevronLeft />}
-            </IconButton>
           </>
         )}
       </Box>

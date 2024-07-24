@@ -32,7 +32,10 @@ const SwipeableDrawer = styled(MuiSwipeableDrawer)<SwipeableDrawerProps>({
     left: 'unset',
     right: 'unset',
     overflowX: 'hidden',
-    transition: 'width .25s ease-in-out, box-shadow .25s ease-in-out'
+    transition: 'width .25s ease-in-out, box-shadow .25s ease-in-out',
+    borderRadius: '8px', // Add rounded corners
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)', // Add smooth shadow
+    background: 'linear-gradient(135deg, #1f1f1f 0%, #3f3f3f 100%)' // Add gradient background
   }
 })
 
@@ -70,7 +73,10 @@ const Drawer = (props: Props) => {
         width: navWidth,
         '& .MuiDrawer-paper': {
           borderRight: 0,
-          backgroundColor: theme.palette.background.default
+          backgroundColor: theme.palette.background.default,
+          borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+          background: 'linear-gradient(135deg, #1f1f1f 0%, #3f3f3f 100%)'
         }
       }}
     >

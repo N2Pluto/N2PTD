@@ -19,13 +19,14 @@ const AppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   padding: theme.spacing(0, 6),
-  backgroundColor: alpha(theme.palette.common.white, 0.8),
+  backgroundColor: theme.palette.common.white,
   color: theme.palette.text.primary,
   minHeight: theme.mixins.toolbar.minHeight + 25, // Increased height by adding 25px
   top: 0,
   position: 'fixed', // Set position to fixed
   width: '100%', // Ensure it spans the full width
   zIndex: theme.zIndex.appBar, // Ensure it stays above other elements
+  borderBottom: `1px solid ${theme.palette.grey[500]}`, // Add bottom border with gray color
   [theme.breakpoints.down('lg')]: {
     paddingLeft: theme.spacing(4),
     paddingRight: theme.spacing(4),
