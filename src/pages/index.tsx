@@ -43,19 +43,59 @@ const slideDown = keyframes`
   }
 `
 
-// Create a styled Box component with slide-up animation
-const BackgroundBox = styled(Box)`
-  animation: ${slideUp} 1s ease-out;,
-
+// Define keyframes for premium background animation
+const backgroundAnimation = keyframes`
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
 `
 
-// Create a styled Box component with slide-down animation
-const TextBox = styled(Box)`
-  animation: ${slideDown} 1s ease-out;
-  animation-delay: 1s;
-  animation-fill-mode: forwards;
+// Define keyframes for premium text animation
+const textAnimation = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(0);
+    text-shadow: 0px 6px 6px rgba(0, 0, 0, 0.35);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  }
+`
+
+// Create a styled Box component with slide-up and background animation
+
+// animation: ${slideUp} 1s ease-out, ${backgroundAnimation} 5s infinite alternate ease-in-out
+const BackgroundBox = styled(Box)`
+  animation: ${slideUp} 1s ease-out, ${backgroundAnimation} 5s 1s infinite;
+`
+
+// Create a styled Box component with slide-down and text animation
+const ModernTextBox = styled(Box)`
+  animation: ${slideDown} 1s ease-out 1s forwards, ${textAnimation} 2s ease-out 1s forwards;
   opacity: 0; /* Initially hidden */
-  animation: ${slideDown} 1s ease-out 1s forwards;
+  color: #2e2e2e; // Modern text color
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); // Adding a shadow for modern effect
+`
+
+const LuxuriousTextBox = styled(ModernTextBox)`
+  animation: ${slideDown} 1.5s cubic-bezier(0.87, 0, 0.13, 1) 1s forwards; // Slower and smoother
+  text-shadow: 2px 4px 6px rgba(0, 0, 0, 0.25); // Deeper shadow for a more luxurious feel
 `
 
 // Create a styled Button component with hover effect
@@ -64,6 +104,12 @@ const StyledButton = styled(Button)`
   &:hover {
     transform: scale(1.2);
   }
+`
+
+const GradientText = styled(Typography)`
+  background: linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `
 
 const LandingPage = () => {
@@ -92,7 +138,7 @@ const LandingPage = () => {
           backgroundSize: 'cover'
         }}
       />
-      <TextBox sx={{ width: '100%', textAlign: 'center', marginTop: theme => theme.spacing(-100) }}>
+      <LuxuriousTextBox sx={{ width: '100%', textAlign: 'center', marginTop: theme => theme.spacing(-100) }}>
         <Typography
           variant='h2'
           sx={{
@@ -109,7 +155,8 @@ const LandingPage = () => {
           sx={{
             mb: 4,
             fontFamily: '"Helvetica Neue", Arial, sans-serif',
-            letterSpacing: '0.05em'
+            letterSpacing: '0.05em',
+            color: '#757575'
           }}
         >
           System case Study: Walailak University
@@ -127,7 +174,7 @@ const LandingPage = () => {
             </StyledButton>
           </Link>
         </Box>
-      </TextBox>
+      </LuxuriousTextBox>
     </Box>
   )
 }

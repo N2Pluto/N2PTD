@@ -9,7 +9,6 @@ import { useRouter } from 'next/router'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import Checkbox from '@mui/material/Checkbox'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import InputLabel from '@mui/material/InputLabel'
@@ -21,6 +20,8 @@ import { styled, useTheme } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 import InputAdornment from '@mui/material/InputAdornment'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert, { AlertProps } from '@mui/material/Alert'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 
@@ -40,17 +41,27 @@ import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 interface State {
   password: string
   showPassword: boolean
+  student_id: string
+  email: string
+  gender: string
 }
 
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
-  [theme.breakpoints.up('sm')]: { width: '28rem' }
+  [theme.breakpoints.up('sm')]: { width: '28rem' },
+  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+  borderRadius: '12px',
+  padding: theme.spacing(4),
+  fontFamily: 'Roboto, sans-serif'
 }))
 
 const LinkStyled = styled('a')(({ theme }) => ({
   fontSize: '0.875rem',
   textDecoration: 'none',
-  color: theme.palette.primary.main
+  color: theme.palette.primary.main,
+  '&:hover': {
+    textDecoration: 'underline'
+  }
 }))
 
 const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ theme }) => ({
@@ -62,8 +73,16 @@ const FormControlLabel = styled(MuiFormControlLabel)<FormControlLabelProps>(({ t
   }
 }))
 
+const Alert = styled(MuiAlert)<AlertProps>(({ theme }) => ({
+  width: '100%',
+  marginTop: theme.spacing(2)
+}))
+
 const RegisterPage = () => {
   const [register, setRegister] = useState([])
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,18 +100,10 @@ const RegisterPage = () => {
   const [values, setValues] = useState<State>({
     password: '',
     showPassword: false,
-    student_id: '', // Add the 'student_id' property
-    email: '', // Add the 'email' property
+    student_id: '',
+    email: '',
     gender: ''
   })
-
-  interface State {
-    password: string
-    showPassword: boolean
-    student_id: string
-    email: string
-    gender: string
-  }
 
   const handleChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
     setValues({ ...values, [prop]: event.target.value })
@@ -106,53 +117,56 @@ const RegisterPage = () => {
 
   const router = useRouter()
 
-  console.log('values.student_id:', values.student_id)
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false)
+  }
 
   const handleSignUp = async () => {
     try {
       // Check if student_id exists in the Student table
-    const studentResponse = await fetch(`/api/register/student/${values.student_id}`);
-    const studentData = await studentResponse.json();
-    console.log(studentData);
+      const studentResponse = await fetch(`/api/register/student/${values.student_id}`)
+      const studentData = await studentResponse.json()
 
-    if (!studentData || !studentData.student_id) {
-      alert('Student ID does not exist in the system.')
-      
-      return
-    }
+      if (!studentData || !studentData.student_id) {
+        setSnackbarMessage('Student ID does not exist in the system.')
+        setSnackbarSeverity('error')
+        setSnackbarOpen(true)
+        return
+      }
       const isExistingUser = register.some(user => user.student_id == values.student_id || user.email === values.email)
 
       if (isExistingUser) {
-        alert('Student ID or email is already in use.')
-
+        setSnackbarMessage('Student ID or email is already in use.')
+        setSnackbarSeverity('error')
+        setSnackbarOpen(true)
         return
       }
 
       if (!values.student_id || !values.email || !values.password) {
-        console.error('Please fill in all fields')
-        alert('Please fill in all fields')
-
+        setSnackbarMessage('Please fill in all fields')
+        setSnackbarSeverity('error')
+        setSnackbarOpen(true)
         return
       }
 
       if (!/^\d{8}$/.test(values.student_id)) {
-        console.error('Student ID must be a number and exactly 8 digits long')
-        alert('Student ID must be a number and exactly 8 digits long')
-
+        setSnackbarMessage('Student ID must be a number and exactly 8 digits long')
+        setSnackbarSeverity('error')
+        setSnackbarOpen(true)
         return
       }
 
       if (!/^[\w-]+(\.[\w-]+)*@mail\.wu\.ac\.th$/.test(values.email)) {
-        console.error('Invalid email format')
-        alert('Invalid email format need to be @mail.wu.ac.th')
-
+        setSnackbarMessage('Invalid email format. It must be @mail.wu.ac.th')
+        setSnackbarSeverity('error')
+        setSnackbarOpen(true)
         return
       }
 
       if (values.password.length < 8) {
-        console.error('Password must be at least 8 characters long')
-        alert('Password must be at least 8 characters long')
-
+        setSnackbarMessage('Password must be at least 8 characters long')
+        setSnackbarSeverity('error')
+        setSnackbarOpen(true)
         return
       }
 
@@ -171,21 +185,26 @@ const RegisterPage = () => {
       })
 
       if (response.ok) {
-        console.log('Data inserted successfully')
-        alert('Register Success')
+        setSnackbarMessage('Register Success')
+        setSnackbarSeverity('success')
+        setSnackbarOpen(true)
         router.push('/pages/login')
       } else {
-        console.error('Failed to insert data')
+        setSnackbarMessage('Failed to insert data')
+        setSnackbarSeverity('error')
+        setSnackbarOpen(true)
       }
     } catch (error) {
-      console.error('Error inserting data:', error)
+      setSnackbarMessage('Error inserting data')
+      setSnackbarSeverity('error')
+      setSnackbarOpen(true)
     }
   }
 
   return (
     <Box className='content-center'>
       <Card sx={{ zIndex: 1 }}>
-        <CardContent sx={{ padding: theme => `${theme.spacing(12, 9, 7)} !important` }}>
+        <CardContent>
           <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Box
               component='img'
@@ -201,14 +220,15 @@ const RegisterPage = () => {
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 fontSize: '1.5rem !important',
-                pt: 6
+                pt: 6,
+                fontFamily: '"Roboto", sans-serif'
               }}
             >
               {themeConfig.templateName}
             </Typography>
           </Box>
           <Box sx={{ mb: 6 }}>
-            <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
+            <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5, fontFamily: '"Roboto", sans-serif' }}>
               REGISTER
             </Typography>
           </Box>
@@ -218,11 +238,17 @@ const RegisterPage = () => {
               fullWidth
               id='student id'
               label='Student ID'
-              sx={{ marginBottom: 4 }}
+              sx={{ marginBottom: 4, fontFamily: '"Roboto", sans-serif' }}
               onChange={handleChange('student_id')}
             />
 
-            <TextField fullWidth type='email' label='Email' sx={{ marginBottom: 4 }} onChange={handleChange('email')} />
+            <TextField
+              fullWidth
+              type='email'
+              label='Email'
+              sx={{ marginBottom: 4, fontFamily: '"Roboto", sans-serif' }}
+              onChange={handleChange('email')}
+            />
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-register-password'>Password</InputLabel>
               <OutlinedInput
@@ -245,24 +271,12 @@ const RegisterPage = () => {
                 }
               />
             </FormControl>
-            {/* <FormControlLabel
-              control={<Checkbox />}
-              label={
-                <Fragment>
-                  <span>I agree to </span>
-                  <Link href='/' passHref>
-                    <LinkStyled onClick={(e: MouseEvent<HTMLElement>) => e.preventDefault()}>
-                      privacy policy & terms
-                    </LinkStyled>
-                  </Link>
-                </Fragment>
-              }
-            /> */}
+
             <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7, mt: 4 }} onClick={handleSignUp}>
               Sign up
             </Button>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Typography variant='body2' sx={{ marginRight: 2 }}>
+              <Typography variant='body2' sx={{ marginRight: 2, fontFamily: '"Roboto", sans-serif' }}>
                 Already have an account?
               </Typography>
               <Typography variant='body2'>
@@ -278,8 +292,17 @@ const RegisterPage = () => {
                 </Link>
               </Typography>
             </Box>
-            {/* <Divider sx={{ my: 5 }}>or</Divider> */}
           </form>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={handleSnackbarClose}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          >
+            <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
         </CardContent>
       </Card>
       <FooterIllustrationsV1 />

@@ -1,4 +1,4 @@
-import { ChangeEvent, useState, useEffect } from 'react'
+import { ChangeEvent, useState, useEffect, ReactNode } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Box from '@mui/material/Box'
@@ -6,6 +6,8 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import CardContent from '@mui/material/CardContent'
+import Snackbar from '@mui/material/Snackbar'
+import MuiAlert, { AlertProps } from '@mui/material/Alert'
 import { styled } from '@mui/material/styles'
 import MuiCard, { CardProps } from '@mui/material/Card'
 
@@ -23,6 +25,10 @@ const LinkStyled = styled('a')(({ theme }) => ({
   color: theme.palette.primary.main
 }))
 
+const Alert = styled(MuiAlert)<AlertProps>(({ theme }) => ({
+  width: '100%'
+}))
+
 const ForgetPasswordPage = () => {
   const [email, setEmail] = useState<string>('')
   const [studentId, setStudentId] = useState<string>('')
@@ -37,6 +43,9 @@ const ForgetPasswordPage = () => {
   const [cooldownTime, setCooldownTime] = useState<number>(0)
   const [failedAttempts, setFailedAttempts] = useState<number>(0)
   const [lockoutTime, setLockoutTime] = useState<number>(0)
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false)
+  const [snackbarMessage, setSnackbarMessage] = useState<string>('')
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success')
   const router = useRouter()
 
   useEffect(() => {
@@ -98,6 +107,9 @@ const ForgetPasswordPage = () => {
         const data = await response.json()
         if (data.valid) {
           setIsVerified(true)
+          setSnackbarMessage('Email and student ID verified successfully.')
+          setSnackbarSeverity('success')
+          setSnackbarOpen(true)
           setError(null)
         } else {
           setError('Email or student ID is incorrect')
@@ -205,7 +217,7 @@ const ForgetPasswordPage = () => {
                     <p>Thank you.</p>
                   </div>
                   <div class="footer">
-                    <p>&copy; ${new Date().getFullYear()} Your Company. All rights reserved.</p>
+                    <p>&copy; ${new Date().getFullYear()} Walailak University. All rights reserved.</p>
                   </div>
                 </div>
               </body>
@@ -216,6 +228,9 @@ const ForgetPasswordPage = () => {
 
       if (otpResponse.ok) {
         setIsOtpSent(true)
+        setSnackbarMessage('OTP sent successfully to your email.')
+        setSnackbarSeverity('success')
+        setSnackbarOpen(true)
       } else {
         setError('Failed to send OTP. Please try again.')
       }
@@ -272,6 +287,9 @@ const ForgetPasswordPage = () => {
 
     // If OTP is correct, not expired, and user is not locked out
     setIsOtpVerified(true)
+    setSnackbarMessage('OTP verified successfully.')
+    setSnackbarSeverity('success')
+    setSnackbarOpen(true)
     setError(null)
     setFailedAttempts(0) // Reset failedAttempts on successful verification
   }
@@ -321,17 +339,20 @@ const ForgetPasswordPage = () => {
                 lineHeight: 1,
                 fontWeight: 600,
                 textTransform: 'uppercase',
-                fontSize: '1.5rem !important'
+                fontSize: '1.5rem !important',
+                fontFamily: '"Roboto", sans-serif'
               }}
             >
               {themeConfig.templateName}
             </Typography>
           </Box>
           <Box sx={{ mb: 6 }}>
-            <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
+            <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5, fontFamily: '"Roboto", sans-serif' }}>
               Forgot Your Password?
             </Typography>
-            <Typography variant='body2'>Enter your email and student ID to reset your password.</Typography>
+            <Typography variant='body2' sx={{ fontFamily: '"Roboto", sans-serif' }}>
+              Enter your email and student ID to reset your password.
+            </Typography>
           </Box>
           <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
             <TextField
@@ -341,7 +362,7 @@ const ForgetPasswordPage = () => {
               label='Email'
               onChange={handleChangeEmail}
               value={email}
-              sx={{ marginBottom: 4 }}
+              sx={{ marginBottom: 4, fontFamily: '"Roboto", sans-serif' }}
               required
               disabled={isVerified}
             />
@@ -351,7 +372,7 @@ const ForgetPasswordPage = () => {
               label='Student ID'
               onChange={handleChangeStudentId}
               value={studentId}
-              sx={{ marginBottom: 4 }}
+              sx={{ marginBottom: 4, fontFamily: '"Roboto", sans-serif' }}
               required
               disabled={isVerified}
             />
@@ -362,7 +383,7 @@ const ForgetPasswordPage = () => {
                 label='OTP'
                 onChange={handleChangeOtp}
                 value={otp}
-                sx={{ marginBottom: 4 }}
+                sx={{ marginBottom: 4, fontFamily: '"Roboto", sans-serif' }}
                 required
                 disabled={isOtpVerified}
               />
@@ -375,7 +396,7 @@ const ForgetPasswordPage = () => {
                 type='password'
                 onChange={handleChangeNewPassword}
                 value={newPassword}
-                sx={{ marginBottom: 4 }}
+                sx={{ marginBottom: 4, fontFamily: '"Roboto", sans-serif' }}
                 required
               />
             )}
@@ -415,7 +436,7 @@ const ForgetPasswordPage = () => {
               </Button>
             )}
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Typography variant='body2' sx={{ marginRight: 2 }}>
+              <Typography variant='body2' sx={{ marginRight: 2, fontFamily: '"Roboto", sans-serif' }}>
                 Remember your password?
               </Typography>
               <Typography variant='body2'>
@@ -432,6 +453,16 @@ const ForgetPasswordPage = () => {
               </Typography>
             </Box>
           </form>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={() => setSnackbarOpen(false)}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          >
+            <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity}>
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
         </CardContent>
       </Card>
       <FooterIllustrationsV1 />
