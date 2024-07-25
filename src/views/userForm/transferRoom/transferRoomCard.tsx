@@ -5,6 +5,7 @@ import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 import { useRouter } from 'next/router'
+import Box from '@mui/material/Box'
 
 const TransferRoomCard = () => {
   const router = useRouter()
@@ -14,28 +15,39 @@ const TransferRoomCard = () => {
   }
 
   return (
-    <Card>
-      <CardMedia sx={{ height: '9.375rem' }} image='/images/cards/watch-on-hand.jpg' />
-      <CardContent sx={{ padding: theme => `${theme.spacing(3, 5.25, 4)} !important` }}>
-        <Typography variant='h6' sx={{ marginBottom: 2 }}>
-          Transfer Room Form
-        </Typography>
-        <Typography variant='body2' sx={{ marginBottom: 2 }}>
-          At Walailak University, students have the option to request a change of dormitory rooms based on availability.
-          Room changes are subject to the availability of vacant rooms within the university dormitories. Students are
-          encouraged to specify their preferred building and room type when making a request. Please note that room
-          changes can only be made to rooms that are currently unoccupied. The university strives to accommodate all
-          requests in a timely and efficient manner, ensuring a smooth transition for students moving to a new room.
-        </Typography>
-      </CardContent>
-      <Button
-        variant='contained'
-        sx={{ py: 2.5, width: '100%', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
-        onClick={handleOpenForm}
-      >
-        Open Form
-      </Button>
-    </Card>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Card sx={{ width: '50%' }}>
+        <CardMedia
+          sx={{ height: '14rem' }}
+          image='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/form_transferRoom1.jpg'
+        />
+        <CardContent sx={{ padding: theme => `${theme.spacing(3, 5.25, 4)} !important` }}>
+          <Typography variant='h6' sx={{ marginBottom: 2 }}>
+            Transfer Room Form
+          </Typography>
+          <Typography variant='body2' sx={{ marginBottom: 2 }}>
+            Please submit a formal request to transfer your current room with another individual. Note that both parties
+            must agree to the transfer. When filling out the form, you will be required to select the following:
+            <ul>
+              <li>
+                <strong>Building:</strong> Choose the building you wish to transfer to.
+              </li>
+              <li>
+                <strong>Room:</strong> Select the specific room within the chosen building.
+              </li>
+              <li>
+                <strong>Bed:</strong> Choose your new bed within the selected room.
+              </li>
+            </ul>
+          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Button variant='contained' sx={{ py: 2.5, width: '50%', borderRadius: 1 }} onClick={handleOpenForm}>
+              Open Form
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
   )
 }
 

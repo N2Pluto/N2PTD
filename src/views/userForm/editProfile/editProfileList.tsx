@@ -11,32 +11,13 @@ import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
-import Collapse from '@mui/material/Collapse'
-import IconButton from '@mui/material/IconButton'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { styled } from '@mui/material/styles'
-
-const ExpandMore = styled(props => {
-  const { expand, ...other } = props
-  return <IconButton {...other} />
-})(({ theme, expand }) => ({
-  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  marginLeft: 'auto',
-  transition: theme.transitions.create('transform', {
-    duration: theme.transitions.duration.shortest
-  })
-}))
 
 export default function EditProfileList() {
   const theme = useTheme()
   const { user } = userStore()
   const [changeRoomData, setChangeRoomData] = useState([])
   const [isLoading, setIsLoading] = useState(false)
-  const [expanded, setExpanded] = useState(-1) // Initialize with -1 to indicate no card is expanded
-
-  const handleExpandClick = index => {
-    setExpanded(expanded === index ? -1 : index) // Toggle the expanded state
-  }
 
   const fetchData = async () => {
     if (!user) {
@@ -95,7 +76,7 @@ export default function EditProfileList() {
       <Backdrop sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }} open={isLoading}>
         <CircularProgress color='inherit' />
       </Backdrop>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} justifyContent={changeRoomData.length === 1 || 2 ? 'center' : 'flex-start'}>
         {changeRoomData.map((item, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
             <Card
@@ -110,10 +91,7 @@ export default function EditProfileList() {
             >
               <CardContent sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
                 <Box sx={{ flexGrow: 1 }}>
-                  <Typography sx={{ fontWeight: 'medium', marginBottom: 2 }}>
-                    EDIT PROFILE #{index + 1} 
-                    {/* {item.userInfo?.name} {item.userInfo?.lastname} */}
-                  </Typography>
+                  <Typography sx={{ fontWeight: 'medium', marginBottom: 2 }}>EDIT PROFILE #{index + 1}</Typography>
                   {/* Conditional rendering for Edit Profile Info messages */}
                   {(item.name || item.lastname) && (
                     <Typography variant='body2' gutterBottom sx={{ fontStyle: 'italic', marginBottom: 1 }}>
@@ -150,7 +128,6 @@ export default function EditProfileList() {
                   </Box>
                 )}
               </CardContent>
-           
             </Card>
           </Grid>
         ))}

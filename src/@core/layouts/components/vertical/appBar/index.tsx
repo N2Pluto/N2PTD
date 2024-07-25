@@ -26,7 +26,7 @@ const AppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
   position: 'fixed', // Set position to fixed
   width: '100%', // Ensure it spans the full width
   zIndex: theme.zIndex.appBar, // Ensure it stays above other elements
-  borderBottom: `1px solid ${theme.palette.grey[500]}`, // Add bottom border with gray color
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
   [theme.breakpoints.down('lg')]: {
     paddingLeft: theme.spacing(4),
     paddingRight: theme.spacing(4),

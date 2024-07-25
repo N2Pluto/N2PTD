@@ -1,22 +1,31 @@
-import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
-import Card from '@mui/material/Card'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import * as React from 'react'
+import Card from '@mui/material/Card'
+import Typography from '@mui/material/Typography'
+import CardContent from '@mui/material/CardContent'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import { CardHeader, Collapse, Divider, Grid, Paper, Table, TableCell, TableContainer, TableHead } from '@mui/material'
-import TableRow from '@mui/material/TableRow'
-import TableBody from '@mui/material/TableBody'
-import { auto } from '@popperjs/core'
-import { userStore, IUser } from 'src/stores/userStore'
-import PersonIcon from '@mui/icons-material/Person'
+import { useEffect, useState } from 'react'
+import Grid from '@mui/material/Grid'
 import Tooltip from '@mui/material/Tooltip'
-import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import FeedIcon from '@mui/icons-material/Feed'
 import AllInboxIcon from '@mui/icons-material/AllInbox'
 import Chip from '@mui/material/Chip'
+import { userStore } from 'src/stores/userStore'
+import PersonIcon from '@mui/icons-material/Person'
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
+import { styled, keyframes } from '@mui/system'
+import {
+  CardActions,
+  Divider,
+  Paper,
+  Table,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableBody,
+  Button
+} from '@mui/material'
+import React from 'react'
 
 interface Column {
   id: 'DETAILS' | 'room' | 'code' | 'Viewdetails' | 'bedstatus'
@@ -27,299 +36,282 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-  { id: 'room', label: 'room', minWidth: 30, align: 'center' },
-  { id: 'code', label: 'bed capacity', minWidth: 150, align: 'center' },
+  { id: 'room', label: 'Room', minWidth: 30, align: 'center' },
+  { id: 'code', label: 'Bed Capacity', minWidth: 150, align: 'center' },
   {
     id: 'bedstatus',
-    label: 'bed status',
+    label: 'Bed Status',
     minWidth: 170,
     align: 'center'
   }
 ]
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`
+
+const StyledCard = styled(Card)(({ theme }) => ({
+  animation: `${fadeIn} 0.6s ease-in-out`,
+  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+  borderRadius: '12px',
+  padding: theme.spacing(3),
+  '&:hover': {
+    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
+    transform: 'scale(1.02)',
+    transition: 'all 0.3s ease-in-out'
+  }
+}))
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  color: theme.palette.text.primary
+}))
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center'
+}))
+
 const ReservationRoomDetails = () => {
   const router = useRouter()
   const [dormitoryBuilding, setDormitoryBuilding] = useState(null)
   const [dormitoryRoom, setDormitoryRoom] = useState([])
-  const [dormitoryRoomStatus, setDormitoryRoomStatus] = useState([])
   const [loading, setLoading] = useState(false)
-  const [reservationData, setReservationData] = useState<Map<string, any[]>>(new Map())
-
-  const [open, setOpen] = useState({}) // Change this line
   const userStoreInstance = userStore()
   const { setUser } = userStoreInstance
 
-  const handleClick = id => {
-    setOpen(prevOpen => ({
-      ...prevOpen,
-      [id]: !prevOpen[id]
-    }))
-  }
-
   useEffect(() => {
-    const fetchReservationData = async (roomId: string) => {
+    const fetchData = async () => {
+      setLoading(true)
       try {
-        setLoading(true)
-        const response = await fetch(`/api/reservation/checkUserReservationBoom?room_id=${roomId}`)
-        const data = await response.json()
-        setReservationData(prevData => {
-          const newData = new Map(prevData)
-          newData.set(roomId, data)
-
-          return newData
-        })
+        const { data } = await fetch(`/api/building/${router.query.id}`).then(res => res.json())
+        setDormitoryBuilding(data)
         setLoading(false)
       } catch (error) {
-        console.error('Error fetching reservation data:', error)
+        console.error('Error fetching dormitory building data:', error)
         setLoading(false)
       }
     }
 
-    dormitoryRoom.forEach(room => {
-      fetchReservationData(room.room_id)
-    })
-  }, [dormitoryRoom])
-
-  useEffect(() => {
-    const fetchDataRoomStatus = async () => {
-      try {
-        const dorm_id = router.query.id // Add the missing declaration for dorm_id
-        const response = await fetch(`/api/reservation/checkStatusRoom?dorm_id=${dorm_id}`)
-        const data = await response.json()
-        setDormitoryRoomStatus(data)
-        console.log('data bed capacity:', data)
-      } catch (error) {
-        console.error('Error fetching room status:', error)
-      }
-    }
-    const fetchDataAndUpdateStatus = async () => {
-      await fetchDataRoomStatus() // Fetch the updated data
-    }
-
-    fetchDataAndUpdateStatus()
-
-    // const intervalId = setInterval(fetchDataAndUpdateStatus, 10000)
-
-    // return () => clearInterval(intervalId)
-  }, []) // Remove dormitoryRoomStatus from dependencies
-
-  useEffect(() => {
     if (router.query.id) {
-      Promise.all([fetchData()])
+      fetchData()
     }
   }, [router.query.id])
 
-  const fetchData = async () => {
-    console.log('router.query.id:', router.query.id)
-    const { data } = await fetch(`/api/building/${router.query.id}`).then(res => res.json())
-    setDormitoryBuilding(data)
-  }
-
-  console.log('dormitoryBuilding:', dormitoryBuilding)
-
   useEffect(() => {
-    const fetchDataRoomByDormID = async () => {
-      console.log('router.query.id:', router.query.id)
-      const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
-      setDormitoryRoom(data)
-      console.log('data:', data)
+    const fetchDataRoom = async () => {
+      try {
+        const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
+        setDormitoryRoom(data)
+      } catch (error) {
+        console.error('Error fetching room data:', error)
+      }
     }
 
-    const fetchDataAndUpdateStatusRoom = async () => {
-      await fetchDataRoomByDormID() // Fetch the updated data
+    if (router.query.id) {
+      fetchDataRoom()
     }
-
-    fetchDataAndUpdateStatusRoom()
-
-    // const intervalId = setInterval(fetchDataAndUpdateStatusRoom, 10000)
-
-    // return () => clearInterval(intervalId)
-  }, [])
-
-  console.log('sdasdad:', dormitoryRoom)
+  }, [router.query.id])
 
   const handleReservation = (room_id: string) => {
-    console.log('Reservation ROOM :', room_id)
-    setUser({ ...userStoreInstance.user, room_id }) // Store room_id in userStore
-    console.log('user:', userStoreInstance.user)
+    setUser({ ...userStoreInstance.user, room_id })
     router.push(`/Dormitory/bed/${room_id}`)
   }
 
   return (
     <>
-      <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
-        <Card>
-          <CardContent>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography sx={{ whiteSpace: 'nowrap', pr: 3, color: 'text.primary' }} variant='body2'>
-                Dormitory
-              </Typography>
+      <Grid container spacing={4}>
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <StyledTypography variant='body2' sx={{ whiteSpace: 'nowrap', pr: 3 }}>
+                  Dormitory
+                </StyledTypography>
 
-              <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
+                <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
 
-              <Typography sx={{ whiteSpace: 'nowrap', pr: 3, pl: 3, color: 'text.primary' }} variant='body2'>
-                Building
-              </Typography>
+                <StyledTypography variant='body2' sx={{ whiteSpace: 'nowrap', pr: 3, pl: 3 }}>
+                  Building
+                </StyledTypography>
 
-              <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
+                <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
 
-              <Typography sx={{ whiteSpace: 'nowrap', pr: 3, pl: 3 }} variant='body2'>
-                Room
-              </Typography>
-            </Box>
-          </CardContent>
-        </Card>
-      </Grid>
+                <StyledTypography variant='body2' sx={{ whiteSpace: 'nowrap', pr: 3, pl: 3 }}>
+                  Room
+                </StyledTypography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
 
-      <Grid item xs={12} sm={12} md={12} lg={12} sx={{ pb: 3 }}>
-        <Card sx={{ pb: 5 }}>
-          {/* <CardMedia sx={{ height: '14.5625rem' }} image={dormitoryBuilding?.images_url} /> */}
-          <CardContent>
-            <Typography variant='h4' sx={{ marginBottom: 2 }}>
-              {dormitoryBuilding?.name}
-            </Typography>
+        <Grid item xs={12}>
+          <StyledCard>
+            <CardContent>
+              <StyledTypography variant='h5' sx={{ marginBottom: 2 }}>
+                {dormitoryBuilding?.name}
+              </StyledTypography>
+              <Divider />
+              <Grid container spacing={6} sx={{ pt: 5 }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', pl: 9 , pt:3 }}>
+                      <img
+                        src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/information_1945758.png'
+                        alt='Information Icon'
+                        style={{ width: 40, height: 40, marginRight: '8px' }} // Added margin-right
+                      />
+                      <StyledTypography variant='h6'>Information</StyledTypography>
+                    </Box>
+                    <Box sx={{ pl: 9, pt: 4 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', pb: 2 }}>
+                        <StyledTypography variant='body1' sx={{ width: 150 }}>
+                          Type building
+                        </StyledTypography>
+                        <StyledTypography variant='body1'>| {dormitoryBuilding?.type_building}</StyledTypography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', pb: 2 }}>
+                        <StyledTypography variant='body1' sx={{ width: 150 }}>
+                          Gender
+                        </StyledTypography>
+                        <StyledTypography variant='body1'>| {dormitoryBuilding?.type_gender}</StyledTypography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', pb: 2 }}>
+                        <StyledTypography variant='body1' sx={{ width: 150 }}>
+                          Price
+                        </StyledTypography>
+                        <StyledTypography variant='body1'>| {dormitoryBuilding?.price} baht / term</StyledTypography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', pb: 2 }}>
+                        <StyledTypography variant='body1' sx={{ width: 150 }}>
+                          Bathroom
+                        </StyledTypography>
+                        <StyledTypography variant='body1'>| {dormitoryBuilding?.type_bathroom}</StyledTypography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', pb: 2 }}>
+                        <StyledTypography variant='body1' sx={{ width: 150 }}>
+                          Roommate
+                        </StyledTypography>
+                        <StyledTypography variant='body1'>| {dormitoryBuilding?.type_roommate} Person</StyledTypography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', pb: 2 }}>
+                        <StyledTypography variant='body1' sx={{ width: 150 }}>
+                          Bed type
+                        </StyledTypography>
+                        <StyledTypography variant='body1'>| {dormitoryBuilding?.type_bedtype}</StyledTypography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', pb: 2 }}>
+                        <StyledTypography variant='body1' sx={{ width: 150 }}>
+                          Bed capacity
+                        </StyledTypography>
+                        <StyledTypography variant='body1'>| {dormitoryBuilding?.type_bedcapacity} bed</StyledTypography>
+                      </Box>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={6} sx={{ mt: 3 }}>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center' }}>
+                      <iframe
+                        src={`http://maps.google.com/maps?q=${dormitoryBuilding?.latitude},${dormitoryBuilding?.longitude}&z=16&output=embed`}
+                        height='275'
+                        width='500'
+                      />
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Divider />
+                  </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', pl: 3 }}>
+                    <img
+                      src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/welfare_2638077.png'
+                      alt='Information Icon'
+                      style={{ width: 40, height: 40, marginRight: '8px' }} // Added margin-right
+                    />
+                    <StyledTypography variant='h6'>Accommodation</StyledTypography>
+                  </Box>
+                  <Box sx={{ pl: 3, pt: 4 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', pb: 2 }}>
+                      <StyledTypography variant='body1' sx={{ width: 150 }}>
+                        Furniture
+                      </StyledTypography>
+                      <StyledTypography variant='body1'>
+                        | {JSON.parse(dormitoryBuilding?.type_furniture || '[]').join(', ')}
+                      </StyledTypography>
+                    </Box>
 
-            <Grid container spacing={6} sx={{ pt: 5 }}>
-              <Grid item xs={12} sm={12}>
-                <Box sx={{ display: 'flex', alignItems: 'center', pl: 3 }}>
-                  <Typography variant='body2' sx={{ pr: 2 }}>
-                    <FeedIcon sx={{ fontSize: 50 }} />
-                  </Typography>
-                  <Typography variant='h5'>Information</Typography>
-                </Box>
-                <Box sx={{ pl: 3, pt: 4 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', height: 10, pb: 5 }}>
-                    <Typography variant='body1' sx={{ width: 150 }}>
-                      Type building{' '}
-                    </Typography>
-                    <Typography variant='body1'> | {dormitoryBuilding?.type_building}</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', pb: 2 }}>
+                      <StyledTypography variant='body1' sx={{ width: 150 }}>
+                        Facilities
+                      </StyledTypography>
+                      <StyledTypography variant='body1'>
+                        | {JSON.parse(dormitoryBuilding?.type_facilities || '[]').join(', ')}
+                      </StyledTypography>
+                    </Box>
                   </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', height: 10, pb: 5 }}>
-                    <Typography variant='body1' sx={{ width: 150 }}>
-                      {' '}
-                      Gender{' '}
-                    </Typography>
-                    <Typography variant='body1'>| {dormitoryBuilding?.type_gender}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', height: 10, pb: 5 }}>
-                    <Typography variant='body1' sx={{ width: 150 }}>
-                      {' '}
-                      Price{' '}
-                    </Typography>
-                    <Typography variant='body1'>| {dormitoryBuilding?.price} baht / term</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', height: 10, pb: 5 }}>
-                    <Typography variant='body1' sx={{ width: 150 }}>
-                      {' '}
-                      Bathroom{' '}
-                    </Typography>
-                    <Typography variant='body1'>| {dormitoryBuilding?.type_bathroom}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', height: 10, pb: 5 }}>
-                    <Typography variant='body1' sx={{ width: 150 }}>
-                      {' '}
-                      Roommate{' '}
-                    </Typography>
-                    <Typography variant='body1'>| {dormitoryBuilding?.type_roommate} Person</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', height: 10, pb: 5 }}>
-                    <Typography variant='body1' sx={{ width: 150 }}>
-                      {' '}
-                      Bed type{' '}
-                    </Typography>
-                    <Typography variant='body1'>| {dormitoryBuilding?.type_bedtype}</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', height: 10, pb: 15 }}>
-                    <Typography variant='body1' sx={{ width: 150 }}>
-                      {' '}
-                      Bed capacity{' '}
-                    </Typography>
-                    <Typography variant='body1'>| {dormitoryBuilding?.type_bedcapacity} bed</Typography>
-                  </Box>
-                </Box>
-                <Divider />
+                  <Divider />
+                </Grid>
               </Grid>
-              <Grid item xs={12} sm={12}>
-                <Box sx={{ display: 'flex', alignItems: 'center', pl: 3 }}>
-                  <Typography variant='body1' sx={{ pr: 2 }}>
-                    <AllInboxIcon sx={{ fontSize: 50 }} />
-                  </Typography>
-                  <Typography variant='h5'>Accommodation</Typography>
-                </Box>
-                <Box sx={{ pl: 3, pt: 4 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Typography variant='body1' sx={{ width: 150 }}>
-                      Furniture{' '}
-                    </Typography>
-                    <Typography variant='body1'>
-                      {' '}
-                      | {JSON.parse(dormitoryBuilding?.type_furniture || '[]').join(', ')}
-                    </Typography>
-                  </Box>
+            </CardContent>
+          </StyledCard>
+        </Grid>
 
-                  <Box sx={{ display: 'flex', alignItems: 'center', pb: 10 }}>
-                    <Typography variant='body1' sx={{ width: 150 }}>
-                      Facilities{' '}
-                    </Typography>
-                    <Typography variant='body1'>
-                      {' '}
-                      | {JSON.parse(dormitoryBuilding?.type_facilities || '[]').join(', ')}
-                    </Typography>
-                  </Box>
-                </Box>
-                <Divider />
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      <Typography variant='h3' sx={{ marginBottom: 2, ml: 2 }}></Typography>
-      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-        <TableContainer sx={{ maxHeight: auto }}>
-          <Table stickyHeader aria-label='sticky table'>
-            <TableHead>
-              <TableRow>
-                {columns.map(column => (
-                  <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
-                    {column.label}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {dormitoryRoom.map(room => (
-                <React.Fragment key={room.room_id}>
-                  <TableRow hover role='checkbox' tabIndex={-1}>
-                    <TableCell align='center'>{room.room_number}</TableCell>
-                    <TableCell align='center'>
-                      {Array.from({ length: room.bed_available }, (_, index) => (
-                        <Tooltip title='This bed already reserve.' key={index}>
-                          <PersonIcon color='primary' />
-                        </Tooltip>
-                      ))}
-
-                      {Array.from({ length: room.bed_capacity - room.bed_available }, (_, index) => (
-                        <Tooltip title='This bed is available' key={index}>
-                          <PersonIcon />
-                        </Tooltip>
-                      ))}
-                    </TableCell>
-                    <TableCell align='center'>
-                      {room.status ? (
-                        <Chip label='Available' color='success' />
-                      ) : (
-                        <Chip label='Unavailable' color='error' />
-                      )}
-                    </TableCell>
+        <Grid item xs={12}>
+          <Typography variant='h3' sx={{ marginBottom: 2, ml: 2 }}></Typography>
+          <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <TableContainer>
+              <Table stickyHeader aria-label='sticky table'>
+                <TableHead>
+                  <TableRow>
+                    {columns.map(column => (
+                      <TableCell key={column.id} align={column.align} sx={{ minWidth: column.minWidth }}>
+                        {column.label}
+                      </TableCell>
+                    ))}
                   </TableRow>
-                  <TableRow></TableRow>
-                </React.Fragment>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
+                </TableHead>
+                <TableBody>
+                  {dormitoryRoom.map(room => (
+                    <React.Fragment key={room.room_id}>
+                      <TableRow hover role='checkbox' tabIndex={-1}>
+                        <TableCell align='center'>{room.room_number}</TableCell>
+                        <TableCell align='center'>
+                          {Array.from({ length: room.bed_available }, (_, index) => (
+                            <Tooltip title='This bed already reserve.' key={index}>
+                              <PersonIcon color='primary' />
+                            </Tooltip>
+                          ))}
+
+                          {Array.from({ length: room.bed_capacity - room.bed_available }, (_, index) => (
+                            <Tooltip title='This bed is available' key={index}>
+                              <PersonIcon />
+                            </Tooltip>
+                          ))}
+                        </TableCell>
+                        <TableCell align='center'>
+                          {room.status ? (
+                            <Chip label='Available' color='success' />
+                          ) : (
+                            <Chip label='Unavailable' color='error' />
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    </React.Fragment>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Grid>
+      </Grid>
     </>
   )
 }

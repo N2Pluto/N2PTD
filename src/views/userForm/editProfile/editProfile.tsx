@@ -15,6 +15,7 @@ import MenuItem from '@mui/material/MenuItem'
 import { userStore } from 'src/stores/userStore'
 import { useRouter } from 'next/router'
 import { FormControl, InputLabel } from '@mui/material'
+import Box from '@mui/material/Box'
 
 // Define options for the AutoComplete
 const editOptions = [
@@ -256,182 +257,384 @@ const UserEditProfile = () => {
   }
 
   return (
-    <Card>
-      <CardHeader title='Edit Profile Form' titleTypographyProps={{ variant: 'h6' }} />
-      <Divider sx={{ margin: 0 }} />
-      <form onSubmit={e => e.preventDefault()}>
-        <CardContent>
-          <Grid container spacing={5}>
-            <Grid item xs={12}>
-              <Typography variant='body2' sx={{ fontWeight: 600 }}>
-                1. Current Personal Information
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='First Name' name='first_name' value={userInfoData.name} disabled />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Last Name' name='last_name' value={userInfoData.lastname} disabled />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Student ID' name='student_id' value={userData.student_id} disabled />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Gender' name='gender' value={userInfoData.gender} disabled />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Religion' name='religion' value={userInfoData.religion} disabled />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Phone' name='phone' value={userInfoData.phone} disabled />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='School' name='school' value={userInfoData.school} disabled />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Department' name='department' value={userInfoData.department} disabled />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Major' name='major' value={userInfoData.major} disabled />
-            </Grid>
-
-            <Grid item xs={12}>
-              <Divider sx={{ marginBottom: 0 }} />
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant='body2' sx={{ fontWeight: 600 }}>
-                2. New Dormitory Assignment
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Autocomplete
-                multiple
-                options={editOptions}
-                disableCloseOnSelect
-                getOptionLabel={option => option.label}
-                renderOption={(props, option, { selected }) => (
-                  <li {...props}>
-                    <Checkbox style={{ marginRight: 8 }} checked={selected} />
-                    {option.label}
-                  </li>
-                )}
-                style={{ width: '100%' }}
-                renderInput={params => <TextField {...params} label='Select Fields to Edit' placeholder='Fields' />}
-                onChange={(event, value) => setSelectedFields(value)}
-              />
-            </Grid>
-            {selectedFields.map(fieldGroup =>
-              fieldGroup.fields.map(field => (
-                <Grid item xs={12} sm={6} key={field}>
-                  {field === 'religion' ? (
-                    <FormControl fullWidth>
-                      <InputLabel id='religion-label'>Religion</InputLabel>
-                      <Select
-                        labelId='religion-label'
-                        name='religion'
-                        value={userInfoData.religion}
-                        onChange={e => setUserInfoData({ ...userInfoData, religion: e.target.value })}
-                        label='Religion'
-                      >
-                        <MenuItem value='Buddhism'>Buddhism</MenuItem>
-                        <MenuItem value='Christianity'>Christianity</MenuItem>
-                        <MenuItem value='Islam'>Islam</MenuItem>
-                        <MenuItem value='Hinduism'>Hinduism</MenuItem>
-                        <MenuItem value='Other'>Other</MenuItem>
-                      </Select>
-                    </FormControl>
-                  ) : field === 'gender' ? (
-                    <FormControl fullWidth>
-                      <InputLabel id='gender-label'>Gender</InputLabel>
-                      <Select
-                        fullWidth
-                        label='Gender'
-                        name='gender'
-                        value={userInfoData.gender}
-                        onChange={e => setUserInfoData({ ...userInfoData, gender: e.target.value })}
-                      >
-                        <MenuItem value='male'>male</MenuItem>
-                        <MenuItem value='female'>female</MenuItem>
-                      </Select>
-                    </FormControl>
-                  ) : field === 'school' ? (
-                    <FormControl fullWidth>
-                      <InputLabel id='school-label'>School</InputLabel>
-                      <Select
-                        fullWidth
-                        label='School'
-                        name='school'
-                        value={userInfoData.school}
-                        onChange={handleSchoolChange}
-                      >
-                        {Object.keys(educationData).map(school => (
-                          <MenuItem key={school} value={school}>
-                            {school}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  ) : field === 'department' ? (
-                    <FormControl fullWidth>
-                      <InputLabel id='department-label'>Department</InputLabel>
-                      <Select
-                        fullWidth
-                        label='Department'
-                        name='department'
-                        value={userInfoData.department}
-                        onChange={handleDepartmentChange}
-                        disabled={!userInfoData.school}
-                      >
-                        {departments.map(department => (
-                          <MenuItem key={department} value={department}>
-                            {department}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  ) : field === 'major' ? (
-                    <FormControl fullWidth>
-                      <InputLabel id='major-label'>Major</InputLabel>
-                      <Select
-                        fullWidth
-                        label='Major'
-                        name='major'
-                        value={userInfoData.major}
-                        onChange={e => setUserInfoData({ ...userInfoData, major: e.target.value })}
-                        disabled={!userInfoData.department}
-                      >
-                        {majors.map(major => (
-                          <MenuItem key={major} value={major}>
-                            {major}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  ) : (
-                    <TextField
-                      fullWidth
-                      label={field.charAt(0).toUpperCase() + field.slice(1)}
-                      name={field}
-                      value={userInfoData[field]}
-                      onChange={e => setUserInfoData({ ...userInfoData, [field]: e.target.value })}
-                    />
-                  )}
-                </Grid>
-              ))
-            )}
-          </Grid>
-        </CardContent>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Card sx={{ width: '100%' }}>
+        <CardHeader title='Edit Profile Form' titleTypographyProps={{ variant: 'h6' }} />
         <Divider sx={{ margin: 0 }} />
-        <CardActions style={{ justifyContent: 'flex-end' }}>
-          <Button size='large' color='secondary' variant='outlined' onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button size='large' sx={{ mr: 2 }} variant='contained' onClick={handleSubmit}>
-            Submit
-          </Button>
-        </CardActions>
-      </form>
-    </Card>
+        <form onSubmit={e => e.preventDefault()}>
+          <CardContent>
+            <Grid container spacing={5}>
+              <Grid item xs={12}>
+                <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                  1. Current Personal Information
+                </Typography>
+              </Grid>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Card sx={{ position: 'relative', ml: 6 }}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', pt: 3 }}>
+                        <Box sx={{ pr: 3 }}>
+                          <img
+                            src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/id-card_4481114.png'
+                            alt='ID Card Icon'
+                            style={{ width: '1.5rem' }}
+                          />
+                        </Box>
+                        <Box sx={{ pr: 2 }}>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            Student id :
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            {userData.student_id}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Card sx={{ position: 'relative' }}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', pt: 3 }}>
+                        <Box sx={{ pr: 3 }}>
+                          <img
+                            src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/id-card_4481114.png'
+                            alt='ID Card Icon'
+                            style={{ width: '1.5rem' }}
+                          />
+                        </Box>
+                        <Box sx={{ pr: 2 }}>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            Name :
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            {userInfoData.name}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Card sx={{ position: 'relative' }}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', pt: 3 }}>
+                        <Box sx={{ pr: 3 }}>
+                          <img
+                            src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/id-card_4481114.png'
+                            alt='ID Card Icon'
+                            style={{ width: '1.5rem' }}
+                          />
+                        </Box>
+                        <Box sx={{ pr: 2 }}>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            Surname :
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            {userInfoData.lastname}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Card sx={{ position: 'relative', ml: 6 }}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', pt: 2 }}>
+                        <Box sx={{ pr: 3 }}>
+                          <img
+                            src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/gender_4196654.png'
+                            alt='Gender Icon'
+                            style={{ width: '24px', height: '24px' }}
+                          />
+                        </Box>
+                        <Box sx={{ pr: 2 }}>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            Gender :
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            {userInfoData.gender}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Card sx={{ position: 'relative' }}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', pt: 2 }}>
+                        <Box sx={{ pr: 3 }}>
+                          <img
+                            src='https://img5.pic.in.th/file/secure-sv1/religion_9311967.png'
+                            alt='Religion Icon'
+                            style={{ width: '24px', height: '24px' }}
+                          />
+                        </Box>
+                        <Box sx={{ pr: 2 }}>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            Religion :
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            {userInfoData.religion}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Card sx={{ position: 'relative' }}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', pt: 2 }}>
+                        <Box sx={{ pr: 3 }}>
+                          <img
+                            src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/mobile_4807370.png'
+                            alt='Phone Icon'
+                            style={{ width: '24px', height: '24px' }}
+                          />
+                        </Box>
+                        <Box sx={{ pr: 2 }}>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            Phone :
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            {userInfoData.phone}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Card sx={{ position: 'relative', ml: 6 }}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', pt: 2 }}>
+                        <Box sx={{ pr: 3 }}>
+                          <img
+                            src='https://img5.pic.in.th/file/secure-sv1/school_2602414.png'
+                            alt='School Icon'
+                            style={{ width: '24px', height: '24px' }}
+                          />
+                        </Box>
+                        <Box sx={{ pr: 2 }}>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            School :
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            {userInfoData.school}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Card sx={{ position: 'relative' }}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', pt: 2 }}>
+                        <Box sx={{ pr: 3 }}>
+                          <img
+                            src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/book_5310733.png'
+                            alt='ID Card Icon'
+                            style={{ width: '1.5rem' }}
+                          />
+                        </Box>
+                        <Box sx={{ pr: 2 }}>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            Department :
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            {userInfoData.department}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Card sx={{ position: 'relative' }}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', pt: 2 }}>
+                        <Box sx={{ pr: 3 }}>
+                          <img
+                            src='https://img5.pic.in.th/file/secure-sv1/graduate_401672.png'
+                            alt='Major Icon'
+                            style={{ width: '24px', height: '24px' }}
+                          />
+                        </Box>
+                        <Box sx={{ pr: 2 }}>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            Major :
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
+                            {userInfoData.major}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Divider sx={{ marginBottom: 0 }} />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                  2. New Dormitory Assignment
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Autocomplete
+                  multiple
+                  options={editOptions}
+                  disableCloseOnSelect
+                  getOptionLabel={option => option.label}
+                  renderOption={(props, option, { selected }) => (
+                    <li {...props}>
+                      <Checkbox style={{ marginRight: 8 }} checked={selected} />
+                      {option.label}
+                    </li>
+                  )}
+                  style={{ width: '100%' }}
+                  renderInput={params => <TextField {...params} label='Select Fields to Edit' placeholder='Fields' />}
+                  onChange={(event, value) => setSelectedFields(value)}
+                />
+              </Grid>
+              {selectedFields.map(fieldGroup =>
+                fieldGroup.fields.map(field => (
+                  <Grid item xs={12} sm={6} key={field}>
+                    {field === 'religion' ? (
+                      <FormControl fullWidth>
+                        <InputLabel id='religion-label'>Religion</InputLabel>
+                        <Select
+                          labelId='religion-label'
+                          name='religion'
+                          value={userInfoData.religion}
+                          onChange={e => setUserInfoData({ ...userInfoData, religion: e.target.value })}
+                          label='Religion'
+                        >
+                          <MenuItem value='Buddhism'>Buddhism</MenuItem>
+                          <MenuItem value='Christianity'>Christianity</MenuItem>
+                          <MenuItem value='Islam'>Islam</MenuItem>
+                          <MenuItem value='Hinduism'>Hinduism</MenuItem>
+                          <MenuItem value='Other'>Other</MenuItem>
+                        </Select>
+                      </FormControl>
+                    ) : field === 'gender' ? (
+                      <FormControl fullWidth>
+                        <InputLabel id='gender-label'>Gender</InputLabel>
+                        <Select
+                          fullWidth
+                          label='Gender'
+                          name='gender'
+                          value={userInfoData.gender}
+                          onChange={e => setUserInfoData({ ...userInfoData, gender: e.target.value })}
+                        >
+                          <MenuItem value='male'>male</MenuItem>
+                          <MenuItem value='female'>female</MenuItem>
+                        </Select>
+                      </FormControl>
+                    ) : field === 'school' ? (
+                      <FormControl fullWidth>
+                        <InputLabel id='school-label'>School</InputLabel>
+                        <Select
+                          fullWidth
+                          label='School'
+                          name='school'
+                          value={userInfoData.school}
+                          onChange={handleSchoolChange}
+                        >
+                          {Object.keys(educationData).map(school => (
+                            <MenuItem key={school} value={school}>
+                              {school}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    ) : field === 'department' ? (
+                      <FormControl fullWidth>
+                        <InputLabel id='department-label'>Department</InputLabel>
+                        <Select
+                          fullWidth
+                          label='Department'
+                          name='department'
+                          value={userInfoData.department}
+                          onChange={handleDepartmentChange}
+                          disabled={!userInfoData.school}
+                        >
+                          {departments.map(department => (
+                            <MenuItem key={department} value={department}>
+                              {department}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    ) : field === 'major' ? (
+                      <FormControl fullWidth>
+                        <InputLabel id='major-label'>Major</InputLabel>
+                        <Select
+                          fullWidth
+                          label='Major'
+                          name='major'
+                          value={userInfoData.major}
+                          onChange={e => setUserInfoData({ ...userInfoData, major: e.target.value })}
+                          disabled={!userInfoData.department}
+                        >
+                          {majors.map(major => (
+                            <MenuItem key={major} value={major}>
+                              {major}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    ) : (
+                      <TextField
+                        fullWidth
+                        label={field.charAt(0).toUpperCase() + field.slice(1)}
+                        name={field}
+                        value={userInfoData[field]}
+                        onChange={e => setUserInfoData({ ...userInfoData, [field]: e.target.value })}
+                      />
+                    )}
+                  </Grid>
+                ))
+              )}
+            </Grid>
+          </CardContent>
+          <Divider sx={{ margin: 0 }} />
+          <CardActions style={{ justifyContent: 'flex-end' }}>
+            <Button size='large' color='secondary' variant='outlined' onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button size='large' sx={{ mr: 2 }} variant='contained' onClick={handleSubmit}>
+              Submit
+            </Button>
+          </CardActions>
+        </form>
+      </Card>
+    </Box>
   )
 }
 

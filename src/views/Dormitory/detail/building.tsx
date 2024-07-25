@@ -45,6 +45,16 @@ const AnimatedCard = styled(Card)(({ theme }) => ({
   }
 }))
 
+const AnimatedButton = styled(Button)(({ theme }) => ({
+  animation: `${slideIn} 0.5s ease-in-out`,
+  transform: 'scale(1)',
+  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+  '&:hover': {
+    transform: 'scale(1.1)', // Added transform: scale(1.05) on hover
+    boxShadow: '0 0 20px rgba(0,0,0,0.1)'
+  }
+}))
+
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -154,9 +164,9 @@ const ReservationBuildingDetails = () => {
                 alignItems: 'center'
               }}
             >
-              <Button variant='contained' onClick={handleDialogToggle}>
+              <AnimatedButton variant='contained' onClick={handleDialogToggle}>
                 Filter Building
-              </Button>
+              </AnimatedButton>
             </Box>
             <FilterDrawer
               open={dialogOpen}

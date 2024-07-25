@@ -14,7 +14,9 @@ async function handler(req: any, res: any) {
       type_bedcapacity: req.body.type_bedcapacity,
       type_roommate: req.body.type_roommate,
       type_furniture: req.body.type_furniture,
-      type_facilities: req.body.type_facilities
+      type_facilities: req.body.type_facilities,
+      latitude: req.body.latitude,
+      longitude: req.body.longitude
     }
   ])
 

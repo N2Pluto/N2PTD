@@ -54,7 +54,9 @@ const EditBuilding = ({ dorm_id, onClose, setSnackbarEditOpen }) => {
     type_bedcapacity: '',
     type_roommate: '',
     type_furniture: [],
-    type_facilities: []
+    type_facilities: [],
+    latitude: '',
+    longitude: ''
   })
 
   useEffect(() => {
@@ -317,6 +319,26 @@ const EditBuilding = ({ dorm_id, onClose, setSnackbarEditOpen }) => {
                 )}
                 style={{ width: '100%' }}
                 renderInput={params => <TextField {...params} label='Facility' placeholder='Facility' />}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label='Latitude'
+                placeholder='Latitude'
+                name='latitude'
+                value={formData.latitude}
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label='Longitude'
+                placeholder='Longitude'
+                name='longitude'
+                value={formData.longitude}
+                onChange={handleInputChange}
               />
             </Grid>
             <Grid item xs={12}>

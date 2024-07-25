@@ -61,6 +61,8 @@ const FormBuilding = ({ onClose, setSnackbarOpen }) => {
   const [type_facilities, setFacility] = useState([])
   const [floor, setFloor] = useState('')
   const [roomsPerFloor, setRoomsPerFloor] = useState<string[]>([])
+  const [latitude, setLatitude] = useState('')
+  const [longitude, setLongitude] = useState('')
   const router = useRouter()
 
   const handleRoomsChange = (index: number, value: string) => {
@@ -113,7 +115,9 @@ const FormBuilding = ({ onClose, setSnackbarOpen }) => {
         type_bedcapacity,
         type_roommate: type_bedcapacity,
         type_furniture: type_furniture.map(furniture => furniture.title),
-        type_facilities: type_facilities.map(facility => facility.title)
+        type_facilities: type_facilities.map(facility => facility.title),
+        latitude,
+        longitude
       })
     })
 
@@ -305,6 +309,7 @@ const FormBuilding = ({ onClose, setSnackbarOpen }) => {
                   </Select>
                 </FormControl>
               </Grid>
+
               <Grid item xs={12} sm={6}>
                 <Autocomplete
                   multiple
@@ -345,6 +350,26 @@ const FormBuilding = ({ onClose, setSnackbarOpen }) => {
                     </li>
                   )}
                   renderInput={params => <TextField {...params} label='Facility' placeholder='Facility' />}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label='Latitude'
+                  placeholder='Latitude'
+                  value={latitude}
+                  onChange={event => setLatitude(event.target.value)}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label='Longitude'
+                  placeholder='Longitude'
+                  value={longitude}
+                  onChange={event => setLongitude(event.target.value)}
+                  required
                 />
               </Grid>
               <Grid item xs={12}>
