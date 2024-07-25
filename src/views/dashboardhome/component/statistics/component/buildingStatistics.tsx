@@ -1,17 +1,9 @@
 // ** MUI Imports
-import Box from '@mui/material/Box'
+import React, { useEffect, useState } from 'react'
 import Card from '@mui/material/Card'
-import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
-import LocalHotelIcon from '@mui/icons-material/LocalHotel'
-
-// ** Icons Imports
-import Heart from 'mdi-material-ui/Heart'
-import Twitter from 'mdi-material-ui/Twitter'
-import ShareVariant from 'mdi-material-ui/ShareVariant'
-import { useEffect, useState } from 'react'
-import CorporateFareIcon from '@mui/icons-material/CorporateFare'
+import Avatar from '@mui/material/Avatar'
 import { useSpring, animated } from '@react-spring/web'
 
 const CardBuildingStatistics = () => {
@@ -22,13 +14,13 @@ const CardBuildingStatistics = () => {
     const fetchUserdata = async () => {
       try {
         const response = await fetch('/api/statistics/building', {
-          method: 'GET',
+          method: 'GET'
         })
         const data = await response.json()
         setDoom(data)
         setIsLoaded(true)
       } catch (error) {
-        console.error('Error fetching round profile:', error)
+        console.error('Error fetching building data:', error)
       }
     }
     fetchUserdata()
@@ -40,48 +32,59 @@ const CardBuildingStatistics = () => {
   const fadeIn = useSpring({
     opacity: isLoaded ? 1 : 0,
     transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
-    from: { opacity: 0, transform: 'translateY(20px)' },
+    from: { opacity: 0, transform: 'translateY(20px)' }
   })
+
+  const [hoverStyle, setHoverStyle] = useSpring(() => ({
+    transform: 'scale(1)',
+    config: { tension: 300, friction: 10 }
+  }))
 
   return (
     <animated.div style={fadeIn}>
-      <Card
-        sx={{
-          border: 0,
-          boxShadow: 0,
-          color: 'common.white',
-           backgroundColor: theme => theme.palette.primary.main,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
+      <animated.div
+        style={hoverStyle}
+        onMouseEnter={() => setHoverStyle({ transform: 'scale(1.05)' })}
+        onMouseLeave={() => setHoverStyle({ transform: 'scale(1)' })}
       >
-        <CardContent
+        <Card
           sx={{
-            padding: (theme) => `${theme.spacing(3.25, 5, 4.5)} !important`,
+            border: 0,
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+            color: 'text.primary',
+            backgroundColor: 'common.white',
             display: 'flex',
-            flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
+            borderRadius: 2,
+            padding: 3,
+            transition: 'transform 0.3s ease-in-out'
           }}
         >
-          <Typography
-            variant='h5'
-            sx={{ display: 'flex', marginBottom: 2, alignItems: 'center', color: 'common.white' }}
+          <CardContent
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
           >
-            <CorporateFareIcon sx={{ fontSize: '4.5rem' }} />
-          </Typography>
-          <Typography
-            variant='h6'
-            sx={{ display: 'flex', marginBottom: 2.75, alignItems: 'center', color: 'common.white' }}
-          >
-            BUILDING
-          </Typography>
-          <Typography variant='body1' sx={{ marginBottom: 3, color: 'common.white' }}>
-            male : {doomM} | female : {doomF}
-          </Typography>
-        </CardContent>
-      </Card>
+            <Avatar
+              src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/hotel_11292871.png'
+              sx={{ width: 100, height: 100, marginBottom: 2, borderRadius: 2 }}
+            />
+            <Typography
+              variant='h6'
+              sx={{ display: 'flex', marginBottom: 2.75, alignItems: 'center', color: 'text.primary' }}
+            >
+              Building
+            </Typography>
+            <Typography variant='body1' sx={{ color: 'text.secondary' }}>
+              Male: {doomM} | Female: {doomF}
+            </Typography>
+          </CardContent>
+        </Card>
+      </animated.div>
     </animated.div>
   )
 }

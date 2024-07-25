@@ -1,5 +1,5 @@
 // ** MUI Imports
-import { Typography } from '@mui/material'
+import { Typography, Box } from '@mui/material'
 import Grid from '@mui/material/Grid'
 
 // ** Styled Component Import
@@ -20,73 +20,41 @@ import CardUserStatistics from 'src/views/dashboardhome/component/statistics/com
 const Dashboard = () => {
   return (
     <LayoutAuth>
-      <Grid container spacing={6}>
-        <Grid item xs={12} sm={12} md={12}>
-          <RenewalChooseForm />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <CardUserStatistics />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <CardBedStatistics />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <CardRoomStatistics />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <CardBuildingStatistics />
-        </Grid>
-        <Grid item xs={12} sm={8}>
-          <FacebookPost />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Grid item xs={12} sm={12} sx={{ pb: 6 }}>
-            <Round />
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
+        <Grid container spacing={6} sx={{ maxWidth: '1200px' }}>
+          <Grid item xs={12}>
+            <RenewalChooseForm />
           </Grid>
-          <Grid item xs={12} sm={12} sx={{ pb: 6 }}>
-            <CardGuid />
+
+          <Grid item xs={12} sm={6} md={3}>
+            <CardUserStatistics />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <CardBuildingStatistics />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <CardRoomStatistics />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <CardBedStatistics />
+          </Grid>
+
+          <Grid item xs={12} sm={8}>
+            <FacebookPost />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <Grid container spacing={6}>
+              <Grid item xs={12}>
+                <Round />
+              </Grid>
+              <Grid item xs={12}>
+                <CardGuid />
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
-
-        {/* <Grid item xs={12} sm={6} md={4}>
-
-        </Grid>
-
-        <Grid item xs={12} md={8}>
-
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-
-        </Grid>
-        <Grid item xs={12} sx={{ pb: 4, pt: theme => `${theme.spacing(17.5)} !important` }}>
-          <Typography variant='h5'>Navigation Cards</Typography>
-        </Grid>
-        <Grid item xs={12} md={6}>
-
-        </Grid>
-        <Grid item xs={12} md={6}>
-
-        </Grid>
-        <Grid item xs={12} sx={{ pb: 4, pt: theme => `${theme.spacing(17.5)} !important` }}>
-          <Typography variant='h5'>Solid Cards</Typography>
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-
-        </Grid> */}
-      </Grid>
+      </Box>
     </LayoutAuth>
   )
 }

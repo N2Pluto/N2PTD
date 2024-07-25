@@ -27,7 +27,13 @@ const Round = () => {
   }, [])
 
   return (
-    <Card>
+    <Card
+      sx={{
+        mt: 2,
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+        borderRadius: 1
+      }}
+    >
       <CardMedia sx={{ height: '14.5625rem' }} image='/images/cards/glass-house.png' />
       <CardHeader title=' Round of open applications' />
       <CardContent>
@@ -39,7 +45,7 @@ const Round = () => {
               {roundItem.student_year
                 .split(',')
                 .map(Number)
-                .sort((a : number, b : number) => a - b)
+                .sort((a: number, b: number) => a - b)
                 .join(' , ')}
             </Typography>
           ))

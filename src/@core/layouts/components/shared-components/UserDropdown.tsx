@@ -105,7 +105,7 @@ const UserDropdown = () => {
   const handleLogout = () => {
     localStorage.clear()
     clearStore()
-    handleDropdownClose('/pages/login')
+    handleDropdownClose('/')
   }
 
   return (
