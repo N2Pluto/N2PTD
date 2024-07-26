@@ -54,6 +54,20 @@ const UserDropdown = () => {
     return () => clearInterval(intervalId)
   }, [])
 
+   useEffect(() => {
+     const intervalId = setInterval(async () => {
+       try {
+         const response = await fetch('/api/reservation/room/checkBed')
+         const data = await response.json()
+         console.log('Data:', data)
+       } catch (error) {
+         console.error('Failed to fetch data:', error)
+       }
+     }, 3000)
+
+     return () => clearInterval(intervalId)
+   }, [])
+
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {

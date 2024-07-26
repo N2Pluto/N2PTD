@@ -32,10 +32,22 @@ const handler = async (req, res) => {
       continue
     }
 
+    const { data: userEmailData, error: userEmailError } = await supabase
+      .from('Users')
+      .select('email')
+      .eq('user_id', item.user_id)
+      .single()
+
+    if (userEmailError) {
+      console.error(userEmailError.message)
+      continue // Skip this iteration if there's an error fetching user email
+    }
+
     // Combine the current item with fetched user info
     combinedData.push({
       ...item,
-      userInfo: userInfoData ? userInfoData : null
+      userInfo: userInfoData ? userInfoData : null,
+      email: userEmailData ? userEmailData.email : null
     })
   }
 

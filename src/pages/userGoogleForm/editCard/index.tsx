@@ -7,6 +7,7 @@ import LayoutAuth from 'src/layouts/LayoutAuth'
 import UserEditProfile from 'src/views/userForm/editProfile/editProfile'
 import EditProfileCard from 'src/views/userForm/editProfile/editProfileCard'
 import EditProfileList from 'src/views/userForm/editProfile/editProfileList'
+import { CardHeader } from '@mui/material'
 
 const MUITable = () => {
   return (
@@ -16,7 +17,10 @@ const MUITable = () => {
           <EditProfileCard />
         </Grid>
         <Grid item xs={12} md={12} lg={12}>
-          <EditProfileList />
+          <Card>
+            <CardHeader title='Request List' />
+            <EditProfileList />
+          </Card>
         </Grid>
       </Grid>
     </LayoutAuth>

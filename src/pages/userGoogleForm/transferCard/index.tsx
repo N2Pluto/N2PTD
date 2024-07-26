@@ -7,6 +7,7 @@ import LayoutAuth from 'src/layouts/LayoutAuth'
 import UserTransferRoom from 'src/views/userForm/transferRoom/transferRoom'
 import TransferRoomCard from 'src/views/userForm/transferRoom/transferRoomCard'
 import TransferRoomList from 'src/views/userForm/transferRoom/transferRoomList'
+import { CardHeader } from '@mui/material'
 
 const MUITable = () => {
   return (
@@ -16,7 +17,10 @@ const MUITable = () => {
           <TransferRoomCard />
         </Grid>
         <Grid item xs={12} md={12} lg={12}>
-          <TransferRoomList />
+          <Card>
+            <CardHeader title='Request List' />
+            <TransferRoomList />
+          </Card>
         </Grid>
       </Grid>
     </LayoutAuth>

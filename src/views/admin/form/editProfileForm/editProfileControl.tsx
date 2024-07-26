@@ -37,9 +37,11 @@ export default function EditProfileControl() {
   const [selectedRequest, setSelectedRequest] = useState(null)
   const [profileData, setProfileData] = useState(null)
   const [selectedUserId, setSelectedUserId] = useState(null)
+  const [selectedEmail, setSelectedEmail] = useState(null)
   const [userData, setUserData] = useState({
     student_id: '',
-    user_id: ''
+    user_id: '',
+    email: ''
   })
   const [userInfoData, setUserInfoData] = useState({
     department: '',
@@ -77,7 +79,6 @@ export default function EditProfileControl() {
       return
     }
 
-    // Filter out null values from selectedRequest
     const filteredRequest = Object.entries(selectedRequest).reduce((acc, [key, value]) => {
       if (value !== null) {
         acc[key] = value
@@ -103,7 +104,86 @@ export default function EditProfileControl() {
       const result = await response.json()
       console.log('Profile updated successfully:', result)
 
-      // Optionally, refresh data or close the drawer here
+      const emailHtml = `
+  <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+    <header style="padding: 10px 0; text-align: center;">
+      <img src="https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png" alt="Walailak University" style="width: 100px; height: auto;" />
+      <h2 style="margin-top: 10px; color: #007bff;">Dormitory Reservation System</h2>
+      <h4 style="margin-top: 5px; color: #555;">Walailak University</h4>
+    </header>
+    <main style="padding: 20px; background-color: #f9f9f9; border-radius: 10px; margin: 20px;">
+      <p>Dear <strong>${userInfoData.name} ${userInfoData.lastname}</strong>,</p>
+      <p>We are pleased to inform you that your request to edit your profile has been successfully processed. Below are the details of the changes:</p>
+      <ul style="list-style-type: none; padding: 0;">
+        ${
+          selectedRequest.name
+            ? `<li style="padding: 5px 0;"><strong>First Name:</strong> ${selectedRequest.name}</li>`
+            : ''
+        }
+        ${
+          selectedRequest.lastname
+            ? `<li style="padding: 5px 0;"><strong>Last Name:</strong> ${selectedRequest.lastname}</li>`
+            : ''
+        }
+        ${
+          selectedRequest.gender
+            ? `<li style="padding: 5px 0;"><strong>Gender:</strong> ${selectedRequest.gender}</li>`
+            : ''
+        }
+        ${
+          selectedRequest.religion
+            ? `<li style="padding: 5px 0;"><strong>Religion:</strong> ${selectedRequest.religion}</li>`
+            : ''
+        }
+        ${
+          selectedRequest.phone
+            ? `<li style="padding: 5px 0;"><strong>Phone:</strong> ${selectedRequest.phone}</li>`
+            : ''
+        }
+        ${
+          selectedRequest.school
+            ? `<li style="padding: 5px 0;"><strong>School:</strong> ${selectedRequest.school}</li>`
+            : ''
+        }
+        ${
+          selectedRequest.department
+            ? `<li style="padding: 5px 0;"><strong>Department:</strong> ${selectedRequest.department}</li>`
+            : ''
+        }
+        ${
+          selectedRequest.major
+            ? `<li style="padding: 5px 0;"><strong>Major:</strong> ${selectedRequest.major}</li>`
+            : ''
+        }
+      </ul>
+      <p>Thank you for using the Dormitory Reservation System.</p>
+    </main>
+    <footer style="text-align: center; padding: 10px 0; color: #777;">
+      <p style="margin: 0;">&copy; 2024 Walailak University. All rights reserved.</p>
+    </footer>
+  </div>
+`
+
+      const emailResponse = await fetch('/api/userForm/nodemailer/nodemailer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          to: selectedEmail,
+          subject: 'Edit Profile Form Submission',
+          text: 'Your request to edit the profile has been processed.',
+          html: emailHtml
+        })
+      })
+
+      if (!emailResponse.ok) {
+        throw new Error('Failed to send email')
+      }
+
+      const emailResult = await emailResponse.json()
+      console.log('Email sent successfully:', emailResult)
+
       fetchData() // Assuming fetchData fetches the latest data
       handleCloseDrawer() // Close the drawer
     } catch (error) {
@@ -174,14 +254,59 @@ export default function EditProfileControl() {
     try {
       setIsLoading(true)
       const response = await fetch(`/api/userForm/editProfile/delete/${requestId}`, { method: 'POST' })
-      const result = await response.json()
+
+      let result
+      try {
+        result = await response.json()
+      } catch (jsonError) {
+        result = { error: 'Invalid JSON response' }
+      }
+
       fetchData()
       if (response.ok) {
         console.log('Request cancelled successfully:', result)
         fetchData()
+
+        const emailHtml = `
+        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+          <header style="padding: 10px 0; text-align: center;">
+            <img src="https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png" alt="Walailak University" style="width: 100px; height: auto;" />
+            <h2 style="margin-top: 10px; color: #007bff;">Dormitory Reservation System</h2>
+            <h4 style="margin-top: 5px; color: #555;">Walailak University</h4>
+          </header>
+          <main style="padding: 20px; background-color: #f9f9f9; border-radius: 10px; margin: 20px;">
+            <p>Dear <strong>${userInfoData.name} ${userInfoData.lastname}</strong>,</p>
+            <p>We regret to inform you that your request to edit your profile has been cancelled. Below are the details of the changes that were requested:</p>
+            <p>If you have any questions or need further assistance, please feel free to contact us at <a href="mailto:dormitoryawalailak@gmail.com" style="color: #007bff; text-decoration: none;">dormitoryawalailak@gmail.com</a>.</p>
+            <p>Thank you for using the Dormitory Reservation System.</p>
+          </main>
+          <footer style="text-align: center; padding: 10px 0; color: #777;">
+            <p style="margin: 0;">&copy; 2024 Walailak University. All rights reserved.</p>
+          </footer>
+        </div>
+      `
+
+        // Send email notification
+        const emailResponse = await fetch('/api/userForm/nodemailer/nodemailer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            to: selectedEmail,
+            subject: 'Edit Profile Form Request Cancelled',
+            text: 'Your request to edit the profile has been cancelled.',
+            html: emailHtml
+          })
+        })
+
+        if (!emailResponse.ok) {
+          const emailError = await emailResponse.json()
+          console.error('Error sending email:', emailError)
+        }
       } else {
         fetchData()
-        console.error('Error cancelling request:', result.error)
+        console.error('Error cancelling request:', result.error || 'Unknown error')
       }
     } catch (error) {
       fetchData()
@@ -208,6 +333,7 @@ export default function EditProfileControl() {
     setSelectedRequest(request) // Assuming you have a state for this
     setDrawerOpen(true) // Assuming you have a state for this
     setSelectedUserId(request.user_id) // Set the selected user_id
+    setSelectedEmail(request.email) // Set the selected email
   }
 
   const handleCloseDrawer = () => {

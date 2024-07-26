@@ -2,21 +2,31 @@ import * as React from 'react'
 import { useEffect, useState } from 'react'
 import { useTheme } from '@mui/material/styles'
 import { userStore } from 'src/stores/userStore'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
-import Backdrop from '@mui/material/Backdrop'
-import CircularProgress from '@mui/material/CircularProgress'
-import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
+import {
+  Backdrop,
+  CircularProgress,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip,
+  Typography,
+  Box,
+  Tabs,
+  Tab
+} from '@mui/material'
+import CancelIcon from '@mui/icons-material/Cancel'
 
 export default function ChangeRoomList() {
   const theme = useTheme()
   const { user } = userStore()
   const [changeRoomData, setChangeRoomData] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  const [currentTab, setCurrentTab] = useState('Pending')
 
   const fetchData = async () => {
     if (!user) {
@@ -70,75 +80,108 @@ export default function ChangeRoomList() {
     return <Chip label={status} color={color} />
   }
 
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue)
+  }
+
+  const filterDataByStatus = status => {
+    return changeRoomData.filter(item => item.status === status)
+  }
+
   return (
     <>
       <Backdrop sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }} open={isLoading}>
         <CircularProgress color='inherit' />
       </Backdrop>
-      <Grid container spacing={2}>
-        {' '}
-        {changeRoomData.map((item, index) => (
-          <>
-            {' '}
-            <Grid item xs={12} sm={6} md={3}>
-              <Card
-                key={item.id} // Ensure each card has a unique key based on the request id
-                variant='outlined'
-                sx={{ display: 'flex', width: 275, justifyContent: 'space-between', marginBottom: 2 }}
-              >
-                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', ml: 2 }}>
-                  <CardContent>
-                    <Typography sx={{ fontWeight: 'medium', marginBottom: 2 }}>
-                      CHANGE ROOM #{index + 1}
-                       {/* {item.userInfo?.name} {item.userInfo?.lastname} */}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={currentTab} onChange={handleTabChange}>
+          <Tab label='Pending' value='Pending' />
+          <Tab label='Approve' value='Approve' />
+        </Tabs>
+      </Box>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label='simple table'>
+          <TableHead>
+            <TableRow>
+              <TableCell align='center'>Request Number</TableCell>
+              <TableCell align='center'>Request Details</TableCell>
+              <TableCell align='center'>Status</TableCell>
+              {currentTab === 'Pending' && <TableCell align='center'>Actions</TableCell>}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filterDataByStatus(currentTab).length > 0 ? (
+              filterDataByStatus(currentTab).map((item, index) => (
+                <TableRow key={item.id}>
+                  <TableCell align='center'>
+                    <Typography variant='body2' sx={{ fontWeight: 'medium', color: '#4a4a4a' }}>
+                      Change Room #{index + 1}
                     </Typography>
-                    <Typography variant='body2' gutterBottom sx={{ fontStyle: 'italic' }}>
-                      Change Room Info
-                    </Typography>
-                    <Typography variant='body2' sx={{ marginBottom: 2, fontWeight: 'medium', color: '#4a4a4a' }}>
-                      {item.Dormitory_Building?.name} ({item.Dormitory_Room?.room_number}/
-                      {item.Dormitory_Bed?.bed_number})
-                    </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2, ml: 9 }}>
-                      <Typography variant='body2'>{getStatusChip(item.status)}</Typography>
-                    </Box>
-                    {item.status === 'Pending' && (
-                      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2, ml: 9 }}>
+                  </TableCell>
+                  <TableCell align='center'>
+                    <Chip
+                      label={`${item.Dormitory_Building?.name} (${item.Dormitory_Room?.room_number}/${item.Dormitory_Bed?.bed_number})`}
+                      sx={{ fontWeight: 'medium', color: '#4a4a4a' }}
+                    />
+                  </TableCell>
+                  <TableCell align='center'>{getStatusChip(item.status)}</TableCell>
+                  {currentTab === 'Pending' && (
+                    <TableCell align='center'>
+                      {item.status === 'Pending' && (
                         <Button
-                          variant='outlined'
+                          variant='contained'
                           color='error'
                           size='small'
+                          startIcon={<CancelIcon sx={{ color: 'white' }} />}
+                          sx={{ backgroundColor: '#ff4d4f' }}
                           onClick={() => handleCancelRequest(item.id)}
                         >
-                          Cancel Request
+                          <Typography variant='body2' sx={{ color: 'white' }}>
+                            Cancel Request
+                          </Typography>
                         </Button>
-                      </Box>
-                    )}
-                  </CardContent>
-                </Box>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    px: 0.2,
-                    writingMode: 'vertical-rl',
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold',
-                    letterSpacing: '1px',
-                    textTransform: 'uppercase',
-                    borderLeft: '1px solid',
-                    borderColor: 'divider',
-                    color: theme.palette.primary.main
-                  }}
-                >
-                  REQUEST #{index + 1}
-                </Box>
-              </Card>
-            </Grid>
-          </>
-        ))}
-      </Grid>
+                      )}
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow style={{ height: 100 }}>
+                <TableCell colSpan={currentTab === 'Pending' ? 4 : 3}>
+                  <Paper
+                    style={{
+                      padding: '20px',
+                      height: '100%',
+                      width: '100%',
+                      backgroundColor: 'rgba(128, 128, 128, 0.05)'
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '100%',
+                        width: '100%'
+                      }}
+                    >
+                      <img
+                        src='https://img5.pic.in.th/file/secure-sv1/erase_1981540.png'
+                        alt='No Data'
+                        width='100'
+                        height='100'
+                        style={{ marginBottom: '10px' }}
+                      />
+                      <Typography variant='body2'>Request Not Found</Typography>
+                    </div>
+                  </Paper>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </>
   )
 }

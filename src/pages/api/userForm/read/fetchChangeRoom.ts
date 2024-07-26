@@ -13,6 +13,7 @@ const handler = async (req, res) => {
 
   if (changeRoomError) {
     console.error(changeRoomError.message)
+
     return res.status(500).json({ error: changeRoomError.message })
   }
 
@@ -25,18 +26,29 @@ const handler = async (req, res) => {
       .from('Users_Info')
       .select('name, lastname')
       .eq('user_id', item.user_id)
-      .single() // Assuming each user_id corresponds to a single user
+      .single()
 
     if (userInfoError) {
       console.error(userInfoError.message)
-      // Optionally handle the error, e.g., continue to the next iteration
       continue
+    }
+
+    const { data: userEmailData, error: userEmailError } = await supabase
+      .from('Users')
+      .select('email')
+      .eq('user_id', item.user_id)
+      .single()
+
+    if (userEmailError) {
+      console.error(userEmailError.message)
+      continue // Skip this iteration if there's an error fetching user email
     }
 
     // Combine the current item with fetched user info
     combinedData.push({
       ...item,
-      userInfo: userInfoData ? userInfoData : null
+      userInfo: userInfoData ? userInfoData : null,
+      email: userEmailData ? userEmailData.email : null
     })
   }
 

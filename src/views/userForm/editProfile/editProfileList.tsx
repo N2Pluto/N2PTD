@@ -1,23 +1,32 @@
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import { useTheme } from '@mui/material/styles'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip,
+  Backdrop,
+  CircularProgress,
+  Button,
+  Typography,
+  Box,
+  Tabs,
+  Tab
+} from '@mui/material'
+import CancelIcon from '@mui/icons-material/Cancel'
 import { userStore } from 'src/stores/userStore'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
-import Backdrop from '@mui/material/Backdrop'
-import CircularProgress from '@mui/material/CircularProgress'
-import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
-import { styled } from '@mui/material/styles'
 
 export default function EditProfileList() {
   const theme = useTheme()
   const { user } = userStore()
   const [changeRoomData, setChangeRoomData] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  const [currentTab, setCurrentTab] = useState('Pending')
 
   const fetchData = async () => {
     if (!user) {
@@ -71,67 +80,131 @@ export default function EditProfileList() {
     return <Chip label={status} color={color} />
   }
 
+  const getRequestDetails = item => {
+    const details = []
+    if (item.name || item.lastname) details.push('Name and Surname')
+    if (item.school || item.department || item.major) details.push('Educational Information')
+    if (item.gender) details.push('Gender Information')
+    if (item.religion) details.push('Religion Information')
+    if (item.phone) details.push('Contact Information')
+    return details
+  }
+
+  const formatDetails = details => {
+    const formattedDetails = []
+    for (let i = 0; i < details.length; i += 3) {
+      formattedDetails.push(details.slice(i, i + 3).join(', '))
+    }
+    return formattedDetails
+  }
+
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue)
+  }
+
+  const filterDataByStatus = status => {
+    return changeRoomData.filter(item => item.status === status)
+  }
+
   return (
     <>
       <Backdrop sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }} open={isLoading}>
         <CircularProgress color='inherit' />
       </Backdrop>
-      <Grid container spacing={2} justifyContent={changeRoomData.length === 1 || 2 ? 'center' : 'flex-start'}>
-        {changeRoomData.map((item, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
-            <Card
-              variant='outlined'
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                marginBottom: 2,
-                height: '100%'
-              }}
-            >
-              <CardContent sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                <Box sx={{ flexGrow: 1 }}>
-                  <Typography sx={{ fontWeight: 'medium', marginBottom: 2 }}>EDIT PROFILE #{index + 1}</Typography>
-                  {/* Conditional rendering for Edit Profile Info messages */}
-                  {(item.name || item.lastname) && (
-                    <Typography variant='body2' gutterBottom sx={{ fontStyle: 'italic', marginBottom: 1 }}>
-                      Request to edit name and surname
-                    </Typography>
-                  )}
-                  {(item.school || item.department || item.major) && (
-                    <Typography variant='body2' gutterBottom sx={{ fontStyle: 'italic', marginBottom: 1 }}>
-                      Request to edit educational information
-                    </Typography>
-                  )}
-                  {item.gender && (
-                    <Typography variant='body2' gutterBottom sx={{ fontStyle: 'italic', marginBottom: 1 }}>
-                      Request to edit gender information
-                    </Typography>
-                  )}
-                  {item.religion && (
-                    <Typography variant='body2' gutterBottom sx={{ fontStyle: 'italic', marginBottom: 1 }}>
-                      Request to edit religious information
-                    </Typography>
-                  )}
-                  {item.phone && (
-                    <Typography variant='body2' gutterBottom sx={{ fontStyle: 'italic', marginBottom: 1 }}>
-                      Request to edit contact information
-                    </Typography>
-                  )}
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>{getStatusChip(item.status)}</Box>
-                {item.status === 'Pending' && (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
-                    <Button variant='outlined' color='error' size='small' onClick={() => handleCancelRequest(item.id)}>
-                      Cancel Request
-                    </Button>
-                  </Box>
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={currentTab} onChange={handleTabChange}>
+          <Tab label='Pending' value='Pending' />
+          <Tab label='Approve' value='Approve' />
+        </Tabs>
+      </Box>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label='simple table'>
+          <TableHead>
+            <TableRow>
+              <TableCell align='center'>Request Number</TableCell>
+              <TableCell align='center'>Request Details</TableCell>
+              <TableCell align='center'>Status</TableCell>
+              {currentTab === 'Pending' && <TableCell align='center'>Actions</TableCell>}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filterDataByStatus(currentTab).length > 0 ? (
+              filterDataByStatus(currentTab).map((item, index) => {
+                const requestDetails = getRequestDetails(item)
+                const formattedDetails = formatDetails(requestDetails)
+
+                return (
+                  <TableRow key={index}>
+                    <TableCell align='center'>
+                      <Typography variant='body2' sx={{ fontWeight: 'medium', color: '#4a4a4a' }}>
+                        Edit Profile #{index + 1}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align='center'>
+                      <Box display='flex' flexDirection='column' alignItems='center'>
+                        {formattedDetails.map((detail, idx) => (
+                          <Chip key={idx} label={`Request to Edit ${detail}`} style={{ margin: 2 }} />
+                        ))}
+                      </Box>
+                    </TableCell>
+                    <TableCell align='center'>{getStatusChip(item.status)}</TableCell>
+                    {currentTab === 'Pending' && (
+                      <TableCell align='center'>
+                        {item.status === 'Pending' && (
+                          <Button
+                            variant='contained'
+                            color='error'
+                            startIcon={<CancelIcon sx={{ color: 'white' }} />}
+                            onClick={() => handleCancelRequest(item.id)}
+                            sx={{ color: 'white' }}
+                          >
+                            <Typography variant='body2' sx={{ color: 'white' }}>
+                              Cancel Request
+                            </Typography>
+                          </Button>
+                        )}
+                      </TableCell>
+                    )}
+                  </TableRow>
+                )
+              })
+            ) : (
+              <TableRow style={{ height: 100 }}>
+                <TableCell colSpan={currentTab === 'Pending' ? 4 : 3}>
+                  <Paper
+                    style={{
+                      padding: '20px',
+                      height: '100%',
+                      width: '100%',
+                      backgroundColor: 'rgba(128, 128, 128, 0.05)'
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '100%',
+                        width: '100%'
+                      }}
+                    >
+                      <img
+                        src='https://img5.pic.in.th/file/secure-sv1/erase_1981540.png'
+                        alt='No Data'
+                        width='100'
+                        height='100'
+                        style={{ marginBottom: '10px' }}
+                      />
+                      <Typography variant='body2'>Request Not Found</Typography>
+                    </div>
+                  </Paper>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </>
   )
 }

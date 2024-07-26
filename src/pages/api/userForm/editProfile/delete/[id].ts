@@ -10,14 +10,14 @@ const handler = async (req, res) => {
 
     if (error) {
       console.error('Error deleting form:', error)
-      // Send a generic error message to the client
+
       return res.status(500).json({ error: 'An error occurred while processing your request.' })
     }
 
     return res.status(200).json(data)
   } catch (err) {
     console.error('Unexpected error:', err)
-    // Handle unexpected errors gracefully
+
     return res.status(500).json({ error: 'An unexpected error occurred.' })
   }
 }

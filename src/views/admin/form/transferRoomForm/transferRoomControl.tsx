@@ -37,6 +37,7 @@ export default function TransferRoomControl() {
   const [selectedRequest, setSelectedRequest] = useState(null)
   const [profileData, setProfileData] = useState(null)
   const [selectedUserId, setSelectedUserId] = useState(null)
+  const [selectedEmail, setSelectedEmail] = useState(null)
   const [tabValue, setTabValue] = useState('Pending')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
@@ -84,6 +85,63 @@ export default function TransferRoomControl() {
       }
       const result = await response.json()
       console.log('Profile updated successfully:', result)
+
+      // Send email notification
+      const emailHtml = `
+       <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+          <header style="padding: 10px 0; text-align: center;">
+              <img src="https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png" alt="Walailak University" style="width: 100px; height: auto;" />
+            <h2 style="margin-top: 10px; color: #007bff;">Dormitory Reservation System</h2>
+            <h4 style="margin-top: 5px; color: #555;">Walailak University</h4>
+          </header>
+          <main style="padding: 20px; background-color: #f9f9f9; border-radius: 10px; margin: 20px;">
+            <p>Dear <strong>${selectedRequest.userInfo?.name} ${selectedRequest.userInfo?.lastname}</strong>,</p>
+            <p>Your request to transfer rooms has been processed. Below are the details of your new assignment:</p>
+            <ul style="list-style-type: none; padding: 0;">
+              ${
+                selectedRequest.Dormitory_Building?.name
+                  ? `<li style="padding: 5px 0;"><strong>New Building:</strong> ${selectedRequest.Dormitory_Building.name}</li>`
+                  : ''
+              }
+              ${
+                selectedRequest.Dormitory_Room?.room_number
+                  ? `<li style="padding: 5px 0;"><strong>New Room:</strong> ${selectedRequest.Dormitory_Room.room_number}</li>`
+                  : ''
+              }
+              ${
+                selectedRequest.Dormitory_Bed?.bed_number
+                  ? `<li style="padding: 5px 0;"><strong>New Bed:</strong> ${selectedRequest.Dormitory_Bed.bed_number}</li>`
+                  : ''
+              }
+            </ul>
+            <p>If you have any questions or need further assistance, please feel free to contact us at <a href="mailto:dormitoryawalailak@gmail.com" style="color: #007bff; text-decoration: none;">dormitoryawalailak@gmail.com</a>.</p>
+            <p>Thank you for using the Dormitory Reservation System.</p>
+          </main>
+          <footer style="text-align: center; padding: 10px 0; color: #777;">
+            <p style="margin: 0;">&copy; 2024 Walailak University. All rights reserved.</p>
+          </footer>
+        </div>
+        `
+
+      const emailResponse = await fetch('/api/userForm/nodemailer/nodemailer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          to: selectedEmail,
+          subject: 'Transfer Room Form Submission',
+          text: 'Your request to Transfer Room has been processed.',
+          html: emailHtml
+        })
+      })
+
+      if (!emailResponse.ok) {
+        throw new Error('Failed to send email')
+      }
+
+      const emailResult = await emailResponse.json()
+      console.log('Email sent successfully:', emailResult)
       fetchData()
       handleCloseDrawer() // Close the drawer
     } catch (error) {
@@ -152,11 +210,55 @@ export default function TransferRoomControl() {
     try {
       setIsLoading(true)
       const response = await fetch(`/api/userForm/transferRoom/delete/${requestId}`, { method: 'POST' })
-      const result = await response.json()
+      let result
+      try {
+        result = await response.json()
+      } catch (jsonError) {
+        console.error('Error parsing JSON:', jsonError)
+        result = {}
+      }
       fetchData()
       if (response.ok) {
         console.log('Request cancelled successfully:', result)
         fetchData()
+
+        const emailHtml = `
+    <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+        <header style="padding: 10px 0; text-align: center;">
+            <img src="https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png" alt="Walailak University" style="width: 100px; height: auto;" />
+            <h2 style="margin-top: 10px; color: #007bff;">Dormitory Reservation System</h2>
+            <h4 style="margin-top: 5px; color: #555;">Walailak University</h4>
+        </header>
+        <main style="padding: 20px; background-color: #f9f9f9; border-radius: 10px; margin: 20px;">
+            <p>Dear <strong>${selectedRequest.userInfo?.name} ${selectedRequest.userInfo?.lastname}</strong>,</p>
+            <p>Your request to transfer rooms has been <strong>canceled</strong>. If you have any questions or need further assistance, please feel free to contact us at <a href="mailto:dormitoryawalailak@gmail.com" style="color: #007bff; text-decoration: none;">dormitoryawalailak@gmail.com</a>.</p>
+            <p>Thank you for using the Dormitory Reservation System.</p>
+        </main>
+        <footer style="text-align: center; padding: 10px 0; color: #777;">
+            <p style="margin: 0;">&copy; 2024 Walailak University. All rights reserved.</p>
+        </footer>
+    </div>
+`
+
+        const emailResponse = await fetch('/api/userForm/nodemailer/nodemailer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            to: selectedEmail,
+            subject: 'Transfer Room Form Cancel',
+            text: 'Your request to Transfer Room has been canceled.',
+            html: emailHtml
+          })
+        })
+
+        if (!emailResponse.ok) {
+          throw new Error('Failed to send email')
+        }
+
+        const emailResult = await emailResponse.json()
+        console.log('Email sent successfully:', emailResult)
       } else {
         fetchData()
         console.error('Error cancelling request:', result.error)
@@ -177,6 +279,7 @@ export default function TransferRoomControl() {
     fetchUserProfile()
     setDrawerOpen(true)
     setSelectedUserId(request.user_id)
+    setSelectedEmail(request.email)
   }
 
   const handleCloseDrawer = () => {

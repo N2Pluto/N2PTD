@@ -37,6 +37,11 @@ export default function ChangeRoomControl() {
   const [selectedRequest, setSelectedRequest] = useState(null)
   const [profileData, setProfileData] = useState(null)
   const [selectedUserId, setSelectedUserId] = useState(null)
+  const [selectedEmail, setSelectedEmail] = useState(null)
+  const [checknewBed, setChecknewBed] = useState(null)
+  const [bedBooked, setBedBooked] = useState(false)
+  const [bedStatusMessage, setBedStatusMessage] = useState('')
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(false)
   const [tabValue, setTabValue] = useState('Pending')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
@@ -86,6 +91,64 @@ export default function ChangeRoomControl() {
 
       const result = await response.json()
       console.log('Profile updated successfully:', result)
+
+      const emailHtml = `
+        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+          <header style="padding: 10px 0; text-align: center;">
+           <img src="https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png" alt="Walailak University" style="width: 100px; height: auto;" />
+            <h2 style="margin-top: 10px; color: #007bff;">Dormitory Reservation System</h2>
+            <h4 style="margin-top: 5px; color: #555;">Walailak University</h4>
+          </header>
+          <main style="padding: 20px; background-color: #f9f9f9; border-radius: 10px; margin: 20px;">
+            <p>Dear <strong>${selectedRequest.userInfo?.name} ${selectedRequest.userInfo?.lastname}</strong>,</p>
+            <p>Your request to change rooms has been processed. Below are the details of your new assignment:</p>
+            <ul style="list-style-type: none; padding: 0;">
+              ${
+                selectedRequest.Dormitory_Building?.name
+                  ? `<li style="padding: 5px 0;"><strong>New Building:</strong> ${selectedRequest.Dormitory_Building.name}</li>`
+                  : ''
+              }
+              ${
+                selectedRequest.Dormitory_Room?.room_number
+                  ? `<li style="padding: 5px 0;"><strong>New Room:</strong> ${selectedRequest.Dormitory_Room.room_number}</li>`
+                  : ''
+              }
+              ${
+                selectedRequest.Dormitory_Bed?.bed_number
+                  ? `<li style="padding: 5px 0;"><strong>New Bed:</strong> ${selectedRequest.Dormitory_Bed.bed_number}</li>`
+                  : ''
+              }
+            </ul>
+            <p>If you have any questions or need further assistance, please feel free to contact us at <a href="mailto:
+dormitoryawalailak@gmail.com" style="color: #007bff; text-decoration: none;">
+dormitoryawalailak@gmail.com</a>.</p>
+            <p>Thank you for using the Dormitory Reservation System.</p>
+          </main>
+          <footer style="text-align: center; padding: 10px 0; color: #777;">
+            <p style="margin: 0;">&copy; 2024 Walailak University. All rights reserved.</p>
+          </footer>
+        </div>
+      `
+
+      const emailResponse = await fetch('/api/userForm/nodemailer/nodemailer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          to: selectedEmail,
+          subject: 'Change Room Form Submission',
+          text: 'Your request to Change Room has been processed.',
+          html: emailHtml
+        })
+      })
+
+      if (!emailResponse.ok) {
+        throw new Error('Failed to send email')
+      }
+
+      const emailResult = await emailResponse.json()
+      console.log('Email sent successfully:', emailResult)
 
       // Optionally, refresh data or close the drawer here
       fetchData() // Assuming fetchData fetches the latest data
@@ -156,14 +219,58 @@ export default function ChangeRoomControl() {
     try {
       setIsLoading(true)
       const response = await fetch(`/api/userForm/delete/${requestId}`, { method: 'POST' })
-      const result = await response.json()
+
+      let result
+      try {
+        result = await response.json()
+      } catch (jsonError) {
+        console.error('Error parsing JSON:', jsonError)
+        result = {}
+      }
+
       fetchData()
       if (response.ok) {
         console.log('Request cancelled successfully:', result)
         fetchData()
+        setDrawerOpen(false)
+        const emailHtml = `
+            <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+                <header style="padding: 10px 0; text-align: center;">
+                <img src="https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png" alt="Walailak University" style="width: 100px; height: auto;" />
+                    <h2 style="margin-top: 10px; color: #007bff;">Dormitory Reservation System</h2>
+                    <h4 style="margin-top: 5px; color: #555;">Walailak University</h4>
+                </header>
+                <main style="padding: 20px; background-color: #f9f9f9; border-radius: 10px; margin: 20px;">
+                    <p>Dear <strong>${selectedRequest.userInfo?.name} ${selectedRequest.userInfo?.lastname}</strong>,</p>
+                    <p>We regret to inform you that your request to change rooms has been cancelled. Below are the details of the changes that were requested:</p>
+                    <p>If you have any questions or need further assistance, please feel free to contact us at <a href="mailto:dormitoryawalailak@gmail.com" style="color: #007bff; text-decoration: none;">dormitoryawalailak@gmail.com</a>.</p>
+                    <p>Thank you for using the Dormitory Reservation System.</p>
+                </main>
+                <footer style="text-align: center; padding: 10px 0; color: #777;">
+                    <p style="margin: 0;">&copy; 2024 Walailak University. All rights reserved.</p>
+                </footer>
+            </div>
+            `
+
+        const emailResponse = await fetch('/api/userForm/nodemailer/nodemailer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            to: selectedEmail,
+            subject: 'Change Room Request Cancelled',
+            text: 'Your request to change rooms has been cancelled.',
+            html: emailHtml
+          })
+        })
+        if (!emailResponse.ok) {
+          const emailError = await emailResponse.json()
+          console.error('Error sending email:', emailError)
+        }
       } else {
         fetchData()
-        console.error('Error cancelling request:', result.error)
+        console.error('Error cancelling request:', result.error || 'Unknown error')
       }
     } catch (error) {
       fetchData()
@@ -175,12 +282,48 @@ export default function ChangeRoomControl() {
     }
   }
 
-  const handleDrawerOpen = request => {
+  const handleDrawerOpen = async request => {
     console.log('Selected request:', request)
     fetchUserProfile()
     setSelectedRequest(request)
     setDrawerOpen(true)
     setSelectedUserId(request.user_id)
+    setSelectedEmail(request.email)
+    setChecknewBed(request.newBed)
+
+    try {
+      const response = await fetch('/api/userForm/read/checkDuplicateBed', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ newBed: request.newBed })
+      })
+
+      console.log('Response status:', response.status)
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Response error text:', errorText)
+        throw new Error('Failed to check bed status')
+      }
+
+      const result = await response.json()
+
+      if (result.status === false) {
+        console.error('The bed is already booked')
+        setBedStatusMessage('The bed is already booked. Please Reject this Request.')
+        setIsSubmitDisabled(true)
+
+        return
+      }
+
+      console.log('The bed is available')
+      setBedStatusMessage('The bed is available')
+      setIsSubmitDisabled(false)
+    } catch (error) {
+      console.error('Error checking bed status:', error)
+    }
   }
 
   const handleCloseDrawer = () => {
@@ -355,6 +498,30 @@ export default function ChangeRoomControl() {
                   </TableRow>
                 </TableBody>
               </Table>
+              <Box
+                sx={{
+                  pt: 20,
+                  mb: 2,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textAlign: 'center'
+                }}
+              >
+                <img
+                  src={
+                    isSubmitDisabled
+                      ? 'https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/caution_16799017.png'
+                      : 'https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/check_4047222.png'
+                  }
+                  alt={isSubmitDisabled ? 'Caution' : 'Check'}
+                  style={{ width: '100px', height: '100px' }}
+                />
+                <Typography variant='body1' sx={{ color: isSubmitDisabled ? 'red' : 'green', marginTop: 1 }}>
+                  {bedStatusMessage}
+                </Typography>
+              </Box>
             </TableContainer>
           </Box>
         </Box>
@@ -375,7 +542,7 @@ export default function ChangeRoomControl() {
                   </Button>
                 </Grid>
                 <Grid item>
-                  <Button variant='contained' onClick={handleSubmit}>
+                  <Button variant='contained' onClick={handleSubmit} disabled={isSubmitDisabled}>
                     Submit
                   </Button>
                 </Grid>
