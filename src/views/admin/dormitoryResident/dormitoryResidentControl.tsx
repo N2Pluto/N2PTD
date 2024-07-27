@@ -36,6 +36,7 @@ import Snackbar from '@mui/material/Snackbar'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CloseIcon from '@mui/icons-material/Close'
 import { makeStyles } from '@mui/styles'
+import ErrorIcon from '@mui/icons-material/Error'
 
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
@@ -738,7 +739,7 @@ const DormitoryResidentControl = () => {
         }
         action={
           <IconButton size='small' aria-label='close' color='inherit' onClick={handleCloseDeleteSnackbar}>
-            <CloseIcon fontSize='small' />
+            <ErrorIcon fontSize='small' />
           </IconButton>
         }
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}

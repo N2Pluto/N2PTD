@@ -1,24 +1,23 @@
-// ** React Imports
 import { ChangeEvent, forwardRef, MouseEvent, useState, useEffect } from 'react'
-
-// ** MUI Imports
-import Card from '@mui/material/Card'
-import Grid from '@mui/material/Grid'
-import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
-import MenuItem from '@mui/material/MenuItem'
-import TextField from '@mui/material/TextField'
-import CardHeader from '@mui/material/CardHeader'
-import InputLabel from '@mui/material/InputLabel'
-import IconButton from '@mui/material/IconButton'
-import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
-import CardActions from '@mui/material/CardActions'
-import FormControl from '@mui/material/FormControl'
-import InputAdornment from '@mui/material/InputAdornment'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
+import {
+  Card,
+  Grid,
+  Button,
+  Divider,
+  MenuItem,
+  TextField,
+  CardHeader,
+  InputLabel,
+  IconButton,
+  Typography,
+  CardContent,
+  CardActions,
+  FormControl,
+  InputAdornment,
+  Select,
+  CircularProgress
+} from '@mui/material'
 import { userStore } from 'src/stores/userStore'
-import { CircularProgress } from '@mui/material'
 import { useRouter } from 'next/router'
 
 const UserTransferRoom = () => {
@@ -36,39 +35,49 @@ const UserTransferRoom = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const user_id = user.user_id
-      const res = await fetch(`/api/userForm/${user_id}`)
-      const data = await res.json()
-      setCurrentData(data)
-      console.log('setCurrentData:', data)
-      if (data) {
-        setBuilding(data.dorm_id)
-        setRoom(data.room_id)
-        setBed(data.bed_id)
+      if (!user) return // Check if user is available
+      try {
+        const user_id = user.user_id
+        const res = await fetch(`/api/userForm/${user_id}`)
+        const data = await res.json()
+        setCurrentData(data)
+        console.log('setCurrentData:', data)
+        if (data) {
+          setBuilding(data.dorm_id)
+          setRoom(data.room_id)
+          setBed(data.bed_id)
+        }
+      } catch (error) {
+        console.error('Error fetching current data:', error)
       }
     }
     fetchData()
     const intervalId = setInterval(fetchData, 5000)
 
     return () => clearInterval(intervalId)
-  }, [])
+  }, [user])
 
   useEffect(() => {
     const fetchDormitoryData = async () => {
+      if (!user) return // Check if user is available
       setLoading(true)
-      const user_id = user.user_id // Assuming `user` is available in this scope
-      const res = await fetch(`/api/userForm/transferRoom/read/fetchDormitory?user_id=${user_id}`)
-      const data = await res.json()
+      try {
+        const user_id = user.user_id
+        const res = await fetch(`/api/userForm/transferRoom/read/fetchDormitory?user_id=${user_id}`)
+        const data = await res.json()
 
-      if (data) {
-        console.log('fetchDormitoryData:', data)
-        setNewData(data.result)
-        setNewData(data.result)
+        if (data) {
+          console.log('fetchDormitoryData:', data)
+          setNewData(data.result)
+          setLoading(false)
+        }
+      } catch (error) {
+        console.error('Error fetching dormitory data:', error)
         setLoading(false)
       }
     }
     fetchDormitoryData()
-  }, [])
+  }, [user])
 
   const handleNewBuildingChange = (event: SelectChangeEvent) => {
     const dorm_id = event.target.value as number
@@ -90,33 +99,38 @@ const UserTransferRoom = () => {
 
   const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    const user_id = user.user_id
-    const data = {
-      user_id,
-      newBuilding,
-      newRoom,
-      newBed
-    }
-    const res = await fetch('/api/userForm/transferRoom/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-    if (res.headers.get('Content-Length') === '0' || !res.ok) {
-      console.error('No content or bad response', res.status)
-      handleClose()
-      return
-    }
-
+    if (!user) return // Check if user is available
     try {
-      const result = await res.json()
-    } catch (error) {
-      console.error('Failed to parse JSON', error)
-    }
+      const user_id = user.user_id
+      const data = {
+        user_id,
+        newBuilding,
+        newRoom,
+        newBed
+      }
+      const res = await fetch('/api/userForm/transferRoom/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      if (res.headers.get('Content-Length') === '0' || !res.ok) {
+        console.error('No content or bad response', res.status)
+        handleClose()
+        return
+      }
 
-    handleClose()
+      try {
+        const result = await res.json()
+      } catch (error) {
+        console.error('Failed to parse JSON', error)
+      }
+
+      handleClose()
+    } catch (error) {
+      console.error('Error submitting transfer room request:', error)
+    }
   }
 
   const handleClose = () => {

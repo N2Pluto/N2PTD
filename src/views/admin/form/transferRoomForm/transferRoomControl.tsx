@@ -27,9 +27,24 @@ import {
 import SettingsIcon from '@mui/icons-material/Settings'
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteIcon from '@mui/icons-material/Delete'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import Snackbar from '@mui/material/Snackbar'
+import { styled } from '@mui/material/styles'
+import { makeStyles } from '@mui/styles'
+import ErrorIcon from '@mui/icons-material/Error'
+
+const useStyles = makeStyles({
+  success: {
+    backgroundColor: '#4caf50'
+  },
+  error: {
+    backgroundColor: '#f44336'
+  }
+})
 
 export default function TransferRoomControl() {
   const theme = useTheme()
+  const classes = useStyles()
   const { user } = userStore()
   const [changeRoomData, setChangeRoomData] = useState([])
   const [isLoading, setIsLoading] = useState(false)
@@ -41,6 +56,19 @@ export default function TransferRoomControl() {
   const [tabValue, setTabValue] = useState('Pending')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [openSnackbar, setOpenSnackbar] = useState(false)
+  const [deleteSnackbar, setDeleteSnackbar] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
+  const [bedStatusMessage, setBedStatusMessage] = useState('')
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(false)
+
+  const handleCloseDeleteSnackbar = () => {
+    setDeleteSnackbar(false)
+  }
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false)
+  }
 
   const handleChangeTab = (event, newValue) => {
     setTabValue(newValue)
@@ -81,47 +109,48 @@ export default function TransferRoomControl() {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to update profile')
+        const errorText = await response.text()
+        throw new Error(`Failed to update profile: ${response.status} ${response.statusText} - ${errorText}`)
       }
       const result = await response.json()
       console.log('Profile updated successfully:', result)
 
       // Send email notification
       const emailHtml = `
-       <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
-          <header style="padding: 10px 0; text-align: center;">
-              <img src="https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png" alt="Walailak University" style="width: 100px; height: auto;" />
-            <h2 style="margin-top: 10px; color: #007bff;">Dormitory Reservation System</h2>
-            <h4 style="margin-top: 5px; color: #555;">Walailak University</h4>
-          </header>
-          <main style="padding: 20px; background-color: #f9f9f9; border-radius: 10px; margin: 20px;">
-            <p>Dear <strong>${selectedRequest.userInfo?.name} ${selectedRequest.userInfo?.lastname}</strong>,</p>
-            <p>Your request to transfer rooms has been processed. Below are the details of your new assignment:</p>
-            <ul style="list-style-type: none; padding: 0;">
-              ${
-                selectedRequest.Dormitory_Building?.name
-                  ? `<li style="padding: 5px 0;"><strong>New Building:</strong> ${selectedRequest.Dormitory_Building.name}</li>`
-                  : ''
-              }
-              ${
-                selectedRequest.Dormitory_Room?.room_number
-                  ? `<li style="padding: 5px 0;"><strong>New Room:</strong> ${selectedRequest.Dormitory_Room.room_number}</li>`
-                  : ''
-              }
-              ${
-                selectedRequest.Dormitory_Bed?.bed_number
-                  ? `<li style="padding: 5px 0;"><strong>New Bed:</strong> ${selectedRequest.Dormitory_Bed.bed_number}</li>`
-                  : ''
-              }
-            </ul>
-            <p>If you have any questions or need further assistance, please feel free to contact us at <a href="mailto:dormitoryawalailak@gmail.com" style="color: #007bff; text-decoration: none;">dormitoryawalailak@gmail.com</a>.</p>
-            <p>Thank you for using the Dormitory Reservation System.</p>
-          </main>
-          <footer style="text-align: center; padding: 10px 0; color: #777;">
-            <p style="margin: 0;">&copy; 2024 Walailak University. All rights reserved.</p>
-          </footer>
-        </div>
-        `
+     <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+        <header style="padding: 10px 0; text-align: center;">
+            <img src="https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png" alt="Walailak University" style="width: 100px; height: auto;" />
+          <h2 style="margin-top: 10px; color: #007bff;">Dormitory Reservation System</h2>
+          <h4 style="margin-top: 5px; color: #555;">Walailak University</h4>
+        </header>
+        <main style="padding: 20px; background-color: #f9f9f9; border-radius: 10px; margin: 20px;">
+          <p>Dear <strong>${selectedRequest.userInfo?.name} ${selectedRequest.userInfo?.lastname}</strong>,</p>
+          <p>Your request to transfer rooms has been processed. Below are the details of your new assignment:</p>
+          <ul style="list-style-type: none; padding: 0;">
+            ${
+              selectedRequest.Dormitory_Building?.name
+                ? `<li style="padding: 5px 0;"><strong>New Building:</strong> ${selectedRequest.Dormitory_Building.name}</li>`
+                : ''
+            }
+            ${
+              selectedRequest.Dormitory_Room?.room_number
+                ? `<li style="padding: 5px 0;"><strong>New Room:</strong> ${selectedRequest.Dormitory_Room.room_number}</li>`
+                : ''
+            }
+            ${
+              selectedRequest.Dormitory_Bed?.bed_number
+                ? `<li style="padding: 5px 0;"><strong>New Bed:</strong> ${selectedRequest.Dormitory_Bed.bed_number}</li>`
+                : ''
+            }
+          </ul>
+          <p>If you have any questions or need further assistance, please feel free to contact us at <a href="mailto:dormitoryawalailak@gmail.com" style="color: #007bff; text-decoration: none;">dormitoryawalailak@gmail.com</a>.</p>
+          <p>Thank you for using the Dormitory Reservation System.</p>
+        </main>
+        <footer style="text-align: center; padding: 10px 0; color: #777;">
+          <p style="margin: 0;">&copy; 2024 Walailak University. All rights reserved.</p>
+        </footer>
+      </div>
+      `
 
       const emailResponse = await fetch('/api/userForm/nodemailer/nodemailer', {
         method: 'POST',
@@ -137,17 +166,21 @@ export default function TransferRoomControl() {
       })
 
       if (!emailResponse.ok) {
-        throw new Error('Failed to send email')
+        const emailErrorText = await emailResponse.text()
+        throw new Error(`Failed to send email: ${emailResponse.status} ${emailResponse.statusText} - ${emailErrorText}`)
       }
 
       const emailResult = await emailResponse.json()
       console.log('Email sent successfully:', emailResult)
       fetchData()
-      handleCloseDrawer() // Close the drawer
     } catch (error) {
       console.error('Error updating profile:', error)
     } finally {
       setIsLoading(false) // Hide loading indicator
+      setSnackbarMessage('Request submitted successfully')
+      handleCloseDrawer() // Close the drawer
+      setOpenSnackbar(true) // Show snackbar
+      fetchData()
     }
   }
 
@@ -270,21 +303,35 @@ export default function TransferRoomControl() {
       setIsLoading(false)
       setDrawerOpen(false)
       fetchData()
+      setSnackbarMessage('Request cancelled successfully')
+      setDeleteSnackbar(true)
     }
   }
 
   const handleDrawerOpen = request => {
     console.log('Selected request:', request)
+    fetchData()
     setSelectedRequest(request)
     fetchUserProfile()
     setDrawerOpen(true)
     setSelectedUserId(request.user_id)
     setSelectedEmail(request.email)
+
+    if (request.newBed === profileData?.reservationData.bed_id) {
+      console.error('The bed is already booked')
+      setBedStatusMessage('The bed is already booked. Please Reject this Request.')
+      setIsSubmitDisabled(true)
+    } else {
+      console.log('The bed is available')
+      setBedStatusMessage('The bed is available')
+      setIsSubmitDisabled(false)
+    }
   }
 
   const handleCloseDrawer = () => {
     setDrawerOpen(false)
     setSelectedRequest(null)
+    fetchData()
   }
 
   const getStatusChip = status => {
@@ -391,6 +438,7 @@ export default function TransferRoomControl() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </TableContainer>
+
       <Drawer
         anchor='right'
         open={drawerOpen}
@@ -454,6 +502,30 @@ export default function TransferRoomControl() {
                   </TableRow>
                 </TableBody>
               </Table>
+              <Box
+                sx={{
+                  pt: 20,
+                  mb: 2,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textAlign: 'center'
+                }}
+              >
+                <img
+                  src={
+                    isSubmitDisabled
+                      ? 'https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/caution_16799017.png'
+                      : 'https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/check_4047222.png'
+                  }
+                  alt={isSubmitDisabled ? 'Caution' : 'Check'}
+                  style={{ width: '100px', height: '100px' }}
+                />
+                <Typography variant='body1' sx={{ color: isSubmitDisabled ? 'red' : 'green', marginTop: 1 }}>
+                  {bedStatusMessage}
+                </Typography>
+              </Box>
             </TableContainer>
           </Box>
         </Box>
@@ -474,7 +546,7 @@ export default function TransferRoomControl() {
                   </Button>
                 </Grid>
                 <Grid item>
-                  <Button variant='contained' onClick={handleSubmit}>
+                  <Button variant='contained' onClick={handleSubmit} disabled={isSubmitDisabled}>
                     Submit
                   </Button>
                 </Grid>
@@ -483,6 +555,43 @@ export default function TransferRoomControl() {
           </Grid>
         </Box>
       </Drawer>
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackbar}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {snackbarMessage}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleCloseSnackbar}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.success }}
+      />
+      <Snackbar
+        open={deleteSnackbar}
+        autoHideDuration={5000}
+        onClose={handleCloseDeleteSnackbar}
+        message={
+          <span>
+            <ErrorIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {snackbarMessage}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleCloseDeleteSnackbar}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.error }}
+      />
     </>
   )
 }

@@ -27,15 +27,33 @@ import {
 import SettingsIcon from '@mui/icons-material/Settings'
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteIcon from '@mui/icons-material/Delete'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import Snackbar from '@mui/material/Snackbar'
+import { styled } from '@mui/material/styles'
+import { makeStyles } from '@mui/styles'
+import ErrorIcon from '@mui/icons-material/Error'
+
+const useStyles = makeStyles({
+  success: {
+    backgroundColor: '#4caf50'
+  },
+  error: {
+    backgroundColor: '#f44336'
+  }
+})
 
 export default function EditProfileControl() {
   const theme = useTheme()
+  const classes = useStyles()
   const { user } = userStore()
   const [changeRoomData, setChangeRoomData] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedRequest, setSelectedRequest] = useState(null)
   const [profileData, setProfileData] = useState(null)
+  const [openSnackbar, setOpenSnackbar] = useState(false)
+  const [deleteSnackbar, setDeleteSnackbar] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
   const [selectedUserId, setSelectedUserId] = useState(null)
   const [selectedEmail, setSelectedEmail] = useState(null)
   const [userData, setUserData] = useState({
@@ -58,6 +76,14 @@ export default function EditProfileControl() {
   const [tabValue, setTabValue] = useState('Pending')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
+
+  const handleCloseDeleteSnackbar = () => {
+    setDeleteSnackbar(false)
+  }
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false)
+  }
 
   const handleChangeTab = (event, newValue) => {
     setTabValue(newValue)
@@ -190,6 +216,9 @@ export default function EditProfileControl() {
       console.error('Error updating profile:', error)
     } finally {
       setIsLoading(false) // Hide loading indicator
+      setSnackbarMessage('Request submitted successfully')
+      setOpenSnackbar(true) // Show snackbar
+      fetchData()
     }
   }
 
@@ -315,6 +344,8 @@ export default function EditProfileControl() {
       setIsLoading(false)
       handleCloseDrawer()
       fetchData()
+      setSnackbarMessage('Request cancelled successfully')
+      setDeleteSnackbar(true)
     }
   }
 
@@ -578,6 +609,43 @@ export default function EditProfileControl() {
           </Grid>
         </Box>
       </Drawer>
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackbar}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {snackbarMessage}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleCloseSnackbar}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.success }}
+      />
+      <Snackbar
+        open={deleteSnackbar}
+        autoHideDuration={5000}
+        onClose={handleCloseDeleteSnackbar}
+        message={
+          <span>
+            <ErrorIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {snackbarMessage}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleCloseDeleteSnackbar}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.error }}
+      />
     </>
   )
 }

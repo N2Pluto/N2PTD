@@ -17,7 +17,7 @@ const handler = async (req, res) => {
 
     // Fetch the bed_id from Reservation table for the user_id
     const { data: reservationData, error: reservationError } = await supabase
-      .from('Reservation')
+      .from('Dormitory_Resident')
       .select('bed_id')
       .eq('user_id', user_id)
       .single()

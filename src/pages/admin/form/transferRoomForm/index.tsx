@@ -16,6 +16,7 @@ const MUITable = () => {
       <Grid container spacing={6}>
         <Grid item xs={12} md={12} lg={12}>
           <Card>
+            <CardHeader title='Transfer Room Form' />
             <TransferRoomControl />
           </Card>
         </Grid>
