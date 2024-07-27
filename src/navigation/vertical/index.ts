@@ -10,10 +10,9 @@ import FeedOutlinedIcon from '@mui/icons-material/FeedOutlined'
 import AutorenewIcon from '@mui/icons-material/Autorenew'
 import ChecklistIcon from '@mui/icons-material/Checklist'
 import GoogleIcon from '@mui/icons-material/Google'
-import ApartmentIcon from '@mui/icons-material/Apartment' // New icon for Dormitory
-import BookOnlineIcon from '@mui/icons-material/BookOnline' // New icon for Reservation
-import PersonIcon from '@mui/icons-material/Person' // New icon for Profile
-import RequestPageIcon from '@mui/icons-material/RequestPage'
+import ApartmentIcon from '@mui/icons-material/Apartment'
+import BookOnlineIcon from '@mui/icons-material/BookOnline'
+import PersonIcon from '@mui/icons-material/Person'
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
 import { userStore } from 'src/stores/userStore'
 import { useEffect, useState } from 'react'
@@ -23,6 +22,8 @@ const useNavigation = (): VerticalNavItemsType => {
   const [roleFilter, setRoleFilter] = useState<string>('')
   const [reservation, setReservation] = useState(null)
   const [userInfo, setUserInfo] = useState(null)
+  const [residentData, setResidentData] = useState(null)
+  const [form, setForm] = useState<GoogleFormData[] | null>(null)
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -68,6 +69,40 @@ const useNavigation = (): VerticalNavItemsType => {
 
   console.log('reservation', reservation)
 
+  useEffect(() => {
+    const fetchResidentData = async () => {
+      try {
+        const response = await fetch(`/api/reservation/checkResident?user_id=${user?.user_id}`)
+        const { residentData } = await response.json()
+        setResidentData(residentData[0])
+        console.log('residentData', residentData)
+      } catch (error) {
+        console.error('Error fetching reservation data:', error)
+      }
+    }
+
+    fetchResidentData()
+  }, [user])
+
+  console.log('residentData', residentData)
+
+  useEffect(() => {
+    const fetchFormData = async () => {
+      try {
+        const response = await fetch('/api/admin/googleForm/read/')
+        const result = await response.json()
+        setForm(result.data)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+
+    fetchFormData()
+    const intervalId = setInterval(fetchFormData, 5000)
+
+    return () => clearInterval(intervalId)
+  }, [])
+
   const navItemsForAdmin = [
     {
       title: 'Home Page',
@@ -80,9 +115,14 @@ const useNavigation = (): VerticalNavItemsType => {
       path: '/admin/importStudent'
     },
     {
-      sectionTitle: 'Form Req',
+      sectionTitle: 'Form',
       icon: DnsOutlinedIcon,
       children: [
+        {
+          title: 'Form Control',
+          icon: GoogleIcon,
+          path: '/admin/googleForm'
+        },
         {
           title: 'Edit Profile',
           icon: ApartmentIcon,
@@ -150,11 +190,6 @@ const useNavigation = (): VerticalNavItemsType => {
           title: 'Renewal Period',
           icon: AutorenewIcon,
           path: '/admin/renewalDormitory'
-        },
-        {
-          title: 'Form Request',
-          icon: GoogleIcon,
-          path: '/admin/googleForm'
         }
       ]
     },
@@ -197,30 +232,37 @@ const useNavigation = (): VerticalNavItemsType => {
       icon: PersonIcon,
       path: '/profile'
     },
-    // {
-    //   title: 'Form Request',
-    //   icon: RequestPageIcon,
-    //   path: '/userGoogleForm'
-    // },
     {
       sectionTitle: 'Form',
       icon: CorporateFareOutlinedIcon,
       children: [
-        {
-          title: 'Edit Profile',
-          icon: DomainAddOutlinedIcon,
-          path: '/userGoogleForm/editCard'
-        },
-        {
-          title: 'Change Room',
-          icon: CorporateFareOutlinedIcon,
-          path: '/userGoogleForm/changeCard'
-        },
-        {
-          title: 'Transfer Room',
-          icon: CorporateFareOutlinedIcon,
-          path: '/userGoogleForm/transferCard'
-        }
+        ...(form && form.find(f => f.id === 1 && f.status)
+          ? [
+              {
+                title: 'Edit Profile',
+                icon: DomainAddOutlinedIcon,
+                path: '/userGoogleForm/editCard'
+              }
+            ]
+          : []),
+        ...(form && form.find(f => f.id === 2 && f.status && residentData)
+          ? [
+              {
+                title: 'Change Room',
+                icon: CorporateFareOutlinedIcon,
+                path: '/userGoogleForm/changeCard'
+              }
+            ]
+          : []),
+        ...(form && form.find(f => f.id === 3 && f.status && residentData)
+          ? [
+              {
+                title: 'Transfer Room',
+                icon: CorporateFareOutlinedIcon,
+                path: '/userGoogleForm/transferCard'
+              }
+            ]
+          : [])
       ]
     }
   ]
@@ -229,6 +271,7 @@ const useNavigation = (): VerticalNavItemsType => {
     const updatedNavItemsForUser = navItemsForUser.map(item =>
       item.title === 'Reservation'
         ? {
+            ...item,
             title: 'My Dormitory',
             icon: FeedOutlinedIcon,
             path: '/mydormitory'

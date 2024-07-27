@@ -7,21 +7,20 @@ import AdminLayout from 'src/layouts/AdminLayout'
 import CreateGoogleForm from 'src/views/admin/googleForm/createGoogleForm'
 import GoogleFormCard from 'src/views/admin/googleForm/googleFormCard'
 
-
 const MUITable = () => {
   return (
     <AdminLayout>
       <Grid container spacing={6}>
-       
-        <Grid item xs={12} md={12} lg={12}>
+        {/* <Grid item xs={12} md={12} lg={12}>
           <Card>
             <CreateGoogleForm />
           </Card>
-        </Grid>
+        </Grid> */}
         <Grid item xs={12} md={12} lg={12}>
-
+          <Card>
+            <CardHeader title='Google Form ' />
             <GoogleFormCard />
-          
+          </Card>
         </Grid>
       </Grid>
     </AdminLayout>

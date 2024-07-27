@@ -1,17 +1,23 @@
-import Card from '@mui/material/Card'
+import { useEffect, useState } from 'react'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
-import { useEffect, useState } from 'react'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import React from 'react'
+import CardContent from '@mui/material/CardContent'
 import { SiGoogleforms } from 'react-icons/si'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import GoogleFormEdit from './googleFormEdit'
 import Chip from '@mui/material/Chip'
 import EditIcon from '@mui/icons-material/Edit'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import Switch from '@mui/material/Switch'
 
 // ** Icons Imports
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
@@ -25,9 +31,9 @@ interface GoogleFormData {
   status: boolean
 }
 
-const GoogleFormCard = () => {
+const GoogleFormTable = () => {
   const [rows, setRows] = useState<GoogleFormData[]>([])
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [selectedFormId, setSelectedFormId] = useState<number | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const open = Boolean(anchorEl)
@@ -51,6 +57,25 @@ const GoogleFormCard = () => {
     setFormEditKey(prevKey => prevKey + 1)
   }
 
+  const handleSwitchChange = async (id: number, newStatus: boolean) => {
+    try {
+      const response = await fetch(`/api/admin/googleForm/update/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: newStatus })
+      })
+      if (response.ok) {
+        setRows(prevRows => prevRows.map(row => (row.id === id ? { ...row, status: newStatus } : row)))
+      } else {
+        console.error('Failed to update status')
+      }
+    } catch (error) {
+      console.error('Error updating status:', error)
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -69,80 +94,52 @@ const GoogleFormCard = () => {
   }, [])
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center' }}>
-      {rows.map(row => (
-        <Card key={row.id} sx={{ width: 300, boxShadow: 3, borderRadius: 2 }}>
-          <CardContent
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              textAlign: 'center',
-              padding: 3,
-              position: 'relative'
-            }}
-          >
-            <Avatar
-              sx={{ width: 50, height: 50, marginBottom: 2, color: 'common.white', backgroundColor: 'primary.main' }}
-            >
-              <SiGoogleforms size={30} />
-            </Avatar>
-            <Button
-              id='basic-button'
-              aria-controls={open ? 'basic-menu' : undefined}
-              aria-haspopup='true'
-              aria-expanded={open ? 'true' : undefined}
-              onClick={event => handleClick(event, row.id)}
-              sx={{
-                position: 'absolute',
-                top: 8,
-                right: 8,
-                minWidth: 'auto',
-                padding: 0,
-                color: 'text.secondary'
-              }}
-            >
-              <MoreVertIcon />
-            </Button>
-            <Menu
-              id='basic-menu'
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              MenuListProps={{
-                'aria-labelledby': 'basic-button'
-              }}
-            >
-              <MenuItem onClick={handleEdit}>
-                <EditIcon />
-                <span style={{ marginLeft: '8px' }}>Edit Form</span>
-              </MenuItem>
-            </Menu>
-            <Typography variant='h6' sx={{ marginBottom: 2 }}>
-              {row.form_name}
-            </Typography>
-            <Typography variant='body2' sx={{ marginBottom: 2, color: 'text.secondary' }}>
-              Start Date: {new Date(row.start_date).toLocaleDateString()}
-            </Typography>
-            <Typography variant='body2' sx={{ marginBottom: 2, color: 'text.secondary' }}>
-              End Date: {new Date(row.end_date).toLocaleDateString()}
-            </Typography>
-            <Typography variant='body2' sx={{ marginBottom: 2 }}>
-              <Chip label={row.status ? 'Active' : 'Inactive'} color={row.status ? 'success' : 'error'} />
-            </Typography>
-            <Button
-              variant='contained'
-              sx={{ padding: theme => theme.spacing(1.5, 4), marginTop: 2 }}
-              onClick={() => window.open(row.form_url, '_blank')}
-            >
-              Open Form
-            </Button>
-          </CardContent>
-        </Card>
-      ))}
-      <GoogleFormEdit key={formEditKey} drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen} id={selectedFormId} />
-    </div>
+    <>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label='simple table'>
+          <TableHead>
+            <TableRow>
+              <TableCell align='center'>Form Name</TableCell>
+              <TableCell align='center'>Status</TableCell>
+              <TableCell align='center'>Toggle Status</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map(row => (
+              <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell component='th' scope='row' align='center'>
+                  <CardContent
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      padding: 3,
+                      position: 'relative'
+                    }}
+                  >
+                    <Typography variant='body2' sx={{ marginBottom: 2 }}>
+                      {row.form_name}
+                    </Typography>
+                  </CardContent>
+                </TableCell>
+                <TableCell align='center'>
+                  <Chip label={row.status ? 'Active' : 'Inactive'} color={row.status ? 'success' : 'error'} />
+                </TableCell>
+                <TableCell align='center'>
+                  <Switch
+                    checked={row.status}
+                    onChange={event => handleSwitchChange(row.id, event.target.checked)}
+                    color='primary'
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   )
 }
 
-export default GoogleFormCard
+export default GoogleFormTable
