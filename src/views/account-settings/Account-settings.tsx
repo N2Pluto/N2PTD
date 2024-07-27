@@ -18,7 +18,6 @@ import FormControl from '@mui/material/FormControl'
 import Button, { ButtonProps } from '@mui/material/Button'
 import { ConsoleNetwork } from 'mdi-material-ui'
 import { userStore } from 'src/stores/userStore'
-import { user, setUser } from 'src/stores/userStore'
 import router from 'next/router'
 import Card from '@mui/material/Card'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
@@ -295,7 +294,7 @@ const schoolOptions = createFilterOptions({
   stringify: (option: SchoolOptionType) => option.title
 })
 
-const religion: ReligionOptionType = [
+const religion: ReligionOptionType[] = [
   { title: 'Buddhism' },
   { title: 'Christianity' },
   { title: 'Islam' },
@@ -342,6 +341,11 @@ const AccountSettings = () => {
   const [selectedSchool, setSelectedSchool] = useState<SchoolOptionType | null>(null)
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null)
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null)
+  
+  type DepartmentOptionType = {
+    label: string;
+    value: string;
+  };
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -421,9 +425,9 @@ const AccountSettings = () => {
         console.error('Error uploading image: ', error.message)
       } else {
         console.log('Image uploaded successfully')
-        const { data, error: urlError } = await supabase.storage.from('profile').getPublicUrl(filePath)
+        const { data, data: urlError } = await supabase.storage.from('profile').getPublicUrl(filePath)
         if (urlError) {
-          console.error('Error getting public URL: ', urlError.message)
+          // console.error('Error getting public URL: ', urlError.message)
         } else {
           const { publicUrl } = data
           setFormData(prevState => ({ ...prevState, image: publicUrl }))
@@ -632,8 +636,8 @@ const AccountSettings = () => {
                       id='major-demo'
                       options={selectedDepartment.majors}
                       getOptionLabel={option => option}
-                      onChange={(event, newValue) => {
-                        setFormData({ ...formData, major: newValue || '' })
+                      onChange={(event, newValue: DepartmentOptionType | null) => {
+                        setFormData({ ...formData, major: newValue ? String(newValue.name) : '' })
                       }}
                       renderInput={params => <TextField {...params} label='Major' required />}
                     />

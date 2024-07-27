@@ -1,6 +1,6 @@
 import supabase from 'src/libs/supabase'
 
-const handler = async (req, res) => {
+const handler = async (req : any, res : any) => {
   try {
     const { data, error } = await supabase
       .from('Dormitory_Building')

@@ -11,7 +11,7 @@ import router from 'next/router'
 import RoomControl from 'src/views/admin/buildingControl/roomControl'
 
 const MUITable = () => {
-  const [dormitoryBuilding, setDormitoryBuilding] = useState([])
+  const [dormitoryBuilding, setDormitoryBuilding] = useState<any>(null)
 
   useEffect(() => {
     if (router.query.id) {

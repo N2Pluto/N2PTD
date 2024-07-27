@@ -1,7 +1,7 @@
-import { NextApiRequest, NextApiResponse } from 'next'
+
 import supabase from 'src/libs/supabase'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: any, res: any) {
   const { room_id } = req.query
 
   try {

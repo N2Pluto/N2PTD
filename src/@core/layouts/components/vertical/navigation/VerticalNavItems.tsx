@@ -57,6 +57,8 @@ const VerticalNavItems = (props: Props) => {
 
   const RenderMenuItems = verticalNavItems?.map((item: NavLink | NavSectionTitle, index: number) => {
     if ((item as NavSectionTitle).sectionTitle) {
+
+
       return (
         <React.Fragment key={index}>
           <ListItem
@@ -87,7 +89,8 @@ const VerticalNavItems = (props: Props) => {
                   marginBottom: navWidth === 150 ? '8px' : 0
                 }}
               >
-                {React.createElement((item as NavSectionTitle).icon)}
+                {item.icon}
+
               </ListItemIcon>
               <ListItemText
                 primary={

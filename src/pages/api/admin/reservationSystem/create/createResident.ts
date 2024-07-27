@@ -1,6 +1,6 @@
 // this is /api/admin/reservationSystem/create/createResident
 
-import { NextApiRequest, NextApiResponse } from 'next'
+
 import  supabase  from 'src/libs/supabase'
 
 interface Resident {
@@ -12,7 +12,7 @@ interface Resident {
   created_at: string
 }
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (req: any, res: any) => {
   if (req.method === 'POST') {
     const residents: Resident[] = req.body
 

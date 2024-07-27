@@ -10,7 +10,7 @@ const SettingRoomPage = () => {
     <AdminLayout>
       <Grid container spacing={6}>
         <Grid item xs={12} md={12} lg={12}>
-          <SettingRoom />
+          <SettingRoom id={''} />
         </Grid>
       </Grid>
     </AdminLayout>

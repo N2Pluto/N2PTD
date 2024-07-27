@@ -2,7 +2,7 @@
 
 import supabase from 'src/libs/supabase'
 
-const handler = async (req, res) => {
+const handler = async (req: any, res: any) => {
   try {
     // Fetching buildings
     const { data: buildings, error: buildingError } = await supabase

@@ -1,7 +1,7 @@
 // /api/admin/student/create/checkDuplicate.ts
 import supabase from 'src/libs/supabase'
 
-const handler = async (req, res) => {
+const handler = async (req : any, res: any) => {
   const { student_ids } = req.body
   const { data, error } = await supabase.from('Student').select('student_id').in('student_id', student_ids)
 
@@ -10,7 +10,7 @@ const handler = async (req, res) => {
   }
 
   const existingIds = data.map(item => item.student_id)
-  const duplicates = student_ids.filter(id => existingIds.includes(id))
+  const duplicates = student_ids.filter((id: any)  => existingIds.includes(id))
 
   if (duplicates.length > 0) {
     return res.status(400).json({ duplicate: true, duplicates })

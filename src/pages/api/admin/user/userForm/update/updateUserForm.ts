@@ -1,8 +1,8 @@
 // This is /api/admin/user/userForm/update/updateUserForm
 import supabase from 'src/libs/supabase'
-import { NextApiRequest, NextApiResponse } from 'next'
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+
+const handler = async (req: any, res: any) => {
   const { filteredUsers } = req.body
   console.log('filteredUsers', filteredUsers)
   const { id } = req.body

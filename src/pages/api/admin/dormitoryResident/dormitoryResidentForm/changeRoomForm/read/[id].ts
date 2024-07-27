@@ -34,7 +34,7 @@ const handler = async (req: any, res: any) => {
     })
     const values = valuesResponse.data.values[0]
 
-    const defaultData = {}
+    const defaultData = <any>{}
 
     const data = keys.reduce((obj, key, i) => ({ ...obj, [key]: values[i] || defaultData[key] }), {})
 

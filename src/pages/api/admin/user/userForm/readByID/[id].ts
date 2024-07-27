@@ -35,27 +35,28 @@ const handler = async (req: any, res: any) => {
     })
     const values = valuesResponse.data.values[0]
 
-    const defaultData = {
-      status: undefined,
-      'Email Address': undefined,
-      username: undefined,
-      StudentID: undefined,
-      name: undefined,
-      lastname: undefined,
-      student_id: undefined,
-      school: undefined,
-      department: undefined,
-      major: undefined,
-      gender: undefined,
-      phone: undefined,
-      religion: undefined
-    }
+    // const defaultData = {
+    //   status: undefined,
+    //   'Email Address': undefined,
+    //   username: undefined,
+    //   StudentID: undefined,
+    //   name: undefined,
+    //   lastname: undefined,
+    //   student_id: undefined,
+    //   school: undefined,
+    //   department: undefined,
+    //   major: undefined,
+    //   gender: undefined,
+    //   phone: undefined,
+    //   religion: undefined
+    // }
 
-    const data = keys.reduce((obj, key, i) => ({ ...obj, [key]: values[i] || defaultData[key] }), {})
+    // const data = keys.reduce((obj, key, i) => ({ ...obj, [key]: values[i] || defaultData[key] }), {})
 
-    console.log(data)
+    // console.log(data)
 
-    res.status(200).json({ data })
+    // res.status(200).json({ data })
+    res.status(200).json({  })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }

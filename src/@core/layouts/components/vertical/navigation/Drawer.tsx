@@ -56,8 +56,8 @@ const Drawer = (props: Props) => {
   // Drawer Props for Desktop screens
   const DesktopDrawerProps = {
     open: true,
-    onOpen: () => null,
-    onClose: () => null
+    onOpen: (): void => null,
+    onClose: (): void => null
   }
 
   return (

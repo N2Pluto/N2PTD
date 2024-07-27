@@ -96,3 +96,11 @@ function handler(req: any, res: any) {
 
 
 export default handler
+
+function updateBedAvailable(room_id: any) {
+  throw new Error('Function not implemented.')
+}
+function updateBedStatus(bed_id: any) {
+  throw new Error('Function not implemented.')
+}
+

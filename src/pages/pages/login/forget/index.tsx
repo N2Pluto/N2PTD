@@ -1,4 +1,4 @@
-import { ChangeEvent, useState, useEffect } from 'react'
+import { ChangeEvent, useState, useEffect, ReactNode } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Box from '@mui/material/Box'

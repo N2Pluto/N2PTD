@@ -76,7 +76,6 @@ const VerticalLayout = (props: LayoutProps) => {
         {/* Navigation Menu */}
         <Navigation
           navWidth={navWidth}
-          toggleNavWidth={toggleNavWidth}
           navVisible={navVisible}
           setNavVisible={setNavVisible}
           toggleNavVisibility={toggleNavVisibility}

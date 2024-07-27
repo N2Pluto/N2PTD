@@ -2,7 +2,7 @@
 
 import supabase from 'src/libs/supabase'
 
-const handler = async (req, res) => {
+const handler = async (req : any, res : any) => {
   // Fetch data from Form_TransferRoom including related dormitory details
   const { data: changeRoomData, error: changeRoomError } = await supabase.from('Form_ChangeRoom').select(`
       *,

@@ -8,7 +8,7 @@ const FormBuildingpage = () => {
     <AdminLayout>
       <Grid container spacing={6}>
         <Grid item xs={12} md={12} lg={12}>
-        <FormBuilding />
+        <FormBuilding onClose={undefined} setSnackbarOpen={undefined} />
         </Grid>
 
       </Grid>

@@ -1,9 +1,9 @@
 // this is /api/admin/user/update/updateUser.ts
 
-import { NextApiRequest, NextApiResponse } from 'next'
+
 import supabase from 'src/libs/supabase'
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (req: any, res: any) => {
   if (req.method === 'POST') {
     const { id, name, lastname, student_id, gender, religion, school, department, major } = req.body
     console.log(req.body)
@@ -33,7 +33,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (errorUser) return res.status(500).json({ error: errorUser.message })
 
-    return res.status(200).json({ data: { ...dataInfo, ...dataUser } })
+      if (dataInfo && dataUser){
+       
+        return res.status(200).json({ data: { ...dataInfo as any, ...dataUser as any} })
+      }
+
+    
   }
 }
 

@@ -1,9 +1,9 @@
 
 // /api/admin/yearSystem/read/index.ts
-import { NextApiRequest, NextApiResponse } from 'next'
+
 import supabase from 'src/libs/supabase'
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (req: any, res: any) => {
   if (req.method === 'GET') {
     try {
       const { data, error } = await supabase.from('Year').select('year, student_id')

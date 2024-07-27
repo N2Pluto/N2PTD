@@ -1,8 +1,8 @@
 // api/loginforget/index.ts
-import { NextApiRequest, NextApiResponse } from 'next'
+
 import supabase from 'src/libs/supabase'
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (req: any, res: any) => {
   const { email, studentId } = req.body
 
   const { data, error } = await supabase.from('Users').select('id').eq('email', email).eq('student_id', studentId)

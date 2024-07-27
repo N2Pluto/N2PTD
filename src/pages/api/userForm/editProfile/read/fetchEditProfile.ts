@@ -2,7 +2,7 @@
 
 import supabase from 'src/libs/supabase'
 
-const handler = async (req, res) => {
+const handler = async (req : any, res : any) => {
   // Fetch data from Form_EditProfile including user_id
   const { data: editProfileData, error: editProfileError } = await supabase.from('Form_EditProfile').select(`*`)
 

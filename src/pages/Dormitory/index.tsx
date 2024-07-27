@@ -3,7 +3,7 @@ import Grid from '@mui/material/Grid'
 import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
 import LayoutAuth from 'src/layouts/LayoutAuth'
 import ReservationBuildingDetails from 'src/views/Dormitory/detail/building'
-import ReservationFilter from 'src/views/reservations/ReservationFilter'
+
 
 const Reservation = () => {
   return (

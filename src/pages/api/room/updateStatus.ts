@@ -1,5 +1,5 @@
 import supabase from 'src/libs/supabase'
-import middleware from '../middleware'
+
 
 async function updateUserInfo(room_id: string, room_rehearse: boolean) {
   try {

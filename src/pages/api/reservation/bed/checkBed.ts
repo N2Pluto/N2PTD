@@ -1,7 +1,7 @@
 // /api/reservation/bed/checkBed.ts
 import supabase from 'src/libs/supabase'
 
-const handler = async (req, res) => {
+const handler = async (req : any, res : any) => {
   try {
     // Fetch all bed_ids from Reservation table
     const { data: reservationData, error: reservationError } = await supabase.from('Reservation').select('bed_id')

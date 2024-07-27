@@ -1,7 +1,7 @@
 //this is /api/building/countBedPerRoom
 import supabase from 'src/libs/supabase'
 
-const handler = async (req, res) => {
+const handler = async (req : any, res : any) => {
   try {
     // Fetching buildings
     const { data: buildings, error: buildingError } = await supabase
@@ -16,7 +16,7 @@ const handler = async (req, res) => {
     // Fetching rooms and counting beds in parallel
     const fetchRoomsAndCountBeds = buildings.map(async building => {
       // Count rooms for each building
-      const { data: roomsCount, error: roomCountError } = await supabase
+      const { data: roomsCount , error: roomCountError } = await supabase
         .from('Dormitory_Room')
         .select('room_id', { count: 'exact' })
         .eq('dorm_id', building.dorm_id)
@@ -66,7 +66,7 @@ const handler = async (req, res) => {
         reservedBeds += reservedBedsCount
       }
 
-      return { ...building, roomsCount: roomsCount.count, totalBeds, reservedBeds }
+      return { ...building, roomsCount: roomsCount, totalBeds, reservedBeds }
     })
 
     const result = await Promise.all(fetchRoomsAndCountBeds)

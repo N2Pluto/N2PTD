@@ -15,7 +15,7 @@ const MUITable = () => {
     <AdminLayout>
       <Grid container spacing={6}>
         <Grid item xs={12} md={12} lg={12}>
-          <Addbuilding />
+          <Addbuilding dorm_id={undefined} />
         </Grid>
 
         <Grid item xs={12} sm={6} md={4}>

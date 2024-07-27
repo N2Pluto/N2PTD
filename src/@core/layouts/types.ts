@@ -25,6 +25,7 @@ export type NavSectionTitle = {
   sectionTitle: string
   action?: string
   subject?: string
+  children?: any[]
 }
 
 export type VerticalNavItemsType = (NavLink | NavSectionTitle)[]

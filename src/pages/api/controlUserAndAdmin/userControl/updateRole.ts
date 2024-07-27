@@ -1,6 +1,4 @@
 import supabase from 'src/libs/supabase'
-import middleware from '../middleware'
-
 async function updateUserInfo(user_id: string, role: string) {
   try {
     const { data, error } = await supabase.from('Users').update({ role }).eq('user_id', user_id)

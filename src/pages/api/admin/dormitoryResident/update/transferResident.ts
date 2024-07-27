@@ -1,9 +1,8 @@
 // /api/admin/dormitoryResident/update/transferResident.ts
 
-import { NextApiRequest, NextApiResponse } from 'next'
 import supabase from 'src/libs/supabase'
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (req: any, res: any) => {
   const { id1, id2 } = req.body
 
   // Fetch the user_id for both selected IDs

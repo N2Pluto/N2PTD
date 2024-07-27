@@ -1,7 +1,7 @@
 // /api/userForm/delete/[id].ts
 import supabase from 'src/libs/supabase'
 
-const handler = async (req, res) => {
+const handler = async (req : any, res : any) => {
   const { id } = req.query
   console.log(`Request to delete form with ID: ${id}`)
 

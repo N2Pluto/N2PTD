@@ -11,7 +11,7 @@ const handler = async (req: any, res: any) => {
     }
 
     // Group by room_id and count
-    const counts = reservations.reduce((acc, reservation) => {
+    const counts: { [key: string]: number } = reservations.reduce((acc: { [key: string]: number }, reservation) => {
       acc[reservation.room_id] = (acc[reservation.room_id] || 0) + 1
 
       return acc

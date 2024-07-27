@@ -128,7 +128,9 @@ const Navigation = (props: Props) => {
               userVerticalNavMenuContent(props)
             ) : (
               <List className='nav-items' sx={{ transition: 'padding .25s ease', pr: 4.5 }}>
-                <VerticalNavHeader {...props} />
+                <VerticalNavHeader toggleNavWidth={function (): void {
+                    throw new Error('Function not implemented.')
+                  } } {...props} />
 
                 <VerticalNavItems
                   groupActive={groupActive}

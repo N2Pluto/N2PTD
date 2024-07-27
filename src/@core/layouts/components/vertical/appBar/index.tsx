@@ -21,7 +21,7 @@ const AppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
   padding: theme.spacing(0, 6),
   backgroundColor: alpha(theme.palette.common.white, 0.8),
   color: theme.palette.text.primary,
-  minHeight: theme.mixins.toolbar.minHeight + 25, // Increased height by adding 25px
+  minHeight: Number(theme.mixins.toolbar.minHeight) + 25, // Increased height by adding 25px
   top: 0,
   position: 'fixed', // Set position to fixed
   width: '100%', // Ensure it spans the full width
@@ -29,7 +29,7 @@ const AppBar = styled(MuiAppBar)<AppBarProps>(({ theme }) => ({
   [theme.breakpoints.down('lg')]: {
     paddingLeft: theme.spacing(4),
     paddingRight: theme.spacing(4),
-    minHeight: theme.mixins.toolbar.minHeight + 25 // Ensure the height increase is also applied for smaller screens
+    minHeight: Number(theme.mixins.toolbar.minHeight )+ 25 // Ensure the height increase is also applied for smaller screens
   }
 }))
 

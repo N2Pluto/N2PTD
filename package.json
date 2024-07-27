@@ -108,6 +108,7 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "16.11.11",
     "@types/node-fetch": "^2.6.11",
+    "@types/nodemailer": "^6.4.15",
     "@types/nprogress": "^0.2.0",
     "@types/react": "17.0.37",
     "@types/react-datepicker": "^4.3.2",

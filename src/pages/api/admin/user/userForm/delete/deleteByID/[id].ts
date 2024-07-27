@@ -22,18 +22,19 @@ const handler = async (req: any, res: any) => {
     const rowNumber = id + 2
     console.log('rowNumber', rowNumber)
 
-    const updateResponse = await sheets.spreadsheets.values.update({
-      spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: `Form_EditProfile!A${rowNumber}`,
-      valueInputOption: 'USER_ENTERED',
-      resource: {
-        values: [['unsuccessfully']]
-      }
-    })
+    // const updateResponse = await sheets.spreadsheets.values.update({
+    //   spreadsheetId: process.env.GOOGLE_SHEET_ID,
+    //   range: `Form_EditProfile!A${rowNumber}`,
+    //   valueInputOption: 'USER_ENTERED',
+    //   resource: {
+    //     values: [['unsuccessfully']]
+    //   }
+    // })
 
-    console.log('updateResponse', updateResponse.data)
+    // console.log('updateResponse', updateResponse.data)
 
-    res.status(200).json({ updateResponse })
+    // res.status(200).json({ updateResponse })
+    res.status(200).json({  })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }

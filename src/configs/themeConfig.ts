@@ -21,7 +21,7 @@ const getMode = () => {
 const themeConfig: ThemeConfig = {
   // ** Layout Configs
   templateName: 'Walailak University' /* App Name */,
-  mode: getMode() /* light | dark */,
+  mode: 'light'/* light | dark */,
   contentWidth: 'boxed' /* full | boxed */,
 
   // ** Routing Configs

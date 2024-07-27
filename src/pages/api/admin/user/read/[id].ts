@@ -1,9 +1,9 @@
 //this is /api/admin/user/read/[id].ts
 
-import { NextApiRequest, NextApiResponse } from 'next'
+
 import supabase from 'src/libs/supabase'
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (req: any, res: any) => {
   const { id } = req.query
 
   const { data, error } = await supabase.from('Users_Info').select('*, Users(student_id, role)').eq('id', id)
