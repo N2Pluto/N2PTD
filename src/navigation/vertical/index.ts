@@ -208,6 +208,36 @@ const useNavigation = (): VerticalNavItemsType => {
           path: '/admin/controlRoom'
         }
       ]
+    },
+    {
+      sectionTitle: 'LOGS',
+      icon: AutorenewIcon,
+      children: [
+        {
+          title: 'Student',
+          icon: WifiProtectedSetupIcon,
+          path: '/admin/log-user-reservation'
+        },
+        {
+          title: 'Approve',
+          icon: WifiProtectedSetupIcon,
+          path: '/admin/log-admin-approve'
+        },{
+          title: 'Create',
+          icon: WifiProtectedSetupIcon,
+          path: '/admin/log-admin-create'
+        },{
+          title: 'Building control',
+          icon: WifiProtectedSetupIcon,
+          path: '/admin/log-admin-buildingcontrol'
+        }
+
+        // {
+        //   title: 'Renewal Period',
+        //   icon: AutorenewIcon,
+        //   path: '/admin/renewalDormitory'
+        // }
+      ]
     }
   ]
 

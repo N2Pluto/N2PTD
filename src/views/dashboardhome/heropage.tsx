@@ -4,7 +4,7 @@ import TopHome from './component/top'
 import { Box } from '@mui/material'
 
 import CustomImageList from './component/ImageListTop'
-import Statistics from './component/statistics/statistics'
+
 
 const HeroDashboard = () => {
   return (
@@ -12,7 +12,7 @@ const HeroDashboard = () => {
       <Box>
         <Grid spacing={6} container sx={{ pt: 10 }}>
           <Grid item xs={12} md={12} lg={12}>
-            <Statistics />
+
           </Grid>
           <Grid item xs={12} md={12} lg={8}>
             <TopHome />
