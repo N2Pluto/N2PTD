@@ -16,6 +16,11 @@ import PersonIcon from '@mui/icons-material/Person'
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
 import { userStore } from 'src/stores/userStore'
 import { useEffect, useState } from 'react'
+import LogoDevIcon from '@mui/icons-material/LogoDev';
+import PsychologyIcon from '@mui/icons-material/Psychology';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import GamepadIcon from '@mui/icons-material/Gamepad';
+import CreateIcon from '@mui/icons-material/Create';
 
 const useNavigation = (): VerticalNavItemsType => {
   const { user } = userStore()
@@ -211,24 +216,24 @@ const useNavigation = (): VerticalNavItemsType => {
     },
     {
       sectionTitle: 'LOGS',
-      icon: AutorenewIcon,
+      icon: LogoDevIcon,
       children: [
         {
           title: 'Student',
-          icon: WifiProtectedSetupIcon,
+          icon: PsychologyIcon,
           path: '/admin/log-user-reservation'
         },
         {
           title: 'Approve',
-          icon: WifiProtectedSetupIcon,
+          icon: AssignmentTurnedInIcon,
           path: '/admin/log-admin-approve'
         },{
           title: 'Create',
-          icon: WifiProtectedSetupIcon,
+          icon: CreateIcon,
           path: '/admin/log-admin-create'
         },{
           title: 'Building control',
-          icon: WifiProtectedSetupIcon,
+          icon: GamepadIcon,
           path: '/admin/log-admin-buildingcontrol'
         }
 
