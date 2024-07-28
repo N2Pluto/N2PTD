@@ -19,7 +19,13 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction='up' ref={ref} {...props} />
 })
 
-export default function DeletePost({ id }: { id: any }) {
+interface DeletePostProps {
+  id: any
+  onDeleteSuccess: () => void
+  onDeleteError: (message: string) => void
+}
+
+const DeletePost: React.FC<DeletePostProps> = ({ id, onDeleteSuccess, onDeleteError }) => {
   const handleDeletePost = async (id: any) => {
     try {
       const response = await fetch('/api/admin/delete/post/deletePostByID', {
@@ -34,12 +40,12 @@ export default function DeletePost({ id }: { id: any }) {
         throw new Error(`Response is not ok. Status: ${response.status}, Status Text: ${response.statusText}`)
       }
 
-      alert('Post deleted successfully')
-      router.reload()
+      onDeleteSuccess()
     } catch (error) {
-      console.error(error)
+      onDeleteError(error.message)
     }
   }
+
   const [open, setOpen] = React.useState(false)
 
   const handleClickOpen = () => {
@@ -77,3 +83,5 @@ export default function DeletePost({ id }: { id: any }) {
     </React.Fragment>
   )
 }
+
+export default DeletePost

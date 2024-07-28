@@ -56,8 +56,34 @@ async function updateUserInfo(
 }
 
 const handler = async (req: any, res: any) => {
-  middleware(req, res, async () => {
-    const {
+  const {
+    user_id,
+    name,
+    lastname,
+    student_year,
+    school,
+    department,
+    religion,
+    major,
+    gender,
+    facebook,
+    instagram,
+    phone,
+    image,
+    activity,
+    sleep,
+    filter_school,
+    filter_major,
+    filter_religion,
+    filter_redflag
+  } = req.body
+
+  if (!user_id) {
+    return res.status(400).json({ error: 'user_id is required' })
+  }
+
+  try {
+    await updateUserInfo(
       user_id,
       name,
       lastname,
@@ -77,14 +103,10 @@ const handler = async (req: any, res: any) => {
       filter_major,
       filter_religion,
       filter_redflag
-    } = req.body
+    )
 
-    if (!user_id) {
-      return res.status(400).json({ error: 'user_id is required' })
-    }
-
-    try {
-      await updateUserInfo(
+    res.status(200).json({
+      data: {
         user_id,
         name,
         lastname,
@@ -104,35 +126,11 @@ const handler = async (req: any, res: any) => {
         filter_major,
         filter_religion,
         filter_redflag
-      )
-
-      res.status(200).json({
-        data: {
-          user_id,
-          name,
-          lastname,
-          student_year,
-          school,
-          department,
-          religion,
-          major,
-          gender,
-          facebook,
-          instagram,
-          phone,
-          image,
-          activity,
-          sleep,
-          filter_school,
-          filter_major,
-          filter_religion,
-          filter_redflag
-        }
-      })
-    } catch (error) {
-      res.status(500).json({ error: error.message })
-    }
-  })
+      }
+    })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
 }
 
 export default handler

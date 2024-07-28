@@ -190,12 +190,12 @@ const RegisterPage = () => {
         setSnackbarOpen(true)
         router.push('/pages/login')
       } else {
-        setSnackbarMessage('Failed to insert data')
+        setSnackbarMessage('Please fill in all fields')
         setSnackbarSeverity('error')
         setSnackbarOpen(true)
       }
     } catch (error) {
-      setSnackbarMessage('Error inserting data')
+      setSnackbarMessage('Please fill in all fields')
       setSnackbarSeverity('error')
       setSnackbarOpen(true)
     }

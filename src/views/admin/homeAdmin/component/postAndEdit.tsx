@@ -1,31 +1,70 @@
-// src/components/FacebookPost.tsx
-import React, { useEffect } from 'react';
-import { Card, CardContent, CardHeader, Avatar, Typography, IconButton, Box } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DeletePost from './deletePost';
-import EditPost from './editPost';
+import React, { useEffect } from 'react'
+import { Card, CardContent, CardHeader, Avatar, Typography, IconButton, Box, Snackbar, Alert } from '@mui/material'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
+import DeletePost from './deletePost'
+import EditPost from './editPost'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import { styled } from '@mui/material/styles'
+import { makeStyles } from '@mui/styles'
+import ErrorIcon from '@mui/icons-material/Error'
+import CloseIcon from '@mui/icons-material/Close'
+
+const useStyles = makeStyles({
+  success: {
+    backgroundColor: '#4caf50'
+  },
+  error: {
+    backgroundColor: '#f44336'
+  }
+})
 
 const FacebookPostAndEdit: React.FC = () => {
-  const [post, setPost] = React.useState<any>([]);
+  const classes = useStyles()
+  const [post, setPost] = React.useState<any>([])
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false)
+  const [snackbarMessage, setSnackbarMessage] = React.useState('')
+  const [snackbarSeverity, setSnackbarSeverity] = React.useState<'success' | 'error'>('success')
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await fetch('/api/readPost').then(res => res.json());
-        setPost(data);
+        const { data } = await fetch('/api/readPost').then(res => res.json())
+        setPost(data)
       } catch (error) {
-        console.error('Error fetching dormitory building data:', error);
+        console.error('Error fetching dormitory building data:', error)
       }
-    };
+    }
 
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
-  console.log(post);
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false)
+  }
 
+  const handleDeleteSuccess = () => {
+    setSnackbarSeverity('success')
+    setSnackbarMessage('Post deleted successfully')
+    setSnackbarOpen(true)
+    // Refresh posts
+    const fetchData = async () => {
+      try {
+        const { data } = await fetch('/api/readPost').then(res => res.json())
+        setPost(data)
+      } catch (error) {
+        console.error('Error fetching dormitory building data:', error)
+      }
+    }
 
+    fetchData()
+  }
 
+  const handleDeleteError = (message: string) => {
+    setSnackbarSeverity('error')
+    setSnackbarMessage(`Error deleting post: ${message}`)
+    setSnackbarOpen(true)
+  }
 
   return (
     <>
@@ -41,7 +80,7 @@ const FacebookPostAndEdit: React.FC = () => {
                   <EditPost id={post.id} />
                 </IconButton>
                 <IconButton aria-label='delete'>
-                  <DeletePost id={post.id} />
+                  <DeletePost id={post.id} onDeleteSuccess={handleDeleteSuccess} onDeleteError={handleDeleteError} />
                 </IconButton>
               </Box>
             }
@@ -59,8 +98,27 @@ const FacebookPostAndEdit: React.FC = () => {
           </CardContent>
         </Card>
       ))}
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleSnackbarClose}
+        message={
+          <span>
+            <ErrorIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {snackbarMessage}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleSnackbarClose}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.error }}
+      />
     </>
   )
-};
+}
 
-export default FacebookPostAndEdit;
+export default FacebookPostAndEdit

@@ -25,7 +25,7 @@ const FacebookPost: React.FC = () => {
       {post.map((post: any) => (
         <Card
           sx={{
-            maxWidth: 650, // typical width of a Facebook post
+            maxWidth: 700, // typical width of a Facebook post
             width: '100%',
             marginBottom: 6,
             boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
@@ -42,15 +42,16 @@ const FacebookPost: React.FC = () => {
             <Box
               sx={{
                 width: '100%',
-                height: '100%',
+                height: '700px',
                 overflow: 'hidden',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center'
               }}
             >
-              <img src={post.image} alt='' style={{ width: '100%', height: 'auto', objectFit: 'cover' }} />
+              <img src={post.image} alt='' style={{ width: 'auto', height: '100%', objectFit: 'initial' }} />
             </Box>
+
             <Typography variant='h6' color='text.secondary' sx={{ pt: 2 }}>
               {post.header}
             </Typography>

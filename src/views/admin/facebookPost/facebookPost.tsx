@@ -9,17 +9,39 @@ import Button, { ButtonProps } from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
 import router from 'next/router'
 import supabase from 'src/libs/supabase'
 import { styled } from '@mui/material/styles'
 import { Backdrop, CircularProgress } from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
+import DeleteIcon from '@mui/icons-material/Delete'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import { makeStyles } from '@mui/styles'
+import ErrorIcon from '@mui/icons-material/Error'
+import IconButton from '@mui/material/IconButton'
+
+const useStyles = makeStyles({
+  success: {
+    backgroundColor: '#4caf50'
+  },
+  error: {
+    backgroundColor: '#f44336'
+  }
+})
 
 const FormLayoutsFacebookPost = () => {
+  const classes = useStyles()
   const [header, setHeader] = useState('')
   const [title, setTitle] = useState('')
   const [profileData, setProfileData] = useState(null)
   const [imgSrc, setImgSrc] = useState<string>('')
   const [open, setOpen] = useState(false)
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success')
+  const [loading, setLoading] = useState(false)
 
   const [formData, setFormData] = useState({
     image: profileData?.userInfoData.image
@@ -40,6 +62,7 @@ const FormLayoutsFacebookPost = () => {
 
   const handleFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
+    setLoading(true)
 
     try {
       const response = await fetch('/api/admin/create/createPost', {
@@ -57,15 +80,24 @@ const FormLayoutsFacebookPost = () => {
       console.log('response', response)
 
       if (response.ok) {
-        alert('สร้างโพสต์สำเร็จ')
-        router.push('/admin/home')
+        setSnackbarSeverity('success')
+        setSnackbarMessage('สร้างโพสต์สำเร็จ')
+        setSnackbarOpen(true)
+        setTimeout(() => {
+          setLoading(false)
+          router.push('/admin/home')
+        }, 3000) // Delay navigation by 3 seconds
       } else {
-        alert('สร้างโพสต์ไม่สำเร็จ')
+        setSnackbarSeverity('error')
+        setSnackbarMessage('สร้างโพสต์ไม่สำเร็จ')
+        setSnackbarOpen(true)
+        setLoading(false)
       }
-
-
     } catch (error) {
-      alert('An error occurred: ' + error.message)
+      setSnackbarSeverity('error')
+      setSnackbarMessage('An error occurred: ' + error.message)
+      setSnackbarOpen(true)
+      setLoading(false)
     }
   }
 
@@ -107,6 +139,10 @@ const FormLayoutsFacebookPost = () => {
     setImgSrc('')
   }
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false)
+  }
+
   const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: 'image/png, image/jpeg' })
 
   return (
@@ -122,7 +158,6 @@ const FormLayoutsFacebookPost = () => {
                 Delete photo
               </Button>
             </Box>
-
           )}
           {!imgSrc && (
             <Box
@@ -143,8 +178,6 @@ const FormLayoutsFacebookPost = () => {
               <p>Drag & drop an image here, or click to select one</p>
             </Box>
           )}
-
-
 
           <Grid container spacing={5} sx={{ marginTop: 3 }}>
             <Grid item xs={12}>
@@ -175,6 +208,29 @@ const FormLayoutsFacebookPost = () => {
           </Grid>
         </form>
       </CardContent>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleSnackbarClose}
+        message={
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            {snackbarMessage}
+          </span>
+        }
+        action={
+          <IconButton size='small' aria-label='close' color='inherit' onClick={handleSnackbarClose}>
+            <CloseIcon fontSize='small' />
+          </IconButton>
+        }
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ContentProps={{ className: classes.success }}
+      />
+
+      <Backdrop sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }} open={loading}>
+        <CircularProgress color='inherit' />
+      </Backdrop>
     </Card>
   )
 }
