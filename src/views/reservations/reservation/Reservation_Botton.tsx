@@ -21,6 +21,7 @@ import HomeIcon from '@mui/icons-material/Home'
 import Link from 'next/link'
 import SuccessฺฺBar from './component'
 import { sendDiscordMessage } from 'src/pages/api/discord/user'
+import sendLogsuser from 'src/pages/api/log/user/reservation/insert'
 
 const ReservationBotton = () => {
   const [open, setOpen] = useState(false)
@@ -48,6 +49,12 @@ const ReservationBotton = () => {
   const discordHandle = async (id: string, email: string) => {
     await sendDiscordMessage(id, email, 'Cancel reservation')
   }
+
+  const loguser = async (id: string, email: string) => {
+    await sendLogsuser(id, email, 'Cancel reservation', 'Reservation');
+  };
+
+
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -95,9 +102,7 @@ const ReservationBotton = () => {
     fetchReservationData()
   }, [user])
 
-  console.log('ตรงนี้:', user)
 
-  console.log('reservation:', reservation)
 
   const handleReservation = () => {
     router.push(`/reservation/building`)
@@ -113,11 +118,11 @@ const ReservationBotton = () => {
       if (error) {
         console.error('Error deleting reservation:', error)
       } else {
-        console.log('Reservation deleted successfully:', data)
+        // console.log('Reservation deleted successfully:', data)
         setSnackbarMessage('Booking successfully deleted')
         setSnackbarOpen(true)
         setReservation(null)
-        discordHandle(user.student_id, user.email)
+        loguser(user.student_id, user.email)
         router.reload() // Reload the page
       }
     } catch (error) {

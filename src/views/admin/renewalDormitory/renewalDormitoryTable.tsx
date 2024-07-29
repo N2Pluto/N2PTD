@@ -84,7 +84,6 @@ const RenewalTable = () => {
   const showSnackbar = (message, className) => {
     console.log('showSnackbar:', message, className)
     setSnackbarMessage(message)
-    // Check if the message is for a delete operation and set the class accordingly
     if (message.includes('Delete successful')) {
       setSnackbarClass(classes.error) // Use error class for delete operation initially
     } else {
@@ -99,6 +98,7 @@ const RenewalTable = () => {
 
   const formatDate = (dateString: string) => {
     const options = { year: '2-digit', month: '2-digit', day: '2-digit' }
+    
     return new Date(dateString).toLocaleDateString('en-US', options)
   }
 

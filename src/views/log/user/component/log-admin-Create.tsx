@@ -32,15 +32,15 @@ const StyledTableRow = styled(TableRow)<TableRowProps>(({ theme }) => ({
   }
 }))
 
-const createData = (id: number, content: string, type: string, actor: string, time: string) => {
-  return { id, content, type, actor, time }
+const createData = (id: number, content: string, admin_id: string ,ip:string,time: string, type: string) => {
+  return { id, content, admin_id,ip ,time, type}
 }
 
 const LogsadminCreate = () => {
   const [searchValue, setSearchValue] = useState('')
   const [loguser, setLoguser] = useState<any>([])
   const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [rowsPerPage, setRowsPerPage] = useState(100)
   const [totalRows, setTotalRows] = useState(0)
   const [sortOrder, setSortOrder] = useState('newer')
   const [selectedType, setSelectedType] = useState('')
@@ -82,28 +82,28 @@ const LogsadminCreate = () => {
   }
 
   const exportToCSV = () => {
-    const headers = ['Content', 'Type', 'Actor', 'Time']
-    const rows = filteredLoguser.map((log: any) => [log.content, log.type, log.actor, log.time])
+    const headers = ['Content','admin_id', 'ip', 'time', 'type'];
+    const rows = filteredLoguser.map((log: any) => [log.content, log.admin_id, log.ip, log.time, log.type]);
 
-    let csvContent = 'data:text/csv;charset=utf-8,'
-    csvContent += headers.join(',') + '\n'
+    let csvContent = 'data:text/csv;charset=utf-8,';
+    csvContent += headers.join(',') + '\n';
     rows.forEach((rowArray: any) => {
-      const row = rowArray.join(',')
-      csvContent += row + '\n'
-    })
+      const row = rowArray.join(',');
+      csvContent += row + '\n';
+    });
 
-    const encodedUri = encodeURI(csvContent)
-    const fileName = `log_admid_create${selectedType ? `_${selectedType}` : ''}.csv`
-    const link = document.createElement('a')
-    link.setAttribute('href', encodedUri)
-    link.setAttribute('download', fileName)
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
+    const encodedUri = encodeURI(csvContent);
+    const fileName = `log_admin_create${selectedType ? `_${selectedType}` : ''}.csv`;
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const filteredLoguser = loguser
-    .filter((log: any) => log.actor.toLowerCase().includes(searchValue.toLowerCase()))
+    .filter((log: any) => log.admin_id.toLowerCase().includes(searchValue.toLowerCase()))
     .filter((log: any) => selectedType === '' || log.type === selectedType)
     .sort((a: any, b: any) =>
       sortOrder === 'newer'
@@ -111,7 +111,7 @@ const LogsadminCreate = () => {
         : new Date(a.time).getTime() - new Date(b.time).getTime()
     )
 
-  const rows = filteredLoguser.map((log: any) => createData(log.log_id, log.content, log.type, log.actor, log.time))
+  const rows = filteredLoguser.map((log: any) => createData(log.log_id, log.content, log.admin_id, log.ip, log.time ,log.type))
 
   return (
     <div>
@@ -144,8 +144,8 @@ const LogsadminCreate = () => {
                 onChange={handleSelectChangetype}
               >
                 <MenuItem value=''>All</MenuItem>
-                <MenuItem value='Booking'>Booking</MenuItem>
-                <MenuItem value='Renewal'>Renewal</MenuItem>
+                <MenuItem value='Booking Period'>Booking Period</MenuItem>
+                <MenuItem value='Renewal Period'>Renewal Period</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -185,8 +185,8 @@ const LogsadminCreate = () => {
             <TableHead>
               <TableRow>
                 <StyledTableCell sx={{ width: '60%' }}>content</StyledTableCell>
-                <StyledTableCell align='center'>type</StyledTableCell>
-                <StyledTableCell align='center'>actor</StyledTableCell>
+                <StyledTableCell align='center'>Admin ID</StyledTableCell>
+                <StyledTableCell align='center'>IP</StyledTableCell>
                 <StyledTableCell align='center'>time</StyledTableCell>
               </TableRow>
             </TableHead>
@@ -196,8 +196,8 @@ const LogsadminCreate = () => {
                   <StyledTableCell component='th' scope='row'>
                     {row.content}
                   </StyledTableCell>
-                  <StyledTableCell align='center'>{row.type}</StyledTableCell>
-                  <StyledTableCell align='center'>{row.actor}</StyledTableCell>
+                  <StyledTableCell align='center'>{row.admin_id}</StyledTableCell>
+                  <StyledTableCell align='center'>{row.ip}</StyledTableCell>
                   <StyledTableCell align='center'>
                     {new Date(row.time).toLocaleTimeString('en-GB', {
                       hour: '2-digit',
@@ -215,7 +215,7 @@ const LogsadminCreate = () => {
       </Box>
 
       <TablePagination
-        rowsPerPageOptions={[5, 10, 25, 50, 100]}
+        rowsPerPageOptions={[100, 250, 500, 1000]}
         component='div'
         count={totalRows}
         rowsPerPage={rowsPerPage}

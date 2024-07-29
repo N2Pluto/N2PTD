@@ -23,6 +23,8 @@ import CloseIcon from '@mui/icons-material/Close'
 import Snackbar from '@mui/material/Snackbar'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { makeStyles } from '@mui/styles'
+import sendLogsadmincreate from 'src/pages/api/log/admin/create/insert'
+import { userStore } from 'src/stores/userStore'
 
 const useStyles = makeStyles(theme => ({
   success: {
@@ -44,10 +46,17 @@ const RenewalForm = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false)
   const [snackbarMessage, setSnackbarMessage] = useState('')
   const [snackbarSeverity, setSnackbarSeverity] = useState('success')
+  const { user } = userStore()
 
   const onClose = () => {
     setDrawerOpen(false)
   }
+
+  const loguser = async () => {
+    const content = `Creat "Renewal Period"  Round: '${renewalName}' Phase: '${renewalPhase}' start_date: '${startDate}' end_date: '${endDate}'`
+    await sendLogsadmincreate(user?.student_id, content, 'Renewal Period')
+  }
+
 
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
     if (
@@ -91,6 +100,7 @@ const RenewalForm = () => {
     })
 
     if (response.ok) {
+      loguser()
       setSnackbarMessage('Create Renewal Period successfully!')
       setSnackbarSeverity('success')
       setSnackbarOpen(true)

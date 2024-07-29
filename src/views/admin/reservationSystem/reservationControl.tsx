@@ -31,7 +31,7 @@ const ReservationControl = () => {
         <ReservationForm />
       </Card>
     </>
-  )
+  )     
 }
 
 export default ReservationControl

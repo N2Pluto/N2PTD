@@ -25,6 +25,8 @@ import TuneIcon from '@mui/icons-material/Tune'
 import Snackbar from '@mui/material/Snackbar'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorIcon from '@mui/icons-material/Error'
+import sendLogsadmincreate from 'src/pages/api/log/admin/create/insert'
+import { userStore } from 'src/stores/userStore'
 
 const useStyles = makeStyles(theme => ({
   success: {
@@ -43,6 +45,17 @@ const RenewalFormEdit = ({ id, showSnackbar }) => {
   const [endDate, setEndDate] = useState<Date | null>(null)
   const [renewalName, setRenewalName] = useState('')
   const [renewalPhase, setRenewalPhase] = useState<string[]>([])
+  const { user } = userStore()
+
+  const loguserdelete = async () => {
+const content = `Delete "Renewal Period"  Round: '${renewalName}' Phase: '${renewalPhase}' start_date: '${startDate}' end_date: '${endDate}'`
+    await sendLogsadmincreate(user?.student_id, content, 'Renewal Period')
+  }
+
+  const loguseredit = async () => {
+    const content = `Edit "Renewal Period"  Round: '${renewalName}' Phase: '${renewalPhase}' start_date: '${startDate}' end_date: '${endDate}'`
+    await sendLogsadmincreate(user?.student_id, content, 'Renewal Period')
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -117,6 +130,7 @@ const RenewalFormEdit = ({ id, showSnackbar }) => {
       })
       const result = await response.json()
       if (response.ok) {
+        loguseredit()
         showSnackbar('Update successful', classes.success)
         onClose() // Assuming onClose is a function to close the form or dialog
       } else {
@@ -134,6 +148,7 @@ const RenewalFormEdit = ({ id, showSnackbar }) => {
       })
       const result = await response.json()
       if (response.ok) {
+        loguserdelete()
         showSnackbar('Delete successful', classes.error)
         onClose()
       } else {

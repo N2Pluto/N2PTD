@@ -33,6 +33,9 @@ const ReservationBedviwe = () => {
   const userStoreInstance = userStore()
   const { user } = userStoreInstance
 
+  console.log('userdsfsf', user?.student_id)
+
+
   const handleChange = async (bedId: string) => {
     setExpanded(expanded === bedId ? false : bedId)
     if (!userReservations[bedId]) {
@@ -41,7 +44,6 @@ const ReservationBedviwe = () => {
     }
   }
 
-  console.log('userReservations5555',userReservations)
 
   const handleOpenWarn = () => {
     setOpenWarn(true)
@@ -145,6 +147,8 @@ const ReservationBedviwe = () => {
         },
         body: JSON.stringify({
           user_id: user.user_id,
+          student_id: user.student_id,
+          email: user.email,
           bed_id: selectedBedId,
           round_id: roundData?.data?.id
         })

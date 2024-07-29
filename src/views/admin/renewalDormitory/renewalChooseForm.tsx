@@ -23,6 +23,7 @@ import Alert from '@mui/material/Alert'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
 import { makeStyles } from '@mui/styles'
+import sendLogsuser from 'src/pages/api/log/user/reservation/insert'
 
 const useStyles = makeStyles(theme => ({
   error: {
@@ -34,6 +35,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const RenewalChooseForm = () => {
+  const { user } = userStore()
   const classes = useStyles()
   const [userRenewal, setUserRenewal] = useState('')
   const [formData, setFormData] = useState(null)
@@ -44,6 +46,17 @@ const RenewalChooseForm = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false)
   const [snackbarMessage, setSnackbarMessage] = useState('')
   const [snackbarSeverity, setSnackbarSeverity] = useState('success')
+
+  const loguser = async (rw: string) => {
+    let content = '';
+    if (rw === 'stay') {
+      content = 'sent a renewal form';
+    } else if (rw === 'leave') {
+      content = 'sent a leave form';
+    }
+
+    await sendLogsuser(user?.student_id, user?.email, content, 'Renewal');
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,7 +112,7 @@ const RenewalChooseForm = () => {
           })
         })
         if (response.ok) {
-          console.log('Data updated successfully')
+          loguser(userRenewal)
           setDrawerOpen(false)
           setSnackbarMessage('Data updated successfully')
           setSnackbarSeverity('success')

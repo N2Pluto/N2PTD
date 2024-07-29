@@ -30,6 +30,8 @@ import CloseIcon from '@mui/icons-material/Close'
 import TuneIcon from '@mui/icons-material/Tune'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { makeStyles } from '@mui/styles'
+import sendLogsadmincreate from 'src/pages/api/log/admin/create/insert'
+import { userStore } from 'src/stores/userStore'
 
 const useStyles = makeStyles(theme => ({
   success: {
@@ -42,6 +44,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function DeleteRound({ id, setSnackbarOpen, setSnackbarMessage, setSnackbarSeverity }) {
   const classes = useStyles()
+  const { user } = userStore()
   const [open, setOpen] = useState(false)
   const [startDate, setStartDate] = useState<Date | null | undefined>(null)
   const [endDate, setEndDate] = useState<Date | null | undefined>(null)
@@ -49,6 +52,22 @@ export default function DeleteRound({ id, setSnackbarOpen, setSnackbarMessage, s
   const initialYears = [63, 64, 65, 66, 67, 68]
   const [years, setYears] = useState(initialYears)
   const [roundName, setRoundName] = useState('')
+  const [oldStartDate, setOldStartDate] = useState<Date | null | undefined>(null)
+  const [oldEndDate, setOldEndDate] = useState<Date | null | undefined>(null)
+  const [oldStudentYear, setOldStudentYear] = useState<string[]>([])
+  const [oldRoundName, setOldRoundName] = useState('')
+
+
+
+  const loguserdelete = async () => {
+    const content = `Delete booking Round: '${roundName}'  start_date: '${startDate}' end_date: '${endDate}'`
+    await sendLogsadmincreate(user?.student_id, content, 'Booking Period')
+  }
+
+  const loguseredit = async () => {
+    const content = `Edit booking reservation Round: '${oldRoundName}'  start_date: '${oldStartDate}' end_date: '${oldEndDate}' student_year: '${oldStudentYear}' to Round: '${roundName}' start_date: '${startDate}' end_date: '${endDate}'`
+    await sendLogsadmincreate(user?.student_id, content, 'Booking Period')
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,6 +84,7 @@ export default function DeleteRound({ id, setSnackbarOpen, setSnackbarMessage, s
   const handleUpdate = async () => {
     if (new Date(startDate) >= new Date(endDate)) {
       alert('Start date must be less than end date.')
+
       return
     }
     const response = await fetch(`/api/admin/reservationSystem/update`, {
@@ -82,6 +102,7 @@ export default function DeleteRound({ id, setSnackbarOpen, setSnackbarMessage, s
     })
 
     if (response.ok) {
+      loguseredit()
       setSnackbarSeverity('success')
       setSnackbarMessage('Update Booking Period Successfully')
       setSnackbarOpen(true)
@@ -127,10 +148,13 @@ export default function DeleteRound({ id, setSnackbarOpen, setSnackbarMessage, s
     setOpen(false)
   }
 
+
+
   const handleDelete = async () => {
     await fetch(`/api/admin/reservationSystem/delete/${id}`, {
       method: 'DELETE'
     })
+    loguserdelete()
     setSnackbarSeverity('error')
     setSnackbarMessage('Delete Booking Period Successfully')
     setSnackbarOpen(true)

@@ -29,6 +29,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CloseIcon from '@mui/icons-material/Close'
 import { makeStyles } from '@mui/styles'
 import Divider from '@mui/material/Divider'
+import sendLogsadmincreate from 'src/pages/api/log/admin/create/insert'
+import { userStore } from 'src/stores/userStore'
 
 const useStyles = makeStyles(theme => ({
   success: {
@@ -45,6 +47,7 @@ export default function ReservationForm() {
   const [student_year, setStudentYear] = useState<string[]>([])
   const initialYears = [63, 64, 65, 66, 67, 68]
   const [years, setYears] = useState(initialYears)
+  const { user } = userStore()
 
   const [roundName, setRoundName] = useState('')
   const currentYear = new Date().getFullYear()
@@ -125,6 +128,11 @@ export default function ReservationForm() {
     setDrawerOpen(false)
   }
 
+  const loguser = async () => {
+    const content = `Creat booking reservation Round: '${roundName}' start_date: '${startDate}' end_date: '${endDate}'`
+    await sendLogsadmincreate(user?.student_id, content, 'Booking Period')
+  }
+
   // Send a POST request to the API endpoint with the form data when the form is submitted
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -132,6 +140,7 @@ export default function ReservationForm() {
     // Ensure start_date is before end_date
     if (new Date(startDate) >= new Date(endDate)) {
       alert('Start date must be before end date.')
+
       return
     }
 
@@ -149,17 +158,20 @@ export default function ReservationForm() {
       })
     })
 
+
     const duplicateCheckData = await duplicateCheckResponse.json()
 
     // If there is an active round, stop the function execution
     if (duplicateCheckData.error) {
       alert(duplicateCheckData.error)
+
       return
     }
 
     // If there are duplicate dates, stop the function execution
     if (duplicateCheckData.isDuplicate) {
       alert('The selected date range is already reserved.')
+
       return
     }
 
@@ -176,7 +188,14 @@ export default function ReservationForm() {
         gender: gender,
         student_year: studentYearValue
       })
-    })
+    });
+
+    if (response.ok) {
+      loguser();
+    } else {
+      console.error('Error creating reservation:', response.statusText);
+    }
+
 
     const data = await response.json()
     setDrawerOpen(false)

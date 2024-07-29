@@ -13,6 +13,7 @@ import { userStore } from 'src/stores/userStore'
 import SuccessbarResult from './component'
 import { sendDiscordMessage } from 'src/pages/api/discord/user'
 import Confetti from 'react-confetti'
+import sendLogsuser from 'src/pages/api/log/user/reservation/insert'
 
 // Define keyframes for animations
 const slideIn = keyframes`
@@ -63,6 +64,20 @@ const AllResult = ({ open, handleClose }) => {
   const [reservation, setReservation] = useState(null)
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
   const [showConfetti, setShowConfetti] = useState(false)
+  const [isButtonVisible, setIsButtonVisible] = useState(false);
+
+  const loguser = async () => {
+    const content = `Make a reservation Dormitory Building : ${reservation?.Dormitory_Building?.name} Room Number : ${reservation?.Dormitory_Room?.room_number} Bed Number : ${reservation?.Dormitory_Bed?.bed_number}`
+    await sendLogsuser(user?.student_id, user?.email, content, 'Reservation')
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsButtonVisible(true);
+    }, 7000); // 5-second delay
+
+    return () => clearTimeout(timer); // Cleanup the timer on component unmount
+  }, []);
 
   useEffect(() => {
     const fetchReservationData = async () => {
@@ -98,16 +113,8 @@ const AllResult = ({ open, handleClose }) => {
     }
   }, [open])
 
-  const discordHandle = async (id, email, domname, roomnum, bednum) => {
-    await sendDiscordMessage(
-      id,
-      email,
-      `Make a reservation\nDormitory Building : ${domname}  \nRoom Number : ${roomnum} \nBed Number : ${bednum}`
-    )
-  }
-
-  const handleSummit = (id, email, domname, roomnum, bednum) => {
-    discordHandle(id, email, domname, roomnum, bednum)
+  const handleSummit = () => {
+    loguser()
     router.push(`/reservation/`)
   }
 
@@ -305,20 +312,18 @@ const AllResult = ({ open, handleClose }) => {
               alignItems: 'center'
             }}
           >
-            <Button
-              onClick={() =>
-                handleSummit(
-                  user?.student_id,
-                  user?.email,
-                  reservation?.Dormitory_Building?.name,
-                  reservation?.Dormitory_Room?.room_number,
-                  reservation?.Dormitory_Bed?.bed_number
-                )
-              }
-              variant='contained'
-            >
-              Go to Reservation HomePAGE
-            </Button>
+            <div>
+              {isButtonVisible && (
+                <Button
+                  onClick={() => {
+                    handleSummit();
+                  }}
+                  variant='contained'
+                >
+                  Go to Reservation HomePAGE
+                </Button>
+              )}
+            </div>
           </Box>
         </Grid>
       </DialogContent>

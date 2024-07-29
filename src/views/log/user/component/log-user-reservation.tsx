@@ -11,7 +11,7 @@ import { Box, Grid, InputAdornment, TextField, TablePagination, FormControl, Inp
 import SearchIcon from '@mui/icons-material/Search'
 import Select from '@mui/material/Select'
 import IconButton from '@mui/material/IconButton'
-import IosShareIcon from '@mui/icons-material/IosShare';
+import IosShareIcon from '@mui/icons-material/IosShare'
 
 const StyledTableCell = styled(TableCell)<TableCellProps>(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -32,15 +32,15 @@ const StyledTableRow = styled(TableRow)<TableRowProps>(({ theme }) => ({
   }
 }))
 
-const createData = (id: number, content: string, type: string, actor: string, time: string) => {
-  return { id, content, type, actor, time }
+const createData = (id: number, content: string, s_id: string, actor: string, time: string, type: string) => {
+  return { id, content, s_id, actor, time, type }
 }
 
 const Loguserreservation = () => {
   const [searchValue, setSearchValue] = useState('')
   const [loguser, setLoguser] = useState<any>([])
   const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [rowsPerPage, setRowsPerPage] = useState(100)
   const [totalRows, setTotalRows] = useState(0)
   const [sortOrder, setSortOrder] = useState('newer')
   const [selectedType, setSelectedType] = useState('')
@@ -82,32 +82,41 @@ const Loguserreservation = () => {
   }
 
   const exportToCSV = () => {
-    const headers = ['Content', 'Type', 'Actor', 'Time'];
-    const rows = filteredLoguser.map((log: any) => [log.content, log.type, log.actor, log.time]);
+    const headers = ['Content', 'Studen ID', 'Actor', 'Time', 'Type']
+    const rows = filteredLoguser.map((log: any) => [log.content, log.s_id, log.actor, log.time, log.type])
 
-    let csvContent = 'data:text/csv;charset=utf-8,';
-    csvContent += headers.join(',') + '\n';
+    let csvContent = 'data:text/csv;charset=utf-8,'
+    csvContent += headers.join(',') + '\n'
     rows.forEach((rowArray: any) => {
-      const row = rowArray.join(',');
-      csvContent += row + '\n';
-    });
+      const row = rowArray.join(',')
+      csvContent += row + '\n'
+    })
 
-    const encodedUri = encodeURI(csvContent);
-    const fileName = `log_user_reservation${selectedType ? `_${selectedType}` : ''}.csv`;
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', fileName);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+    const encodedUri = encodeURI(csvContent)
+    const fileName = `log_user${selectedType ? `_${selectedType}` : ''}.csv`
+    const link = document.createElement('a')
+    link.setAttribute('href', encodedUri)
+    link.setAttribute('download', fileName)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   const filteredLoguser = loguser
-    .filter((log: any) => log.actor.toLowerCase().includes(searchValue.toLowerCase()))
+  .filter((log: any) =>
+    log.actor.toLowerCase().includes(searchValue.toLowerCase()) ||
+    log.s_id.toLowerCase().includes(searchValue.toLowerCase())
+  )
     .filter((log: any) => selectedType === '' || log.type === selectedType)
-    .sort((a: any, b: any) => sortOrder === 'newer' ? new Date(b.time).getTime() - new Date(a.time).getTime() : new Date(a.time).getTime() - new Date(b.time).getTime())
+    .sort((a: any, b: any) =>
+      sortOrder === 'newer'
+        ? new Date(b.time).getTime() - new Date(a.time).getTime()
+        : new Date(a.time).getTime() - new Date(b.time).getTime()
+    )
 
-  const rows = filteredLoguser.map((log: any) => createData(log.log_id, log.content, log.type, log.actor, log.time))
+  const rows = filteredLoguser.map((log: any) =>
+    createData(log.log_id, log.content, log.s_id, log.actor, log.time, log.type)
+  )
 
   return (
     <div>
@@ -129,35 +138,30 @@ const Loguserreservation = () => {
         </Grid>
 
         <Grid item xs={12} sm={3}>
-        <Box sx={{ paddingLeft: 5 }}>
-        <FormControl fullWidth>
-            <InputLabel id='form-layouts-separator-select-label'>Type</InputLabel>
-            <Select
-              label='Type'
-              value={selectedType}
-              id='form-layouts-separator-select'
-              labelId='form-layouts-separator-select-label'
-              onChange={handleSelectChangetype}
-            >
-              <MenuItem value=''>All</MenuItem>
-              <MenuItem value='Reservation'>Reservation</MenuItem>
-              <MenuItem value='Renewal'>Renewal</MenuItem>
-            </Select>
-          </FormControl>
-</Box>
-
+          <Box sx={{ paddingLeft: 5 }}>
+            <FormControl fullWidth>
+              <InputLabel id='form-layouts-separator-select-label'>Type</InputLabel>
+              <Select
+                label='Type'
+                value={selectedType}
+                id='form-layouts-separator-select'
+                labelId='form-layouts-separator-select-label'
+                onChange={handleSelectChangetype}
+              >
+                <MenuItem value=''>All</MenuItem>
+                <MenuItem value='Reservation'>Reservation</MenuItem>
+                <MenuItem value='Renewal'>Renewal</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         </Grid>
-
-
-
-
 
         <Grid item xs={12} sm={3}>
           <Grid item xs={12}>
             <TextField
               fullWidth
               label='Search'
-              placeholder='Student ID'
+              placeholder='Student ID or Email'
               value={searchValue}
               onChange={handleSearchChange}
               sx={{ flexGrow: 1, ml: 8 }}
@@ -186,8 +190,8 @@ const Loguserreservation = () => {
             <TableHead>
               <TableRow>
                 <StyledTableCell sx={{ width: '60%' }}>content</StyledTableCell>
-                <StyledTableCell align='center'>type</StyledTableCell>
-                <StyledTableCell align='center'>actor</StyledTableCell>
+                <StyledTableCell align='center'>Student</StyledTableCell>
+                <StyledTableCell align='center'>Email</StyledTableCell>
                 <StyledTableCell align='center'>time</StyledTableCell>
               </TableRow>
             </TableHead>
@@ -197,9 +201,17 @@ const Loguserreservation = () => {
                   <StyledTableCell component='th' scope='row'>
                     {row.content}
                   </StyledTableCell>
-                  <StyledTableCell align='center'>{row.type}</StyledTableCell>
+                  <StyledTableCell align='center'>{row.s_id}</StyledTableCell>
                   <StyledTableCell align='center'>{row.actor}</StyledTableCell>
-                  <StyledTableCell align='center'>{new Date(row.time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}</StyledTableCell>
+                  <StyledTableCell align='center'>
+                    {new Date(row.time).toLocaleTimeString('en-GB', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric'
+                    })}
+                  </StyledTableCell>
                 </StyledTableRow>
               ))}
             </TableBody>
@@ -208,7 +220,7 @@ const Loguserreservation = () => {
       </Box>
 
       <TablePagination
-        rowsPerPageOptions={[5, 10, 25, 50, 100]}
+        rowsPerPageOptions={[100, 250, 500, 1000]}
         component='div'
         count={totalRows}
         rowsPerPage={rowsPerPage}
