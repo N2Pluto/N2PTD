@@ -11,6 +11,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (fetchError || !data || data.length === 0) {
     console.error('Error fetching updated reservation data:', fetchError)
     res.status(500).json({ error: 'Failed to fetch updated reservation data' })
+
     return
   }
 
@@ -20,6 +21,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (updateError) {
     console.error('Error updating status in Dormitory_Approve:', updateError)
     res.status(500).json({ error: 'Failed to update status in Dormitory_Approve' })
+    
     return
   }
 
@@ -34,6 +36,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (insertError) {
     console.error('Error inserting reservation data into Dormitory_Resident:', insertError)
     res.status(500).json({ error: 'Failed to insert reservation data into Dormitory_Resident' })
+
     return
   }
 

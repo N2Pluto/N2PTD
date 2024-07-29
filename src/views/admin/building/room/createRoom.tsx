@@ -23,6 +23,7 @@ import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
+import { userStore } from 'src/stores/userStore'
 
 // ** Icons Imports
 import Phone from 'mdi-material-ui/Phone'
@@ -31,18 +32,25 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 import MessageOutline from 'mdi-material-ui/MessageOutline'
 import { MdMeetingRoom } from 'react-icons/md'
 import { FaBed } from 'react-icons/fa6'
+import sendLogsadmincontorl from 'src/pages/api/log/admin/control/insert'
 
-export default function CreateRoom({ setSnackbarOpen }) {
+export default function CreateRoom({ setSnackbarOpen, dormitoryName }) {
   const [open, setOpen] = React.useState(false)
   const [fullWidth, setFullWidth] = React.useState(true)
   const [maxWidth, setMaxWidth] = React.useState<DialogProps['maxWidth']>('sm')
   const [room_number, setRoomNumber] = React.useState('')
   const [bed_capacity, setBedCapacity] = React.useState('')
+  const { user } = userStore()
 
   const router = useRouter()
 
   const dorm_id = router.query.id
-  console.log('dorm_id:', dorm_id)
+  console.log('dormname:', dormitoryName)
+
+  const loguseredit = async (name: string) => {
+    const content = `Add Room Number: '${room_number}' Bedcapacity: '${bed_capacity}' in '${name}' `
+    await sendLogsadmincontorl(user?.student_id, content, 'Edit Room')
+  }
 
   const handleSubmit = async () => {
     try {
@@ -57,6 +65,7 @@ export default function CreateRoom({ setSnackbarOpen }) {
           bed_capacity: bed_capacity
         })
       })
+      loguseredit(dormitoryName)
 
       if (!response.ok) {
         throw new Error(`Response is not ok. Status: ${response.status}, Status Text: ${response.statusText}`)
@@ -109,7 +118,7 @@ export default function CreateRoom({ setSnackbarOpen }) {
         Create Room
       </Button>
       <Dialog fullWidth={fullWidth} maxWidth={maxWidth} open={open} onClose={handleClose}>
-        <DialogTitle>Create Room</DialogTitle>
+        <DialogTitle>Create Room in {dormitoryName}</DialogTitle> {/* Display dormitory name */}
         <DialogContent>
           <Card>
             <CardHeader title='Input a detail to create a room.' titleTypographyProps={{ variant: 'h2' }} />

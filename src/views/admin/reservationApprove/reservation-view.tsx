@@ -47,6 +47,8 @@ import SearchIcon from '@mui/icons-material/Search'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { useEffect, useState } from 'react'
 import RejectDialog from './reject-dialog'
+import sendLogsadminApprove from 'src/pages/api/log/admin/approve/insert'
+import { userStore } from 'src/stores/userStore'
 
 const useStyles = makeStyles({
   success: {
@@ -154,12 +156,16 @@ const ReservationApprove = () => {
   const [studentIds, setStudentIds] = useState([])
   const [snackbarMessage, setSnackbarMessage] = React.useState('')
   const [snackbarStyle, setSnackbarStyle] = React.useState({})
+  const { user } = userStore()
 
-  const handleOpenRejectDialog = async (ids, studentIds) => {
+
+  const handleOpenRejectDialog = async (ids, studentIds ,domename ,romenum , bednum ,round) => {
     console.log('Opening reject dialog for IDs:', ids, 'and Student IDs:', studentIds)
+    logAdminReject(studentIds ,domename ,romenum , bednum ,round)
     setSelectedUserIds(ids) // Assuming setSelectedUserIds is updated to handle array of IDs
     setOpenDialog(true)
-    setStudentIds(studentIds) // Assuming setStudentIds is a state setter function for studentIds
+    setStudentIds(studentIds)
+
   }
 
   const handleDialogSubmit = reasonsArray => {
@@ -168,10 +174,20 @@ const ReservationApprove = () => {
       selectedUserIds.forEach(id => {
         console.log('Handling reject for ID:', id)
         console.log('Reasons:', reasonsArray)
-        handleReject(id, reasonsArray) // Call handleReject for each ID with the same reasonsArray
+        handleReject(id, reasonsArray) //
       })
-      setSelectedUserIds([]) // Clear the selected IDs after handling
+      setSelectedUserIds([])
     }
+  }
+
+  const logAdminReject = async (studentIds:string ,domename :string,romenum :string, bednum:string ,round:string) => {
+    const content = `Reject "Reservation" for student ID: '${studentIds}' in '${domename}' Room: '${romenum}' Bed: '${bednum}' Round: '${round}'`
+    await sendLogsadminApprove(user?.student_id, content, 'Reservation')
+  }
+
+  const logAdminApprove = async (studentIds:string ,domename :string,romenum :string, bednum:string ,round:string) => {
+    const content = `Approve "Reservation" for student ID: '${studentIds}' in '${domename}' Room: '${romenum}' Bed: '${bednum}' Round: '${round}'`
+    await sendLogsadminApprove(user?.student_id, content, 'Reservation')
   }
 
   const handleReject = async (id, reasons) => {
@@ -184,7 +200,6 @@ const ReservationApprove = () => {
       },
       body: JSON.stringify({ id, status: 'Reject' })
     })
-
     if (!response.ok) {
       console.error(`Failed to update reservation status for id ${id}`)
     } else {
@@ -473,7 +488,7 @@ const ReservationApprove = () => {
     return new Date(dateString).toLocaleDateString(undefined, options)
   }
 
-  const handleApprove = async (ids: number[]) => {
+  const handleApprove = async (ids: number[] ,studentIds ,domename ,romenum , bednum ,round) => {
     setLoading(true)
     await Promise.all(
       ids.map(async id => {
@@ -484,6 +499,7 @@ const ReservationApprove = () => {
           },
           body: JSON.stringify({ id, status: 'Approve' })
         })
+        logAdminApprove(studentIds ,domename ,romenum , bednum ,round)
 
         if (!response.ok) {
           console.error(`Failed to update reservation status for id ${id}`)
@@ -563,8 +579,6 @@ const ReservationApprove = () => {
     resetSelected()
     setLoading(false)
   }
-
-  // Modified handleReject to accept reasons
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -721,12 +735,9 @@ const ReservationApprove = () => {
               setOpenApprove(true)
             }}
             handleReject={async ids => {
-              console.log('handleReject ids', ids)
-              // Map selected IDs to their corresponding user objects
               const selectedUsers = ids
                 .map(id => filteredUsers.find(user => user.id === id))
                 .filter(user => user !== undefined)
-              // Extract student_ids from the selected users
               const studentIds = selectedUsers
                 .map(user => user.Users?.student_id)
                 .filter(studentId => studentId !== undefined)
@@ -790,7 +801,7 @@ const ReservationApprove = () => {
                               onClick={async event => {
                                 event.stopPropagation()
                                 setSelected([row.id])
-                                await handleApprove([row.id])
+                                await handleApprove([row.id] ,  studentIds ,row.Dormitory_Building.name ,row.Dormitory_Room.room_number ,row.Dormitory_Bed.bed_number,row.Reservation_System.round_name)
                                 resetSelected()
                                 setOpenApprove(true)
                               }}
@@ -800,10 +811,9 @@ const ReservationApprove = () => {
                             <IconButton
                               onClick={async event => {
                                 event.stopPropagation()
-                                const ids = [row.id] // Existing row ID
-                                const studentIds = [row.Users?.student_id] // New: Prepare the studentIds array
-                                console.log('handleReject ids', ids, 'studentIds', studentIds) // Logging both IDs
-                                await handleOpenRejectDialog(ids, studentIds) // Pass both IDs and Student IDs
+                                const ids = [row.id]
+                                const studentIds = [row.Users?.student_id]
+                                await handleOpenRejectDialog(ids, studentIds ,row.Dormitory_Building.name ,row.Dormitory_Room.room_number ,row.Dormitory_Bed.bed_number,row.Reservation_System.round_name) // Pass both IDs and Student IDs
                                 resetSelected() // Resetting selection after handling reject
                               }}
                             >

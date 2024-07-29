@@ -20,6 +20,8 @@ import { useRouter } from 'next/router'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
+import sendLogsadmincontorl from 'src/pages/api/log/admin/control/insert'
+import { userStore } from 'src/stores/userStore'
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
 const checkedIcon = <CheckBoxIcon fontSize='small' />
@@ -42,6 +44,7 @@ const facilityOptions = [
 ]
 
 const EditBuilding = ({ dorm_id, onClose, setSnackbarEditOpen }) => {
+  const { user } = userStore()
   const [formData, setFormData] = useState({
     name: '',
     room_total: '',
@@ -58,6 +61,11 @@ const EditBuilding = ({ dorm_id, onClose, setSnackbarEditOpen }) => {
     latitude: '',
     longitude: ''
   })
+
+  const loguseredit = async (name: string) => {
+    const content = `Edit form '${name}' to Room total: '${formData.room_total}' Gender: '${formData.type_gender}' Price: '${formData.price}' Bathroom: '${formData.type_bathroom}' Bedtype: '${formData.type_bedtype}' Bedcapacity: '${formData.type_bedcapacity}'`
+    await sendLogsadmincontorl(user?.student_id, content, 'Edit Building')
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,6 +116,7 @@ const EditBuilding = ({ dorm_id, onClose, setSnackbarEditOpen }) => {
     } catch (error) {
       console.error('Error updating building data:', error)
     }
+    loguseredit(formData.name)
     setSnackbarEditOpen(true)
     onClose()
   }

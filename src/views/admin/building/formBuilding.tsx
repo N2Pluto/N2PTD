@@ -25,6 +25,8 @@ import Box from '@mui/material/Box'
 
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
+import sendLogsadmincontorl from 'src/pages/api/log/admin/control/insert'
+import { userStore } from 'src/stores/userStore'
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
 const checkedIcon = <CheckBoxIcon fontSize='small' />
@@ -64,6 +66,13 @@ const FormBuilding = ({ onClose, setSnackbarOpen }) => {
   const [latitude, setLatitude] = useState('')
   const [longitude, setLongitude] = useState('')
   const router = useRouter()
+  const { user } = userStore()
+
+  const loguseredit = async (name: string) => {
+    const content = `Create '${name} Room total:'${room_total}' Gender:'${type_gender}' Price:'${price}' Bedcapacity:'${type_bedcapacity}'`;
+    await sendLogsadmincontorl(user?.student_id, content, 'Create');
+  };
+
 
   const handleRoomsChange = (index: number, value: string) => {
     const newRoomsPerFloor = [...roomsPerFloor]
@@ -119,7 +128,9 @@ const FormBuilding = ({ onClose, setSnackbarOpen }) => {
         latitude,
         longitude
       })
+
     })
+    loguseredit(name)
 
     if (!response.ok) {
       console.error('Failed to create dormitory')

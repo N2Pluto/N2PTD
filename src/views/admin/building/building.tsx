@@ -17,19 +17,17 @@ import {
   Typography,
   IconButton
 } from '@mui/material'
-import AddCircleIcon from '@mui/icons-material/AddCircle'
-import { styled } from '@mui/material/styles'
 import DeleteBuilding from './deleteBuilding'
 import EditBuilding from './editBuilding'
 import FormBuilding from './formBuilding'
-import EditRoom from './room/editRoom'
-import DeleteIcon from '@mui/icons-material/Delete'
 import Snackbar from '@mui/material/Snackbar'
-import MuiAlert from '@mui/material/Alert'
+
 import CloseIcon from '@mui/icons-material/Close'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorIcon from '@mui/icons-material/Error'
 import { makeStyles } from '@mui/styles'
+import sendLogsadmincontorl from 'src/pages/api/log/admin/control/insert'
+import { userStore } from 'src/stores/userStore'
 
 const useStyles = makeStyles(theme => ({
   error: {
@@ -51,6 +49,13 @@ const Building = ({ dorm_id }) => {
   const [snackbarEditOpen, setSnackbarEditOpen] = useState(false)
   const [snackbarDeleteOpen, setSnackbarDeleteOpen] = useState(false)
   const router = useRouter()
+  const { user } = userStore()
+
+
+  const loguseredit = async (name: string) => {
+    const content = `Delete '${name} and rooms in the building' `;
+    await sendLogsadmincontorl(user?.student_id, content, 'Delete');
+  };
 
   const handleSnackbarDeleteClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -106,7 +111,7 @@ const Building = ({ dorm_id }) => {
     return () => clearInterval(intervalId)
   }, [])
 
-  const handleDeleteBuilding = async dorm_id => {
+  const handleDeleteBuilding = async (dorm_id ,name) => {
     try {
       const response = await fetch('/api/admin/delete/building/deleteBuildingByID', {
         method: 'POST',
@@ -123,6 +128,7 @@ const Building = ({ dorm_id }) => {
       // Refresh the dormitoryBuilding data after successful deletion
       const { data } = await fetch('/api/admin/read/fetch_building').then(res => res.json())
 
+      loguseredit(name)
       setDormitoryBuilding(data)
       setSnackbarDeleteOpen(true)
     } catch (error) {

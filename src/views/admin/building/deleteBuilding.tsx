@@ -14,6 +14,8 @@ import { Typography } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import IconButton from '@mui/material/IconButton'
 import ErrorIcon from '@mui/icons-material/Error'
+import sendLogsadmincontorl from 'src/pages/api/log/admin/control/insert'
+
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -29,6 +31,7 @@ export default function DeleteBuilding({ dorm_id, name, handleDeleteBuilding }) 
   const [confirmationName, setConfirmationName] = React.useState('')
   const [snackbarOpen, setSnackbarOpen] = React.useState(false)
 
+
   const handleClickOpen = () => {
     setOpen(true)
   }
@@ -39,7 +42,7 @@ export default function DeleteBuilding({ dorm_id, name, handleDeleteBuilding }) 
   }
 
   const handleDelete = () => {
-    handleDeleteBuilding(dorm_id)
+    handleDeleteBuilding(dorm_id,name)
     handleClose()
     setSnackbarOpen(true)
   }
@@ -47,6 +50,8 @@ export default function DeleteBuilding({ dorm_id, name, handleDeleteBuilding }) 
   const handleChange = event => {
     setConfirmationName(event.target.value)
   }
+
+
 
   const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {

@@ -14,6 +14,8 @@ import BuildCircleIcon from '@mui/icons-material/BuildCircle'
 import { sendDiscordMessage } from 'src/pages/api/discord/admin'
 import { userStore } from 'src/stores/userStore'
 import router from 'next/router'
+import sendLogsadmincreate from 'src/pages/api/log/admin/create/insert'
+import sendLogsadmincontorl from 'src/pages/api/log/admin/control/insert'
 
 const RoomControl = () => {
   const [room, setRoom] = useState([])
@@ -41,6 +43,17 @@ const RoomControl = () => {
 
     fetchDataRoomByDormID()
   }, [])
+
+  const loguseredit = async (room_rehearse: string, roomNum: string, dormitoryBuilding: string) => {
+    let content = '';
+    if (!room_rehearse) {
+      content = `Control "Open" Room: '${roomNum}' '${dormitoryBuilding}'`;
+    } else {
+      content = `Control "Close" Room: '${roomNum}' '${dormitoryBuilding}'`;
+    }
+
+    await sendLogsadmincontorl(user?.student_id, content, 'Control Room');
+  };
 
   const discordHandle = async (room_rehearse, room_number, dormitoryBuilding) => {
     if (!room_rehearse) {
@@ -74,6 +87,7 @@ const RoomControl = () => {
       })
 
       if (response.ok) {
+        loguseredit(currentStatus ,roomNum ,domname)
         discordHandle(!currentStatus, roomNum, domname)
 
         // Update the room state immediately
@@ -82,9 +96,9 @@ const RoomControl = () => {
         )
 
         // Set Snackbar message and open status
-      const message = !currentStatus
-        ? `Room ${roomNum} in building ${domname} is now open ✅`
-        : `Room ${roomNum} in building ${domname} is now closed ❌`
+        const message = !currentStatus
+          ? `Room ${roomNum} in building ${domname} is now open ✅`
+          : `Room ${roomNum} in building ${domname} is now closed ❌`
         setSnackbarMessage(message)
         setSnackbarOpen(true)
       }

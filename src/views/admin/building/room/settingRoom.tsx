@@ -28,6 +28,8 @@ import ErrorIcon from '@mui/icons-material/Error'
 import { makeStyles } from '@mui/styles'
 import IconButton from '@mui/material/IconButton'
 import { useState } from 'react'
+import sendLogsadmincontorl from 'src/pages/api/log/admin/control/insert'
+import { userStore } from 'src/stores/userStore'
 
 const useStyles = makeStyles(theme => ({
   error: {
@@ -38,7 +40,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function SettingRoom({ id, setSnackbarDeleteRoom, room_number }: { id: string }) {
+export default function SettingRoom({ id, setSnackbarDeleteRoom, room_number ,dormitoryName}: { id: string }) {
   const classes = useStyles()
   const [open, setOpen] = React.useState(false)
   const [fullWidth, setFullWidth] = React.useState(true)
@@ -46,6 +48,19 @@ export default function SettingRoom({ id, setSnackbarDeleteRoom, room_number }: 
   const [dormitoryRoom, setDormitoryRoom] = React.useState<any[]>([])
   const router = useRouter()
   const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const { user } = userStore()
+
+
+
+  const loguseredeleteBed = async (name: string) => {
+    const content = `Delete Bed in Room Number: '${room_number}' '${name}' `
+    await sendLogsadmincontorl(user?.student_id, content, 'Edit Room')
+  }
+
+  const loguseredeleteRoom = async (name: string) => {
+    const content = `Delete Room Number ${room_number} in '${name}' `
+    await sendLogsadmincontorl(user?.student_id, content, 'Edit Room')
+  }
 
   const handleSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -88,6 +103,7 @@ export default function SettingRoom({ id, setSnackbarDeleteRoom, room_number }: 
         },
         body: JSON.stringify({ bed_id })
       })
+      loguseredeleteBed(dormitoryName)
 
       if (!response.ok) {
         throw new Error(`Response is not ok. Status: ${response.status}, Status Text: ${response.statusText}`)
@@ -110,6 +126,7 @@ export default function SettingRoom({ id, setSnackbarDeleteRoom, room_number }: 
         },
         body: JSON.stringify({ room_id })
       })
+      loguseredeleteRoom(dormitoryName)
 
       if (!response.ok) {
         throw new Error(`Response is not ok. Status: ${response.status}, Status Text: ${response.statusText}`)

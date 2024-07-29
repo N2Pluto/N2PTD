@@ -149,6 +149,7 @@ const EditRoom = () => {
               <CreateRoom
                 setSnackbarOpen={setSnackbarOpen}
                 id={dormitoryBuilding.length > 0 ? dormitoryBuilding[0].dorm_id : ''}
+                dormitoryName={dormitoryBuilding.length > 0 ? dormitoryBuilding[0].name : ''}
               >
                 <Button variant='contained' color='primary'>
                   Add Room
@@ -182,6 +183,7 @@ const EditRoom = () => {
                         <SettingRoom
                           id={row.room_id}
                           room_number={row.room_number}
+                          dormitoryName={dormitoryBuilding.length > 0 ? dormitoryBuilding[0].name : ''}
                           setSnackbarDeleteRoom={setSnackbarDeleteRoom}
                         >
                           <Button>
