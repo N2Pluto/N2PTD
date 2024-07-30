@@ -89,7 +89,7 @@ type EnhancedTableToolbarProps = {
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected, selected, resetSelected, handleApprove, handleReject } = props
-  console.log(selected)
+  console.log('select any id', selected)
 
   return (
     <Toolbar
@@ -158,14 +158,11 @@ const ReservationApprove = () => {
   const [snackbarStyle, setSnackbarStyle] = React.useState({})
   const { user } = userStore()
 
-
-  const handleOpenRejectDialog = async (ids, studentIds ,domename ,romenum , bednum ,round) => {
+  const handleOpenRejectDialog = async (ids, studentIds, domename, romenum, bednum, round) => {
     console.log('Opening reject dialog for IDs:', ids, 'and Student IDs:', studentIds)
-    logAdminReject(studentIds ,domename ,romenum , bednum ,round)
     setSelectedUserIds(ids) // Assuming setSelectedUserIds is updated to handle array of IDs
     setOpenDialog(true)
     setStudentIds(studentIds)
-
   }
 
   const handleDialogSubmit = reasonsArray => {
@@ -180,13 +177,137 @@ const ReservationApprove = () => {
     }
   }
 
-  const logAdminReject = async (studentIds:string ,domename :string,romenum :string, bednum:string ,round:string) => {
-    const content = `Reject "Reservation" for student ID: '${studentIds}' in '${domename}' Room: '${romenum}' Bed: '${bednum}' Round: '${round}'`
-    await sendLogsadminApprove(user?.student_id, content, 'Reservation')
+  const logAdminApprove = async (
+    ids: number[],
+    studentIds: string,
+    domename: string,
+    romenum: string,
+    bednum: string,
+    round: string
+  ) => {
+    try {
+      const content = `Approve "Reservation" for student ID: '${studentIds}' in '${domename}' Room: '${romenum}' Bed: '${bednum}' Round: '${round}'`
+      await sendLogsadminApprove(user?.student_id, content, 'Reservation')
+    } catch (error) {
+      console.error('Error logging admin approval:', error)
+    }
   }
 
-  const logAdminApprove = async (studentIds:string ,domename :string,romenum :string, bednum:string ,round:string) => {
-    const content = `Approve "Reservation" for student ID: '${studentIds}' in '${domename}' Room: '${romenum}' Bed: '${bednum}' Round: '${round}'`
+  const handleApprove = async (ids: number[], studentIds) => {
+    console.log('Approving for IDs:', ids) // Log the IDs being approved
+    setLoading(true)
+    await Promise.all(
+      ids.map(async id => {
+        const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id, status: 'Approve' })
+        })
+
+        if (!response.ok) {
+          console.error(`Failed to update reservation status for id ${id}`)
+        } else {
+          // Find the user
+          const user = users.find(user => user.id === id)
+          console.log('User Approve Info', user)
+          if (user) {
+            // Send email to the user
+            await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                to: user.Users.email,
+                subject: 'Reservation Approved',
+                html: `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <style>
+                  body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f4f4;
+                  }
+                  .container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    background-color: #ffffff;
+                    padding: 20px;
+                    border-radius: 5px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                  }
+                  h1 {
+                    color: #333333;
+                    text-align: center;
+                    margin-top: 0;
+                  }
+                  p {
+                    line-height: 1.5;
+                    color: #555555;
+                  }
+                  .button {
+                    display: inline-block;
+                    background-color: #007bff;
+                    color: #ffffff;
+                    padding: 10px 20px;
+                    text-decoration: none;
+                    border-radius: 5px;
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <h1>Your Reservation is Approved</h1>
+                  <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
+                  <p>We are delighted to inform you that your reservation has been approved. We look forward to welcoming you to our establishment.</p>
+                  <p>Please find the details of your reservation below:</p>
+                  <ul>
+                    <li>Building: ${user.Dormitory_Building.name}</li>
+                    <li>Room: ${user.Dormitory_Room.room_number}</li>
+                    <li>Bed: ${user.Dormitory_Bed.bed_number}</li>
+                  </ul>
+                  <p>If you have any further questions or concerns, please do not hesitate to contact us.</p>
+                  <p>Best regards,<br>WU Dormitory</p>
+                </div>
+              </body>
+            </html>
+            `
+              })
+            })
+          }
+        }
+      })
+    )
+
+    for (const id of ids) {
+      const user = users.find(user => user.id === id)
+      if (user) {
+        const domename = user.Dormitory_Building.name
+        const romenum = user.Dormitory_Room.room_number
+        const bednum = user.Dormitory_Bed.bed_number
+        const round = user.Reservation_System.round_name
+        const studentId = user.Users?.student_id
+
+        await logAdminApprove([id], studentId, domename, romenum, bednum, round)
+      }
+    }
+
+    setOpenApprove(true)
+    resetSelected()
+    setLoading(false)
+  }
+
+  const logAdminReject = async (
+    studentIds: string,
+    domename: string,
+    romenum: string,
+    bednum: string,
+    round: string
+  ) => {
+    const content = `Reject "Reservation" for student ID: '${studentIds}' in '${domename}' Room: '${romenum}' Bed: '${bednum}' Round: '${round}'`
     await sendLogsadminApprove(user?.student_id, content, 'Reservation')
   }
 
@@ -204,6 +325,7 @@ const ReservationApprove = () => {
       console.error(`Failed to update reservation status for id ${id}`)
     } else {
       const user = users.find(user => user.id === id)
+      console.log('User Reject Info', user)
       if (user) {
         console.log('Sending rejection email to:', user.Users.email) // Log the email being notified
         await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
@@ -215,25 +337,35 @@ const ReservationApprove = () => {
             to: user.Users.email,
             subject: 'Reservation Rejected',
             html: `
-                    <!DOCTYPE html>
-                    <html>
-                      <head>...</head>
-                      <body>
-                        <div class="container">
-                          <h1>Your Reservation is Rejected</h1>
-                          <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
-                          <p>We regret to inform you that your reservation has been rejected for the following reasons:</p>
-                          <ul>
-                            ${reasons.map(reason => `<li>${reason}</li>`).join('')}
-                          </ul>
-                          <p>We apologize for any inconvenience this may have caused you. If you have any further questions or concerns, please do not hesitate to contact our support team.</p>
-                          <p>Best regards,<br>WU Dormitory</p>
-                        </div>
-                      </body>
-                    </html>
-                  `
+                  <!DOCTYPE html>
+                  <html>
+                    <head>...</head>
+                    <body>
+                      <div class="container">
+                        <h1>Your Reservation is Rejected</h1>
+                        <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
+                        <p>We regret to inform you that your reservation has been rejected for the following reasons:</p>
+                        <ul>
+                          ${reasons.map(reason => `<li>${reason}</li>`).join('')}
+                        </ul>
+                        <p>We apologize for any inconvenience this may have caused you. If you have any further questions or concerns, please do not hesitate to contact our support team.</p>
+                        <p>Best regards,<br>WU Dormitory</p>
+                      </div>
+                    </body>
+                  </html>
+                `
           })
         })
+
+        // Extract necessary values from the user object
+        const domename = user.Dormitory_Building.name
+        const romenum = user.Dormitory_Room.room_number
+        const bednum = user.Dormitory_Bed.bed_number
+        const round = user.Reservation_System.round_name
+        const studentId = user.Users.student_id
+
+        // Call logAdminReject with the extracted values
+        await logAdminReject(studentId, domename, romenum, bednum, round)
       }
     }
     setOpenReject(true)
@@ -488,98 +620,6 @@ const ReservationApprove = () => {
     return new Date(dateString).toLocaleDateString(undefined, options)
   }
 
-  const handleApprove = async (ids: number[] ,studentIds ,domename ,romenum , bednum ,round) => {
-    setLoading(true)
-    await Promise.all(
-      ids.map(async id => {
-        const response = await fetch('/api/admin/reservationApprove/update/updateApprove', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ id, status: 'Approve' })
-        })
-        logAdminApprove(studentIds ,domename ,romenum , bednum ,round)
-
-        if (!response.ok) {
-          console.error(`Failed to update reservation status for id ${id}`)
-        } else {
-          // Find the user
-          const user = users.find(user => user.id === id)
-          if (user) {
-            // Send email to the user
-            await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                to: user.Users.email,
-                subject: 'Reservation Approved',
-                html: `
-            <!DOCTYPE html>
-            <html>
-              <head>
-                <style>
-                  body {
-                    font-family: Arial, sans-serif;
-                    background-color: #f4f4f4;
-                  }
-                  .container {
-                    max-width: 600px;
-                    margin: 0 auto;
-                    background-color: #ffffff;
-                    padding: 20px;
-                    border-radius: 5px;
-                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                  }
-                  h1 {
-                    color: #333333;
-                    text-align: center;
-                    margin-top: 0;
-                  }
-                  p {
-                    line-height: 1.5;
-                    color: #555555;
-                  }
-                  .button {
-                    display: inline-block;
-                    background-color: #007bff;
-                    color: #ffffff;
-                    padding: 10px 20px;
-                    text-decoration: none;
-                    border-radius: 5px;
-                  }
-                </style>
-              </head>
-              <body>
-                <div class="container">
-                  <h1>Your Reservation is Approved</h1>
-                  <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
-                  <p>We are delighted to inform you that your reservation has been approved. We look forward to welcoming you to our establishment.</p>
-                  <p>Please find the details of your reservation below:</p>
-                  <ul>
-                    <li>Building: ${user.Dormitory_Building.name}</li>
-                    <li>Room: ${user.Dormitory_Room.room_number}</li>
-                    <li>Bed: ${user.Dormitory_Bed.bed_number}</li>
-                  </ul>
-                  <p>If you have any further questions or concerns, please do not hesitate to contact us.</p>
-                  <p>Best regards,<br>WU Dormitory</p>
-                </div>
-              </body>
-            </html>
-            `
-              })
-            })
-          }
-        }
-      })
-    )
-    setOpenApprove(true)
-    resetSelected()
-    setLoading(false)
-  }
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Pending':
@@ -801,7 +841,14 @@ const ReservationApprove = () => {
                               onClick={async event => {
                                 event.stopPropagation()
                                 setSelected([row.id])
-                                await handleApprove([row.id] ,  studentIds ,row.Dormitory_Building.name ,row.Dormitory_Room.room_number ,row.Dormitory_Bed.bed_number,row.Reservation_System.round_name)
+                                await handleApprove(
+                                  [row.id],
+                                  studentIds,
+                                  row.Dormitory_Building.name,
+                                  row.Dormitory_Room.room_number,
+                                  row.Dormitory_Bed.bed_number,
+                                  row.Reservation_System.round_name
+                                )
                                 resetSelected()
                                 setOpenApprove(true)
                               }}
@@ -813,7 +860,14 @@ const ReservationApprove = () => {
                                 event.stopPropagation()
                                 const ids = [row.id]
                                 const studentIds = [row.Users?.student_id]
-                                await handleOpenRejectDialog(ids, studentIds ,row.Dormitory_Building.name ,row.Dormitory_Room.room_number ,row.Dormitory_Bed.bed_number,row.Reservation_System.round_name) // Pass both IDs and Student IDs
+                                await handleOpenRejectDialog(
+                                  ids,
+                                  studentIds,
+                                  row.Dormitory_Building.name,
+                                  row.Dormitory_Room.room_number,
+                                  row.Dormitory_Bed.bed_number,
+                                  row.Reservation_System.round_name
+                                ) // Pass both IDs and Student IDs
                                 resetSelected() // Resetting selection after handling reject
                               }}
                             >

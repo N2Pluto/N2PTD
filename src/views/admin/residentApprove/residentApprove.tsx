@@ -50,6 +50,8 @@ import CircularProgress from '@mui/material/CircularProgress'
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import SearchIcon from '@mui/icons-material/Search'
+import sendLogsadminApprove from 'src/pages/api/log/admin/approve/insert'
+import { userStore } from 'src/stores/userStore'
 
 // ** Styles
 
@@ -150,6 +152,235 @@ const ResidentApprove = () => {
   const [approvedSnackbarOpen, setApprovedSnackbarOpen] = useState(false)
   const [rejectedSnackbarOpen, setRejectedSnackbarOpen] = useState(false)
   const [loading, setLoading] = React.useState(false)
+  const { user } = userStore()
+
+  const logAdminApprove = async (
+    ids: number[],
+    studentIds: string,
+    domename: string,
+    romenum: string,
+    bednum: string,
+    round: string
+  ) => {
+    try {
+      const content = `Approve "Resident" for student ID: '${studentIds}' in '${domename}' Room: '${romenum}' Bed: '${bednum}' Round: '${round}'`
+      await sendLogsadminApprove(user?.student_id, content, 'Resident')
+    } catch (error) {
+      console.error('Error logging admin approval:', error)
+    }
+  }
+
+  const handleApprove = async (ids: number[]) => {
+    setLoading(true)
+    ids.forEach(async id => {
+      console.log(`Button clicked with id: ${id}`)
+      event.stopPropagation()
+
+      // Call the API endpoint
+      const response = await fetch('/api/admin/residentApprove/update/updateResident', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id })
+      })
+
+      resetSelected()
+      setApprovedSnackbarOpen(true)
+
+      if (!response.ok) {
+        console.error('Failed to update reservation status')
+        return
+      } else {
+        // Find the user
+        const user = users.find(user => user.id === id)
+        console.log('user:', user)
+        if (user) {
+          // Send email to the user
+          await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              to: user.Users.email,
+              subject: 'คุณได้รับอนุมัติในการยืนยันตัวเข้าสู่หอพัก Walailak University',
+              html: `
+  <!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f4;
+        direction: ltr; /* Set the writing direction to left-to-right */
+        text-align: left; /* Align text to the left */
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333333;
+        text-align: center;
+        margin-top: 0;
+      }
+      p {
+        line-height: 1.5;
+        color: #555555;
+        text-align: justify; /* Justify the text for better readability */
+      }
+      .button {
+        display: inline-block;
+        background-color: #007bff;
+        color: #ffffff;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Welcome to Walailak University Dormitory</h1>
+      <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
+      <p>We are pleased to inform you that your application to reside in the Walailak University Dormitory has been approved. We are excited to welcome you to our community.</p>
+      <p>Please find the details of your reservation below:</p>
+      <ul>
+        <li>Building: ${user.Dormitory_Building.name}</li>
+        <li>Room: ${user.Dormitory_Room.room_number}</li>
+        <li>Bed: ${user.Dormitory_Bed.bed_number}</li>
+      </ul>
+      <p>Should you have any questions or concerns, please do not hesitate to contact us.</p>
+      <p>Sincerely,<br>Walailak University Dormitory</p>
+    </div>
+  </body>
+</html>
+`
+            })
+          })
+        }
+      }
+      setLoading(false)
+    })
+    for (const id of ids) {
+      const user = users.find(user => user.id === id)
+      if (user) {
+        const domename = user.Dormitory_Building.name
+        const romenum = user.Dormitory_Room.room_number
+        const bednum = user.Dormitory_Bed.bed_number
+        const round = user.Reservation_System.round_name
+        const studentId = user.Users?.student_id
+
+        await logAdminApprove([id], studentId, domename, romenum, bednum, round)
+      }
+    }
+  }
+
+  const logAdminReject = async (
+    studentIds: string,
+    domename: string,
+    romenum: string,
+    bednum: string,
+    round: string
+  ) => {
+    const content = `Reject "Resident" for student ID: '${studentIds}' in '${domename}' Room: '${romenum}' Bed: '${bednum}' Round: '${round}'`
+    await sendLogsadminApprove(user?.student_id, content, 'Resident')
+  }
+
+  const handleReject = async (ids: number[]) => {
+    setLoading(true)
+    ids.forEach(async id => {
+      event.stopPropagation()
+
+      // Call the API endpoint
+      const response = await fetch('/api/admin/residentApprove/delete/deleteResident', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id })
+      })
+      resetSelected()
+      setRejectedSnackbarOpen(true)
+      setLoading(false)
+
+      if (!response.ok) {
+        console.error('Failed to delete reservation')
+        return
+      } else {
+        // Find the user
+        const user = users.find(user => user.id === id)
+        console.log('User Reject Info', user)
+        if (user) {
+          // Send email to the user
+          await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              to: user.Users.email,
+              subject: 'Reservation Denied',
+              html: `
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+          color: #333333;
+          text-align: center;
+          margin-top: 0;
+        }
+        p {
+          line-height: 1.5;
+          color: #555555;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>Reservation Denied</h1>
+        <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
+        <p>We regret to inform you that your reservation for the Walailak University Dormitory has been denied. This is due to the non-payment of the reservation confirmation fee within the specified timeframe.</p>
+        <p>To proceed with your reservation, please make the necessary payment as soon as possible. You can find the payment details in your reservation confirmation email.</p>
+        <p>If you have already made the payment and believe this is an error, please contact us immediately so we can investigate further.</p>
+        <p>We apologize for any inconvenience this may cause.</p>
+        <p>Sincerely,<br>Walailak University Dormitory</p>
+      </div>
+    </body>
+  </html>
+`
+            })
+          })
+          const domename = user.Dormitory_Building.name
+          const romenum = user.Dormitory_Room.room_number
+          const bednum = user.Dormitory_Bed.bed_number
+          const round = user.Reservation_System.round_name
+          const studentId = user.Users.student_id
+
+          // Call logAdminReject with the extracted values
+          await logAdminReject(studentId, domename, romenum, bednum, round)
+        }
+      }
+    })
+  }
 
   const handleCloseApprovedSnackbar = () => {
     setApprovedSnackbarOpen(false)
@@ -339,185 +570,6 @@ const ResidentApprove = () => {
     console.log('newSelected', newSelected)
   }
 
-  const handleApprove = async (ids: number[]) => {
-    setLoading(true)
-    ids.forEach(async id => {
-      console.log(`Button clicked with id: ${id}`)
-      event.stopPropagation()
-
-      // Call the API endpoint
-      const response = await fetch('/api/admin/residentApprove/update/updateResident', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id })
-      })
-
-      resetSelected()
-      setApprovedSnackbarOpen(true)
-
-      if (!response.ok) {
-        console.error('Failed to update reservation status')
-        return
-      } else {
-        // Find the user
-        const user = users.find(user => user.id === id)
-        if (user) {
-          // Send email to the user
-          await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              to: user.Users.email,
-              subject: 'คุณได้รับอนุมัติในการยืนยันตัวเข้าสู่หอพัก Walailak University',
-              html: `
-  <!DOCTYPE html>
-<html>
-  <head>
-    <style>
-      body {
-        font-family: 'Arial', sans-serif;
-        background-color: #f4f4f4;
-        direction: ltr; /* Set the writing direction to left-to-right */
-        text-align: left; /* Align text to the left */
-      }
-      .container {
-        max-width: 600px;
-        margin: 0 auto;
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      }
-      h1 {
-        color: #333333;
-        text-align: center;
-        margin-top: 0;
-      }
-      p {
-        line-height: 1.5;
-        color: #555555;
-        text-align: justify; /* Justify the text for better readability */
-      }
-      .button {
-        display: inline-block;
-        background-color: #007bff;
-        color: #ffffff;
-        padding: 10px 20px;
-        text-decoration: none;
-        border-radius: 5px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Welcome to Walailak University Dormitory</h1>
-      <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
-      <p>We are pleased to inform you that your application to reside in the Walailak University Dormitory has been approved. We are excited to welcome you to our community.</p>
-      <p>Please find the details of your reservation below:</p>
-      <ul>
-        <li>Building: ${user.Dormitory_Building.name}</li>
-        <li>Room: ${user.Dormitory_Room.room_number}</li>
-        <li>Bed: ${user.Dormitory_Bed.bed_number}</li>
-      </ul>
-      <p>Should you have any questions or concerns, please do not hesitate to contact us.</p>
-      <p>Sincerely,<br>Walailak University Dormitory</p>
-    </div>
-  </body>
-</html>
-`
-            })
-          })
-        }
-      }
-      setLoading(false)
-    })
-  }
-
-  const handleReject = async (ids: number[]) => {
-    setLoading(true)
-    ids.forEach(async id => {
-      event.stopPropagation()
-
-      // Call the API endpoint
-      const response = await fetch('/api/admin/residentApprove/delete/deleteResident', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id })
-      })
-      resetSelected()
-      setRejectedSnackbarOpen(true)
-      setLoading(false)
-
-      if (!response.ok) {
-        console.error('Failed to delete reservation')
-        return
-      } else {
-        // Find the user
-        const user = users.find(user => user.id === id)
-        if (user) {
-          // Send email to the user
-          await fetch('/api/admin/reservationApprove/nodemailer/nodemailer', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              to: user.Users.email,
-              subject: 'Reservation Denied',
-              html: `
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          background-color: #f4f4f4;
-        }
-        .container {
-          max-width: 600px;
-          margin: 0 auto;
-          background-color: #ffffff;
-          padding: 20px;
-          border-radius: 5px;
-          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-          color: #333333;
-          text-align: center;
-          margin-top: 0;
-        }
-        p {
-          line-height: 1.5;
-          color: #555555;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h1>Reservation Denied</h1>
-        <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
-        <p>We regret to inform you that your reservation for the Walailak University Dormitory has been denied. This is due to the non-payment of the reservation confirmation fee within the specified timeframe.</p>
-        <p>To proceed with your reservation, please make the necessary payment as soon as possible. You can find the payment details in your reservation confirmation email.</p>
-        <p>If you have already made the payment and believe this is an error, please contact us immediately so we can investigate further.</p>
-        <p>We apologize for any inconvenience this may cause.</p>
-        <p>Sincerely,<br>Walailak University Dormitory</p>
-      </div>
-    </body>
-  </html>
-`
-            })
-          })
-        }
-      }
-    })
-  }
-
   const getStatusColor = (payment_status: string) => {
     switch (payment_status) {
       case 'Pending':
@@ -540,38 +592,38 @@ const ResidentApprove = () => {
 
   console.log('filteredUsers:', filteredUsers)
 
- const handleImportCSV = async (parsedData: any[]) => {
-   console.log('Imported CSV data:', parsedData)
-   const updatedUsers = [...users]
+  const handleImportCSV = async (parsedData: any[]) => {
+    console.log('Imported CSV data:', parsedData)
+    const updatedUsers = [...users]
 
-   updatedUsers.forEach(user => {
-     // Check if the student_id exists in the imported data
-     const existsInImportedData = parsedData.some(({ student_id }) => student_id === user.Users?.student_id)
+    updatedUsers.forEach(user => {
+      // Check if the student_id exists in the imported data
+      const existsInImportedData = parsedData.some(({ student_id }) => student_id === user.Users?.student_id)
 
-     // Update only if current payment_status is 'Pending'
-     if (user.payment_status === 'Pending') {
-       // Set the payment_status based on the existence of the student_id in the imported data
-       user.payment_status = existsInImportedData ? 'TRUE' : 'FALSE'
-     }
-   })
+      // Update only if current payment_status is 'Pending'
+      if (user.payment_status === 'Pending') {
+        // Set the payment_status based on the existence of the student_id in the imported data
+        user.payment_status = existsInImportedData ? 'TRUE' : 'FALSE'
+      }
+    })
 
-   setUsers(updatedUsers)
-   console.log('updatedUsers', updatedUsers)
+    setUsers(updatedUsers)
+    console.log('updatedUsers', updatedUsers)
 
-   const response = await fetch('/api/admin/residentApprove/update/updateResidentApprove', {
-     method: 'POST',
-     headers: {
-       'Content-Type': 'application/json'
-     },
-     body: JSON.stringify({ updatedUsers })
-   })
-   handleDrawerClose()
-   if (!response.ok) {
-     console.error('Failed to update users:', await response.text())
-   } else {
-     setImportSnackbarOpen(true)
-   }
- }
+    const response = await fetch('/api/admin/residentApprove/update/updateResidentApprove', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ updatedUsers })
+    })
+    handleDrawerClose()
+    if (!response.ok) {
+      console.error('Failed to update users:', await response.text())
+    } else {
+      setImportSnackbarOpen(true)
+    }
+  }
 
   const exportToCSV = (roundId: number | null) => {
     console.log('exportToCSV called')

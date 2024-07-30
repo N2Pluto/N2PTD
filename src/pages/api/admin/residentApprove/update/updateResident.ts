@@ -21,7 +21,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (updateError) {
     console.error('Error updating status in Dormitory_Approve:', updateError)
     res.status(500).json({ error: 'Failed to update status in Dormitory_Approve' })
-    
+
     return
   }
 

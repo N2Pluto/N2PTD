@@ -11,7 +11,7 @@ import { Box, Grid, InputAdornment, TextField, TablePagination, FormControl, Inp
 import SearchIcon from '@mui/icons-material/Search'
 import Select from '@mui/material/Select'
 import IconButton from '@mui/material/IconButton'
-import IosShareIcon from '@mui/icons-material/IosShare';
+import IosShareIcon from '@mui/icons-material/IosShare'
 
 const StyledTableCell = styled(TableCell)<TableCellProps>(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -32,8 +32,8 @@ const StyledTableRow = styled(TableRow)<TableRowProps>(({ theme }) => ({
   }
 }))
 
-const createData = (id: number, content: string, admin_id:string, ip: string, time: string,type: string) => {
-  return { id, content,admin_id, type, time ,ip }
+const createData = (id: number, content: string, admin_id: string, ip: string, time: string, type: string) => {
+  return { id, content, admin_id, type, time, ip }
 }
 
 const LogsadminApprove = () => {
@@ -82,32 +82,38 @@ const LogsadminApprove = () => {
   }
 
   const exportToCSV = () => {
-    const headers = ['Content','admin_id', 'ip', 'time', 'type'];
-    const rows = filteredLoguser.map((log: any) => [log.content, log.admin_id, log.ip, log.time, log.type]);
+    const headers = ['Content', 'admin_id', 'ip', 'time', 'type']
+    const rows = filteredLoguser.map((log: any) => [log.content, log.admin_id, log.ip, log.time, log.type])
 
-    let csvContent = 'data:text/csv;charset=utf-8,';
-    csvContent += headers.join(',') + '\n';
+    let csvContent = 'data:text/csv;charset=utf-8,'
+    csvContent += headers.join(',') + '\n'
     rows.forEach((rowArray: any) => {
-      const row = rowArray.join(',');
-      csvContent += row + '\n';
-    });
+      const row = rowArray.join(',')
+      csvContent += row + '\n'
+    })
 
-    const encodedUri = encodeURI(csvContent);
-    const fileName = `log_admin_controlbuilding_${selectedType ? `_${selectedType}` : ''}.csv`;
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', fileName);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+    const encodedUri = encodeURI(csvContent)
+    const fileName = `log_admin_controlbuilding_${selectedType ? `_${selectedType}` : ''}.csv`
+    const link = document.createElement('a')
+    link.setAttribute('href', encodedUri)
+    link.setAttribute('download', fileName)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   const filteredLoguser = loguser
     .filter((log: any) => log.admin_id.toLowerCase().includes(searchValue.toLowerCase()))
     .filter((log: any) => selectedType === '' || log.type === selectedType)
-    .sort((a: any, b: any) => sortOrder === 'newer' ? new Date(b.time).getTime() - new Date(a.time).getTime() : new Date(a.time).getTime() - new Date(b.time).getTime())
+    .sort((a: any, b: any) =>
+      sortOrder === 'newer'
+        ? new Date(b.time).getTime() - new Date(a.time).getTime()
+        : new Date(a.time).getTime() - new Date(b.time).getTime()
+    )
 
-  const rows = filteredLoguser.map((log: any) => createData(log.log_id, log.content, log.admin_id,log.ip, log.time, log.type))
+  const rows = filteredLoguser.map((log: any) =>
+    createData(log.log_id, log.content, log.admin_id, log.ip, log.time, log.type)
+  )
 
   return (
     <div>
@@ -129,31 +135,24 @@ const LogsadminApprove = () => {
         </Grid>
 
         <Grid item xs={12} sm={3}>
-        <Box sx={{ paddingLeft: 5 }}>
-        <FormControl fullWidth>
-            <InputLabel id='form-layouts-separator-select-label'>Type</InputLabel>
-            <Select
-              label='Type'
-              value={selectedType}
-              id='form-layouts-separator-select'
-              labelId='form-layouts-separator-select-label'
-              onChange={handleSelectChangetype}
-            >
-              <MenuItem value=''>All</MenuItem>
-              <MenuItem value='Resident'>Resident</MenuItem>
-              <MenuItem value='Reservation'>Reservation</MenuItem>
-              <MenuItem value='Renewal'>Renewal</MenuItem>
-
-
-            </Select>
-          </FormControl>
-</Box>
-
+          <Box sx={{ paddingLeft: 5 }}>
+            <FormControl fullWidth>
+              <InputLabel id='form-layouts-separator-select-label'>Type</InputLabel>
+              <Select
+                label='Type'
+                value={selectedType}
+                id='form-layouts-separator-select'
+                labelId='form-layouts-separator-select-label'
+                onChange={handleSelectChangetype}
+              >
+                <MenuItem value=''>All</MenuItem>
+                <MenuItem value='Resident'>Resident</MenuItem>
+                <MenuItem value='Reservation'>Reservation</MenuItem>
+                <MenuItem value='Renewal'>Renewal</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         </Grid>
-
-
-
-
 
         <Grid item xs={12} sm={3}>
           <Grid item xs={12}>
@@ -202,7 +201,15 @@ const LogsadminApprove = () => {
                   </StyledTableCell>
                   <StyledTableCell align='center'>{row.admin_id}</StyledTableCell>
                   <StyledTableCell align='center'>{row.ip}</StyledTableCell>
-                  <StyledTableCell align='center'>{new Date(row.time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}</StyledTableCell>
+                  <StyledTableCell align='center'>
+                    {new Date(row.time).toLocaleTimeString('en-GB', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric'
+                    })}
+                  </StyledTableCell>
                 </StyledTableRow>
               ))}
             </TableBody>
@@ -224,5 +231,3 @@ const LogsadminApprove = () => {
 }
 
 export default LogsadminApprove
-
-

@@ -36,6 +36,8 @@ import Menu from '@mui/material/Menu'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import Typography from '@mui/material/Typography'
 import EventBusyIcon from '@mui/icons-material/EventBusy'
+import sendLogsadminApprove from 'src/pages/api/log/admin/approve/insert'
+import { userStore } from 'src/stores/userStore'
 
 const useStyles = makeStyles({
   success: {
@@ -92,8 +94,250 @@ const RenewalSystem = () => {
   const [logMessages, setLogMessages] = useState<string[]>([])
   const [selectedCount, setSelectedCount] = useState(0)
   const [backdropOpen, setBackdropOpen] = useState(false)
-
+  const { user } = userStore()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+
+  const logAdminApprove = async (
+    ids: number[],
+    studentIds: string,
+    domename: string,
+    romenum: string,
+    bednum: string,
+    round: string
+  ) => {
+    try {
+      const content = `Approve "Renewal" for student ID: '${studentIds}' in '${domename}' Room: '${romenum}' Bed: '${bednum}' Round: '${round}'`
+      await sendLogsadminApprove(user?.student_id, content, 'Renewal')
+    } catch (error) {
+      console.error('Error logging admin approval:', error)
+    }
+  }
+
+  const handleApprove = async (row: User) => {
+    setBackdropOpen(true)
+    try {
+      const response = await fetch(`/api/admin/renewalSystem/create/createReservation`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: row.user_id,
+          id: row.id // pass the id for status update
+        })
+      })
+
+      if (response.ok) {
+        await fetch('/api/admin/renewalSystem/nodemailer/nodemailer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            to: row.Users.email,
+            subject: 'Reservation Approved',
+            html: `
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+          color: #333333;
+          text-align: center;
+          margin-top: 0;
+        }
+        p {
+          line-height: 1.5;
+          color: #555555;
+        }
+        ul {
+          line-height: 1.5;
+          color: #555555;
+        }
+        .button {
+          display: inline-block;
+          background-color: #007bff;
+          color: #ffffff;
+          padding: 10px 20px;
+          text-decoration: none;
+          border-radius: 5px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>Your Reservation is Approved</h1>
+        <p>Dear ${row.Users_Info.name} ${row.Users_Info.lastname},</p>
+        <p>We are thrilled to inform you that your reservation to stay in our dormitory for the upcoming academic term has been successfully approved. This means that you can continue to enjoy the comfort and convenience of staying in the same dormitory where you have made so many memories.</p>
+        <p>We understand how important it is to have a stable and supportive living environment, especially during your academic journey. Our team is committed to ensuring that your experience in our dormitory is as pleasant and productive as possible. Our facilities are designed to provide you with everything you need to focus on your studies and personal growth.</p>
+        <p>Below are the details of your approved reservation:</p>
+        <ul>
+          <li><strong>Building:</strong> ${row.dorm_id}</li>
+          <li><strong>Room:</strong> ${row.room_id}</li>
+          <li><strong>Bed:</strong> ${row.bed_id}</li>
+        </ul>
+        <p>We hope that you will continue to take advantage of the amenities and community spirit that our dormitory offers. Should you have any questions or require further assistance, please do not hesitate to reach out to our support team. We are here to help you and ensure that your stay with us is as comfortable as possible.</p>
+        <p>Best regards,<br>WU Dormitory</p>
+      </div>
+    </body>
+  </html>
+  `
+          })
+        })
+
+        // Extract values for logging
+        const domename = row.Dormitory_Building.name
+        const romenum = row.Dormitory_Room.room_number
+        const bednum = row.Dormitory_Bed.bed_number
+        const round = row.Reservation_System.round_name
+        const studentId = row.Users?.student_id
+
+        // Log admin approval
+        await logAdminApprove([row.id], studentId, domename, romenum, bednum, round)
+
+        setSnackbarMessage(
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            Reservation approved successfully
+          </span>
+        )
+        setSnackbarColor('success')
+        setOpen(true)
+        setSelected([]) // Reset selected state
+        setSelectedCount(0) // Reset selected count
+        setBackdropOpen(false)
+      } else {
+        console.error('Failed to approve reservation')
+      }
+    } catch (error) {
+      console.error('Error approving reservation:', error)
+    }
+  }
+
+  const logAdminReject = async (
+    studentIds: string,
+    domename: string,
+    romenum: string,
+    bednum: string,
+    round: string
+  ) => {
+    const content = `Reject "Renewal" for student ID: '${studentIds}' in '${domename}' Room: '${romenum}' Bed: '${bednum}' Round: '${round}'`
+    await sendLogsadminApprove(user?.student_id, content, 'Renewal')
+  }
+
+  const handleDelete = async (id: number) => {
+    setBackdropOpen(true)
+    try {
+      const response = await fetch(`/api/admin/renewalSystem/delete/deleteReservation`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id })
+      })
+
+      if (response.ok) {
+        // Find the user that matches the id
+        const user = users.find(user => user.id === id)
+
+        if (user) {
+          // Send an email to the user
+          const emailResponse = await fetch(`/api/admin/renewalSystem/nodemailer/nodemailer`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              to: user.Users.email,
+              subject: 'Reservation Cancelled',
+              html: `
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+          color: #333333;
+          text-align: center;
+          margin-top: 0;
+        }
+        p {
+          line-height: 1.5;
+          color: #555555;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>Your Reservation has been Cancelled</h1>
+        <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
+        <p>We regret to inform you that your reservation for the upcoming academic term has been cancelled. This decision was made because you have chosen not to stay in the dormitory for the next term.</p>
+        <p>We understand that there can be many reasons for this decision, and we respect your choice. Please note that your departure from the dormitory has been processed accordingly.</p>
+        <p>If you have any questions or need further assistance, do not hesitate to contact our support team. We are here to help and ensure that your transition is as smooth as possible.</p>
+        <p>Thank you for staying with us, and we wish you all the best in your future endeavors.</p>
+        <p>Best regards,<br>WU Dormitory</p>
+      </div>
+    </body>
+  </html>
+  `
+            })
+          })
+          const domename = user.Dormitory_Building.name
+          const romenum = user.Dormitory_Room.room_number
+          const bednum = user.Dormitory_Bed.bed_number
+          const round = user.Reservation_System.round_name
+          const studentId = user.Users.student_id
+
+          // Call logAdminReject with the extracted values
+          await logAdminReject(studentId, domename, romenum, bednum, round)
+
+          if (!emailResponse.ok) {
+            console.error('Failed to send email')
+          }
+        }
+
+        setUsers(prevUsers => prevUsers.filter(user => user.id !== id))
+        setSnackbarMessage(
+          <span>
+            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
+            Reservation deleted successfully
+          </span>
+        )
+        setSnackbarColor('error')
+        setOpen(true)
+        setSelected([]) // Reset selected state
+        setSelectedCount(0) // Reset selected count
+        setBackdropOpen(false)
+      } else {
+        console.error('Failed to delete reservation')
+      }
+    } catch (error) {
+      console.error('Error deleting reservation:', error)
+    }
+  }
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -266,202 +510,6 @@ const RenewalSystem = () => {
 
   const handleSelectRoundChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setSelectRoundValue(event.target.value as string)
-  }
-
-  const handleApprove = async (row: User) => {
-    setBackdropOpen(true)
-    try {
-      const response = await fetch(`/api/admin/renewalSystem/create/createReservation`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          user_id: row.user_id,
-          id: row.id // pass the id for status update
-        })
-      })
-
-      if (response.ok) {
-        await fetch('/api/admin/renewalSystem/nodemailer/nodemailer', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            to: row.Users.email,
-            subject: 'Reservation Approved',
-            html: `
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          background-color: #f4f4f4;
-        }
-        .container {
-          max-width: 600px;
-          margin: 0 auto;
-          background-color: #ffffff;
-          padding: 20px;
-          border-radius: 5px;
-          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-          color: #333333;
-          text-align: center;
-          margin-top: 0;
-        }
-        p {
-          line-height: 1.5;
-          color: #555555;
-        }
-        ul {
-          line-height: 1.5;
-          color: #555555;
-        }
-        .button {
-          display: inline-block;
-          background-color: #007bff;
-          color: #ffffff;
-          padding: 10px 20px;
-          text-decoration: none;
-          border-radius: 5px;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h1>Your Reservation is Approved</h1>
-        <p>Dear ${row.Users_Info.name} ${row.Users_Info.lastname},</p>
-        <p>We are thrilled to inform you that your reservation to stay in our dormitory for the upcoming academic term has been successfully approved. This means that you can continue to enjoy the comfort and convenience of staying in the same dormitory where you have made so many memories.</p>
-        <p>We understand how important it is to have a stable and supportive living environment, especially during your academic journey. Our team is committed to ensuring that your experience in our dormitory is as pleasant and productive as possible. Our facilities are designed to provide you with everything you need to focus on your studies and personal growth.</p>
-        <p>Below are the details of your approved reservation:</p>
-        <ul>
-          <li><strong>Building:</strong> ${row.dorm_id}</li>
-          <li><strong>Room:</strong> ${row.room_id}</li>
-          <li><strong>Bed:</strong> ${row.bed_id}</li>
-        </ul>
-        <p>We hope that you will continue to take advantage of the amenities and community spirit that our dormitory offers. Should you have any questions or require further assistance, please do not hesitate to reach out to our support team. We are here to help you and ensure that your stay with us is as comfortable as possible.</p>
-        <p>Best regards,<br>WU Dormitory</p>
-      </div>
-    </body>
-  </html>
-  `
-          })
-        })
-        setSnackbarMessage(
-          <span>
-            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
-            Reservation approved successfully
-          </span>
-        )
-        setSnackbarColor('success')
-        setOpen(true)
-        setSelected([]) // Reset selected state
-        setSelectedCount(0) // Reset selected count
-        setBackdropOpen(false)
-      } else {
-        console.error('Failed to approve reservation')
-      }
-    } catch (error) {
-      console.error('Error approving reservation:', error)
-    }
-  }
-
-  const handleDelete = async (id: number) => {
-    setBackdropOpen(true)
-    try {
-      const response = await fetch(`/api/admin/renewalSystem/delete/deleteReservation`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id })
-      })
-
-      if (response.ok) {
-        // Find the user that matches the id
-        const user = users.find(user => user.id === id)
-
-        if (user) {
-          // Send an email to the user
-          const emailResponse = await fetch(`/api/admin/renewalSystem/nodemailer/nodemailer`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              to: user.Users.email,
-              subject: 'Reservation Cancelled',
-              html: `
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          background-color: #f4f4f4;
-        }
-        .container {
-          max-width: 600px;
-          margin: 0 auto;
-          background-color: #ffffff;
-          padding: 20px;
-          border-radius: 5px;
-          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-          color: #333333;
-          text-align: center;
-          margin-top: 0;
-        }
-        p {
-          line-height: 1.5;
-          color: #555555;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h1>Your Reservation has been Cancelled</h1>
-        <p>Dear ${user.Users_Info.name} ${user.Users_Info.lastname},</p>
-        <p>We regret to inform you that your reservation for the upcoming academic term has been cancelled. This decision was made because you have chosen not to stay in the dormitory for the next term.</p>
-        <p>We understand that there can be many reasons for this decision, and we respect your choice. Please note that your departure from the dormitory has been processed accordingly.</p>
-        <p>If you have any questions or need further assistance, do not hesitate to contact our support team. We are here to help and ensure that your transition is as smooth as possible.</p>
-        <p>Thank you for staying with us, and we wish you all the best in your future endeavors.</p>
-        <p>Best regards,<br>WU Dormitory</p>
-      </div>
-    </body>
-  </html>
-  `
-            })
-          })
-
-          if (!emailResponse.ok) {
-            console.error('Failed to send email')
-          }
-        }
-
-        setUsers(prevUsers => prevUsers.filter(user => user.id !== id))
-        setSnackbarMessage(
-          <span>
-            <CheckCircleIcon fontSize='small' style={{ verticalAlign: 'middle', marginRight: '8px' }} />
-            Reservation deleted successfully
-          </span>
-        )
-        setSnackbarColor('error')
-        setOpen(true)
-        setSelected([]) // Reset selected state
-        setSelectedCount(0) // Reset selected count
-        setBackdropOpen(false)
-      } else {
-        console.error('Failed to delete reservation')
-      }
-    } catch (error) {
-      console.error('Error deleting reservation:', error)
-    }
   }
 
   const filteredUsers = users.filter(user => {
