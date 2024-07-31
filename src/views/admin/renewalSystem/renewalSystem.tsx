@@ -659,25 +659,29 @@ const RenewalSystem = () => {
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.id)
                   const labelId = `enhanced-table-checkbox-${index}`
+                  const displayIndex = page * rowsPerPage + index + 1
 
                   return (
                     <TableRow
-                      hover
-                      onClick={event => handleClick(event, row.id)}
+                      hover={tab !== 'Pending'}
+                      onClick={tab !== 'Pending' ? event => handleClick(event, row.id) : undefined}
                       role='checkbox'
                       aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={row.id}
                       selected={isItemSelected}
+                      sx={{ cursor: tab !== 'Pending' ? 'pointer' : 'default' }}
                     >
-                      <TableCell padding='checkbox'>
-                        <Checkbox
-                          color='primary'
-                          checked={isItemSelected}
-                          inputProps={{
-                            'aria-labelledby': labelId
-                          }}
-                        />
+                      <TableCell padding='checkbox' align='center'>
+                        {tab === 'Pending' ? (
+                          <span>#{displayIndex}</span>
+                        ) : (
+                          <Checkbox
+                            color='primary'
+                            checked={isItemSelected}
+                            inputProps={{ 'aria-labelledby': labelId }}
+                          />
+                        )}
                       </TableCell>
                       <TableCell align='left'>{row.Users?.student_id}</TableCell>
                       <TableCell align='left'>

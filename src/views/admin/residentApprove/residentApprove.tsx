@@ -1083,25 +1083,29 @@ const ResidentApprove = () => {
                 {visibleRows.map((row, index) => {
                   const isItemSelected = isSelected(row.id)
                   const labelId = `enhanced-table-checkbox-${index}`
+                  const displayIndex = page * rowsPerPage + index + 1
 
                   return (
                     <TableRow
-                      hover
-                      onClick={event => handleClick(event, row.id)}
+                      hover={tab !== 'Waiting' && tab !== 'SUCCESS'}
+                      onClick={tab !== 'Waiting' && tab !== 'SUCCESS' ? event => handleClick(event, row.id) : undefined}
                       role='checkbox'
                       aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={row.id}
-                      a
                       selected={isItemSelected}
-                      sx={{ cursor: 'pointer' }}
+                      sx={{ cursor: tab !== 'Waiting' && tab !== 'SUCCESS' ? 'pointer' : 'default' }}
                     >
-                      <TableCell padding='checkbox'>
-                        <Checkbox
-                          color='primary'
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        />
+                      <TableCell padding='checkbox' align='center'>
+                        {tab === 'Waiting' || tab === 'SUCCESS' ? (
+                          <span>#{displayIndex}</span>
+                        ) : (
+                          <Checkbox
+                            color='primary'
+                            checked={isItemSelected}
+                            inputProps={{ 'aria-labelledby': labelId }}
+                          />
+                        )}
                       </TableCell>
                       <TableCell component='th' id={labelId} scope='row' padding='none'>
                         {row.Users?.student_id}
@@ -1121,19 +1125,17 @@ const ResidentApprove = () => {
                       </TableCell>
                       <TableCell align='left'>
                         {tab === 'TRUE' ? (
-                          <>
-                            <IconButton
-                              onClick={async event => {
-                                event.stopPropagation()
-                                setSelected([row.id])
-                                await handleApprove([row.id])
-                                resetSelected()
-                                setApprovedSnackbarOpen(true)
-                              }}
-                            >
-                              <CheckIcon />
-                            </IconButton>
-                          </>
+                          <IconButton
+                            onClick={async event => {
+                              event.stopPropagation()
+                              setSelected([row.id])
+                              await handleApprove([row.id])
+                              resetSelected()
+                              setApprovedSnackbarOpen(true)
+                            }}
+                          >
+                            <CheckIcon />
+                          </IconButton>
                         ) : null}
 
                         {tab === 'FALSE' ? (
