@@ -1,10 +1,8 @@
-import { ChangeEvent, forwardRef, MouseEvent, useState, useEffect } from 'react'
+import { ChangeEvent, useState, useEffect } from 'react'
 import * as React from 'react'
 import {
   Button,
   Drawer,
-  DialogContent,
-  DialogContentText,
   FormControl,
   InputLabel,
   MenuItem,
@@ -13,19 +11,16 @@ import {
   OutlinedInput,
   TextField,
   Grid,
-  Card,
   Typography,
-  CardContent,
   List,
-  Snackbar,
   IconButton,
   Box,
-  Divider
+  Divider,
+  Alert
 } from '@mui/material'
 import DatePicker from '@mui/lab/DatePicker'
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import LocalizationProvider from '@mui/lab/LocalizationProvider'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CloseIcon from '@mui/icons-material/Close'
 import TuneIcon from '@mui/icons-material/Tune'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -38,7 +33,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.success.main
   },
   error: {
-    backgroundColor: theme.palette.error.main
+    color: theme.palette.error.main
   }
 }))
 
@@ -56,8 +51,7 @@ export default function DeleteRound({ id, setSnackbarOpen, setSnackbarMessage, s
   const [oldEndDate, setOldEndDate] = useState<Date | null | undefined>(null)
   const [oldStudentYear, setOldStudentYear] = useState<string[]>([])
   const [oldRoundName, setOldRoundName] = useState('')
-
-
+  const [errorMessage, setErrorMessage] = useState('')
 
   const loguserdelete = async () => {
     const content = `Delete booking Round: '${roundName}'  start_date: '${startDate}' end_date: '${endDate}'`
@@ -83,10 +77,29 @@ export default function DeleteRound({ id, setSnackbarOpen, setSnackbarMessage, s
 
   const handleUpdate = async () => {
     if (new Date(startDate) >= new Date(endDate)) {
-      alert('Start date must be less than end date.')
-
+      setErrorMessage('Start date must be less than end date.')
       return
     }
+
+    const duplicateCheckResponse = await fetch('/api/admin/reservationSystem/create/checkEditDate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        start_date: startDate,
+        end_date: endDate
+      })
+    })
+
+    const duplicateCheckData = await duplicateCheckResponse.json()
+
+    // If there are duplicate dates, stop the function execution
+    if (duplicateCheckData.isDuplicate) {
+      setErrorMessage('The selected date range is already reserved.')
+      return
+    }
+
     const response = await fetch(`/api/admin/reservationSystem/update`, {
       method: 'PUT',
       headers: {
@@ -109,7 +122,7 @@ export default function DeleteRound({ id, setSnackbarOpen, setSnackbarMessage, s
       handleClose()
     } else {
       const responseData = await response.json()
-      alert(responseData.error)
+      setErrorMessage(responseData.error)
     }
   }
 
@@ -146,9 +159,8 @@ export default function DeleteRound({ id, setSnackbarOpen, setSnackbarMessage, s
 
   const handleClose = () => {
     setOpen(false)
+    setErrorMessage('')
   }
-
-
 
   const handleDelete = async () => {
     await fetch(`/api/admin/reservationSystem/delete/${id}`, {
@@ -195,6 +207,7 @@ export default function DeleteRound({ id, setSnackbarOpen, setSnackbarMessage, s
             start and end dates, ensuring that your bookings are organized and manageable.
           </Typography>
           <Divider />
+
           <Box
             sx={{
               margin: 2,
@@ -279,6 +292,11 @@ export default function DeleteRound({ id, setSnackbarOpen, setSnackbarMessage, s
             </Box>
           </Box>
         </Box>
+        {errorMessage && (
+          <Alert severity='error' sx={{ ml: 5, mt: 2 }}>
+            {errorMessage}
+          </Alert>
+        )}
         <Divider />
         <Box sx={{ padding: 3 }}>
           <Grid container spacing={4} alignItems='center'>

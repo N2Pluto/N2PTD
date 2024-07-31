@@ -14,13 +14,11 @@ import {
   OutlinedInput,
   TextField,
   Grid,
-  Card,
   Typography,
-  CardContent,
   List,
   Snackbar,
-  Alert,
-  IconButton
+  IconButton,
+  Alert
 } from '@mui/material'
 import DatePicker from '@mui/lab/DatePicker'
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
@@ -37,7 +35,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.success.main
   },
   error: {
-    backgroundColor: theme.palette.error.main
+    color: theme.palette.error.main
   }
 }))
 
@@ -56,6 +54,7 @@ export default function ReservationForm() {
   const [startDate, setStartDate] = useState<Date | null | undefined>(null)
   const [endDate, setEndDate] = useState<Date | null | undefined>(null)
   const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const yearMenuItems = Array.from({ length: yearsAhead }, (_, index) => (
     <MenuItem key={index} value={currentYear + index}>
@@ -81,6 +80,7 @@ export default function ReservationForm() {
     setStartDate(null)
     setEndDate(null)
     setGender('')
+    setErrorMessage('')
   }
 
   // Handle Select
@@ -139,15 +139,14 @@ export default function ReservationForm() {
 
     // Ensure start_date is before end_date
     if (new Date(startDate) >= new Date(endDate)) {
-      alert('Start date must be before end date.')
-
+      setErrorMessage('Start date must be before end date.')
       return
     }
 
     const studentYearValue = student_year.length > 1 ? student_year.join(',') : student_year[0]
 
     // Check for duplicate dates
-    const duplicateCheckResponse = await fetch('/api/admin/reservationSystem/create/checkDuplicateDate', {
+    const duplicateCheckResponse = await fetch('/api/admin/reservationSystem/create/checkCreateDate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -158,20 +157,17 @@ export default function ReservationForm() {
       })
     })
 
-
     const duplicateCheckData = await duplicateCheckResponse.json()
 
     // If there is an active round, stop the function execution
     if (duplicateCheckData.error) {
-      alert(duplicateCheckData.error)
-
+      setErrorMessage(duplicateCheckData.error)
       return
     }
 
     // If there are duplicate dates, stop the function execution
     if (duplicateCheckData.isDuplicate) {
-      alert('The selected date range is already reserved.')
-
+      setErrorMessage('The selected date range is already reserved.')
       return
     }
 
@@ -188,18 +184,18 @@ export default function ReservationForm() {
         gender: gender,
         student_year: studentYearValue
       })
-    });
+    })
 
     if (response.ok) {
-      loguser();
+      loguser()
+      setSnackbarOpen(true) // Show the Snackbar on success
+      resetForm()
     } else {
-      console.error('Error creating reservation:', response.statusText);
+      console.error('Error creating reservation:', response.statusText)
+      setErrorMessage('Error creating reservation')
     }
 
-
-    const data = await response.json()
     setDrawerOpen(false)
-    setSnackbarOpen(true) // Show the Snackbar on success
   }
 
   const handleSnackbarClose = () => {
@@ -234,14 +230,12 @@ export default function ReservationForm() {
             Create Booking Period
           </Typography>
           <IconButton onClick={toggleDrawer(false)}>
-            {' '}
             <CloseIcon sx={{ pt: 2, fontSize: '35px' }} />
           </IconButton>
         </Box>
         <Divider />
         <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
           <Typography variant='body2' sx={{ ml: 5, margin: 3 }}>
-            {' '}
             You can create a booking period for your reservations. This feature allows you to specify the start and end
             dates, ensuring that your bookings are organized and manageable.
           </Typography>
@@ -253,7 +247,7 @@ export default function ReservationForm() {
               padding: 3,
               display: 'flex',
               flexDirection: 'column',
-              border: '1px dashed rgba(0, 0, 0, 0.12)' // Add this line
+              border: '1px dashed rgba(0, 0, 0, 0.12)'
             }}
           >
             <Box sx={{ margin: 5 }}>
@@ -312,8 +306,6 @@ export default function ReservationForm() {
                       onChange={newValue => {
                         setStartDate(newValue)
                       }}
-                      renderInput={params => <TextField {...params} />}
-                      format='dd/MM/yyyy'
                       renderInput={params => <TextField {...params} fullWidth />}
                     />
                     <Typography variant='caption' display='block' gutterBottom>
@@ -327,8 +319,6 @@ export default function ReservationForm() {
                       onChange={newValue => {
                         setEndDate(newValue)
                       }}
-                      renderInput={params => <TextField {...params} />}
-                      format='dd/MM/yyyy'
                       renderInput={params => <TextField {...params} fullWidth />}
                     />
                     <Typography variant='caption' display='block' gutterBottom>
@@ -340,6 +330,11 @@ export default function ReservationForm() {
             </Box>
           </Box>
         </Box>
+        {errorMessage && (
+          <Alert severity='error' sx={{ ml: 5, mt: 2 }}>
+            {errorMessage}
+          </Alert>
+        )}
         <Divider />
 
         <Box sx={{ padding: 3 }}>

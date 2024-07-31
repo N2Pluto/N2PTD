@@ -25,6 +25,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { makeStyles } from '@mui/styles'
 import sendLogsadmincreate from 'src/pages/api/log/admin/create/insert'
 import { userStore } from 'src/stores/userStore'
+import Alert from '@mui/material/Alert'
 
 const useStyles = makeStyles(theme => ({
   success: {
@@ -47,16 +48,17 @@ const RenewalForm = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('')
   const [snackbarSeverity, setSnackbarSeverity] = useState('success')
   const { user } = userStore()
+  const [errorMessage, setErrorMessage] = useState('')
 
   const onClose = () => {
     setDrawerOpen(false)
+    setErrorMessage('')
   }
 
   const loguser = async () => {
     const content = `Creat "Renewal Period"  Round: '${renewalName}' Phase: '${renewalPhase}' start_date: '${startDate}' end_date: '${endDate}'`
     await sendLogsadmincreate(user?.student_id, content, 'Renewal Period')
   }
-
 
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
     if (
@@ -82,8 +84,32 @@ const RenewalForm = () => {
   const handleSubmit = async () => {
     // Check if startDate is less than endDate
     if (new Date(startDate) >= new Date(endDate)) {
-      alert('Start date must be before end date.') // Or handle this error appropriately
+      setErrorMessage('Start date must be before end date.') // Or handle this error appropriately
       return // Exit the function to prevent the form submission
+    }
+
+    const duplicateCheckResponse = await fetch('/api/admin/renewalDormitory/create/checkCreateDate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        start_date: startDate,
+        end_date: endDate
+      })
+    })
+
+    const duplicateCheckData = await duplicateCheckResponse.json()
+
+    if (duplicateCheckData.error) {
+      setErrorMessage('Failed to check for duplicate dates. Please try again.') // Or handle this error appropriately
+      return // Exit the function to prevent the form submission
+    }
+
+    // If there are duplicate dates, stop the function execution
+    if (duplicateCheckData.isDuplicate) {
+      setErrorMessage('Failed to Create Renewal Form. The selected date range is already reserved.')
+      return
     }
 
     const response = await fetch('/api/admin/renewalDormitory/create/createRenewalForm', {
@@ -250,6 +276,11 @@ const RenewalForm = () => {
             </Box>
           </Box>
         </Box>
+        {errorMessage && (
+          <Alert severity='error' sx={{ ml: 5, mt: 2 }}>
+            {errorMessage}
+          </Alert>
+        )}
         <Divider />
         <Box sx={{ padding: 3 }}>
           <Grid container spacing={4} alignItems='center' justifyContent='flex-end'>

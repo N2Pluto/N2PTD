@@ -27,6 +27,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorIcon from '@mui/icons-material/Error'
 import sendLogsadmincreate from 'src/pages/api/log/admin/create/insert'
 import { userStore } from 'src/stores/userStore'
+import Alert from '@mui/material/Alert'
 
 const useStyles = makeStyles(theme => ({
   success: {
@@ -46,9 +47,10 @@ const RenewalFormEdit = ({ id, showSnackbar }) => {
   const [renewalName, setRenewalName] = useState('')
   const [renewalPhase, setRenewalPhase] = useState<string[]>([])
   const { user } = userStore()
+  const [errorMessage, setErrorMessage] = useState('')
 
   const loguserdelete = async () => {
-const content = `Delete "Renewal Period"  Round: '${renewalName}' Phase: '${renewalPhase}' start_date: '${startDate}' end_date: '${endDate}'`
+    const content = `Delete "Renewal Period"  Round: '${renewalName}' Phase: '${renewalPhase}' start_date: '${startDate}' end_date: '${endDate}'`
     await sendLogsadmincreate(user?.student_id, content, 'Renewal Period')
   }
 
@@ -81,6 +83,7 @@ const content = `Delete "Renewal Period"  Round: '${renewalName}' Phase: '${rene
 
   const onClose = () => {
     setDrawerOpen(false)
+    setErrorMessage('')
   }
 
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -112,8 +115,33 @@ const content = `Delete "Renewal Period"  Round: '${renewalName}' Phase: '${rene
 
       // Check if start_date is less than end_date
       if (start >= end) {
-        alert('Start date must be before end date.') // Or handle this error appropriately
+        setErrorMessage('Start date must be before end date.') // Or handle this error appropriately
         return // Stop execution if the condition is not met
+      }
+
+      const duplicateCheckResponse = await fetch('/api/admin/renewalDormitory/create/checkEditDate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: id,
+          start_date: startDate,
+          end_date: endDate
+        })
+      })
+
+      const duplicateCheckData = await duplicateCheckResponse.json()
+
+      if (duplicateCheckData.error) {
+        setErrorMessage('Failed to check for duplicate dates. Please try again.') // Or handle this error appropriately
+        return // Exit the function to prevent the form submission
+      }
+
+      // If there are duplicate dates, stop the function execution
+      if (duplicateCheckData.isDuplicate) {
+        setErrorMessage('Failed to Update Form. The selected date range is already reserved.')
+        return
       }
 
       const response = await fetch(`/api/admin/renewalDormitory/updateByID/${id}`, {
@@ -277,6 +305,11 @@ const content = `Delete "Renewal Period"  Round: '${renewalName}' Phase: '${rene
             </Box>
           </Box>
         </Box>
+        {errorMessage && (
+          <Alert severity='error' sx={{ ml: 5, mt: 2 }}>
+            {errorMessage}
+          </Alert>
+        )}
         <Divider />
         <Box sx={{ padding: 3 }}>
           <Grid container spacing={4} alignItems='center' justifyContent='space-between'>
