@@ -10,11 +10,11 @@ const userManagementpage = () => {
   return (
     <AdminLayout>
       <Grid container spacing={6}>
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Card>
             <UserManagementForm />
           </Card>
-        </Grid>
+        </Grid> */}
         <Grid item xs={12}>
           <Card>
             <UserManagement />

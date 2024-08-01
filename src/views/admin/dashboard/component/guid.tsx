@@ -1,19 +1,22 @@
 // ** MUI Imports
-import Card from '@mui/material/Card'
-import Button from '@mui/material/Button'
-import Typography from '@mui/material/Typography'
-import CardHeader from '@mui/material/CardHeader'
-import CardContent from '@mui/material/CardContent'
-import CardActions from '@mui/material/CardActions'
+import { Card, Button, Typography, CardHeader, CardContent, CardActions, CardMedia } from '@mui/material'
 import Link from 'next/link'
-import { CardMedia } from '@mui/material'
+import { styled } from '@mui/system'
+
+// Styled Card Component with Hover Effect
+const AnimatedCard = styled(Card)(({ theme }) => ({
+  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+  '&:hover': {
+    transform: 'scale(1.03)',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+  }
+}))
 
 const CardGuid = () => {
   return (
-    <Card
+    <AnimatedCard
       sx={{
         mt: 2,
-        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
         borderRadius: 1
       }}
     >
@@ -31,7 +34,7 @@ const CardGuid = () => {
       </CardContent>
       <CardActions className='card-action-dense'>
         <Link
-          href='https://drive.google.com/file/d/1cuT1acGp5kdY3aitRjE3nFQ4auTHqCfx/view?fbclid=IwZXh0bgNhZW0CMTAAAR0VQj6p6aIPxpIK1oES9VYfWVz9HiJwf65nM0mDE8DGE5pwdc4t1XQQ6bs_aem_AY1cgMrGuBn_NvakK8wV9_mkxmxQfX1eAfNTJP9r4LLdC5poiYjBlfrALedP_ibOGZ1CuulW7gXRBLrJmWQwWWD_'
+          href='https://drive.google.com/file/d/1cuT1acGp5kdY3aitRjE3nFQj6p6aIPxpIK1oES9VYfWVz9HiJwf65nM0mDE8DGE5pwdc4t1XQQ6bs_aem_AY1cgMrGuBn_NvakK8wV9_mkxmxQfX1eAfNTJP9r4LLdC5poiYjBlfrALedP_ibOGZ1CuulW7gXRBLrJmWQwWWD_'
           passHref
         >
           <a target='_blank' rel='noopener noreferrer'>
@@ -39,7 +42,7 @@ const CardGuid = () => {
           </a>
         </Link>
       </CardActions>
-    </Card>
+    </AnimatedCard>
   )
 }
 

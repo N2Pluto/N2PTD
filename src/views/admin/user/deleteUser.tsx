@@ -8,6 +8,8 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Slide from '@mui/material/Slide'
 import { TransitionProps } from '@mui/material/transitions'
 import DeleteIcon from '@mui/icons-material/Delete'
+import Backdrop from '@mui/material/Backdrop'
+import CircularProgress from '@mui/material/CircularProgress'
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -23,10 +25,10 @@ interface DeleteUserProps {
   resetSelected: () => void
 }
 
-
 export default function DeleteUser(props: DeleteUserProps) {
   const { selected, resetSelected } = props
   const [open, setOpen] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
   console.log('selected button', selected)
 
   const handleClickOpen = () => {
@@ -38,6 +40,7 @@ export default function DeleteUser(props: DeleteUserProps) {
   }
 
   const handleDelete = async () => {
+    setLoading(true)
     try {
       const response = await fetch('/api/admin/user/delete/deleteUser', {
         method: 'POST',
@@ -56,6 +59,8 @@ export default function DeleteUser(props: DeleteUserProps) {
       resetSelected()
     } catch (error) {
       console.error('Failed to delete user:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -80,6 +85,9 @@ export default function DeleteUser(props: DeleteUserProps) {
           <Button onClick={handleDelete}>Agree</Button>
         </DialogActions>
       </Dialog>
+      <Backdrop sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }} open={loading}>
+        <CircularProgress color='inherit' />
+      </Backdrop>
     </React.Fragment>
   )
 }

@@ -1,6 +1,15 @@
 // src/components/FacebookPost.tsx
 import React, { useEffect } from 'react'
 import { Card, CardContent, CardHeader, Avatar, Typography, Box } from '@mui/material'
+import { styled } from '@mui/system'
+
+const AnimatedCard = styled(Card)(({ theme }) => ({
+  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+  '&:hover': {
+    transform: 'scale(1.03)',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+  }
+}))
 
 const FacebookPost: React.FC = () => {
   const [post, setPost] = React.useState<any>([])
@@ -23,12 +32,11 @@ const FacebookPost: React.FC = () => {
   return (
     <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center' minHeight='100vh' p={2}>
       {post.map((post: any) => (
-        <Card
+        <AnimatedCard
           sx={{
             maxWidth: 700, // typical width of a Facebook post
             width: '100%',
             marginBottom: 6,
-            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
             borderRadius: 1
           }}
           key={post.id}
@@ -59,7 +67,7 @@ const FacebookPost: React.FC = () => {
               {post.title}
             </Typography>
           </CardContent>
-        </Card>
+        </AnimatedCard>
       ))}
     </Box>
   )

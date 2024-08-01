@@ -13,7 +13,9 @@ import {
   Divider,
   Checkbox,
   Autocomplete,
-  Paper
+  Paper,
+  Snackbar,
+  Alert
 } from '@mui/material'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
@@ -136,6 +138,8 @@ const CreatePersonalityUser = () => {
   const [majorOptions, setMajorOptions] = useState([])
   const [selectedOptions, setSelectedOptions] = useState([])
   const [formData, setFormData] = useState({})
+  const [openSnackbar, setOpenSnackbar] = useState(false)
+  const [snackbarMessage, setSnackbarMessage] = useState('')
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -208,13 +212,14 @@ const CreatePersonalityUser = () => {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ user_id: user.user_id, student_year: formData.student_year })
+          body: JSON.stringify({ user_id: user.user_id })
         })
         const { data: userInfoData, error: userInfoError } = await responseUserInfo.json()
         if (userInfoError) {
           console.error('Error Update data into Users_Info table:', userInfoError.message)
         } else {
-          console.log('Data Update Success')
+          setSnackbarMessage('Data Update Success')
+          setOpenSnackbar(true)
         }
         router.push('/profile/')
       }
@@ -237,6 +242,10 @@ const CreatePersonalityUser = () => {
       reader.onload = () => setImgSrc(reader.result as string)
       reader.readAsDataURL(files[0])
     }
+  }
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false)
   }
 
   return (
@@ -472,6 +481,16 @@ const CreatePersonalityUser = () => {
         </Grid>
       </Grid>
       <DormitoryFooter />
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity='success' sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }

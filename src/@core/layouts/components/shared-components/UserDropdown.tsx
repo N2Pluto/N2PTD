@@ -33,11 +33,7 @@ const BadgeContentSpan = styled('span')(({ theme }) => ({
 const UserDropdown = () => {
   const { user, clearStore } = userStore()
   const [profileData, setProfileData] = useState(null)
-
-  // ** States
   const [anchorEl, setAnchorEl] = useState<Element | null>(null)
-
-  // ** Hooks
   const router = useRouter()
 
   useEffect(() => {
@@ -45,7 +41,6 @@ const UserDropdown = () => {
       try {
         const response = await fetch('/api/reservation/room/checkRoom')
         const data = await response.json()
-        console.log('Data:', data)
       } catch (error) {
         console.error('Failed to fetch data:', error)
       }
@@ -54,19 +49,18 @@ const UserDropdown = () => {
     return () => clearInterval(intervalId)
   }, [])
 
-   useEffect(() => {
-     const intervalId = setInterval(async () => {
-       try {
-         const response = await fetch('/api/reservation/room/checkBed')
-         const data = await response.json()
-         console.log('Data:', data)
-       } catch (error) {
-         console.error('Failed to fetch data:', error)
-       }
-     }, 3000)
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await fetch('/api/reservation/room/checkBed')
+        const data = await response.json()
+      } catch (error) {
+        console.error('Failed to fetch data:', error)
+      }
+    }, 3000)
 
-     return () => clearInterval(intervalId)
-   }, [])
+    return () => clearInterval(intervalId)
+  }, [])
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -80,15 +74,17 @@ const UserDropdown = () => {
         })
         const data = await response.json()
         setProfileData(data) // เซ็ตข้อมูลผู้ใช้ที่ได้รับจาก API
-        console.log(data)
-      } catch (error) {}
+      } catch (error) {
+        console.error('Error fetching user profile:', error)
+      }
     }
 
     if (user?.user_id) {
       fetchUserProfile()
-    }
+      const intervalId = setInterval(fetchUserProfile, 10000) // Fetch every 5 seconds
 
-    fetchUserProfile()
+      return () => clearInterval(intervalId) // Clear interval on component unmount
+    }
   }, [user])
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
@@ -173,39 +169,6 @@ const UserDropdown = () => {
           </Link>
         </MenuItem>
 
-        {/* <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-          <Box sx={styles}>
-            <EmailOutline sx={{ marginRight: 2 }} />
-            Inbox
-          </Box>
-        </MenuItem> */}
-
-        {/* <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-          <Box sx={styles}>
-            <MessageOutline sx={{ marginRight: 2 }} />
-            Chat
-          </Box>
-        </MenuItem> */}
-
-        {/* <Divider />
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-          <Box sx={styles}>
-            <CogOutline sx={{ marginRight: 2 }} />
-            Settings
-          </Box>
-        </MenuItem> */}
-        {/* <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-          <Box sx={styles}>
-            <CurrencyUsd sx={{ marginRight: 2 }} />
-            Pricing
-          </Box>
-        </MenuItem>
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-          <Box sx={styles}>
-            <HelpCircleOutline sx={{ marginRight: 2 }} />
-            FAQ
-          </Box>
-        </MenuItem> */}
         <Divider />
         <MenuItem sx={{ py: 2 }} onClick={handleLogout}>
           <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem', color: 'text.secondary' }} />

@@ -37,11 +37,22 @@ const handler = async (req: any, res: any) => {
         console.error('Error deleting from Reservation:', error)
       }
 
-      // Delete from Dormitory_Approve
       try {
-        await supabase.from('Dormitory_Approve').delete().match({ user_id: user_id })
+        await supabase.from('Form_ChangeRoom').delete().match({ user_id: user_id })
       } catch (error) {
-        console.error('Error deleting from Dormitory_Approve:', error)
+        console.error('Error deleting from Reservation:', error)
+      }
+
+      try {
+        await supabase.from('Form_TransferRoom').delete().match({ user_id: user_id })
+      } catch (error) {
+        console.error('Error deleting from Reservation:', error)
+      }
+
+      try {
+        await supabase.from('Form_EditProfile').delete().match({ user_id: user_id })
+      } catch (error) {
+        console.error('Error deleting from Reservation:', error)
       }
 
       // Delete from Dormitory_Resident

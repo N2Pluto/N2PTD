@@ -9,7 +9,24 @@ import { userStore } from 'src/stores/userStore'
 import { useEffect, useState } from 'react'
 import { Divider, Grid } from '@mui/material'
 import Link from 'next/link'
+import { styled } from '@mui/system'
 import CustomizedMenus from './component/ButtonSpeedDial'
+
+// Styled Card Component with Hover Effect
+const AnimatedCard = styled(Card)(({ theme }) => ({
+  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+  '&:hover': {
+    transform: 'scale(1.03)',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+  }
+}))
+const AnimatedButton = styled(Card)(({ theme }) => ({
+  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+  '&:hover': {
+    transform: 'scale(1.03)',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+  }
+}))
 
 const Profile = () => {
   const { user } = userStore()
@@ -104,7 +121,7 @@ const Profile = () => {
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={6} sx={{ pt: 3 }}>
             <Grid item xs={12} md={12} lg={12} sx={{ pt: 3 }}>
-              <Card sx={{ position: 'relative' }}>
+              <AnimatedCard sx={{ position: 'relative' }}>
                 <CardContent>
                   <Box>
                     <Typography variant='h6' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
@@ -233,10 +250,10 @@ const Profile = () => {
                   </Box>
                   <Divider />
                 </CardContent>
-              </Card>
+              </AnimatedCard>
             </Grid>
             <Grid item xs={12} md={12} lg={12} sx={{ pt: 3 }}>
-              <Card sx={{ position: 'relative' }}>
+              <AnimatedCard sx={{ position: 'relative' }}>
                 <CardContent>
                   <Box>
                     <Typography variant='h6' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
@@ -311,13 +328,13 @@ const Profile = () => {
                   </Box>
                   <Divider />
                 </CardContent>
-              </Card>
+              </AnimatedCard>
             </Grid>
           </Grid>
 
           <Grid item xs={12} md={6} lg={6} sx={{ pt: 3 }}>
             <Grid item xs={12} md={12} lg={12} sx={{ pt: 3 }}>
-              <Card sx={{ position: 'relative' }}>
+              <AnimatedCard sx={{ position: 'relative' }}>
                 <CardContent>
                   <Box>
                     <Typography variant='h6' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
@@ -386,10 +403,10 @@ const Profile = () => {
                   </Box>
                   <Divider />
                 </CardContent>
-              </Card>
+              </AnimatedCard>
             </Grid>
             <Grid item xs={12} md={12} lg={12} sx={{ pt: 3 }}>
-              <Card sx={{ position: 'relative', pb: '1px' }}>
+              <AnimatedCard sx={{ position: 'relative', pb: '1px' }}>
                 <CardContent>
                   <Box>
                     <Typography variant='h6' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
@@ -456,7 +473,7 @@ const Profile = () => {
                   </Box>
                   <Divider sx={{ pb: '22px' }} />
                 </CardContent>
-              </Card>
+              </AnimatedCard>
             </Grid>
           </Grid>
         </Grid>

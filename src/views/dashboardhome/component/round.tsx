@@ -1,10 +1,15 @@
-// ** MUI Imports
-import Card from '@mui/material/Card'
-import Typography from '@mui/material/Typography'
-import CardHeader from '@mui/material/CardHeader'
-import CardContent from '@mui/material/CardContent'
+import { Card, CardMedia, Typography, CardHeader, CardContent } from '@mui/material'
+import { styled } from '@mui/system'
 import { useEffect, useState } from 'react'
-import { CardMedia } from '@mui/material'
+
+// Styled Card Component with Hover Effect
+const AnimatedCard = styled(Card)(({ theme }) => ({
+  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+  '&:hover': {
+    transform: 'scale(1.03)',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+  }
+}))
 
 const Round = () => {
   const [round, setRound] = useState([])
@@ -25,10 +30,9 @@ const Round = () => {
   }, [])
 
   return (
-    <Card
+    <AnimatedCard
       sx={{
         mt: 2,
-        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
         borderRadius: 1
       }}
     >
@@ -66,7 +70,7 @@ const Round = () => {
           <Typography variant='body2'>No booking periods are currently open.</Typography>
         )}
       </CardContent>
-    </Card>
+    </AnimatedCard>
   )
 }
 

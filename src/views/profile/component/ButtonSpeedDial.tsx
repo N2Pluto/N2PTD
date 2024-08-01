@@ -11,6 +11,14 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import Link from 'next/link'
 
+const AnimatedButton = styled(Button)(({ theme }) => ({
+  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+  '&:hover': {
+    transform: 'scale(1.1)',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+  }
+}))
+
 const StyledMenu = styled((props: MenuProps) => (
   <Menu
     elevation={0}
@@ -61,7 +69,7 @@ export default function CustomizedMenus() {
   return (
     <div>
       <Link href='/profile/personality-settings' passHref>
-        <Button
+        <AnimatedButton
           id='demo-customized-button'
           aria-controls={open ? 'demo-customized-menu' : undefined}
           aria-haspopup='true'
@@ -71,7 +79,7 @@ export default function CustomizedMenus() {
           onClick={handleClick}
         >
           Edit Profile
-        </Button>
+        </AnimatedButton>
       </Link>
     </div>
   )
