@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import CardContent from '@mui/material/CardContent'
 import Button, { ButtonProps } from '@mui/material/Button'
+import Paper from '@mui/material/Paper'
 import { userStore } from 'src/stores/userStore'
 import { user, setUser } from 'src/stores/userStore'
 import router from 'next/router'
@@ -30,6 +31,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import Snackbar from '@mui/material/Snackbar'
 import { makeStyles } from '@mui/styles'
 import CloseIcon from '@mui/icons-material/Close'
+import { Divider } from '@mui/material'
 
 const useStyles = makeStyles({
   success: {
@@ -41,68 +43,70 @@ const useStyles = makeStyles({
 })
 
 const activity = [
-  { title: 'Basketball' },
-  { title: 'Read a Book' },
-  { title: 'Football' },
-  { title: 'Play a game' },
-  { title: 'Hang out' },
-  { title: 'Watch a movie' },
-  { title: 'Listen to music' },
-  { title: 'Cooking' },
-  { title: 'Travel' },
-  { title: 'Shopping' },
-  { title: 'Swimming' },
-  { title: 'Running' },
-  { title: 'Cycling' },
-  { title: 'Tennis' },
-  { title: 'Golf' },
-  { title: 'Volleyball' },
-  { title: 'Badminton' },
-  { title: 'Table Tennis' },
-  { title: 'Gym' },
-  { title: 'Yoga' },
-  { title: 'Dance' },
-  { title: 'Meditation' },
-  { title: 'Fishing' },
-  { title: 'Photography' },
-  { title: 'Drawing' },
-  { title: 'Singing' },
-  { title: 'Playing an instrument' },
-  { title: 'Gardening' },
-  { title: 'Hiking' },
-  { title: 'Camping' },
-  { title: 'Skiing' },
-  { title: 'Snowboarding' },
-  { title: 'Surfing' },
-  { title: 'Skateboarding' },
-  { title: 'Rollerblading' },
-  { title: 'Ice Skating' },
-  { title: 'Bowling' },
-  { title: 'Billiards' },
-  { title: 'Darts' },
-  { title: 'Chess' },
-  { title: 'Poker' },
-  { title: 'Mahjong' },
-  { title: 'Board Games' },
-  { title: 'Video Games' },
-  { title: 'Karaoke' },
-  { title: 'Clubbing' },
-  { title: 'Bar Hopping' },
-  { title: 'Wine Tasting' }
+  { title: 'Basketball', type: 'Sports' },
+  { title: 'Football', type: 'Sports' },
+  { title: 'Swimming', type: 'Sports' },
+  { title: 'Volleyball', type: 'Sports' },
+  { title: 'Tennis', type: 'Sports' },
+  { title: 'Badminton', type: 'Sports' },
+  { title: 'Table Tennis', type: 'Sports' },
+  { title: 'Read a Book', type: 'Leisure' },
+  { title: 'Cooking Class', type: 'Leisure' },
+  { title: 'Gardening', type: 'Leisure' },
+  { title: 'Yoga', type: 'Fitness' },
+  { title: 'Jogging', type: 'Fitness' },
+  { title: 'Dance Practice', type: 'Fitness' },
+  { title: 'Weightlifting', type: 'Fitness' },
+  { title: 'Cycling', type: 'Fitness' },
+  { title: 'Meditation', type: 'Wellness' },
+  { title: 'Spa Day', type: 'Wellness' },
+  { title: 'Chess', type: 'Mind Games' },
+  { title: 'Sudoku', type: 'Mind Games' },
+  { title: 'Painting', type: 'Arts' },
+  { title: 'Photography', type: 'Arts' },
+  { title: 'Drawing', type: 'Arts' },
+  { title: 'Guitar Practice', type: 'Music' },
+  { title: 'Piano Practice', type: 'Music' },
+  { title: 'Drama Club', type: 'Performing Arts' },
+  { title: 'Coding Club', type: 'Technology' },
+  { title: 'Robotics Club', type: 'Technology' },
+  { title: 'Debate Club', type: 'Academics' },
+  { title: 'Science Club', type: 'Academics' },
+  { title: 'Volunteer Work', type: 'Community Service' },
+  { title: 'Student Government', type: 'Leadership' }
 ]
 
 const redflag = [
-  { title: 'Dirty' },
-  { title: 'Smoke' },
-  { title: 'Drink' },
-  { title: 'Party' },
-  { title: 'Play loud music' },
-  { title: 'Bring friends over' },
-  { title: 'Be messy' },
-  { title: 'Be noisy' },
-  { title: 'Be a night owl' },
-  { title: 'Be a morning person' },
-  { title: 'Be a pet owner' }
+  { title: 'Dirty', type: 'Hygiene' },
+  { title: 'Be messy', type: 'Hygiene' },
+  { title: 'Leave dishes unwashed', type: 'Hygiene' },
+  { title: 'Forget to take out trash', type: 'Hygiene' },
+  { title: 'Not clean up after cooking', type: 'Hygiene' },
+  { title: 'Smoke', type: 'Habit' },
+  { title: 'Drink', type: 'Habit' },
+  { title: 'Party', type: 'Social Behavior' },
+  { title: 'Bring friends over', type: 'Social Behavior' },
+  { title: 'Spread rumors', type: 'Social Behavior' },
+  { title: 'Have frequent visitors', type: 'Social Behavior' },
+  { title: 'Be noisy', type: 'Noise' },
+  { title: 'Play loud music', type: 'Noise' },
+  { title: 'Host loud gatherings', type: 'Noise' },
+  { title: 'Be a night owl', type: 'Routine' },
+  { title: 'Be a morning person', type: 'Routine' },
+  { title: 'Be a pet owner', type: 'Living Preferences' },
+  { title: 'Leave lights on', type: 'Energy Use' },
+  { title: 'Leave doors unlocked', type: 'Security' },
+  { title: 'Borrow things without asking', type: 'Respect' },
+  { title: 'Invade personal space', type: 'Respect' },
+  { title: 'Be careless with shared spaces', type: 'Respect' },
+  { title: 'Be irresponsible with money', type: 'Finance' },
+  { title: 'Be late on rent', type: 'Finance' },
+  { title: 'Break things and not fix them', type: 'Responsibility' },
+  { title: 'Not share chores', type: 'Responsibility' },
+  { title: 'Ignore house rules', type: 'Responsibility' },
+  { title: 'Be overly critical', type: 'Attitude' },
+  { title: 'Be passive-aggressive', type: 'Attitude' },
+  { title: 'Be confrontational', type: 'Attitude' }
 ]
 
 const sleep = [
@@ -182,16 +186,6 @@ const ButtonStyled = styled(Button)<ButtonProps & { component?: ElementType; htm
   [theme.breakpoints.down('sm')]: {
     width: '100%',
     textAlign: 'center'
-  }
-}))
-
-const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
-  marginLeft: theme.spacing(4.5),
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-    marginLeft: 0,
-    textAlign: 'center',
-    marginTop: theme.spacing(4)
   }
 }))
 
@@ -354,227 +348,232 @@ const PersonalitySettings = () => {
         <CircularProgress color='inherit' />
       </Backdrop>
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={12} md={12} lg={12}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Link href='/dashboard' passHref>
-              <Typography sx={{ whiteSpace: 'nowrap', pr: 3, color: 'text.primary' }} variant='body2'>
-                Home
+        <Grid item xs={12}>
+          <Paper elevation={3} sx={{ p: 4 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', mb: 3, pl: 2 }}>
+              <img
+                src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/exam_6393087.png'
+                alt='Requirement Icon'
+                width={40}
+                height={40}
+                style={{ marginRight: 8 }}
+              />
+              <Typography variant='h6' sx={{ display: 'flex', alignItems: 'center' }}>
+                Edit Profile
               </Typography>
-            </Link>
-            <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
-            <Link href='/profile' passHref>
-              <Typography sx={{ whiteSpace: 'nowrap', pr: 3, pl: 3, color: 'text.primary' }} variant='body2'>
-                Profile
-              </Typography>
-            </Link>
-            <FiberManualRecordIcon sx={{ fontSize: '5px' }} />
-            <Typography sx={{ whiteSpace: 'nowrap', pl: 3 }} variant='body2'>
-              Edit Requirement
-            </Typography>
-          </Box>
-        </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={5}>
-          <Box sx={{ height: '600px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <CardContent>
-              <form onSubmit={handleUserInfo}>
-                <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
-                  <Box sx={{ alignItems: 'center', justifyItems: 'center' }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                      <ImgStyled src={imgSrc} alt='Profile Pic' />
-                    </Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            </Box>
+            <Divider />
+            <Grid container spacing={1}>
+              <Grid item xs={12} md={5}>
+                <CardContent>
+                  <form onSubmit={handleUserInfo}>
+                    <Box sx={{ alignItems: 'center', justifyItems: 'center', textAlign: 'center', mt: 30 }}>
+                      <ImgStyled src={formData.image ? formData.image : imgSrc} alt='Profile Pic' />
                       <Typography variant='body2' sx={{ marginTop: 5 }}>
                         Allowed PNG or JPG. Max size of 800K.
                       </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 3 }}>
                       <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
                         Upload Photo
                         <input
                           hidden
                           type='file'
                           onChange={handleOnChange}
-                          accept='image/png, image/jpeg , image/JPG, image/jpg, image/JPEG, image/PNG'
+                          accept='image/png, image/jpeg'
                           id='account-settings-upload-image'
                         />
                       </ButtonStyled>
-
                       <Backdrop sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }} open={open}>
                         <CircularProgress color='inherit' />
                       </Backdrop>
                     </Box>
-                  </Box>
-                </Grid>
-              </form>
-            </CardContent>
-          </Box>
-        </Grid>
-        <Grid item xs={12} sm={12} md={12} lg={5}>
-          <Box sx={{ justifyContent: 'center', alignItems: 'center' }}>
-            <CardContent>
-              <form onSubmit={handleUserInfo}>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={12}>
-                    <Typography variant='h5' sx={{ mb: 3, pl: 2 }}>
-                      Requirement
-                    </Typography>
-                  </Grid>
+                  </form>
+                </CardContent>
+              </Grid>
 
-                  <Grid item xs={12} sm={12}>
-                    <Autocomplete
-                      id='filter-demo'
-                      options={school}
-                      value={selectedSchool}
-                      getOptionLabel={option => option.title}
-                      onChange={(event, newValue) => {
-                        setSelectedSchool(newValue) // เก็บข้อมูล school ที่ถูกเลือก
-                        setFormData(prevState => ({
-                          ...prevState,
-                          filter_school: newValue ? newValue.title : '',
-                          filter_major: '' // Clear major selection when school changes
-                        }))
-                        setMajorOptions(newValue ? newValue.majors : [])
-                      }}
-                      style={{ width: 500 }}
-                      renderInput={params => <TextField {...params} label='School Filter' fullWidth />}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={12}>
-                    {selectedSchool && (
-                      <Grid item xs={12} sm={12}>
+              <Grid item xs={12} md={6}>
+                <CardContent>
+                  <form onSubmit={handleUserInfo}>
+                    <Grid item xs={12}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, pl: 2 }}>
+                        <img
+                          src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/requirements_11337337.png'
+                          alt='Requirement Icon'
+                          width={40}
+                          height={40}
+                          style={{ marginRight: 8 }}
+                        />
+                        <Typography variant='body1' sx={{ fontWeight: 'bold' }}>
+                          Requirement
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid container spacing={1}>
+                      <Grid item xs={12}>
                         <Autocomplete
-                          id='filter-demo-major'
-                          options={majorOptions} // ใช้ majorOptions แทน major ที่เปลี่ยนแปลงไปตามโรงเรียนที่เลือก
-                          value={majorOptions.find(option => option.title === formData.filter_major) || null}
+                          id='filter-demo'
+                          options={school}
+                          value={selectedSchool}
+                          getOptionLabel={option => option.title}
+                          onChange={(event, newValue) => {
+                            setSelectedSchool(newValue)
+                            setFormData(prevState => ({
+                              ...prevState,
+                              filter_school: newValue ? newValue.title : '',
+                              filter_major: ''
+                            }))
+                            setMajorOptions(newValue ? newValue.majors : [])
+                          }}
+                          renderInput={params => <TextField {...params} label='School Filter' fullWidth />}
+                          sx={{ transform: 'scale(0.9)' }}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12}>
+                        {selectedSchool && (
+                          <Autocomplete
+                            id='filter-demo-major'
+                            options={majorOptions}
+                            value={majorOptions.find(option => option.title === formData.filter_major) || null}
+                            getOptionLabel={option => option.title}
+                            onChange={(event, newValue) => {
+                              setFormData(prevState => ({
+                                ...prevState,
+                                filter_major: newValue ? newValue.title : ''
+                              }))
+                            }}
+                            renderInput={params => <TextField {...params} label='Major Filter' fullWidth />}
+                            sx={{ transform: 'scale(0.9)' }}
+                          />
+                        )}
+                      </Grid>
+
+                      <Grid item xs={12}>
+                        <Autocomplete
+                          id='filter-demo-religion'
+                          options={religion}
+                          value={religion.find(option => option.title === formData.filter_religion) || null}
                           getOptionLabel={option => option.title}
                           onChange={(event, newValue) => {
                             setFormData(prevState => ({
                               ...prevState,
-                              filter_major: newValue ? newValue.title : ''
+                              filter_religion: newValue ? newValue.title : ''
                             }))
                           }}
-                          style={{ width: 500 }}
-                          renderInput={params => <TextField {...params} label='Major Filter' fullWidth />}
+                          renderInput={params => <TextField {...params} label='Religion Filter' fullWidth />}
+                          sx={{ transform: 'scale(0.9)' }}
                         />
                       </Grid>
-                    )}
-                  </Grid>
 
-                  <Grid item xs={12} sm={12}>
-                    <Autocomplete
-                      id='filter-demo'
-                      options={religion}
-                      value={religion.find(option => option.title === formData.filter_religion) || null}
-                      getOptionLabel={option => option.title}
-                      onChange={(event, newValue) => {
-                        setFormData(prevState => ({
-                          ...prevState,
-                          filter_religion: newValue ? newValue.title : ''
-                        }))
-                      }}
-                      style={{ width: 500 }}
-                      renderInput={params => <TextField {...params} label='Religion Filter' fullWidth />}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={12}>
-                    <Typography variant='h5' sx={{ mb: 3, pl: 2 }}>
-                      LIFE STYLE
-                    </Typography>
-                  </Grid>
-
-                  <Grid item xs={12} sm={12}>
-                    <Autocomplete
-                      multiple
-                      id='checkboxes-tags-demo'
-                      options={activity}
-                      value={activity.filter(option => formData.activity?.includes(option.title))}
-                      disableCloseOnSelect
-                      getOptionLabel={option => option.title}
-                      onChange={(event, newValue) => {
-                        setFormData(prevState => ({
-                          ...prevState,
-                          activity: newValue.map(option => option.title).join(', ')
-                        }))
-                      }}
-                      renderOption={(props, option, { selected }) => (
-                        <li {...props}>
-                          <Checkbox
-                            icon={icon}
-                            checkedIcon={checkedIcon}
+                      <Grid item xs={12}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, pl: 2 }}>
+                          <img
+                            src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/expectation_6193213.png'
+                            alt='Lifestyle Icon'
+                            width={40}
+                            height={40}
                             style={{ marginRight: 8 }}
-                            checked={selected}
                           />
-                          {option.title}
-                        </li>
-                      )}
-                      style={{ width: 500 }}
-                      renderInput={params => (
-                        <TextField {...params} label='Activity' placeholder='Favorites' fullWidth />
-                      )}
-                    />
-                  </Grid>
+                          <Typography variant='body1' sx={{ fontWeight: 'bold', mt: 2 }}>
+                            Lifestyle
+                          </Typography>
+                        </Box>
+                      </Grid>
 
-                  <Grid item xs={12} sm={12}>
-                    <Autocomplete
-                      multiple
-                      id='checkboxes-tags-demo'
-                      options={redflag}
-                      value={redflag.filter(option => formData.filter_redflag?.includes(option.title))}
-                      disableCloseOnSelect
-                      getOptionLabel={option => option.title}
-                      onChange={(event, newValue) => {
-                        setFormData(prevState => ({
-                          ...prevState,
-                          filter_redflag: newValue.map(option => option.title).join(', ')
-                        }))
-                      }}
-                      renderOption={(props, option, { selected }) => (
-                        <li {...props}>
-                          <Checkbox
-                            icon={icon}
-                            checkedIcon={checkedIcon}
-                            style={{ marginRight: 8 }}
-                            checked={selected}
-                          />
-                          {option.title}
-                        </li>
-                      )}
-                      style={{ width: 500 }}
-                      renderInput={params => (
-                        <TextField {...params} label='Red Flag Filter' placeholder='Favorites' fullWidth />
-                      )}
-                    />
-                  </Grid>
+                      <Grid item xs={12}>
+                        <Autocomplete
+                          multiple
+                          id='checkboxes-tags-demo'
+                          options={activity}
+                          value={activity.filter(option => formData.activity?.includes(option.title))}
+                          disableCloseOnSelect
+                          getOptionLabel={option => option.title}
+                          groupBy={option => option.type}
+                          onChange={(event, newValue) => {
+                            setFormData(prevState => ({
+                              ...prevState,
+                              activity: newValue.map(option => option.title).join(', ')
+                            }))
+                          }}
+                          sx={{ transform: 'scale(0.9)' }}
+                          renderOption={(props, option, { selected }) => (
+                            <li {...props}>
+                              <Checkbox
+                                icon={icon}
+                                checkedIcon={checkedIcon}
+                                style={{ marginRight: 8 }}
+                                checked={selected}
+                              />
+                              {option.title}
+                            </li>
+                          )}
+                          renderInput={params => (
+                            <TextField {...params} label='Activity' placeholder='Favorites' fullWidth />
+                          )}
+                        />
+                      </Grid>
 
-                  <Grid item xs={12} sm={12}>
-                    <Autocomplete
-                      id='filter-demo'
-                      options={sleep}
-                      value={sleep.find(option => option.title === formData.sleep) || null}
-                      getOptionLabel={option => option.title}
-                      onChange={(event, newValue) => {
-                        setFormData(prevState => ({
-                          ...prevState,
-                          sleep: newValue ? newValue.title : ''
-                        }))
-                      }}
-                      style={{ width: 500 }}
-                      renderInput={params => <TextField {...params} label='Sleep Style' fullWidth />}
-                    />
-                  </Grid>
+                      <Grid item xs={12}>
+                        <Autocomplete
+                          multiple
+                          id='checkboxes-tags-demo-redflag'
+                          options={redflag}
+                          value={redflag.filter(option => formData.filter_redflag?.includes(option.title))}
+                          disableCloseOnSelect
+                          getOptionLabel={option => option.title}
+                          groupBy={option => option.type}
+                          onChange={(event, newValue) => {
+                            setFormData(prevState => ({
+                              ...prevState,
+                              filter_redflag: newValue.map(option => option.title).join(', ')
+                            }))
+                          }}
+                          sx={{ transform: 'scale(0.9)' }}
+                          renderOption={(props, option, { selected }) => (
+                            <li {...props}>
+                              <Checkbox
+                                icon={icon}
+                                checkedIcon={checkedIcon}
+                                style={{ marginRight: 8 }}
+                                checked={selected}
+                              />
+                              {option.title}
+                            </li>
+                          )}
+                          renderInput={params => (
+                            <TextField {...params} label='Red Flag Filter' placeholder='Favorites' fullWidth />
+                          )}
+                        />
+                      </Grid>
 
-                  <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <Button type='submit' variant='contained' color='primary'>
-                      SAVE CHANGES!
-                    </Button>
-                  </Grid>
-                </Grid>
-              </form>
-            </CardContent>
-          </Box>
+                      <Grid item xs={12}>
+                        <Autocomplete
+                          id='filter-demo-sleep'
+                          options={sleep}
+                          value={sleep.find(option => option.title === formData.sleep) || null}
+                          getOptionLabel={option => option.title}
+                          onChange={(event, newValue) => {
+                            setFormData(prevState => ({
+                              ...prevState,
+                              sleep: newValue ? newValue.title : ''
+                            }))
+                          }}
+                          renderInput={params => <TextField {...params} label='Sleep Style' fullWidth />}
+                          sx={{ transform: 'scale(0.9)' }}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', mr: 5 }}>
+                        <Button type='submit' variant='contained' color='primary'>
+                          SAVE CHANGES!
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </form>
+                </CardContent>
+              </Grid>
+            </Grid>
+          </Paper>
         </Grid>
-        <Grid item xs={1} sm={1} md={1} lg={1}></Grid>
       </Grid>
 
       <Snackbar

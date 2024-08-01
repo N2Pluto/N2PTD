@@ -79,8 +79,6 @@ const textAnimation = keyframes`
 `
 
 // Create a styled Box component with slide-up and background animation
-
-// animation: ${slideUp} 1s ease-out, ${backgroundAnimation} 5s infinite alternate ease-in-out
 const BackgroundBox = styled(Box)`
   animation: ${slideUp} 1s ease-out, ${backgroundAnimation} 5s 1s infinite;
 `
@@ -106,10 +104,14 @@ const StyledButton = styled(Button)`
   }
 `
 
-const GradientText = styled(Typography)`
-  background: linear-gradient(45deg, #fe6b8b 30%, #ff8e53 90%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+// Create styled Typography components with hover animation
+const HoverableTypography = styled(Typography)`
+  transition: transform 0.3s, color 0.3s, text-shadow 0.3s;
+  &:hover {
+    transform: scale(1.1);
+    color: #fe6b8b;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  }
 `
 
 const LandingPage = () => {
@@ -139,7 +141,7 @@ const LandingPage = () => {
         }}
       />
       <LuxuriousTextBox sx={{ width: '100%', textAlign: 'center', marginTop: theme => theme.spacing(-100) }}>
-        <Typography
+        <HoverableTypography
           variant='h2'
           sx={{
             fontWeight: 'bold',
@@ -149,8 +151,8 @@ const LandingPage = () => {
           }}
         >
           Dormitory Reservation
-        </Typography>
-        <Typography
+        </HoverableTypography>
+        <HoverableTypography
           variant='h6'
           sx={{
             mb: 4,
@@ -160,7 +162,7 @@ const LandingPage = () => {
           }}
         >
           System case Study: Walailak University
-        </Typography>
+        </HoverableTypography>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 5 }}>
           <Link href='/pages/login' passHref>
