@@ -45,10 +45,11 @@ const useStyles = makeStyles(theme => ({
     },
     '&.rank-3': {
       animationDelay: '2s'
+    },
+    '&:hover': {
+      transform: 'scale(1.1)',
+      animation: `$drop 0.5s ease forwards, $scaleUp 0.5s ease forwards`
     }
-    // '&:hover': {
-    //   animation: `$drop 0.5s ease forwards, $scaleUp 0.5s ease forwards`
-    // }
   },
   cardContent: {
     textAlign: 'left'
@@ -120,6 +121,7 @@ const useStyles = makeStyles(theme => ({
     }
   }
 }))
+
 
 const RoomCard = ({ showCard, finalFilteredRooms }) => {
   const classes = useStyles()

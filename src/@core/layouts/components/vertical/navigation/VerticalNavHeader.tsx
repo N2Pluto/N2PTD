@@ -105,47 +105,45 @@ const VerticalNavHeader = (props: Props) => {
             {userVerticalNavMenuBranding ? (
               userVerticalNavMenuBranding(props)
             ) : (
-              <Link href='/dashboard' passHref>
-                <StyledLink>
-                  <Box
-                    component='img'
-                    src={'https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png'}
+              <StyledLink>
+                <Box
+                  component='img'
+                  src={'https://img5.pic.in.th/file/secure-sv1/logof3d9597dfa097dbd.png'}
+                  sx={{
+                    height: 75,
+                    width: '100%',
+                    pt: 3,
+                    transition: 'transform .25s ease-in-out', // Add transform transition
+                    '&:hover': {
+                      transform: 'scale(1.2)' // Add scale effect on hover
+                    }
+                  }}
+                  alt='logo'
+                />
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <HeaderTitle variant='body1' sx={{ ml: 1, pt: 6, textAlign: 'center' }}>
+                    DORMITORY MENU
+                  </HeaderTitle>
+                  <IconButton
+                    color='primary'
+                    onClick={toggleNavWidth}
                     sx={{
-                      height: 75,
-                      width: '100%',
-                      pt: 3,
-                      transition: 'transform .25s ease-in-out', // Add transform transition
+                      fontSize: 'large',
+                      '& svg': { fontSize: '2rem' },
+                      padding: 0,
+                      ml: 2, // Adjust margin left for spacing
+                      backgroundColor: theme.palette.background.paper, // Background color
+                      boxShadow: theme.shadows[3], // Box shadow for depth
+                      borderRadius: theme.shape.borderRadius, // Border radius
                       '&:hover': {
-                        transform: 'scale(1.2)' // Add scale effect on hover
+                        backgroundColor: theme.palette.action.hover // Hover effect
                       }
                     }}
-                    alt='logo'
-                  />
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <HeaderTitle variant='body1' sx={{ ml: 1, pt: 6, textAlign: 'center' }}>
-                      DORMITORY MENU
-                    </HeaderTitle>
-                    <IconButton
-                      color='primary'
-                      onClick={toggleNavWidth}
-                      sx={{
-                        fontSize: 'large',
-                        '& svg': { fontSize: '2rem' },
-                        padding: 0,
-                        ml: 2, // Adjust margin left for spacing
-                        backgroundColor: theme.palette.background.paper, // Background color
-                        boxShadow: theme.shadows[3], // Box shadow for depth
-                        borderRadius: theme.shape.borderRadius, // Border radius
-                        '&:hover': {
-                          backgroundColor: theme.palette.action.hover // Hover effect
-                        }
-                      }}
-                    >
-                      {navWidth === 100 ? <ChevronRight /> : <ChevronLeft />}
-                    </IconButton>
-                  </Box>
-                </StyledLink>
-              </Link>
+                  >
+                    {navWidth === 100 ? <ChevronRight /> : <ChevronLeft />}
+                  </IconButton>
+                </Box>
+              </StyledLink>
             )}
           </>
         )}

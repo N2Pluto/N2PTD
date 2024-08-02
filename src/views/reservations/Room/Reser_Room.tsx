@@ -28,6 +28,16 @@ import MenuItem from '@mui/material/MenuItem'
 import Checkbox from '@mui/material/Checkbox'
 import ListItemText from '@mui/material/ListItemText'
 import { makeStyles } from '@mui/styles'
+import RefreshIcon from '@mui/icons-material/Refresh'
+import { styled, alpha } from '@mui/material/styles'
+
+const AnimatedButton = styled(Button)(({ theme }) => ({
+  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+  '&:hover': {
+    transform: 'scale(1.1)',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+  }
+}))
 
 const useStyles = makeStyles({
   highlightText: {
@@ -57,7 +67,7 @@ const columns: readonly Column[] = [
   },
   {
     id: 'reserve',
-    label: 'reserve',
+    label: 'Action',
     minWidth: 170,
     align: 'center',
     format: (value: number) => value.toFixed(2)
@@ -211,20 +221,7 @@ const ReservationRoomTest = () => {
     const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
     setDormitoryRoom(data)
 
-    // Call the new API for each room
-    if (data) {
-      data.forEach(async room => {
-        const response = await fetch('/api/reservation/room/checkRoomSize', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ dorm_id: router.query.id, room_id: room.room_id })
-        })
-        const result = await response.json()
-        console.log('checkBedStatus result:', result)
-      })
-    }
+    // Removed the API call for each room
   }
 
   const fetchDataAndUpdateStatusRoom = async () => {
@@ -625,73 +622,101 @@ const ReservationRoomTest = () => {
   return (
     <>
       <SuccessฺฺBarRoom />
-      <Grid pb={4}>
-        <Card>
-          <CardContent>
-            <Box
-              sx={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-              }}
-            ></Box>
-            <div>
-              <Button variant='contained' onClick={handleDialogOpen}>
-                Filter Room
-              </Button>
-              <RoomFilterDialog
-                disableScrollLock={true}
-                open={dialogOpen}
-                onClose={handleDialogClose}
-                bedAvailableFilter={bedAvailableFilter}
-                setBedAvailableFilter={setBedAvailableFilter}
-                floorFilter={floorFilter}
-                setFloorFilter={setFloorFilter}
-                schoolFilter={schoolFilter}
-                setSchoolFilter={setSchoolFilter}
-                majorFilter={majorFilter}
-                setMajorFilter={setMajorFilter}
-                religionFilter={religionFilter}
-                setReligionFilter={setReligionFilter}
-                sleepFilter={sleepFilter}
-                setSleepFilter={setSleepFilter}
-              />
-            </div>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Box sx={{ display: 'flex', pb: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', pl: 3 }}>
-          <Button variant='contained' onClick={handleSmartReservation}>
-            MATCHING ROOM
-          </Button>
+      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+        <Box sx={{ display: 'flex', margin: 5 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', pl: 3 }}>
+            <AnimatedButton variant='contained' onClick={handleSmartReservation}>
+              MATCHING ROOM
+            </AnimatedButton>
+          </Box>
         </Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', pl: 3 }}>
-          <Button variant='contained' onClick={handleRefresh}>
-            Refresh Real-Time
-          </Button>
-        </Box>
-      </Box>
-      {showRoomCard && (
-        <Box sx={{ height: '325px', width: '100%', overflow: 'hidden', marginBottom: '30px', marginTop: '30px' }}>
-          <Box style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-5px' }}>
-            <Button onClick={handleClickMatchBy}>Match By</Button>
-            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-              {['School', 'Major', 'Religion', 'Activity', 'Redflag', 'Sleep'].map(option => (
-                <MenuItem key={option} onClick={() => handleToggle(option)}>
-                  <Checkbox checked={selectedOptions.indexOf(option) !== -1} />
-                  <ListItemText primary={option} />
-                </MenuItem>
-              ))}
-            </Menu>
+        {showRoomCard && (
+          <Box
+            sx={{
+              height: '400px',
+              width: '100%',
+              overflow: 'hidden',
+              marginBottom: '30px',
+              marginTop: '30px',
+              display: 'flex',
+              flexDirection: 'column', // Ensure vertical alignment
+              justifyContent: 'center',
+              alignItems: 'center' // Center horizontally and vertically
+            }}
+          >
+            <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+              <RoomCard key={key} showCard={showCard} finalFilteredRooms={finalFilteredRooms} />
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '80px' }}>
+              {' '}
+              <AnimatedButton variant='contained' onClick={handleClickMatchBy}>
+                Match Option
+              </AnimatedButton>
+              <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+                {['School', 'Major', 'Religion', 'Activity', 'Redflag', 'Sleep'].map(option => (
+                  <MenuItem key={option} onClick={() => handleToggle(option)}>
+                    <Checkbox checked={selectedOptions.indexOf(option) !== -1} />
+                    <ListItemText primary={option} />
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
           </Box>
-          <RoomCard key={key} showCard={showCard} finalFilteredRooms={finalFilteredRooms} />
+        )}
+      </Paper>
+
+      <Paper sx={{ width: '100%', overflow: 'hidden', mt: 5 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pl: 3, pr: 3 }}>
+          <Typography
+            variant='h5'
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-start',
+              alignItems: 'center', // Align items vertically
+              pt: 2,
+              margin: 5
+            }}
+          >
+            <Box
+              component='img'
+              src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/bunk-bed_904809.png'
+              alt='Bunk Bed Icon'
+              sx={{
+                width: 40,
+                height: 40,
+                marginRight: 2 // Add some space between the image and the text
+              }}
+            />
+            {dormitoryBuilding?.name}
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 4 }}>
+            <AnimatedButton variant='contained' onClick={handleDialogOpen}>
+              Filter Room
+            </AnimatedButton>
+            <RoomFilterDialog
+              disableScrollLock={true}
+              open={dialogOpen}
+              onClose={handleDialogClose}
+              bedAvailableFilter={bedAvailableFilter}
+              setBedAvailableFilter={setBedAvailableFilter}
+              floorFilter={floorFilter}
+              setFloorFilter={setFloorFilter}
+              schoolFilter={schoolFilter}
+              setSchoolFilter={setSchoolFilter}
+              majorFilter={majorFilter}
+              setMajorFilter={setMajorFilter}
+              religionFilter={religionFilter}
+              setReligionFilter={setReligionFilter}
+              sleepFilter={sleepFilter}
+              setSleepFilter={setSleepFilter}
+            />
+            <AnimatedButton variant='contained' onClick={handleRefresh} endIcon={<RefreshIcon />}>
+              Refresh Real-Time
+            </AnimatedButton>
+          </Box>
         </Box>
-      )}
-      <h1> {dormitoryBuilding?.name}</h1>
-      <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+
         <TableContainer sx={{ maxHeight: auto }}>
           <Table stickyHeader aria-label='sticky table'>
             <TableHead>
@@ -711,6 +736,7 @@ const ReservationRoomTest = () => {
                   if (schoolFilter === null) return true
                   if (schoolFilter === 0) {
                     const reservations = reservationData.get(room.room_id) || []
+
                     return reservations.some(
                       reservation => profileData?.userInfoData?.school === reservation.Users_Info?.school
                     )
@@ -809,13 +835,13 @@ const ReservationRoomTest = () => {
                         <Box>
                           {room.room_rehearse ? (
                             room.status ? (
-                              <Button
+                              <AnimatedButton
                                 onClick={() => handleReservation(room.room_id)}
                                 variant='contained'
                                 style={{ color: 'white' }}
                               >
                                 Select
-                              </Button>
+                              </AnimatedButton>
                             ) : (
                               <Button variant='contained' color='error' disabled>
                                 Full

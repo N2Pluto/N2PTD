@@ -22,6 +22,15 @@ import Link from 'next/link'
 import SuccessฺฺBar from './component'
 import { sendDiscordMessage } from 'src/pages/api/discord/user'
 import sendLogsuser from 'src/pages/api/log/user/reservation/insert'
+import { styled, alpha } from '@mui/material/styles'
+
+const AnimatedButton = styled(Button)(({ theme }) => ({
+  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+  '&:hover': {
+    transform: 'scale(1.1)',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+  }
+}))
 
 const ReservationBotton = () => {
   const [open, setOpen] = useState(false)
@@ -172,7 +181,7 @@ const ReservationBotton = () => {
               </Typography>
             </Box>
             <Box sx={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-              <Button
+              <AnimatedButton
                 variant='contained'
                 onClick={() =>
                   reservation?.Dormitory_Building && reservation?.Dormitory_Room && reservation?.Dormitory_Bed
@@ -183,7 +192,7 @@ const ReservationBotton = () => {
                 {reservation?.Dormitory_Building && reservation?.Dormitory_Room && reservation?.Dormitory_Bed
                   ? 'Cancel Reservation'
                   : 'Reservation'}
-              </Button>
+              </AnimatedButton>
 
               <Dialog
                 open={open}

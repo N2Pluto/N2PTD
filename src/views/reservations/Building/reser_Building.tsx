@@ -27,6 +27,14 @@ const slideIn = keyframes`
   }
 `
 
+const AnimatedButton = styled(Button)(({ theme }) => ({
+  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+  '&:hover': {
+    transform: 'scale(1.1)',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+  }
+}))
+
 const AnimatedCard = styled(Card)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
@@ -221,9 +229,9 @@ const ReservationBuilding = () => {
                 alignItems: 'center'
               }}
             >
-              <Button variant='contained' onClick={handleDialogToggle}>
+              <AnimatedButton variant='contained' onClick={handleDialogToggle}>
                 Filter Building
-              </Button>
+              </AnimatedButton>
             </Box>
             <FilterDrawer
               open={dialogOpen}

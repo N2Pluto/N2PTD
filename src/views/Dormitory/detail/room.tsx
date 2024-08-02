@@ -111,6 +111,8 @@ const ReservationRoomDetails = () => {
       try {
         const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
         setDormitoryRoom(data)
+        console.log(data)
+
       } catch (error) {
         console.error('Error fetching room data:', error)
       }
@@ -120,11 +122,6 @@ const ReservationRoomDetails = () => {
       fetchDataRoom()
     }
   }, [router.query.id])
-
-  const handleReservation = (room_id: string) => {
-    setUser({ ...userStoreInstance.user, room_id })
-    router.push(`/Dormitory/bed/${room_id}`)
-  }
 
   return (
     <>
@@ -163,7 +160,7 @@ const ReservationRoomDetails = () => {
               <Grid container spacing={6} sx={{ pt: 5 }}>
                 <Grid container spacing={2}>
                   <Grid item xs={6}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', pl: 9 , pt:3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', pl: 9, pt: 3 }}>
                       <img
                         src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/information_1945758.png'
                         alt='Information Icon'
