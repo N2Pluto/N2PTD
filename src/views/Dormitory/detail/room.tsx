@@ -26,6 +26,9 @@ import {
   Button
 } from '@mui/material'
 import React from 'react'
+import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined'
+import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined'
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined'
 
 interface Column {
   id: 'DETAILS' | 'room' | 'code' | 'Viewdetails' | 'bedstatus'
@@ -112,7 +115,6 @@ const ReservationRoomDetails = () => {
         const { data } = await fetch(`/api/room/building/${router.query.id}`).then(res => res.json())
         setDormitoryRoom(data)
         console.log(data)
-
       } catch (error) {
         console.error('Error fetching room data:', error)
       }
@@ -295,9 +297,9 @@ const ReservationRoomDetails = () => {
                         </TableCell>
                         <TableCell align='center'>
                           {room.status ? (
-                            <Chip label='Available' color='success' />
+                            <Chip label='Available' icon={<CheckCircleOutlinedIcon />} color='success' />
                           ) : (
-                            <Chip label='Unavailable' color='error' />
+                            <Chip label='Unavailable' icon={<CancelOutlinedIcon />} color='error' />
                           )}
                         </TableCell>
                       </TableRow>

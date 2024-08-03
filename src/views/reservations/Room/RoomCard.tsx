@@ -122,7 +122,6 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-
 const RoomCard = ({ showCard, finalFilteredRooms }) => {
   const classes = useStyles()
 

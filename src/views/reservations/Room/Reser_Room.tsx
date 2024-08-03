@@ -869,7 +869,7 @@ const ReservationRoomTest = () => {
                                 <Card sx={{ margin: 3 }} key={index}>
                                   <CardContent sx={{ mt: -5, mb: -5 }}>
                                     <Typography variant='body1' gutterBottom component='div'>
-                                      <Typography variant='h6'>{`BED ${index + 1}`}</Typography>
+                                      <Typography variant='h6'>{`Bed ${index + 1}`}</Typography>
                                     </Typography>
                                     <Grid container spacing={2}>
                                       <Grid item xs={12}>

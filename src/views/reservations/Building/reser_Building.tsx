@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Grid, { GridProps } from '@mui/material/Grid'
 import { CardActions, Dialog, DialogContent, DialogTitle } from '@mui/material'
 import { userStore } from 'src/stores/userStore'
@@ -90,28 +90,10 @@ const ReservationBuilding = () => {
 
   const [profileData, setProfileData] = useState(null)
 
-  console.log('userStoreInstance:', userStoreInstance?.user)
-  console.log('userStoreInstance Gender:', userStoreInstance?.user?.gender)
-
   const router = useRouter()
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
-
-  useEffect(() => {
-    const intervalId = setInterval(async () => {
-      try {
-        const response = await fetch('/api/reservation/room/checkRoom')
-        const data = await response.json()
-        console.log('Data:', data)
-      } catch (error) {
-        console.error('Failed to fetch data:', error)
-      }
-    }, 2000)
-
-    // Clean up function
-    return () => clearInterval(intervalId)
-  }, [])
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -148,9 +130,7 @@ const ReservationBuilding = () => {
 
   const handleReservation = (dorm_id: string) => {
     if (dorm_id) {
-      console.log('Reservation Building:', dorm_id)
       setUser({ ...userStoreInstance.user, dorm_id }) // เปลี่ยน เป็นเก็บ ใน useState
-      console.log('user:', userStoreInstance.user)
       router.push(`/reservation/room/${dorm_id}`)
     } else {
       console.error('Invalid dorm_id:', dorm_id)
@@ -161,12 +141,22 @@ const ReservationBuilding = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true) // Set loading to true before fetching data
-        const { data } = await fetch('/api/building/fetch_building').then(res => res.json())
+        const response = await fetch('/api/building/fetch_building')
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const { data } = await response.json()
         console.log('data:', data)
         setDormitoryBuilding(data)
-        setIsLoading(false) // Set loading to false after data is fetched
       } catch (error) {
-        console.error('Error fetching dormitory building data:', error)
+        if (error instanceof TypeError) {
+          console.error('Network error or resource not found:', error)
+        } else {
+          console.error('Error fetching dormitory building data:', error)
+        }
+      } finally {
         setIsLoading(false) // Ensure loading is set to false even if there is an error
       }
     }
@@ -179,6 +169,11 @@ const ReservationBuilding = () => {
       try {
         setIsLoadingBedInfo(true) // Set loading to true before fetching data
         const response = await fetch('/api/building/countBedPerRoom')
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
         const jsonResponse = await response.json()
 
         // Assuming the expected data is wrapped in a result property based on your server-side handler
@@ -187,10 +182,13 @@ const ReservationBuilding = () => {
         } else {
           console.error('Unexpected response structure:', jsonResponse)
         }
-
-        setIsLoadingBedInfo(false) // Set loading to false after data is fetched
       } catch (error) {
-        console.error('Error fetching dormitory building data:', error)
+        if (error instanceof TypeError) {
+          console.error('Network error or resource not found:', error)
+        } else {
+          console.error('Error fetching bed information data:', error)
+        }
+      } finally {
         setIsLoadingBedInfo(false) // Ensure loading is set to false even if there is an error
       }
     }
