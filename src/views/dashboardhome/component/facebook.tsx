@@ -15,19 +15,27 @@ const FacebookPost: React.FC = () => {
   const [post, setPost] = React.useState<any>([])
 
   useEffect(() => {
+    let isMounted = true
+
     const fetchData = async () => {
       try {
         const { data } = await fetch('/api/readPost').then(res => res.json())
-        setPost(data)
+        if (isMounted) {
+          setPost(data)
+        }
       } catch (error) {
-        console.error('Error fetching dormitory building data:', error)
+        if (isMounted) {
+          console.error('Error fetching dormitory building data:', error)
+        }
       }
     }
 
     fetchData()
-  }, [])
 
-  console.log(post)
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   return (
     <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center' minHeight='100vh' p={2}>

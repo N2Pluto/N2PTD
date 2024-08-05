@@ -20,14 +20,12 @@ export default function TransferRoom({ open, onClose, id }: TransferRoomProps) {
     onClose()
   }
 
-  console.log('edit roaom id ', id)
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
     const formJson = Object.fromEntries((formData as any).entries())
     const email = formJson.email
-    console.log(email)
 
     // Call the API to transfer the resident
     const response = await fetch('/api/admin/dormitoryResident/update/transferResident', {
@@ -64,7 +62,6 @@ export default function TransferRoom({ open, onClose, id }: TransferRoomProps) {
             const formData = new FormData(event.currentTarget)
             const formJson = Object.fromEntries((formData as any).entries())
             const email = formJson.email
-            console.log(email)
             handleClose()
           }
         }}

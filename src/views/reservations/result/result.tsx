@@ -64,7 +64,7 @@ const AllResult = ({ open, handleClose }) => {
   const [reservation, setReservation] = useState(null)
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
   const [showConfetti, setShowConfetti] = useState(false)
-  const [isButtonVisible, setIsButtonVisible] = useState(false);
+  const [isButtonVisible, setIsButtonVisible] = useState(false)
 
   const loguser = async () => {
     const content = `Make a reservation Dormitory Building : ${reservation?.Dormitory_Building?.name} Room Number : ${reservation?.Dormitory_Room?.room_number} Bed Number : ${reservation?.Dormitory_Bed?.bed_number}`
@@ -73,11 +73,11 @@ const AllResult = ({ open, handleClose }) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsButtonVisible(true);
-    }, 7000); // 5-second delay
+      setIsButtonVisible(true)
+    }, 7000) // 5-second delay
 
-    return () => clearTimeout(timer); // Cleanup the timer on component unmount
-  }, []);
+    return () => clearTimeout(timer) // Cleanup the timer on component unmount
+  }, [])
 
   useEffect(() => {
     const fetchReservationData = async () => {
@@ -115,7 +115,7 @@ const AllResult = ({ open, handleClose }) => {
 
   const handleSummit = () => {
     loguser()
-    router.push(`/reservation/`)
+    router.push(`/reservation/reservation-info`)
   }
 
   return (
@@ -316,7 +316,7 @@ const AllResult = ({ open, handleClose }) => {
               {isButtonVisible && (
                 <Button
                   onClick={() => {
-                    handleSummit();
+                    handleSummit()
                   }}
                   variant='contained'
                 >

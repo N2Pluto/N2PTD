@@ -355,7 +355,6 @@ const AccountSettings = () => {
         })
         const data = await response.json()
         setProfileData(data) // เซ็ตข้อมูลผู้ใช้ที่ได้รับจาก API
-        console.log(data)
       } catch (error) {
         console.error('Error fetching user profile:', error)
       }
@@ -382,7 +381,6 @@ const AccountSettings = () => {
     image: profileData?.userInfoData.image
   })
 
-  console.log('profileData', profileData)
 
   useEffect(() => {
     if (user?.student_id.toString().startsWith('63')) {
@@ -420,14 +418,12 @@ const AccountSettings = () => {
       if (error) {
         console.error('Error uploading image: ', error.message)
       } else {
-        console.log('Image uploaded successfully')
         const { data, error: urlError } = await supabase.storage.from('profile').getPublicUrl(filePath)
         if (urlError) {
           console.error('Error getting public URL: ', urlError.message)
         } else {
           const { publicUrl } = data
           setFormData(prevState => ({ ...prevState, image: publicUrl }))
-          console.log('Image URL:', publicUrl)
         }
       }
     }
@@ -465,7 +461,6 @@ const AccountSettings = () => {
       if (error) {
         console.error('Error Update data into Users table:', error.message)
       } else {
-        console.log('Data Update Success:', data)
         alert('Data Update Success')
         router.push('/profile/')
       }

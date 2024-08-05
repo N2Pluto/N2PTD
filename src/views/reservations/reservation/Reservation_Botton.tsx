@@ -40,30 +40,9 @@ const ReservationBotton = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('')
   const [profileData, setProfileData] = useState(null)
 
-  useEffect(() => {
-    const intervalId = setInterval(async () => {
-      try {
-        const response = await fetch('/api/reservation/room/checkRoom')
-        const data = await response.json()
-        console.log('Data:', data)
-      } catch (error) {
-        console.error('Failed to fetch data:', error)
-      }
-    }, 2000)
-
-    // Clean up function
-    return () => clearInterval(intervalId)
-  }, [])
-
-  const discordHandle = async (id: string, email: string) => {
-    await sendDiscordMessage(id, email, 'Cancel reservation')
-  }
-
   const loguser = async (id: string, email: string) => {
-    await sendLogsuser(id, email, 'Cancel reservation', 'Reservation');
-  };
-
-
+    await sendLogsuser(id, email, 'Cancel reservation', 'Reservation')
+  }
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -111,8 +90,6 @@ const ReservationBotton = () => {
     fetchReservationData()
   }, [user])
 
-
-
   const handleReservation = () => {
     router.push(`/reservation/building`)
   }
@@ -122,20 +99,20 @@ const ReservationBotton = () => {
         method: 'DELETE'
       })
 
-      const { data, error } = await response.json()
-
-      if (error) {
-        console.error('Error deleting reservation:', error)
-      } else {
-        // console.log('Reservation deleted successfully:', data)
+      if (response.ok) {
         setSnackbarMessage('Booking successfully deleted')
         setSnackbarOpen(true)
         setReservation(null)
-        loguser(user.student_id, user.email)
-        router.reload() // Reload the page
+        await loguser(user.student_id, user.email) // Ensure logging is complete before redirecting
+        router.push(`/reservation/reservation`)
+      } else {
+        const { error } = await response.json()
+        throw new Error(error || `Server error: ${response.statusText}`)
       }
     } catch (error) {
       console.error('Error deleting reservation:', error)
+      setSnackbarMessage('Failed to delete reservation. Please try again.')
+      setSnackbarOpen(true)
     }
   }
 

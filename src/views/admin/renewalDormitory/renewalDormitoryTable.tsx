@@ -63,23 +63,28 @@ const RenewalTable = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('')
   const [snackbarClass, setSnackbarClass] = useState('')
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('/api/admin/renewalDormitory/read/')
-        const result = await response.json()
-        setRows(result.data)
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      }
+  const fetchData = async () => {
+    try {
+      const response = await fetch('/api/admin/renewalDormitory/read/')
+      const result = await response.json()
+      setRows(result.data)
+    } catch (error) {
+      console.error('Error fetching data:', error)
     }
+  }
 
+  useEffect(() => {
     fetchData()
-
     const intervalId = setInterval(fetchData, 3000)
-
+    
     return () => clearInterval(intervalId)
   }, [])
+
+  useEffect(() => {
+    if (snackbarOpen) {
+      fetchData()
+    }
+  }, [snackbarOpen])
 
   const showSnackbar = (message, className) => {
     console.log('showSnackbar:', message, className)
@@ -98,7 +103,7 @@ const RenewalTable = () => {
 
   const formatDate = (dateString: string) => {
     const options = { year: '2-digit', month: '2-digit', day: '2-digit' }
-    
+
     return new Date(dateString).toLocaleDateString('en-US', options)
   }
 

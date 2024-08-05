@@ -15,19 +15,29 @@ const CardUserStatistics = () => {
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
+    let isMounted = true
+
     const fetchUserdata = async () => {
       try {
         const response = await fetch('/api/statistics/user', {
           method: 'GET'
         })
         const data = await response.json()
-        setUser(data)
-        setIsLoaded(true)
+        if (isMounted) {
+          setUser(data)
+          setIsLoaded(true)
+        }
       } catch (error) {
-        console.error('Error fetching user data:', error)
+        if (isMounted) {
+          console.error('Error fetching user data:', error)
+        }
       }
     }
     fetchUserdata()
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   const userCount = user.filter((u: any) => u.role === 'user').length

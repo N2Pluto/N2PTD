@@ -81,7 +81,6 @@ const EditBuilding = ({ dorm_id, onClose, setSnackbarEditOpen }) => {
               typeof data.type_facilities === 'string' ? JSON.parse(data.type_facilities) : data.type_facilities
           }
           setFormData(parsedData)
-          console.log('setFormData data:', parsedData)
         } else {
           console.error('No data returned from API')
         }
@@ -112,7 +111,6 @@ const EditBuilding = ({ dorm_id, onClose, setSnackbarEditOpen }) => {
         body: JSON.stringify({ dorm_id, ...formData })
       })
       const data = await response.json()
-      console.log(data)
     } catch (error) {
       console.error('Error updating building data:', error)
     }

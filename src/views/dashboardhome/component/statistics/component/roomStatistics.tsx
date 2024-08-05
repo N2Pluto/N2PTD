@@ -11,19 +11,29 @@ const CardRoomStatistics = () => {
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
+    let isMounted = true
+
     const fetchRoomData = async () => {
       try {
         const response = await fetch('/api/statistics/room', {
           method: 'GET'
         })
         const data = await response.json()
-        setRoom(data)
-        setIsLoaded(true)
+        if (isMounted) {
+          setRoom(data)
+          setIsLoaded(true)
+        }
       } catch (error) {
-        console.error('Error fetching room data:', error)
+        if (isMounted) {
+          console.error('Error fetching room data:', error)
+        }
       }
     }
     fetchRoomData()
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   const roomFree = room.filter((r: any) => r.status === true).length

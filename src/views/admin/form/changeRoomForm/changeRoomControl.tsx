@@ -116,7 +116,6 @@ export default function ChangeRoomControl() {
       }
 
       const result = await response.json()
-      console.log('Profile updated successfully:', result)
 
       const emailHtml = `
         <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
@@ -174,7 +173,6 @@ dormitoryawalailak@gmail.com</a>.</p>
       }
 
       const emailResult = await emailResponse.json()
-      console.log('Email sent successfully:', emailResult)
 
       // Optionally, refresh data or close the drawer here
       fetchData() // Assuming fetchData fetches the latest data
@@ -202,7 +200,6 @@ dormitoryawalailak@gmail.com</a>.</p>
       })
       const data = await response.json()
       setProfileData(data) // Set the received user data
-      console.log('User data:', data)
     } catch (error) {
       console.error('Failed to fetch user profile', error)
     }
@@ -233,7 +230,6 @@ dormitoryawalailak@gmail.com</a>.</p>
     setIsLoading(false)
 
     if (response.ok) {
-      console.log('setEditProfileData:', data)
       setChangeRoomData(data)
     } else {
       console.error(data.error)
@@ -259,7 +255,6 @@ dormitoryawalailak@gmail.com</a>.</p>
 
       fetchData()
       if (response.ok) {
-        console.log('Request cancelled successfully:', result)
         fetchData()
         setDrawerOpen(false)
         const emailHtml = `
@@ -314,7 +309,6 @@ dormitoryawalailak@gmail.com</a>.</p>
   }
 
   const handleDrawerOpen = async request => {
-    console.log('Selected request:', request)
     fetchUserProfile()
     setSelectedRequest(request)
     setDrawerOpen(true)
@@ -330,8 +324,6 @@ dormitoryawalailak@gmail.com</a>.</p>
         },
         body: JSON.stringify({ newBed: request.newBed })
       })
-
-      console.log('Response status:', response.status)
 
       if (!response.ok) {
         const errorText = await response.text()
@@ -349,7 +341,6 @@ dormitoryawalailak@gmail.com</a>.</p>
         return
       }
 
-      console.log('The bed is available')
       setBedStatusMessage('The bed is available')
       setIsSubmitDisabled(false)
     } catch (error) {

@@ -134,7 +134,6 @@ const NotificationDropdown = () => {
 
     fetchData()
   }, [])
-  console.log('test', userManagement)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -172,8 +171,6 @@ const NotificationDropdown = () => {
   const changeRoomForm = changeRoom.filter(r => r.status === '').length
   const transferRoomForm = transferRoom.filter(r => r.status === '').length
   const all = userManagementForm + changeRoomForm + transferRoomForm
-  console.log('userManagementForm', userManagementForm)
-  console.log('changeRoomForm', changeRoomForm)
 
   return (
     <Fragment>

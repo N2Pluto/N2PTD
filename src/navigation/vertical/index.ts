@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react'
 import HomeOutline from 'mdi-material-ui/HomeOutline'
 import AccountPlusOutline from 'mdi-material-ui/AccountPlusOutline'
 import WifiProtectedSetupIcon from '@mui/icons-material/WifiProtectedSetup'
@@ -13,22 +14,21 @@ import GoogleIcon from '@mui/icons-material/Google'
 import ApartmentIcon from '@mui/icons-material/Apartment'
 import BookOnlineIcon from '@mui/icons-material/BookOnline'
 import PersonIcon from '@mui/icons-material/Person'
+import LogoDevIcon from '@mui/icons-material/LogoDev'
+import PsychologyIcon from '@mui/icons-material/Psychology'
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn'
+import GamepadIcon from '@mui/icons-material/Gamepad'
+import CreateIcon from '@mui/icons-material/Create'
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
 import { userStore } from 'src/stores/userStore'
-import { useEffect, useState } from 'react'
-import LogoDevIcon from '@mui/icons-material/LogoDev';
-import PsychologyIcon from '@mui/icons-material/Psychology';
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import GamepadIcon from '@mui/icons-material/Gamepad';
-import CreateIcon from '@mui/icons-material/Create';
 
 const useNavigation = (): VerticalNavItemsType => {
   const { user } = userStore()
   const [roleFilter, setRoleFilter] = useState<string>('')
-  const [reservation, setReservation] = useState(null)
-  const [userInfo, setUserInfo] = useState(null)
-  const [residentData, setResidentData] = useState(null)
-  const [form, setForm] = useState<GoogleFormData[] | null>(null)
+  const [reservation, setReservation] = useState<any>(null)
+  const [userInfo, setUserInfo] = useState<any>(null)
+  const [residentData, setResidentData] = useState<any>(null)
+  const [form, setForm] = useState<any[] | null>(null)
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -69,10 +69,13 @@ const useNavigation = (): VerticalNavItemsType => {
       }
     }
 
-    fetchReservationData()
-  }, [user])
+    if (user?.user_id) {
+      fetchReservationData()
+      const intervalId = setInterval(fetchReservationData, 5000)
 
-  console.log('reservation', reservation)
+      return () => clearInterval(intervalId)
+    }
+  }, [user])
 
   useEffect(() => {
     const fetchResidentData = async () => {
@@ -80,16 +83,18 @@ const useNavigation = (): VerticalNavItemsType => {
         const response = await fetch(`/api/reservation/checkResident?user_id=${user?.user_id}`)
         const { residentData } = await response.json()
         setResidentData(residentData[0])
-        console.log('residentData', residentData)
       } catch (error) {
-        console.error('Error fetching reservation data:', error)
+        console.error('Error fetching resident data:', error)
       }
     }
 
-    fetchResidentData()
-  }, [user])
+    if (user?.user_id) {
+      fetchResidentData()
+      const intervalId = setInterval(fetchResidentData, 5000)
 
-  console.log('residentData', residentData)
+      return () => clearInterval(intervalId)
+    }
+  }, [user])
 
   useEffect(() => {
     const fetchFormData = async () => {
@@ -98,7 +103,7 @@ const useNavigation = (): VerticalNavItemsType => {
         const result = await response.json()
         setForm(result.data)
       } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error('Error fetching form data:', error)
       }
     }
 
@@ -227,21 +232,17 @@ const useNavigation = (): VerticalNavItemsType => {
           title: 'Approve',
           icon: AssignmentTurnedInIcon,
           path: '/admin/log-admin-approve'
-        },{
+        },
+        {
           title: 'Create',
           icon: CreateIcon,
           path: '/admin/log-admin-create'
-        },{
+        },
+        {
           title: 'Building control',
           icon: GamepadIcon,
           path: '/admin/log-admin-buildingcontrol'
         }
-
-        // {
-        //   title: 'Renewal Period',
-        //   icon: AutorenewIcon,
-        //   path: '/admin/renewalDormitory'
-        // }
       ]
     }
   ]
@@ -257,11 +258,17 @@ const useNavigation = (): VerticalNavItemsType => {
       icon: ApartmentIcon,
       path: '/Dormitory'
     },
-    {
-      title: 'Reservation',
-      icon: BookOnlineIcon,
-      path: '/reservation'
-    },
+    reservation
+      ? {
+          title: 'Reservation Info',
+          icon: BookOnlineIcon,
+          path: '/reservation-info'
+        }
+      : {
+          title: 'Reservation',
+          icon: BookOnlineIcon,
+          path: '/reservation'
+        },
     {
       title: 'My Profile',
       icon: PersonIcon,
@@ -304,7 +311,7 @@ const useNavigation = (): VerticalNavItemsType => {
 
   if (reservation?.status === 'Approve' && reservation?.payment_status === 'SUCCESS') {
     const updatedNavItemsForUser = navItemsForUser.map(item =>
-      item.title === 'Reservation'
+      item.title === (reservation ? 'Reservation Info' : 'Reservation')
         ? {
             ...item,
             title: 'My Dormitory',

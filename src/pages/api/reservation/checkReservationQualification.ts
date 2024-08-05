@@ -1,51 +1,56 @@
 // /api/reservation/checkReservationQualification.ts
 import supabase from 'src/libs/supabase'
 
-// ฟังก์ชันเช็คสถานะรอบการจอง
+// Function to check round status
 const checkRoundStatus = async (startDate: string, endDate: string): Promise<boolean> => {
   const currentDate = new Date()
   const start = new Date(startDate)
   const end = new Date(endDate)
 
   if (currentDate < start || currentDate > end) {
-    // ถ้าเวลาปัจจุบันไม่อยู่ในช่วง start_date และ end_date
-    const { error } = await supabase
-      .from('Reservation_System')
-      .update({ round_status: false })
-      .eq('round_status', true)
+    // If the current time is not within the start_date and end_date range
+    const { error } = await supabase.from('Reservation_System').update({ round_status: false }).eq('round_status', true)
 
     if (error) {
       console.error('Error updating round status:', error)
-      
       return false
     }
+
+    return false
   }
 
-  return currentDate >= start && currentDate <= end
+  return true
 }
 
-// ฟังก์ชันเช็คคุณสมบัติของนักศึกษา
-const checkUserQualification = (userYear: number, reservationYear: number[]): boolean => {
-  return reservationYear.includes(userYear)
+// Function to check user qualification
+const checkUserQualification = (userYear: number, reservationYears: number[]): boolean => {
+  return reservationYears.includes(userYear)
 }
 
 const handler = async (req: any, res: any) => {
   try {
     const { data, error } = await supabase.from('Reservation_System').select('*').eq('round_status', true).single()
 
-    if (error) throw error
+    if (error || !data) {
+      throw new Error('No active reservation round found or error fetching round data')
+    }
 
     const { start_date, end_date, student_year } = data
     const isValidRound = await checkRoundStatus(start_date, end_date)
+
+    if (!isValidRound) {
+      return res.status(200).json({ isEligible: false, message: 'No active reservation round' })
+    }
+
     const isValidUser = checkUserQualification(req.body.userYear, student_year)
 
-    if (isValidRound && isValidUser) {
+    if (isValidUser) {
       res.status(200).json({ isEligible: true })
     } else {
-      res.status(200).json({ isEligible: false })
+      res.status(200).json({ isEligible: false, message: 'User does not meet the qualification criteria' })
     }
   } catch (error) {
-    console.error('Error checking reservation qualification:', error)
+    console.error('Error checking reservation qualification:', error.message)
     res.status(500).json({ error: 'Failed to check reservation qualification' })
   }
 }

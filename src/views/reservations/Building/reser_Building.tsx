@@ -252,7 +252,7 @@ const ReservationBuilding = () => {
         </Card>
       </Grid>
       <Grid container spacing={4}>
-        {isLoading || isLoadingBedInfo
+        {isLoading
           ? // Display skeletons when data is loading
             Array.from(new Array(8)).map((_, index) => (
               <Grid key={index} item xs={12} sm={6} md={3} pb={5}>
@@ -266,14 +266,46 @@ const ReservationBuilding = () => {
                 </Card>
               </Grid>
             ))
-          : dormitoryBuilding
-              .filter(dorm => genderFilter === '' || dorm.type_gender === genderFilter)
-              .filter(dorm => buildingFilter === '' || dorm.type_building === buildingFilter)
-              .filter(dorm => roommateFilter === '' || dorm.type_roommate === roommateFilter)
-              .filter(dorm => bathroomFilter === '' || dorm.type_bathroom === bathroomFilter)
-              .filter(dorm => bedFilter === '' || dorm.type_bedtype === bedFilter)
-              .filter(dorm => priceFilter === '' || dorm.price === priceFilter)
-              .map(dorm => (
+          : (() => {
+              const filteredDormitories = dormitoryBuilding
+                .filter(dorm => genderFilter === '' || dorm.type_gender === genderFilter)
+                .filter(dorm => buildingFilter === '' || dorm.type_building === buildingFilter)
+                .filter(dorm => roommateFilter === '' || dorm.type_roommate === roommateFilter)
+                .filter(dorm => bathroomFilter === '' || dorm.type_bathroom === bathroomFilter)
+                .filter(dorm => bedFilter === '' || dorm.type_bedtype === bedFilter)
+                .filter(dorm => priceFilter === '' || dorm.price === priceFilter)
+
+              if (filteredDormitories.length === 0) {
+                return (
+                  <Grid item xs={12}>
+                    <Card>
+                      <CardContent>
+                        <Box
+                          sx={{
+                            width: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                        >
+                          <img
+                            src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/folder_12478062.png'
+                            alt='No Rooms Found'
+                            style={{ maxWidth: '100px', marginBottom: '20px' }} // Adjust the image size and spacing
+                          />
+                          <Typography variant='body1' component='div' textAlign='center'>
+                            The filter you have selected did not match any Building. Please select a different filter to
+                            find the Building you desire.
+                          </Typography>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                )
+              }
+
+              return filteredDormitories.map(dorm => (
                 <Grid key={dorm.dorm_id} item xs={12} sm={6} md={3} pb={5}>
                   <AnimatedCard
                     sx={{
@@ -331,55 +363,42 @@ const ReservationBuilding = () => {
                           </Typography>
 
                           <Typography sx={{ fontWeight: 500, marginBottom: '16px', fontSize: '0.95rem' }}>
-                            {' '}
                             Gender :{' '}
                             <Box component='span' sx={{ fontWeight: 'bold' }}>
                               {dorm.type_gender}
                             </Box>
                           </Typography>
                           <Typography sx={{ fontWeight: 500, marginBottom: '16px', fontSize: '0.95rem' }}>
-                            {' '}
                             Include :{' '}
                             <Box component='span' sx={{ fontWeight: 'bold' }}>
                               {dorm.type_building}
                             </Box>
                           </Typography>
                           <Typography sx={{ fontWeight: 500, marginBottom: '16px', fontSize: '0.95rem' }}>
-                            {' '}
-                            {/* Adjusted marginBottom */}
                             Bathroom :{' '}
                             <Box component='span' sx={{ fontWeight: 'bold' }}>
                               {dorm.type_bathroom}
                             </Box>
                           </Typography>
-
                           <Typography sx={{ fontWeight: 500, marginBottom: '16px', fontSize: '0.95rem' }}>
-                            {' '}
-                            {/* Adjusted marginBottom */}
                             Bed Type :{' '}
                             <Box component='span' sx={{ fontWeight: 'bold' }}>
                               {dorm.type_bedtype}
                             </Box>
                           </Typography>
                           <Typography sx={{ fontWeight: 500, marginBottom: '16px', fontSize: '0.95rem' }}>
-                            {' '}
-                            {/* Adjusted marginBottom */}
                             Roommate :{' '}
                             <Box component='span' sx={{ fontWeight: 'bold' }}>
                               {dorm.type_roommate}
                             </Box>
                           </Typography>
                           <Typography sx={{ fontWeight: 500, marginBottom: '16px', fontSize: '0.95rem' }}>
-                            {' '}
-                            {/* Adjusted marginBottom */}
                             Room Total :{' '}
                             <Box component='span' sx={{ fontWeight: 'bold' }}>
                               {dorm.room_total}
                             </Box>
                           </Typography>
                           <Typography sx={{ fontWeight: 500, marginBottom: '16px', fontSize: '0.95rem' }}>
-                            {' '}
-                            {/* Adjusted marginBottom */}
                             Price :{' '}
                             <Box component='span' sx={{ fontWeight: 'bold' }}>
                               {dorm.price} / Person / Term.
@@ -422,7 +441,8 @@ const ReservationBuilding = () => {
                     </Grid>
                   </AnimatedCard>
                 </Grid>
-              ))}
+              ))
+            })()}
       </Grid>
     </>
   )

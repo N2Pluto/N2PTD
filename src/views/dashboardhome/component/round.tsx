@@ -15,18 +15,30 @@ const Round = () => {
   const [round, setRound] = useState([])
 
   useEffect(() => {
+    let isMounted = true // Add a flag to track component mount status
+
     const fetchUserdata = async () => {
       try {
         const response = await fetch('/api/round/', {
           method: 'GET'
         })
         const data = await response.json()
-        setRound(data)
+        if (isMounted) {
+          // Check if the component is still mounted before updating state
+          setRound(data)
+        }
       } catch (error) {
-        console.error('Error fetching round profile:', error)
+        if (isMounted) {
+          // Check if the component is still mounted before logging the error
+          console.error('Error fetching round profile:', error)
+        }
       }
     }
     fetchUserdata()
+
+    return () => {
+      isMounted = false // Cleanup function to set the flag to false
+    }
   }, [])
 
   return (

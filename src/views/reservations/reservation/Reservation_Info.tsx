@@ -14,9 +14,9 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
-import Backdrop from '@mui/material/Backdrop'
 import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgress'
 import Link from 'next/link'
+import Backdrop from '@mui/material/Backdrop'
 
 function LinearProgressWithLabel(props: LinearProgressProps & { value: number }) {
   return (
@@ -31,7 +31,7 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
   )
 }
 
-const ReservationHomePage = () => {
+const ReservationInfo = () => {
   const { user } = userStore()
 
   const [profileData, setProfileData] = useState(null)
@@ -42,6 +42,8 @@ const ReservationHomePage = () => {
   const [loadingPercentage, setLoadingPercentage] = useState(0)
 
   const handleNavigate = async () => {
+    let isMounted = true
+
     const intervalId = setInterval(async () => {
       try {
         // Extract the first two characters of the student_id
@@ -55,43 +57,65 @@ const ReservationHomePage = () => {
           body: JSON.stringify({ userYear })
         })
         const data = await response.json()
-        setIsEligible(data.isEligible)
 
-        if (data.isEligible) {
-          clearInterval(intervalId) // Stop the interval when the user is eligible
-          setLoading(false)
-          router.push('/reservation/reservation')
+        if (isMounted) {
+          setIsEligible(data.isEligible)
+
+          if (data.isEligible) {
+            clearInterval(intervalId)
+            setLoading(false)
+            router.push('/reservation/reservation-info')
+          }
         }
       } catch (error) {
-        console.error('Error checking reservation qualification:', error)
+        if (isMounted) {
+          console.error('Error checking reservation qualification:', error)
+        }
       }
     }, 1000) // Fetch every second
 
     setTimeout(() => {
-      if (!isEligible) {
+      if (isMounted && !isEligible) {
         setShowDialog(true)
         setLoading(false)
       }
     }, 3000) // Show dialog after 3 seconds if not eligible
+
+    return () => {
+      isMounted = false
+      clearInterval(intervalId)
+    }
   }
 
   useEffect(() => {
+    let isMounted = true
+
     const fetchRoundProfile = async () => {
       try {
         const response = await fetch('/api/reservation/fetchRoundProfile', {
           method: 'GET'
         })
         const data = await response.json()
-        setRoundData(data)
+        if (isMounted) {
+          setRoundData(data)
+        }
         console.log('Round Info', data)
       } catch (error) {
-        console.error('Error fetching round profile:', error)
+        if (isMounted) {
+          console.error('Error fetching round profile:', error)
+        }
       }
     }
     fetchRoundProfile()
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   useEffect(() => {
+    let isMounted = true
+
     const fetchUserProfile = async () => {
       try {
         const response = await fetch('/api/profile/fetchUserProfile', {
@@ -102,7 +126,9 @@ const ReservationHomePage = () => {
           body: JSON.stringify({ user_id: user.user_id })
         })
         const data = await response.json()
-        setProfileData(data)
+        if (isMounted) {
+          setProfileData(data)
+        }
 
         // Check round status
         const roundResponse = await fetch('/api/reservation/checkRoundStatus', {
@@ -118,12 +144,18 @@ const ReservationHomePage = () => {
           console.log('Round status checked successfully')
         }
       } catch (error) {
-        console.error('Error fetching user profile:', error)
+        if (isMounted) {
+          console.error('Error fetching user profile:', error)
+        }
       }
     }
 
     if (user?.user_id) {
       fetchUserProfile()
+    }
+
+    return () => {
+      isMounted = false
     }
   }, [user])
 
@@ -148,6 +180,8 @@ const ReservationHomePage = () => {
           return prev + 1
         })
       }, 30) // Update every 30 milliseconds
+
+      return () => clearInterval(interval)
     }
   }, [loading, isEligible])
 
@@ -193,4 +227,4 @@ const ReservationHomePage = () => {
   )
 }
 
-export default ReservationHomePage
+export default ReservationInfo

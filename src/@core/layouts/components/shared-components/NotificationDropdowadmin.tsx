@@ -155,7 +155,6 @@ const NotificationAdminDropdown = () => {
     }
     fetchUserdata()
   }, [])
-  console.log('11111', reservation)
 
   useEffect(() => {
     const fetchUserdata = async () => {
@@ -171,7 +170,6 @@ const NotificationAdminDropdown = () => {
     }
     fetchUserdata()
   }, [])
-  console.log('22222', approve)
 
   useEffect(() => {
     const fetchUserdata = async () => {
@@ -187,7 +185,6 @@ const NotificationAdminDropdown = () => {
     }
     fetchUserdata()
   }, [])
-  console.log('33333', renewalSystem)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -205,7 +202,6 @@ const NotificationAdminDropdown = () => {
 
     fetchData()
   }, [])
-  console.log('test', userManagement)
 
   useEffect(() => {
     const fetchData = async () => {

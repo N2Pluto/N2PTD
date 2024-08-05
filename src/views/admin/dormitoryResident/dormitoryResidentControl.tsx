@@ -83,8 +83,6 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const [swapSnackbarOpen, setSwapSnackbarOpen] = useState(false)
   const classes = useStyles()
 
-  console.log('numSelected', numSelected)
-  console.log('selected', selected)
 
   const handleCloseExportSnackbar = () => {
     setSwapSnackbarOpen(false)
@@ -250,7 +248,6 @@ const DormitoryResidentControl = () => {
 
   const handleCloseExportSnackbar = () => {
     setExportSnackbarOpen(false)
-    console.log('handleCloseExportSnackbar')
   }
 
   const handleDeleteSnackbar = () => {
@@ -349,7 +346,6 @@ const DormitoryResidentControl = () => {
         const { data } = await fetch(`/api/admin/dormitoryResident/read/fetchResident`).then(res => res.json())
         if (data) {
           setUsers(data)
-          console.log('fetchResident', data)
         } else {
           console.error('No data returned from API')
         }

@@ -10,19 +10,29 @@ const CardBedStatistics = () => {
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
+    let isMounted = true
+
     const fetchUserdata = async () => {
       try {
         const response = await fetch('/api/statistics/bed', {
           method: 'GET'
         })
         const data = await response.json()
-        setBed(data)
-        setIsLoaded(true)
+        if (isMounted) {
+          setBed(data)
+          setIsLoaded(true)
+        }
       } catch (error) {
-        console.error('Error fetching bed data:', error)
+        if (isMounted) {
+          console.error('Error fetching bed data:', error)
+        }
       }
     }
     fetchUserdata()
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   const bedFree = bed.filter((b: any) => b.bed_status === true).length

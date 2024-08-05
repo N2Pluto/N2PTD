@@ -11,19 +11,29 @@ const CardBuildingStatistics = () => {
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
+    let isMounted = true
+
     const fetchUserdata = async () => {
       try {
         const response = await fetch('/api/statistics/building', {
           method: 'GET'
         })
         const data = await response.json()
-        setDoom(data)
-        setIsLoaded(true)
+        if (isMounted) {
+          setDoom(data)
+          setIsLoaded(true)
+        }
       } catch (error) {
-        console.error('Error fetching building data:', error)
+        if (isMounted) {
+          console.error('Error fetching building data:', error)
+        }
       }
     }
     fetchUserdata()
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   const doomM = doom.filter((b: any) => b.type_gender === 'male').length

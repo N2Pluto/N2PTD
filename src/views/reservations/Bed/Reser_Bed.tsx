@@ -33,6 +33,7 @@ const ReservationBedviwe = () => {
   const [dormitoryRoom, setDormitoryRoom] = useState([])
   const [userReservations, setUserReservations] = useState<{ [key: string]: any }>({})
   const [openWarn, setOpenWarn] = useState(false)
+  const [openWarnUser, setOpenWarnUser] = useState(false)
   const [openAllResult, setOpenAllResult] = useState(false)
   const [roundData, setRoundData] = useState(null)
   const [expanded, setExpanded] = useState<string | false>(false)
@@ -50,6 +51,15 @@ const ReservationBedviwe = () => {
       const { data } = await fetch(`/api/reservation/checkUserReservBed?bed_id=${bedId}`).then(res => res.json())
       setUserReservations(prevReservations => ({ ...prevReservations, [bedId]: data }))
     }
+  }
+
+  const handleOpenWarnUser = () => {
+    setOpenWarnUser(true)
+  }
+
+  const handleCloseWarnUser = () => {
+    setOpenWarnUser(false)
+    router.push('/dashboard')
   }
 
   const handleOpenWarn = () => {
@@ -132,7 +142,7 @@ const ReservationBedviwe = () => {
       const { hasReservation } = await checkResponse.json()
 
       if (hasReservation) {
-        handleOpenWarn()
+        handleOpenWarnUser()
         handleCloseConfirmation()
 
         return
@@ -373,6 +383,23 @@ const ReservationBedviwe = () => {
           </Grid>
         </Card>
       </Grid>
+
+      <Dialog
+        open={openWarnUser}
+        onClose={handleCloseWarnUser}
+        aria-labelledby='alert-dialog-title'
+        aria-describedby='alert-dialog-description'
+      >
+        <DialogTitle id='alert-dialog-title'>{'Warn'}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id='alert-dialog-description'>
+            You already have a reservation in the system.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseWarnUser}>Accept</Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog
         open={openWarn}

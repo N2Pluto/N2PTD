@@ -65,19 +65,25 @@ export default function ReservationRoundStatus() {
   const [snackbarMessage, setSnackbarMessage] = useState('')
   const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success')
 
-  useEffect(() => {
-    const fetchRoundStatus = async () => {
-      const response = await fetch('/api/admin/reservationSystem/read/fetchRoundStatus')
-      const data = await response.json()
-      setRows(data)
-    }
+  const fetchRoundStatus = async () => {
+    const response = await fetch('/api/admin/reservationSystem/read/fetchRoundStatus')
+    const data = await response.json()
+    setRows(data)
+  }
 
+  useEffect(() => {
     fetchRoundStatus()
 
     const intervalId = setInterval(fetchRoundStatus, 5000)
 
     return () => clearInterval(intervalId)
   }, [])
+
+  useEffect(() => {
+    if (snackbarOpen) {
+      fetchRoundStatus()
+    }
+  }, [snackbarOpen])
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false)

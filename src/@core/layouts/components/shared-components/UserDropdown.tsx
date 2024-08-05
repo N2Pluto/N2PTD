@@ -41,7 +41,6 @@ const UserDropdown = () => {
       try {
         const response = await fetch('/api/reservation/room/checkRoom')
         const data = await response.json()
-        console.log(data)
       } catch (error) {
         console.error('Failed to fetch data:', error)
       }

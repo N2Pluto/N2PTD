@@ -624,21 +624,23 @@ const ReservationRoomTest = () => {
       <SuccessฺฺBarRoom />
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>
         <Box sx={{ display: 'flex', margin: 5 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', pl: 3 }}>
-            <AnimatedButton variant='contained' onClick={handleSmartReservation}>
-              MATCHING ROOM
-            </AnimatedButton>
-          </Box>
+          {!showCard && (
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', pl: 3 }}>
+              <Button variant='contained' onClick={handleSmartReservation}>
+                MATCHING ROOM
+              </Button>
+            </Box>
+          )}
         </Box>
 
-        {showRoomCard && (
+        {showCard && (
           <Box
             sx={{
-              height: '400px',
+              height: '500px',
               width: '100%',
               overflow: 'hidden',
-              marginBottom: '30px',
-              marginTop: '30px',
+              marginBottom: '20px',
+              marginTop: '20px',
               display: 'flex',
               flexDirection: 'column', // Ensure vertical alignment
               justifyContent: 'center',
@@ -649,18 +651,26 @@ const ReservationRoomTest = () => {
               <RoomCard key={key} showCard={showCard} finalFilteredRooms={finalFilteredRooms} />
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '80px' }}>
-              {' '}
-              <AnimatedButton variant='contained' onClick={handleClickMatchBy}>
-                Match Option
-              </AnimatedButton>
-              <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-                {['School', 'Major', 'Religion', 'Activity', 'Redflag', 'Sleep'].map(option => (
-                  <MenuItem key={option} onClick={() => handleToggle(option)}>
-                    <Checkbox checked={selectedOptions.indexOf(option) !== -1} />
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  justifyContent: 'center',
+                  gap: 2 // Add some gap between items
+                }}
+              >
+                {['School', 'Major', 'Religion', 'Activity', 'Redflag', 'Sleep'].map((option, index) => (
+                  <Box key={index} sx={{ width: '30%', display: 'flex', alignItems: 'center' }}>
+                    <Checkbox checked={selectedOptions.indexOf(option) !== -1} onChange={() => handleToggle(option)} />
                     <ListItemText primary={option} />
-                  </MenuItem>
+                  </Box>
                 ))}
-              </Menu>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+              <Button variant='contained' onClick={handleSmartReservation}>
+                MATCHING ROOM AGAIn
+              </Button>
             </Box>
           </Box>
         )}
@@ -1013,38 +1023,45 @@ const ReservationRoomTest = () => {
                       if (schoolFilter === null) return true
                       if (schoolFilter === 0) {
                         const reservations = reservationData.get(room.room_id) || []
+
                         return reservations.some(
                           reservation => profileData?.userInfoData?.school === reservation.Users_Info?.school
                         )
                       }
                       if (schoolFilter === 1) {
                         const reservations = reservationData.get(room.room_id) || []
+
                         return reservations.some(
                           reservation => profileData?.userInfoData?.school !== reservation.Users_Info?.school
                         )
                       }
+
                       return true
                     })
                     .filter(room => {
                       if (majorFilter === null) return true
                       if (majorFilter === 0) {
                         const reservations = reservationData.get(room.room_id) || []
+
                         return reservations.some(
                           reservation => profileData?.userInfoData?.major === reservation.Users_Info?.major
                         )
                       }
                       if (majorFilter === 1) {
                         const reservations = reservationData.get(room.room_id) || []
+
                         return reservations.some(
                           reservation => profileData?.userInfoData?.major !== reservation.Users_Info?.major
                         )
                       }
+
                       return true
                     })
                     .filter(room => {
                       if (religionFilter === null) return true
                       if (religionFilter === 0) {
                         const reservations = reservationData.get(room.room_id) || []
+
                         return reservations.some(
                           reservation => profileData?.userInfoData?.religion === reservation.Users_Info?.religion
                         )
@@ -1063,12 +1080,14 @@ const ReservationRoomTest = () => {
                       if (sleepFilter === null) return true
                       if (sleepFilter === 0) {
                         const reservations = reservationData.get(room.room_id) || []
+
                         return reservations.some(
                           reservation => profileData?.userReqData?.sleep === reservation.Users_Req?.sleep
                         )
                       }
                       if (sleepFilter === 1) {
                         const reservations = reservationData.get(room.room_id) || []
+
                         return reservations.some(
                           reservation => profileData?.userReqData?.sleep !== reservation.Users_Req?.sleep
                         )
@@ -1082,9 +1101,9 @@ const ReservationRoomTest = () => {
                             <img
                               src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/folder_12478062.png'
                               alt='No Rooms Found'
-                              style={{ maxWidth: '150px' }} // Adjust the image size here
+                              style={{ maxWidth: '100px' }} // Adjust the image size here
                             />
-                            <Typography variant='h6' component='div'>
+                            <Typography variant='body1' component='div'>
                               {' '}
                               The filter you have selected did not match any rooms. Please select a different filter to
                               find the room you desire.
