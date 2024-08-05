@@ -1,6 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { Grid, Box, Card, Typography, CardContent, Button, Dialog, DialogContent } from '@mui/material'
+import {
+  Grid,
+  Box,
+  Card,
+  Typography,
+  CardContent,
+  Button,
+  Dialog,
+  DialogContent,
+  Backdrop,
+  CircularProgress
+} from '@mui/material'
 import { keyframes } from '@emotion/react'
 import styled from '@emotion/styled'
 import { userStore } from 'src/stores/userStore'
@@ -44,6 +55,7 @@ const AllResult = ({ open, handleClose }) => {
   const { user } = userStore()
   const router = useRouter()
   const [reservation, setReservation] = useState(null)
+  const [loading, setLoading] = useState(true) // State for loading
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
   const [showConfetti, setShowConfetti] = useState(false)
   const [isButtonVisible, setIsButtonVisible] = useState(false)
@@ -71,6 +83,8 @@ const AllResult = ({ open, handleClose }) => {
         setReservation(data.reservationData[0] || null)
       } catch (error) {
         console.error('Error fetching reservation data:', error)
+      } finally {
+        setLoading(false) // Set loading to false after data is fetched
       }
     }
 
@@ -104,6 +118,9 @@ const AllResult = ({ open, handleClose }) => {
 
   return (
     <Dialog open={open} onClose={handleClose} fullScreen aria-labelledby='full-screen-dialog-title'>
+      <Backdrop open={loading} style={{ zIndex: 1301, color: '#fff' }}>
+        <CircularProgress color='inherit' />
+      </Backdrop>
       {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
       <DialogContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Grid container spacing={3} sx={{ flex: 1, alignItems: 'center' }}>

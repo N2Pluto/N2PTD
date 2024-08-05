@@ -54,7 +54,7 @@ const handler = async (req: any, res: any) => {
         const duplicateIds = duplicates.map(duplicate => duplicate.id)
 
         if (duplicateIds.length > 0) {
-          const { error: deleteError } = await supabase.from('Reservation').delete().eq('id', duplicateIds)
+          const { error: deleteError } = await supabase.from('Reservation').delete().in('id', duplicateIds)
           if (deleteError) throw new Error(deleteError.message)
         }
       }
