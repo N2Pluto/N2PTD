@@ -77,6 +77,8 @@ const AllResult = ({ open, handleClose }) => {
 
   useEffect(() => {
     const fetchReservationData = async () => {
+      setLoading(true) // Show loading backdrop
+
       try {
         // Check for duplicate bed reservations without sending user_id
         const duplicateResponse = await fetch(`/api/reservation/deleteDuplicate`)
@@ -93,7 +95,7 @@ const AllResult = ({ open, handleClose }) => {
       } catch (error) {
         console.error('Error fetching reservation data:', error)
       } finally {
-        setLoading(false) // Set loading to false after data is fetched
+        setLoading(false) // Hide loading backdrop after data is fetched
       }
     }
 
@@ -342,9 +344,24 @@ const AllResult = ({ open, handleClose }) => {
               </Box>
             </>
           ) : (
-            <Typography variant='h4' color='error'>
-              เสียใจด้วย จองไม่ทัน
-            </Typography>
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                flexDirection: 'column',
+                alignItems: 'center',
+                height: '100%',
+                textAlign: 'center'
+              }}
+            >
+              <Typography variant='h4' color='error'>
+                เสียใจด้วย จองไม่ทัน
+              </Typography>
+              <Typography variant='body1' sx={{ mt: 2 }}>
+                โปรดลองอีกครั้งในภายหลัง
+              </Typography>
+            </Box>
           )}
         </Grid>
       </DialogContent>
