@@ -92,8 +92,6 @@ const AllResult = ({ open, handleClose }) => {
         setReservation(data.reservationData[0] || null)
       } catch (error) {
         console.error('Error fetching reservation data:', error)
-      } finally {
-        setLoading(false) // Set loading to false once data is fetched
       }
     }
 
@@ -102,6 +100,15 @@ const AllResult = ({ open, handleClose }) => {
 
     return () => clearInterval(intervalId)
   }, [user])
+
+  useEffect(() => {
+    // Force the loading screen to stay visible for 10 seconds
+    const loadingTimer = setTimeout(() => {
+      setLoading(false)
+    }, 5000)
+
+    return () => clearTimeout(loadingTimer)
+  }, [])
 
   useEffect(() => {
     if (open) {
