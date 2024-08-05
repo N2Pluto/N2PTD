@@ -1,3 +1,5 @@
+//this is /api/reservation/checkReservation
+
 import supabase from 'src/libs/supabase'
 
 
