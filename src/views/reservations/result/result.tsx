@@ -77,8 +77,6 @@ const AllResult = ({ open, handleClose }) => {
 
   useEffect(() => {
     const fetchReservationData = async () => {
-      setLoading(true) // Show loading backdrop
-
       try {
         // Check for duplicate bed reservations without sending user_id
         const duplicateResponse = await fetch(`/api/reservation/deleteDuplicate`)
@@ -95,7 +93,7 @@ const AllResult = ({ open, handleClose }) => {
       } catch (error) {
         console.error('Error fetching reservation data:', error)
       } finally {
-        setLoading(false) // Hide loading backdrop after data is fetched
+        setLoading(false) // Set loading to false once data is fetched
       }
     }
 
@@ -129,13 +127,17 @@ const AllResult = ({ open, handleClose }) => {
 
   return (
     <Dialog open={open} onClose={handleClose} fullScreen aria-labelledby='full-screen-dialog-title'>
-      <Backdrop open={loading} style={{ zIndex: 1301, color: '#fff' }}>
-        <CircularProgress color='inherit' />
-      </Backdrop>
       {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
       <DialogContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Grid container spacing={3} sx={{ flex: 1, alignItems: 'center' }}>
-          {reservation ? (
+        {loading ? (
+          <Backdrop sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }} open={loading}>
+            <CircularProgress color='inherit' />
+            <Typography variant='h6' sx={{ mt: 2 }}>
+              กำลังประมวลผล
+            </Typography>
+          </Backdrop>
+        ) : reservation ? (
+          <Grid container spacing={3} sx={{ flex: 1, alignItems: 'center' }}>
             <>
               <Grid
                 item
@@ -343,27 +345,27 @@ const AllResult = ({ open, handleClose }) => {
                 </div>
               </Box>
             </>
-          ) : (
-            <Box
-              sx={{
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                flexDirection: 'column',
-                alignItems: 'center',
-                height: '100%',
-                textAlign: 'center'
-              }}
-            >
-              <Typography variant='h4' color='error'>
-                เสียใจด้วย จองไม่ทัน
-              </Typography>
-              <Typography variant='body1' sx={{ mt: 2 }}>
-                โปรดลองอีกครั้งในภายหลัง
-              </Typography>
-            </Box>
-          )}
-        </Grid>
+          </Grid>
+        ) : (
+          <Box
+            sx={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              alignItems: 'center',
+              height: '100%',
+              textAlign: 'center'
+            }}
+          >
+            <Typography variant='h4' color='error'>
+              เสียใจด้วย จองไม่ทัน
+            </Typography>
+            <Typography variant='body1' sx={{ mt: 2 }}>
+              โปรดลองอีกครั้งในภายหลัง
+            </Typography>
+          </Box>
+        )}
       </DialogContent>
     </Dialog>
   )
