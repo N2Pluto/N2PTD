@@ -29,7 +29,7 @@ const slideIn = keyframes`
     opacity: 1;
     transform: translateX(0);
   }
-`;
+`
 
 const fadeIn = keyframes`
   from {
@@ -38,7 +38,7 @@ const fadeIn = keyframes`
   to {
     opacity: 1;
   }
-`;
+`
 
 const StyledComponents = {
   ImageContainer: styled.div`
@@ -48,7 +48,7 @@ const StyledComponents = {
     animation: ${fadeIn} 1s ease-in-out;
     animation-delay: ${({ delay }) => delay}s;
     animation-fill-mode: both;
-  `,
+  `
 }
 
 const AllResult = ({ open, handleClose }) => {
@@ -85,9 +85,11 @@ const AllResult = ({ open, handleClose }) => {
           console.error('Error checking for duplicate bed reservations:', duplicateData.error)
         } else {
           if (duplicateData.deleted && duplicateData.deleted.length > 0) {
-            setErrorMessage('เสียใจด้วย จองไม่ทัน')
+            console.log('เสียใจด้วย จองไม่ทัน')
+            setErrorMessage(true)
           } else {
             console.log('Duplicate bed reservations checked successfully')
+            setErrorMessage(false)
           }
         }
       } catch (error) {
@@ -157,9 +159,6 @@ const AllResult = ({ open, handleClose }) => {
           {loading ? (
             <Backdrop sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }} open={loading}>
               <CircularProgress color='inherit' />
-              <Typography variant='h6' sx={{ mt: 2 }}>
-                กำลังประมวลผล
-              </Typography>
             </Backdrop>
           ) : errorMessage ? (
             <Box
@@ -174,7 +173,7 @@ const AllResult = ({ open, handleClose }) => {
               }}
             >
               <Typography variant='h4' color='error'>
-                {errorMessage}
+                เสียใจด้วย จองไม่ทัน
               </Typography>
             </Box>
           ) : reservation ? (
@@ -400,7 +399,7 @@ const AllResult = ({ open, handleClose }) => {
               }}
             >
               <Typography variant='h4' color='error'>
-                กำลังประมวลผล
+                กำลังตรวจสอบข้อมูล
               </Typography>
             </Box>
           )}
