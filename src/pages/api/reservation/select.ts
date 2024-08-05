@@ -47,9 +47,7 @@ const handler = async (req: any, res: any) => {
     // Check for duplicates and delete the newer ones
     for (const key in groupedReservations) {
       if (groupedReservations[key].length > 1) {
-        const sortedReservations = groupedReservations[key].sort(
-          (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-        )
+        const sortedReservations = groupedReservations[key].sort((a, b) => a.id - b.id)
         const [, ...duplicates] = sortedReservations
         const duplicateIds = duplicates.map(duplicate => duplicate.id)
 
