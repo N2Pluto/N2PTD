@@ -130,63 +130,62 @@ const ReservationBedviwe = () => {
     fetchRoundProfile()
   }, [])
 
- const handleReservation = async () => {
-   try {
-     if (!user || !selectedBedId) {
-       console.error('User data or bed ID is missing.')
-       return
-     }
+  const handleReservation = async () => {
+    try {
+      if (!user || !selectedBedId) {
+        console.error('User data or bed ID is missing.')
+        return
+      }
 
-     // First, check if the bed is already reserved
-     const checkBedResponse = await fetch(`/api/reservation/checkRepeat?bed_id=${selectedBedId}`)
-     const { isReserved } = await checkBedResponse.json()
+      // First, check if the bed is already reserved
+      const checkBedResponse = await fetch(`/api/reservation/checkRepeat?bed_id=${selectedBedId}`)
+      const { isReserved } = await checkBedResponse.json()
 
-     if (isReserved) {
-       handleOpenWarn()
-       handleCloseConfirmation()
-       return
-     }
+      if (isReserved) {
+        handleOpenWarn()
+        handleCloseConfirmation()
+        return
+      }
 
-     // Then, check if the user already has a reservation
-     const checkResponse = await fetch(`/api/reservation/checkReservation?user_id=${user.user_id}`)
-     const { hasReservation } = await checkResponse.json()
+      // Then, check if the user already has a reservation
+      const checkResponse = await fetch(`/api/reservation/checkReservation?user_id=${user.user_id}`)
+      const { hasReservation } = await checkResponse.json()
 
-     if (hasReservation) {
-       handleOpenWarnUser()
-       handleCloseConfirmation()
-       return
-     }
+      if (hasReservation) {
+        handleOpenWarnUser()
+        handleCloseConfirmation()
+        return
+      }
 
-     // If both checks pass, proceed with the reservation
-     const response = await fetch('/api/reservation', {
-       method: 'POST',
-       headers: {
-         'Content-Type': 'application/json'
-       },
-       body: JSON.stringify({
-         user_id: user.user_id,
-         student_id: user.student_id,
-         email: user.email,
-         bed_id: selectedBedId,
-         round_id: roundData?.data?.id
-       })
-     })
+      // If both checks pass, proceed with the reservation
+      const response = await fetch('/api/reservation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: user.user_id,
+          student_id: user.student_id,
+          email: user.email,
+          bed_id: selectedBedId,
+          round_id: roundData?.data?.id
+        })
+      })
 
-     const { data, error } = await response.json()
+      const { data, error } = await response.json()
 
-     if (error) {
-       console.error('Error inserting data into Reservation table:', error.message)
-     } else {
-       console.log('Data inserted successfully:', data)
-       setOpenAllResult(true)
-     }
-     handleCloseConfirmation()
-   } catch (error) {
-     console.error('Error inserting data into Reservation table:', error.message)
-     handleCloseConfirmation()
-   }
- }
-
+      if (error) {
+        console.error('Error inserting data into Reservation table:', error.message)
+      } else {
+        console.log('Data inserted successfully:', data)
+        setOpenAllResult(true)
+      }
+      handleCloseConfirmation()
+    } catch (error) {
+      console.error('Error inserting data into Reservation table:', error.message)
+      handleCloseConfirmation()
+    }
+  }
 
   return (
     <>
