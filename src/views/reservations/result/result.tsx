@@ -40,6 +40,15 @@ const fadeIn = keyframes`
   }
 `
 
+const fadeInDelayed = keyframes`
+  0%, 95% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+`
+
 const StyledComponents = {
   ImageContainer: styled.div`
     animation: ${slideIn} 1s ease-in-out;
@@ -48,6 +57,13 @@ const StyledComponents = {
     animation: ${fadeIn} 1s ease-in-out;
     animation-delay: ${({ delay }) => delay}s;
     animation-fill-mode: both;
+  `,
+  ErrorTypography: styled(Typography)`
+    animation: ${fadeInDelayed} 5s ease-in-out forwards;
+  `,
+  ErrorMessage: styled(Typography)`
+    animation: ${fadeInDelayed} 5s ease-in-out forwards;
+    margin-top: 2rem;
   `
 }
 
@@ -365,12 +381,10 @@ const AllResult = ({ open, handleClose }) => {
               textAlign: 'center'
             }}
           >
-            <Typography variant='h4' color='error'>
+            <StyledComponents.ErrorTypography variant='h4' color='error'>
               เสียใจด้วย จองไม่ทัน
-            </Typography>
-            <Typography variant='body1' sx={{ mt: 2 }}>
-              โปรดลองอีกครั้งในภายหลัง
-            </Typography>
+            </StyledComponents.ErrorTypography>
+            <StyledComponents.ErrorMessage variant='body1'>โปรดลองอีกครั้งในภายหลัง</StyledComponents.ErrorMessage>
           </Box>
         )}
       </DialogContent>
