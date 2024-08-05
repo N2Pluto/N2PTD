@@ -88,6 +88,7 @@ const AllResult = ({ open, handleClose }) => {
             console.log('เสียใจด้วย จองไม่ทัน')
             setErrorMessage(true)
             setLoading(false)
+            return // Exit early if this condition is met
           } else {
             console.log('Duplicate bed reservations checked successfully')
             setErrorMessage(false)
@@ -106,6 +107,10 @@ const AllResult = ({ open, handleClose }) => {
 
   useEffect(() => {
     const fetchReservationData = async () => {
+      if (errorMessage) {
+        setLoading(false)
+        return
+      }
       try {
         const response = await fetch(`/api/reservation/select?user_id=${user?.user_id}`)
         const data = await response.json()
@@ -121,7 +126,7 @@ const AllResult = ({ open, handleClose }) => {
     const intervalId = setInterval(fetchReservationData, 3000)
 
     return () => clearInterval(intervalId)
-  }, [user])
+  }, [user, errorMessage])
 
   useEffect(() => {
     // Force the loading screen to stay visible for 10 seconds
