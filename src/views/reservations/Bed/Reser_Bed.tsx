@@ -78,11 +78,6 @@ const ReservationBedviwe = () => {
     setOpenAllResult(false)
   }
 
-  const handleOpenConfirmation = (bedId: string) => {
-    setSelectedBedId(bedId)
-    setConfirmationOpen(true)
-  }
-
   const handleCloseConfirmation = () => {
     setSelectedBedId(null)
     setConfirmationOpen(false)
@@ -130,6 +125,13 @@ const ReservationBedviwe = () => {
     fetchRoundProfile()
   }, [])
 
+  const handleOpenConfirmation = (bedId: string) => {
+    setSelectedBedId(bedId)
+    setConfirmationOpen(true)
+  }
+
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
+
   const handleReservation = async () => {
     try {
       if (!user || !selectedBedId) {
@@ -156,6 +158,10 @@ const ReservationBedviwe = () => {
         handleCloseConfirmation()
         return
       }
+
+      // Delay the reservation process by 1-5 seconds
+      const randomDelay = Math.floor(Math.random() * 5000) + 1000 // Random delay between 1000ms (1s) and 5000ms (5s)
+      await delay(randomDelay)
 
       // If both checks pass, proceed with the reservation
       const response = await fetch('/api/reservation', {
