@@ -64,6 +64,12 @@ const StyledComponents = {
   ErrorMessage: styled(Typography)`
     animation: ${fadeInDelayed} 5s ease-in-out forwards;
     margin-top: 2rem;
+  `,
+  CatImage: styled.img`
+    animation: ${fadeInDelayed} 5s ease-in-out forwards;
+  `,
+  GoHomeButton: styled(Button)`
+    animation: ${fadeInDelayed} 5s ease-in-out forwards;
   `
 }
 
@@ -75,6 +81,10 @@ const AllResult = ({ open, handleClose }) => {
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
   const [showConfetti, setShowConfetti] = useState(false)
   const [isButtonVisible, setIsButtonVisible] = useState(false)
+
+  const handleGoHome = () => {
+    router.push('/reservation/building/')
+  }
 
   const loguser = async () => {
     if (reservation) {
@@ -155,9 +165,6 @@ const AllResult = ({ open, handleClose }) => {
         {loading ? (
           <Backdrop sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }} open={loading}>
             <CircularProgress color='inherit' />
-            <Typography variant='h6' sx={{ mt: 2 }}>
-              กำลังประมวลผล
-            </Typography>
           </Backdrop>
         ) : reservation ? (
           <Grid container spacing={3} sx={{ flex: 1, alignItems: 'center' }}>
@@ -381,10 +388,20 @@ const AllResult = ({ open, handleClose }) => {
               textAlign: 'center'
             }}
           >
-            <StyledComponents.ErrorTypography variant='h4' color='error'>
-              เสียใจด้วย จองไม่ทัน
-            </StyledComponents.ErrorTypography>
-            <StyledComponents.ErrorMessage variant='body1'>โปรดลองอีกครั้งในภายหลัง</StyledComponents.ErrorMessage>
+            <StyledComponents.CatImage
+              src='https://qjtblnjatlesdldxagow.supabase.co/storage/v1/object/public/icon/image-VytVWHXTH-transformed-removebg-preview.png'
+              alt='Error Icon'
+              style={{ marginBottom: '20px' }} // Adjust the margin as needed
+            />
+            <Box sx={{ pb: 5 }}>
+              <StyledComponents.ErrorTypography variant='h4' color='error'>
+                Sorry, you couldn't book the dormitory in time.
+              </StyledComponents.ErrorTypography>
+            </Box>
+
+            <StyledComponents.GoHomeButton variant='contained' color='primary' onClick={handleGoHome}>
+              Return to Reservation
+            </StyledComponents.GoHomeButton>
           </Box>
         )}
       </DialogContent>
