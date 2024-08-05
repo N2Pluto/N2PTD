@@ -78,6 +78,15 @@ const AllResult = ({ open, handleClose }) => {
   useEffect(() => {
     const fetchReservationData = async () => {
       try {
+        // Check for duplicate bed reservations without sending user_id
+        const duplicateResponse = await fetch(`/api/reservation/deleteDuplicate`)
+        const duplicateData = await duplicateResponse.json()
+        if (duplicateData.error) {
+          console.error('Error checking for duplicate bed reservations:', duplicateData.error)
+        } else {
+          console.log('Duplicate bed reservations checked successfully')
+        }
+
         const response = await fetch(`/api/reservation/select?user_id=${user?.user_id}`)
         const data = await response.json()
         setReservation(data.reservationData[0] || null)
