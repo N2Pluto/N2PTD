@@ -87,6 +87,7 @@ const AllResult = ({ open, handleClose }) => {
           if (duplicateData.deleted && duplicateData.deleted.length > 0) {
             console.log('เสียใจด้วย จองไม่ทัน')
             setErrorMessage(true)
+            setLoading(false)
           } else {
             console.log('Duplicate bed reservations checked successfully')
             setErrorMessage(false)
@@ -109,8 +110,10 @@ const AllResult = ({ open, handleClose }) => {
         const response = await fetch(`/api/reservation/select?user_id=${user?.user_id}`)
         const data = await response.json()
         setReservation(data.reservationData[0] || null)
+        setLoading(false)
       } catch (error) {
         console.error('Error fetching reservation data:', error)
+        setLoading(false)
       }
     }
 
@@ -159,6 +162,9 @@ const AllResult = ({ open, handleClose }) => {
           {loading ? (
             <Backdrop sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }} open={loading}>
               <CircularProgress color='inherit' />
+              <Typography variant='h6' sx={{ mt: 2 }}>
+                กำลังตรวจสอบข้อมูล
+              </Typography>
             </Backdrop>
           ) : errorMessage ? (
             <Box
