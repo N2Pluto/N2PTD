@@ -133,7 +133,8 @@ const AllResult = ({ open, handleClose }) => {
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} fullScreen aria-labelledby='full-screen-dialog-title'>
+    <div>
+       <Dialog open={open} onClose={handleClose} fullScreen aria-labelledby='full-screen-dialog-title'>
       {showConfetti && <Confetti width={windowSize.width} height={windowSize.height} />}
       <DialogContent sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         {loading ? (
@@ -366,15 +367,14 @@ const AllResult = ({ open, handleClose }) => {
             }}
           >
             <Typography variant='h4' color='error'>
-              เสียใจด้วย จองไม่ทัน
-            </Typography>
-            <Typography variant='body1' sx={{ mt: 2 }}>
-              โปรดลองอีกครั้งในภายหลัง
+             กำลังประมวลผล
             </Typography>
           </Box>
         )}
       </DialogContent>
     </Dialog>
+    </div>
+
   )
 }
 
