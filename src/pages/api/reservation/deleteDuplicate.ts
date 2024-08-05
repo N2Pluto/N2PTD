@@ -28,14 +28,20 @@ const handler = async (req: any, res: any) => {
       }
     }
 
+    let deletedData = []
     if (toDelete.length > 0) {
-      // Delete duplicates
-      const { error: deleteError } = await supabase.from('Reservation').delete().in('id', toDelete)
+      // Delete duplicates and return deleted records
+      const { data: deleted, error: deleteError } = await supabase
+        .from('Reservation')
+        .delete()
+        .in('id', toDelete)
+        .select('*')
 
       if (deleteError) throw deleteError
+      deletedData = deleted
     }
 
-    res.status(200).json({ message: 'Duplicate reservations deleted successfully' })
+    res.status(200).json({ message: 'Duplicate reservations deleted successfully', deleted: deletedData })
   } catch (error) {
     res.status(500).json({ error: error.message })
   }
