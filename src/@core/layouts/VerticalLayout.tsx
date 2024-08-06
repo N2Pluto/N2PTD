@@ -23,6 +23,7 @@ import ScrollToTop from 'src/@core/components/scroll-to-top'
 
 // ** Styled Component
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+import ChatBot from '../components/chatbot'
 
 const VerticalLayoutWrapper = styled('div')({
   height: '100%',
@@ -56,6 +57,7 @@ const ContentWrapper = styled('main')(({ theme }) => ({
 const VerticalLayout = (props: LayoutProps) => {
   // ** Props
   const { settings, children, scrollToTop } = props
+  const { chatBot } = props
 
   // ** Vars
   const { contentWidth } = settings
@@ -110,6 +112,8 @@ const VerticalLayout = (props: LayoutProps) => {
           </DatePickerWrapper>
         </MainContentWrapper>
       </VerticalLayoutWrapper>
+
+      {chatBot ? chatBot(props) : <ChatBot />}
 
       {scrollToTop ? (
         scrollToTop(props)

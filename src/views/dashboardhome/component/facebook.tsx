@@ -55,18 +55,9 @@ const FacebookPost: React.FC = () => {
             subheader={new Date(post.created_at).toLocaleDateString('en-GB')}
           />
           <CardContent>
-            <Box
-              sx={{
-                width: '100%',
-                height: '700px',
-                overflow: 'hidden',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-            >
-              <img src={post.image} alt='' style={{ width: 'auto', height: '100%', objectFit: 'initial' }} />
-            </Box>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <img src={post.image} alt='' style={{ maxWidth: '100%', height: 'auto' }} />
+            </div>
 
             <Typography variant='h6' color='text.secondary' sx={{ pt: 2 }}>
               {post.header}

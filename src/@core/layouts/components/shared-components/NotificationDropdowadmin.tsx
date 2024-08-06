@@ -19,7 +19,7 @@ import BellOutline from 'mdi-material-ui/BellOutline'
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle'
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings'
-import BookOnlineIcon from '@mui/icons-material/BookOnline';
+import BookOnlineIcon from '@mui/icons-material/BookOnline'
 
 // ** Third Party Components
 import PerfectScrollbarComponent from 'react-perfect-scrollbar'
@@ -108,15 +108,15 @@ const NotificationAdminDropdown = () => {
   }
 
   const handleRouter1 = () => {
-    router.push('/admin/userManagement')
+    router.push('/admin/form/editProfileForm/')
   }
 
   const handleRouter2 = () => {
-    router.push('/admin/dormitoryResident')
+    router.push('/admin/form/changeRoomForm/')
   }
 
   const handleRouter3 = () => {
-    router.push('/admin/dormitoryResident')
+    router.push('/admin/form/transferRoomForm/')
   }
 
   const handleRouter4 = () => {
@@ -189,7 +189,7 @@ const NotificationAdminDropdown = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await fetch(`/api/admin/user/userForm/read/fetch_form`).then(res => res.json())
+        const { data } = await fetch(`/api/admin/user/userForm/read/fetchUserForm`).then(res => res.json())
         if (data) {
           setUserManagement(data) // Corrected line
         } else {
@@ -205,9 +205,7 @@ const NotificationAdminDropdown = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(
-        '/api/admin/dormitoryResident/dormitoryResidentForm/changeRoomForm/read/fetch_changeRoom'
-      )
+      const response = await fetch('/api/admin/user/userForm/read/fetchChangeForm')
       const result = await response.json()
       const mappedData = result.data.map((item: any) => ({
         id: item.id,
@@ -221,9 +219,7 @@ const NotificationAdminDropdown = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(
-        '/api/admin/dormitoryResident/dormitoryResidentForm/transferForm/read/fetch_transferRoom'
-      )
+      const response = await fetch('/api/admin/user/userForm/read/fetchTransfer')
       const result = await response.json()
       const mappedData = result.data.map((item: any) => ({
         id: item.id,
@@ -235,16 +231,13 @@ const NotificationAdminDropdown = () => {
     fetchData()
   }, [])
 
-  const userManagementForm = userManagement.filter(r => r.status === '').length
-  const changeRoomForm = changeRoom.filter(r => r.status === '').length
-  const transferRoomForm = transferRoom.filter(data => data.status === '').length
+  const userManagementForm = userManagement.filter(r => r.status === 'Pending').length
+  const changeRoomForm = changeRoom.filter(r => r.status === 'Pending').length
+  const transferRoomForm = transferRoom.filter(data => data.status === 'Pending').length
 
-
-
-  const reservationForm  = reservation.filter(data => data.status === 'Pending').length
-  const approveForm  = approve.filter(data => data.status =='').length
-  const renewalSystemForm  = renewalSystem.filter(data => data.status == '').length
-
+  const reservationForm = reservation.filter(data => data.status === 'Pending').length
+  const approveForm = approve.filter(data => data.status == '').length
+  const renewalSystemForm = renewalSystem.filter(data => data.status == '').length
 
   const all = userManagementForm + changeRoomForm + transferRoomForm + reservationForm + approveForm + renewalSystemForm
 

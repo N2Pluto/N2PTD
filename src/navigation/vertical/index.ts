@@ -124,48 +124,7 @@ const useNavigation = (): VerticalNavItemsType => {
       icon: AccountPlusOutline,
       path: '/admin/importStudent'
     },
-    {
-      sectionTitle: 'Form',
-      icon: DnsOutlinedIcon,
-      children: [
-        {
-          title: 'Form Control',
-          icon: GoogleIcon,
-          path: '/admin/googleForm'
-        },
-        {
-          title: 'Edit Profile',
-          icon: ApartmentIcon,
-          path: '/admin/form/editProfileForm'
-        },
-        {
-          title: 'Change Room',
-          icon: ApartmentIcon,
-          path: '/admin/form/changeRoomForm'
-        },
-        {
-          title: 'Transfer Room',
-          icon: PersonIcon,
-          path: '/admin/form/transferRoomForm'
-        }
-      ]
-    },
-    {
-      sectionTitle: 'Information',
-      icon: DnsOutlinedIcon,
-      children: [
-        {
-          title: 'Resident Info',
-          icon: ApartmentIcon,
-          path: '/admin/dormitoryResident'
-        },
-        {
-          title: 'User Info',
-          icon: PersonIcon,
-          path: '/admin/userManagement'
-        }
-      ]
-    },
+
     {
       sectionTitle: 'Approve',
       icon: CheckBoxOutlinedIcon,
@@ -184,6 +143,22 @@ const useNavigation = (): VerticalNavItemsType => {
           title: 'Renewal',
           icon: ChecklistIcon,
           path: '/admin/renewalSystem'
+        }
+      ]
+    },
+    {
+      sectionTitle: 'Information',
+      icon: DnsOutlinedIcon,
+      children: [
+        {
+          title: 'Resident Info',
+          icon: ApartmentIcon,
+          path: '/admin/dormitoryResident'
+        },
+        {
+          title: 'User Info',
+          icon: PersonIcon,
+          path: '/admin/userManagement'
         }
       ]
     },
@@ -216,6 +191,32 @@ const useNavigation = (): VerticalNavItemsType => {
           title: 'Building Control',
           icon: CorporateFareOutlinedIcon,
           path: '/admin/controlRoom'
+        }
+      ]
+    },
+    {
+      sectionTitle: 'Form',
+      icon: DnsOutlinedIcon,
+      children: [
+        {
+          title: 'Form Control',
+          icon: GoogleIcon,
+          path: '/admin/googleForm'
+        },
+        {
+          title: 'Edit Profile',
+          icon: ApartmentIcon,
+          path: '/admin/form/editProfileForm'
+        },
+        {
+          title: 'Change Room',
+          icon: ApartmentIcon,
+          path: '/admin/form/changeRoomForm'
+        },
+        {
+          title: 'Transfer Room',
+          icon: PersonIcon,
+          path: '/admin/form/transferRoomForm'
         }
       ]
     },

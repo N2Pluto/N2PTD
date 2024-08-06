@@ -321,7 +321,7 @@ const Profile = () => {
                       </Box>
                       <Box>
                         <Typography variant='subtitle2' sx={{ whiteSpace: 'nowrap', color: 'text.primary' }}>
-                          {profileData?.userInfoData.phone}
+                          +66{profileData?.userInfoData.phone}
                         </Typography>
                       </Box>
                     </Box>

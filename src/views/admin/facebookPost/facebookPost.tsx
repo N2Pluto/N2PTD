@@ -56,7 +56,7 @@ const FormLayoutsFacebookPost = () => {
 
   const ImgStyled = styled('img')(({ theme }) => ({
     width: 800,
-    height: 500,
+    height: 800,
     borderRadius: theme.shape.borderRadius
   }))
 

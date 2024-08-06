@@ -323,7 +323,7 @@ export default function TransferRoomControl() {
       setIsSubmitDisabled(true)
     } else {
       console.log('The bed is available')
-      setBedStatusMessage('The bed is available')
+      setBedStatusMessage('Ready to Submit')
       setIsSubmitDisabled(false)
     }
   }

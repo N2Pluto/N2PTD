@@ -44,7 +44,7 @@ const UserDropdown = () => {
       } catch (error) {
         console.error('Failed to fetch data:', error)
       }
-    }, 3000)
+    }, 10000)
 
     return () => clearInterval(intervalId)
   }, [])
@@ -57,7 +57,7 @@ const UserDropdown = () => {
       } catch (error) {
         console.error('Failed to fetch data:', error)
       }
-    }, 3000)
+    }, 10000)
 
     return () => clearInterval(intervalId)
   }, [])
