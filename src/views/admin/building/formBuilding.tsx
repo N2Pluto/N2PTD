@@ -68,11 +68,10 @@ const FormBuilding = ({ onClose, setSnackbarOpen }) => {
   const router = useRouter()
   const { user } = userStore()
 
-  const loguseredit = async (name: string) => {
-    const content = `Create '${name} Room total:'${room_total}' Gender:'${type_gender}' Price:'${price}' Bedcapacity:'${type_bedcapacity}'`;
-    await sendLogsadmincontorl(user?.student_id, content, 'Create');
-  };
-
+  const loguseredit = async (name: string, room_total: number) => {
+    const content = `Create '${name} Room total:'${room_total}' Gender:'${type_gender}' Price:'${price}' Bedcapacity:'${type_bedcapacity}'`
+    await sendLogsadmincontorl(user?.student_id, content, 'Create')
+  }
 
   const handleRoomsChange = (index: number, value: string) => {
     const newRoomsPerFloor = [...roomsPerFloor]
@@ -128,9 +127,8 @@ const FormBuilding = ({ onClose, setSnackbarOpen }) => {
         latitude,
         longitude
       })
-
     })
-    loguseredit(name)
+    loguseredit(name, room_total)
 
     if (!response.ok) {
       console.error('Failed to create dormitory')

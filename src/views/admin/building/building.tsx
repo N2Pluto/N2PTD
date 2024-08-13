@@ -52,10 +52,10 @@ const Building = ({ dorm_id }) => {
   const { user } = userStore()
 
 
-  const loguseredit = async (name: string) => {
-    const content = `Delete '${name} and rooms in the building' `;
-    await sendLogsadmincontorl(user?.student_id, content, 'Delete');
-  };
+  // const loguseredit = async (name: string) => {
+  //   const content = `Delete '${name} and rooms in the building' `;
+  //   await sendLogsadmincontorl(user?.student_id, content, 'Delete');
+  // };
 
   const handleSnackbarDeleteClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -128,7 +128,7 @@ const Building = ({ dorm_id }) => {
       // Refresh the dormitoryBuilding data after successful deletion
       const { data } = await fetch('/api/admin/read/fetch_building').then(res => res.json())
 
-      loguseredit(name)
+      // loguseredit(name)
       setDormitoryBuilding(data)
       setSnackbarDeleteOpen(true)
     } catch (error) {
